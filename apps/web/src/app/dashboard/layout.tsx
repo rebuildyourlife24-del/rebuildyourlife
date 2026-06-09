@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AuthProvider, useAuth, useRequireAuth } from '@/lib/auth';
+import { AuthProvider, useRequireAuth } from '@/lib/auth';
 
 const navItems = [
   {

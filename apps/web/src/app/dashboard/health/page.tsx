@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BarChart,
   Bar,
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -13,7 +11,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   ComposedChart,
-  Area,
 } from 'recharts';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

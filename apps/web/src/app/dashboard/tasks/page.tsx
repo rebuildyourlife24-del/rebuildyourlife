@@ -19,12 +19,7 @@ interface Task {
   assignedAgentType: AgentType | null;
 }
 
-const statusColors: Record<TaskStatus, 'default' | 'info' | 'success' | 'danger'> = {
-  PENDING: 'default',
-  IN_PROGRESS: 'info',
-  COMPLETED: 'success',
-  CANCELLED: 'danger'
-};
+
 
 const priorityColors: Record<TaskPriority, 'default' | 'info' | 'warning' | 'danger'> = {
   LOW: 'default',
@@ -206,7 +201,7 @@ export default function TasksPage() {
               >
                 <option value="" className="bg-navy">Niemand</option>
                 {AGENT_DEFINITIONS.map(a => (
-                  <option key={a.type} value={a.type} className="bg-navy">{a.name} ({a.role})</option>
+                  <option key={a.type} value={a.type} className="bg-navy">{a.name} ({a.description})</option>
                 ))}
               </select>
             </div>

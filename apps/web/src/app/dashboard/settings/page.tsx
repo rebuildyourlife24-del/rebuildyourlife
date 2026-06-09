@@ -5,10 +5,10 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { api, formatApiError } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
+
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+
   const [loading, setLoading] = useState(true);
   
   // Profile Form

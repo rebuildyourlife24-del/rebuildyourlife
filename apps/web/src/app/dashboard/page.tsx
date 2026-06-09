@@ -13,62 +13,7 @@ import { api, formatCurrency, formatRelativeTime } from '@/lib/api';
 import type { DashboardStats, Activity, AIAgent } from '@rebuildyourlife/shared';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
-const fallbackStats: DashboardStats = {
-  activeGoals: 7,
-  monthlyBudget: 3200,
-  totalDebt: 24500,
-  tasksDue: 4,
-  goalsCompletedThisMonth: 3,
-  debtPaidThisMonth: 850,
-  completedGoals: 12,
-  monthlyBudgetBalance: 400,
-  tasksDueToday: 2,
-  tasksOverdue: 0,
-  activePrograms: 1,
-};
 
-const fallbackActivities: Activity[] = [
-  {
-    id: '1',
-    userId: '1',
-    type: 'goal_completed',
-    title: 'Goal Completed',
-    description: 'You completed "Create emergency fund plan"',
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: '2',
-    userId: '1',
-    type: 'debt_payment',
-    title: 'Debt Payment Made',
-    description: 'Paid $250 to Capital One',
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: '3',
-    userId: '1',
-    type: 'ai_interaction',
-    title: 'AI Coaching Session',
-    description: 'Completed career strategy session with Career Coach',
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-  },
-  {
-    id: '4',
-    userId: '1',
-    type: 'task_completed',
-    title: 'Task Completed',
-    description: 'Updated resume with new skills section',
-    createdAt: new Date(Date.now() - 28800000).toISOString(),
-  },
-  {
-    id: '5',
-    userId: '1',
-    type: 'milestone_reached',
-    title: 'Milestone Reached',
-    description: 'Reached 30-day streak of daily goal reviews',
-    createdAt: new Date(Date.now() - 43200000).toISOString(),
-  },
-];
 
 const fallbackAgents: Pick<AIAgent, 'name' | 'specialization' | 'status'>[] = [
   { name: 'Financial Advisor', specialization: 'financial_advisor', status: 'online' },
@@ -159,8 +104,8 @@ export default function DashboardPage() {
           api.get<{ data: DashboardStats }>('/user/dashboard'),
           api.get<{ data: Activity[] }>('/user/dashboard/activities')
         ]);
-        setStats(statsRes.data as DashboardStats);
-        setActivities(activitiesRes.data as Activity[] || []);
+        setStats(statsRes.data as unknown as DashboardStats);
+        setActivities(activitiesRes.data as unknown as Activity[] || []);
       } catch (err) {
         console.error(err);
       } finally {

@@ -9,7 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Paywall } from '@/components/ui/Paywall';
 import { api, formatApiError } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
+
 
 type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'PROSPECT';
 type InvoiceStatus = 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE';
@@ -77,7 +77,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function BusinessPage() {
-  const { user } = useAuth();
+
   const [summary, setSummary] = useState<BusinessSummary>({ totalRevenue: 0, outstandingInvoices: 0, activeClients: 0 });
   const [clients, setClients] = useState<Client[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
