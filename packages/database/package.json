@@ -1,0 +1,38 @@
+{
+  "name": "@rebuildyourlife/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "tsx src/seed.ts",
+    "db:studio": "prisma studio",
+    "build": "npm run db:generate && tsc",
+    "clean": "rimraf dist node_modules/.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "prisma": "^6.8.0",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "prisma": {
+    "seed": "tsx src/seed.ts"
+  }
+}
