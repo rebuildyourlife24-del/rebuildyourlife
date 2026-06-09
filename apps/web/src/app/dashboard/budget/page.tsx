@@ -223,7 +223,7 @@ export default function BudgetPage() {
                       })}
                     </Pie>
                     <RechartsTooltip 
-                      formatter={(value: number) => `€ ${value.toLocaleString('nl-NL', { minimumFractionDigits: 2 })}`}
+                      formatter={(value: any) => `€ ${Number(value).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}`}
                       contentStyle={{ backgroundColor: '#1a2035', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#f1f1f1' }}
                       itemStyle={{ color: '#d4a853' }}
                     />

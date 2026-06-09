@@ -128,7 +128,7 @@ export default function AITeamPage() {
                   <h3 className={`font-semibold ${activeAgent === agent.type ? 'text-gold' : 'text-textPrimary'}`}>
                     {agent.name}
                   </h3>
-                  <p className="text-xs text-textSecondary">{agent.role}</p>
+                  <p className="text-xs text-textSecondary">{agent.description}</p>
                 </div>
               </div>
             </motion.button>
@@ -151,7 +151,7 @@ export default function AITeamPage() {
                     {AGENT_DEFINITIONS.find((a) => a.type === activeAgent)?.name}
                   </h2>
                   <p className="text-xs text-textSecondary">
-                    {AGENT_DEFINITIONS.find((a) => a.type === activeAgent)?.role}
+                    {AGENT_DEFINITIONS.find((a) => a.type === activeAgent)?.description}
                   </p>
                 </div>
               </div>
