@@ -284,7 +284,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               const isActive =
                 item.href === '/dashboard'
                   ? pathname === '/dashboard'
-                  : pathname.startsWith(item.href);
+                  : pathname?.startsWith(item.href);
 
               return (
                 <li key={item.href}>
