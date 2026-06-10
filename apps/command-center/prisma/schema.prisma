@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------
+// ORION COMMAND CENTER: HIVE MIND DATABASE SCHEMA
+// ----------------------------------------------------
+
+enum AgentType {
+  ORION_CORE
+  FINANCE_MGR
+  SEO_MARKETING
+  LEAD_SCRAPER
+  ECOMMERCE_MEDIA
+}
+
+enum TaskStatus {
+  QUEUED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  STANDBY
+}
+
+// ============================================
+// 1. ORION'S MEMORY & VECTOR DATABASE
+// ============================================
+
+model AIMemory {
+  id          String    @id @default(uuid())
+  agentType   AgentType
+  content     String    @db.Text
+  // In the future: embedding vector(1536) for pgvector long-term similarity search
+  category    String    // e.g. "STRATEGY", "COMPETITOR_DATA", "USER_PREFERENCE"
+  importance  Int       @default(1) // 1-10
+  createdAt   DateTime  @default(now())
+}
+
+// ============================================
+// 2. DAILY OPERATIONS MONITOR
+// ============================================
+
+model DailyLog {
+  id          String    @id @default(uuid())
+  agentType   AgentType
+  action      String    @db.Text
+  costUsd     Float     @default(0.0) // Tracking API usage costs
+  status      String    @default("SUCCESS")
+  timestamp   DateTime  @default(now())
+}
+
+// ============================================
+// 3. AGENT TASK QUEUE
+// ============================================
+
+model AgentTask {
+  id          String     @id @default(uuid())
+  agentType   AgentType
+  title       String
+  description String?    @db.Text
+  status      TaskStatus @default(QUEUED)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// ============================================
+// 4. PLUGIN & MODULE REGISTRY
+// ============================================
+
+model Plugin {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  isActive    Boolean   @default(true)
+  version     String    @default("1.0.0")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

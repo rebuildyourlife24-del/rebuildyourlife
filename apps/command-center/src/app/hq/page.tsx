@@ -6,9 +6,50 @@ import { Mic, Activity, DollarSign, BarChart2, Globe, ShoppingCart, Cpu, Shield,
 
 export default function WarRoom() {
   const [isListening, setIsListening] = useState(false);
+  const [orionAdvice, setOrionAdvice] = useState('"Henk, all systems are currently nominal. I am awaiting your command."');
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-[#05050f] text-white overflow-hidden relative font-sans">
+  const handleMicClick = async () => {
+    if (isListening) return; // Prevent double clicks
+    
+    setIsListening(true);
+    setOrionAdvice("...");
+    setIsProcessing(true);
+
+    // Simulate the user talking into the mic for 2 seconds
+    setTimeout(async () => {
+      setIsListening(false);
+      setOrionAdvice("Analyzing voice command...");
+
+      try {
+        // Send a simulated prompt to Orion's Brain
+        const sampleCommands = [
+          "We need more leads, activate the scraper",
+          "What is my profit margin from Mollie?",
+          "Generate a new white label video for Shopify"
+        ];
+        const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
+
+        const res = await fetch('/api/orion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: randomCommand })
+        });
+
+        const data = await res.json();
+        
+        if (data.response) {
+          setOrionAdvice(data.response);
+        } else {
+          setOrionAdvice("Error processing command. Check API logs.");
+        }
+      } catch (error) {
+        setOrionAdvice("System Error: Connection to Core failed.");
+      } finally {
+        setIsProcessing(false);
+      }
+    }, 2500);
+  };
       <div className="stars opacity-50"></div>
       
       {/* Top Nav */}
@@ -65,11 +106,11 @@ export default function WarRoom() {
               animate={{ opacity: 1, y: 0 }}
               className="w-full glass-panel border border-cyan-500/20 rounded-xl p-4 flex gap-4 items-start"
             >
-              <Lightbulb className="w-5 h-5 text-cyan-400 shrink-0 mt-1 animate-pulse" />
+              <Lightbulb className={`w-5 h-5 text-cyan-400 shrink-0 mt-1 ${isProcessing ? 'animate-bounce' : 'animate-pulse'}`} />
               <div>
                 <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION'S ADVICE</h4>
-                <p className="text-sm text-white/80 leading-relaxed">
-                  "Henk, the Scraper agent found a new trending private-label product in the supplement niche. The SEO agent is currently on standby. I recommend activating SEO to immediately generate a test campaign to validate demand."
+                <p className={`text-sm text-white/80 leading-relaxed ${isProcessing ? 'animate-pulse text-cyan-200' : ''}`}>
+                  {orionAdvice}
                 </p>
               </div>
             </motion.div>
