@@ -216,21 +216,21 @@ export async function getDebtOverview(userId: string) {
   });
 
   const totalOwed = debts.reduce(
-    (sum, d) => sum + toNumber(d.currentBalance),
+    (sum: any, d: any) => sum + toNumber(d.currentBalance),
     0,
   );
   const totalMonthlyPayments = debts
-    .filter((d) => d.status === "ACTIVE" || d.status === "PAYMENT_PLAN")
-    .reduce((sum, d) => sum + toNumber(d.monthlyPayment), 0);
+    .filter((d: any) => d.status === "ACTIVE" || d.status === "PAYMENT_PLAN")
+    .reduce((sum: any, d: any) => sum + toNumber(d.monthlyPayment), 0);
   const totalPaid = debts.reduce(
-    (sum, d) =>
-      sum + d.payments.reduce((ps, p) => ps + toNumber(p.amount), 0),
+    (sum: any, d: any) =>
+      sum + d.payments.reduce((ps: any, p: any) => ps + toNumber(p.amount), 0),
     0,
   );
 
   const debtsByStatus: Record<string, number> = {};
   for (const status of Object.values(DebtStatus)) {
-    debtsByStatus[status] = debts.filter((d) => d.status === status).length;
+    debtsByStatus[status] = debts.filter((d: any) => d.status === status).length;
   }
 
   return {
@@ -289,7 +289,7 @@ export async function calculatePayoffScenarios(
     return [];
   }
 
-  const debts: DebtForScenario[] = debtsRaw.map((d) => ({
+  const debts: DebtForScenario[] = debtsRaw.map((d: any) => ({
     id: d.id,
     creditorName: d.creditorName,
     currentBalance: toNumber(d.currentBalance),
