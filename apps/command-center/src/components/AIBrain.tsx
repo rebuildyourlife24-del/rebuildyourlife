@@ -17,39 +17,33 @@ export default function AIBrain({ activeAgents, orionState = 'IDLE' }: { activeA
     canvas.width = width;
     canvas.height = height;
 
-    const nodes: { x: number, y: number, vx: number, vy: number, baseRadius: number }[] = [];
-    
-    for (let i = 0; i < 200; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      
-      const cx = width / 2;
-      const brainRadiusY = 70;
-      const brainRadiusX = 85;
-      const brainCenterY = 120;
-      
-      const isBrain = (Math.pow(x - cx, 2) / Math.pow(brainRadiusX, 2)) + (Math.pow(y - brainCenterY, 2) / Math.pow(brainRadiusY, 2)) <= 1;
-      const isSpine = y > 180 && y < 350 && Math.abs(x - cx) < 15;
+    const cx = width / 2;
+    const cy = 120; // Brain center
 
-      if (isBrain || isSpine) {
-        nodes.push({
-          x, y,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          baseRadius: Math.random() * 1.5 + 0.5
-        });
-      }
-    }
-
-    const agentColors: Record<number, string> = {
-      1: '#4ade80', 2: '#c084fc', 3: '#60a5fa', 4: '#f472b6', 99: '#facc15'
-    };
-    
-    const agentNodes = [
-      { id: 1, x: 180, y: 100 }, { id: 2, x: 220, y: 110 }, 
-      { id: 3, x: 170, y: 140 }, { id: 4, x: 230, y: 130 }, 
-      { id: 99, x: 200, y: 80 }
+    // Semantic Nodes Definition
+    const semanticNodes = [
+      { id: 'n1', label: 'CASHFLOW', group: 'finance', x: cx - 40, y: cy - 20, tx: cx - 40, ty: cy - 20 },
+      { id: 'n2', label: 'STRIPE_API', group: 'finance', x: cx - 60, y: cy + 10, tx: cx - 60, ty: cy + 10 },
+      { id: 'n3', label: 'META_ADS', group: 'wealth', x: cx + 50, y: cy - 30, tx: cx + 50, ty: cy - 30 },
+      { id: 'n4', label: 'TRENDS', group: 'wealth', x: cx + 30, y: cy + 20, tx: cx + 30, ty: cy + 20 },
+      { id: 'n5', label: 'CRAWLER', group: 'seo', x: cx, y: cy - 50, tx: cx, ty: cy - 50 },
+      { id: 'n6', label: 'LEADS_DB', group: 'seo', x: cx + 10, y: cy + 40, tx: cx + 10, ty: cy + 40 },
+      { id: 'n7', label: 'ORION_CORE', group: 'core', x: cx, y: cy, tx: cx, ty: cy },
     ];
+
+    // Background filler nodes for density
+    const fillerNodes: { x: number, y: number, tx: number, ty: number, radius: number }[] = [];
+    for (let i = 0; i < 100; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 60;
+      fillerNodes.push({
+        x: cx + Math.cos(angle) * radius,
+        y: cy + Math.sin(angle) * radius,
+        tx: cx + Math.cos(angle) * radius,
+        ty: cy + Math.sin(angle) * radius,
+        radius: Math.random() * 1.5 + 0.5
+      });
+    }
 
     let animationId: number;
     let time = 0;
@@ -57,74 +51,113 @@ export default function AIBrain({ activeAgents, orionState = 'IDLE' }: { activeA
     const render = () => {
       ctx.clearRect(0, 0, width, height);
       
-      // Speed multiplier based on state
       const speedMult = orionState === 'THINKING' ? 3 : orionState === 'EXECUTING' ? 5 : 1;
       time += 0.02 * speedMult;
 
-      ctx.fillStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.9)' : 'rgba(0, 240, 255, 0.8)';
-      ctx.strokeStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(0, 240, 255, 0.2)';
-      ctx.lineWidth = orionState === 'EXECUTING' ? 1.5 : 0.5;
+      // Update target positions based on state
+      if (orionState === 'THINKING') {
+        // Tight cluster
+        semanticNodes.forEach((n, i) => {
+          n.tx = cx + Math.cos(time * 2 + i) * 15;
+          n.ty = cy + Math.sin(time * 2 + i) * 15;
+        });
+        fillerNodes.forEach((n, i) => {
+          n.tx = cx + Math.cos(i) * 30;
+          n.ty = cy + Math.sin(i) * 30;
+        });
+      } else if (orionState === 'EXECUTING') {
+        // Structured grid/flow
+        semanticNodes.forEach((n, i) => {
+          n.tx = cx + (i % 3 - 1) * 40;
+          n.ty = cy + Math.floor(i / 3 - 1) * 40;
+        });
+        fillerNodes.forEach((n, i) => {
+          n.tx = cx + (Math.random() - 0.5) * 120;
+          n.ty = cy + (Math.random() - 0.5) * 80 + Math.sin(time * 5 + i) * 20;
+        });
+      } else {
+        // Idle - gentle drift
+        semanticNodes.forEach((n, i) => {
+          n.tx = cx + Math.cos(time * 0.5 + i) * 45;
+          n.ty = cy + Math.sin(time * 0.5 + i) * 35;
+        });
+        fillerNodes.forEach((n, i) => {
+          n.tx = cx + Math.cos(time * 0.2 + i) * 70;
+          n.ty = cy + Math.sin(time * 0.2 + i) * 50;
+        });
+      }
 
-      nodes.forEach(node => {
-        node.x += node.vx * speedMult;
-        node.y += node.vy * speedMult;
-
-        node.vx += (Math.random() - 0.5) * 0.05 * speedMult;
-        node.vy += (Math.random() - 0.5) * 0.05 * speedMult;
-        
-        node.vx *= 0.95;
-        node.vy *= 0.95;
-
-        if (node.x < 100 || node.x > 300) node.vx *= -1;
-        if (node.y < 50 || node.y > 400) node.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.baseRadius * (orionState === 'THINKING' ? 1.5 : 1), 0, Math.PI * 2);
-        ctx.fill();
+      // Physics interpolation
+      const lerp = (start: number, end: number, amt: number) => (1 - amt) * start + amt * end;
+      
+      semanticNodes.forEach(n => {
+        n.x = lerp(n.x, n.tx, 0.05 * speedMult);
+        n.y = lerp(n.y, n.ty, 0.05 * speedMult);
       });
 
+      fillerNodes.forEach(n => {
+        n.x = lerp(n.x, n.tx, 0.02 * speedMult);
+        n.y = lerp(n.y, n.ty, 0.02 * speedMult);
+      });
+
+      // Draw filler nodes and connections
+      ctx.fillStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.6)' : 'rgba(0, 240, 255, 0.4)';
+      ctx.strokeStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.1)' : 'rgba(0, 240, 255, 0.05)';
+      ctx.lineWidth = 0.5;
+
       ctx.beginPath();
-      const connectionDist = orionState === 'EXECUTING' ? 40 : 25;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-          if (dist < connectionDist) {
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
+      fillerNodes.forEach(n => {
+        ctx.moveTo(n.x, n.y);
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+      });
+      ctx.fill();
+
+      // Connect filler nodes slightly
+      ctx.beginPath();
+      for (let i = 0; i < fillerNodes.length; i += 3) {
+        for (let j = i + 1; j < fillerNodes.length; j += 4) {
+          const dist = Math.hypot(fillerNodes[i].x - fillerNodes[j].x, fillerNodes[i].y - fillerNodes[j].y);
+          if (dist < 20) {
+            ctx.moveTo(fillerNodes[i].x, fillerNodes[i].y);
+            ctx.lineTo(fillerNodes[j].x, fillerNodes[j].y);
           }
         }
       }
       ctx.stroke();
 
-      agentNodes.forEach(node => {
-        const agent = activeAgents.find(a => a.id === node.id || (node.id === 99 && a.id > 4));
-        if (agent) {
-          const isStandby = agent.isStandby;
-          const color = agentColors[node.id];
-          const pulse = isStandby ? 0 : Math.sin(time * 3 + node.id) * 3;
-          const radius = 6 + pulse;
+      // Draw Semantic Nodes
+      ctx.lineWidth = orionState === 'EXECUTING' ? 1.5 : 0.8;
+      ctx.strokeStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.8)' : 'rgba(0, 240, 255, 0.5)';
+      
+      // Connect Semantic Nodes to Core
+      const coreNode = semanticNodes.find(n => n.id === 'n7');
+      if (coreNode) {
+        ctx.beginPath();
+        semanticNodes.forEach(n => {
+          if (n.id !== 'n7') {
+            ctx.moveTo(coreNode.x, coreNode.y);
+            ctx.lineTo(n.x, n.y);
+          }
+        });
+        ctx.stroke();
+      }
 
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, radius * 2, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.globalAlpha = orionState === 'EXECUTING' ? 0.6 : 0.2;
-          ctx.fill();
+      // Render Semantic Nodes and Labels
+      semanticNodes.forEach(n => {
+        const radius = n.id === 'n7' ? 8 : 4;
+        
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, radius + (orionState === 'THINKING' ? Math.random() * 2 : 0), 0, Math.PI * 2);
+        ctx.fillStyle = n.id === 'n7' ? '#fff' : (orionState === 'COMPLETED' ? '#4ade80' : '#06b6d4');
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.fill();
+        ctx.shadowBlur = 0;
 
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
-          ctx.shadowBlur = isStandby ? 5 : 20;
-          ctx.shadowColor = color;
-          ctx.globalAlpha = isStandby ? 0.4 : 1;
-          ctx.fill();
-          
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, radius * 0.4, 0, Math.PI * 2);
-          ctx.fillStyle = '#fff';
-          ctx.fill();
-          
-          ctx.shadowBlur = 0;
-          ctx.globalAlpha = 1;
-        }
+        // Draw Labels
+        ctx.font = '8px monospace';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillText(n.label, n.x + 8, n.y + 3);
       });
 
       animationId = requestAnimationFrame(render);
@@ -133,7 +166,7 @@ export default function AIBrain({ activeAgents, orionState = 'IDLE' }: { activeA
     render();
 
     return () => cancelAnimationFrame(animationId);
-  }, [activeAgents, orionState]);
+  }, [orionState]);
 
   const isTalking = orionState === 'THINKING' || orionState === 'EXECUTING';
 

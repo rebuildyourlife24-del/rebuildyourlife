@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu } from 'lucide-react';
+import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu, Zap } from 'lucide-react';
 
 import DeepSpaceBackground from '@/components/DeepSpaceBackground';
 import SciFiHUD from '@/components/SciFiHUD';
@@ -11,8 +11,11 @@ import AgentWindow from '@/components/AgentWindow';
 import SettingsMenu from '@/components/SettingsMenu';
 import CommandBar, { OrionState } from '@/components/CommandBar';
 import AgentCard from '@/components/AgentCard';
+import AgentTerminal from '@/components/AgentTerminal';
+import { useProactiveEngine } from '@/hooks/useProactiveEngine';
 
 const INITIAL_AGENTS = [
+  { id: 999, title: "WEALTH & OPPORTUNITY ENGINE", icon: "Zap", status: "HUNTING", color: "text-amber-400", isStandby: false },
   { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", color: "text-green-400", isStandby: false },
   { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", color: "text-purple-400", isStandby: true },
   { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "AAN HET ZOEKEN", color: "text-blue-400", isStandby: false },
@@ -24,9 +27,21 @@ export default function WarRoom() {
   const [orionState, setOrionState] = useState<OrionState>('IDLE');
   const [agents] = useState(INITIAL_AGENTS);
   const [hoveredAgent, setHoveredAgent] = useState<number | null>(null);
+  const [selectedTerminalAgent, setSelectedTerminalAgent] = useState<string | null>(null);
   
   // Ambient Notifications
   const [ambientMessage, setAmbientMessage] = useState<string | null>(null);
+
+  // Proactive Alert Engine
+  const { activeAlert, dismissAlert } = useProactiveEngine();
+
+  useEffect(() => {
+    if (activeAlert) {
+      setOrionState('ALERT');
+    } else if (orionState === 'ALERT') {
+      setOrionState('IDLE');
+    }
+  }, [activeAlert]);
 
   useEffect(() => {
     if (orionState !== 'IDLE') return;
@@ -49,6 +64,7 @@ export default function WarRoom() {
       case "Globe": return <Globe className="w-5 h-5" />;
       case "ShoppingCart": return <ShoppingCart className="w-5 h-5" />;
       case "Code": return <Code className="w-5 h-5" />;
+      case "Zap": return <Zap className="w-5 h-5" />;
       default: return <Cpu className="w-5 h-5" />;
     }
   };
@@ -157,6 +173,7 @@ export default function WarRoom() {
                       isStandby={agent.isStandby}
                       isOpen={openWindows.includes(agent.id)}
                       onToggle={() => toggleWindow(agent.id)}
+                      onClick={() => setSelectedTerminalAgent(agent.title)}
                       hoveredAgent={hoveredAgent}
                       setHoveredAgent={setHoveredAgent}
                     />
@@ -176,6 +193,47 @@ export default function WarRoom() {
             onCommandComplete={handleCommandComplete} 
           />
         </div>
+
+        {/* Live Terminal Overlay */}
+        <AnimatePresence>
+          {selectedTerminalAgent && (
+            <AgentTerminal 
+              agentTitle={selectedTerminalAgent} 
+              onClose={() => setSelectedTerminalAgent(null)} 
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Proactive Alert Overlay */}
+        <AnimatePresence>
+          {activeAlert && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] md:w-[500px] glass-panel bg-amber-950/80 border-amber-500 shadow-[0_0_50px_rgba(245,158,11,0.3)] z-50 p-6 rounded-2xl flex flex-col items-center text-center"
+            >
+              <Zap className="w-12 h-12 text-amber-400 mb-4 animate-pulse" />
+              <h2 className="text-xl font-bold font-mono text-amber-400 mb-2">{activeAlert.title}</h2>
+              <p className="text-amber-100/80 text-sm mb-6">{activeAlert.message}</p>
+              
+              <div className="flex gap-4 w-full">
+                <button 
+                  onClick={dismissAlert}
+                  className="flex-1 py-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-400 font-mono rounded-lg transition-colors"
+                >
+                  YES, SHOW DATA
+                </button>
+                <button 
+                  onClick={dismissAlert}
+                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 font-mono rounded-lg transition-colors"
+                >
+                  DISMISS
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </main>
     </div>

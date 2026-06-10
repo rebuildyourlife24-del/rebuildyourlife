@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 interface AgentCardProps {
   id: number;
@@ -12,10 +13,12 @@ interface AgentCardProps {
   onToggle: () => void;
   hoveredAgent: number | null;
   setHoveredAgent: (id: number | null) => void;
+  onClick?: () => void;
 }
 
 // Mock status cycles for realistic AI working representation
 const STATUS_CYCLES: Record<string, string[]> = {
+  "WEALTH & OPPORTUNITY ENGINE": ["Meta advertentie library crawlen...", "Google Trends analyseren...", "Nieuwe dropship niche gevonden", "Concurrentie winstmarges berekenen", "Data sturen naar SEO & E-COM", "ROI projecties simuleren (0€ inleg)"],
   "FINANCIËN & BETALINGEN": ["Facturen scannen...", "Cashflow up-to-date", "Aan het monitoren", "Nieuwe betaling verwerkt"],
   "SEO & MARKETING": ["Zoektermen analyseren...", "14 taken actief", "Concurrentie scannen", "Nieuwe kans gevonden!"],
   "SCRAPER & LEADS": ["Websites crawlen...", "Leads filteren...", "20 prospects gevonden", "Database synchroniseren"],
@@ -23,7 +26,7 @@ const STATUS_CYCLES: Record<string, string[]> = {
   "CUSTOM AI PLUGIN": ["Plugin standby", "Klaar voor actie", "Systeem diagnostiek ok"]
 };
 
-export default function AgentCard({ id, title, icon, color, isStandby, isOpen, onToggle, hoveredAgent, setHoveredAgent }: AgentCardProps) {
+export default function AgentCard({ id, title, icon, color, isStandby, isOpen, onToggle, hoveredAgent, setHoveredAgent, onClick }: AgentCardProps) {
   const statuses = STATUS_CYCLES[title] || ["Standby"];
   const [currentStatusIndex, setCurrentStatusIndex] = useState(0);
 
@@ -42,11 +45,11 @@ export default function AgentCard({ id, title, icon, color, isStandby, isOpen, o
   }, [isStandby, statuses.length]);
 
   return (
-    <button 
-      onClick={onToggle}
+    <motion.button 
+      onClick={() => { onToggle(); onClick?.(); }}
       onMouseEnter={() => setHoveredAgent(id)}
       onMouseLeave={() => setHoveredAgent(null)}
-      className={`relative w-full flex flex-col p-3 rounded-lg transition-all duration-300 border ${
+      className={`relative w-full flex flex-col p-3 rounded-lg transition-all duration-300 border cursor-pointer ${
         isOpen 
           ? `bg-white/10 ${color.replace('text-', 'border-')} shadow-[0_0_15px_rgba(255,255,255,0.05)]` 
           : 'bg-black/40 border-white/5 hover:border-white/20'
