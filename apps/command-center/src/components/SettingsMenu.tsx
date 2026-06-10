@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from 'react';
-import { Settings, Globe, Code, ChevronDown, Bell, Shield } from 'lucide-react';
+import { Settings, Globe, Code, ChevronDown, Bell, Shield, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { logout } from '@/app/actions/auth';
 
 export default function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <nav className="absolute top-0 w-full h-16 border-b border-white/5 flex items-center justify-between px-8 bg-black/40 backdrop-blur-md z-50">
@@ -21,7 +30,10 @@ export default function SettingsMenu() {
         </span>
         <span className="hidden md:block">CEO: HENK SEMLER</span>
 
-        <div className="relative">
+        <div className="relative flex items-center gap-4">
+          <Link href="/ceo" className="text-xs font-bold text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded-lg hover:bg-cyan-500/10 transition-colors flex items-center gap-2">
+            CEO DASHBOARD
+          </Link>
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="flex items-center gap-2 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
@@ -65,6 +77,18 @@ export default function SettingsMenu() {
                     </div>
                   </button>
                 </div>
+                
+                <div className="h-px w-full bg-white/5 my-1" />
+                <button 
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <div>
+                    <div className="text-sm font-medium text-left">Systeem Verlaten</div>
+                    <div className="text-xs text-red-400/50 text-left">Verbreek de verbinding met Orion</div>
+                  </div>
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
