@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Check, ChevronRight, Shield, Cpu, BarChart3, Clock, Lock } from 'lucide-react';
+import { Check, ChevronRight, Shield, Cpu, BarChart3 } from 'lucide-react';
 
 export default function LandingPage() {
   const fadeIn = {
