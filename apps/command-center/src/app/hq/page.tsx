@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, Activity, DollarSign, BarChart2, Globe, ShoppingCart, Shield, Power, ListTodo, Lightbulb, Plus, Code } from 'lucide-react';
+import { Mic, Activity, DollarSign, BarChart2, Globe, ShoppingCart, Shield, Power, ListTodo, Lightbulb, Plus, Code, Cpu } from 'lucide-react';
 
 const INITIAL_AGENTS = [
   { id: 1, title: "FINANCE & PAYMENTS", icon: "DollarSign", status: "MONITORING", tasks: ['Reconciling Mollie API', 'Calculating profit margin'], color: "text-green-400", borderColor: "border-green-500/30", isStandby: false },
