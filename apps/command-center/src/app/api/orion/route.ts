@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
-const customOpenAI = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "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",
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     // PHASE 3: TRUE AI INTELLIGENCE (ORION'S BRAIN)
     // ----------------------------------------------------
     
-    // We ask GPT-4o-mini to act as Orion, determine the agent, and give a response.
+    // We ask Gemini to act as Orion, determine the agent, and give a response.
     const systemPrompt = `You are ORION, the central AI CEO of the Command Center for Henk Semler.
 You must analyze the user's voice command and determine which sub-agent should handle it.
 Sub-agents: ORION_CORE, FINANCE_MGR, SEO_MARKETING, LEAD_SCRAPER, ECOMMERCE_MEDIA.
@@ -31,7 +31,7 @@ Respond in JSON format exactly like this:
 }`;
 
     const { text } = await generateText({
-      model: customOpenAI('gpt-4o-mini'),
+      model: google('gemini-1.5-flash'),
       system: systemPrompt,
       prompt: prompt,
     });
