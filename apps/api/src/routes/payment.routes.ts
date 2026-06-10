@@ -32,13 +32,9 @@ router.post(
   }
 );
 
-const webhookSchema = z.object({
-  id: z.string(),
-});
-
 router.post(
   "/webhook",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     try {
       const { id } = req.body;
       if (!id) {
