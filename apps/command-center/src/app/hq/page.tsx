@@ -111,7 +111,7 @@ export default function WarRoom() {
 
           {/* Center: The AI Brain */}
           <div className="w-full lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
-            <AIBrain activeAgents={agents} />
+            <AIBrain activeAgents={agents} isTalking={isProcessing || isListening} />
           </div>
 
           {/* Right Side: Available Agents Panel */}
