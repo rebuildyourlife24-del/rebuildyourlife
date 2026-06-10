@@ -23,7 +23,7 @@ Sub-agents: ORION_CORE, FINANCE_MGR, SEO_MARKETING, LEAD_SCRAPER, ECOMMERCE_MEDI
 Respond in JSON format exactly like this:
 {
   "agent": "AGENT_NAME",
-  "response": "Your confident, brief, strategic response speaking directly to Henk."
+  "response": "Je zelfverzekerde, korte, strategische reactie. BELANGRIJK: Spreek ALTIJD Nederlands. Spreek Henk direct aan."
 }`;
 
     const { text } = await generateText({

@@ -5,15 +5,15 @@ import { motion } from 'framer-motion';
 import { Mic, Activity, DollarSign, BarChart2, Globe, ShoppingCart, Shield, Power, ListTodo, Lightbulb, Plus, Code, Cpu } from 'lucide-react';
 
 const INITIAL_AGENTS = [
-  { id: 1, title: "FINANCE & PAYMENTS", icon: "DollarSign", status: "MONITORING", tasks: ['Reconciling Mollie API', 'Calculating profit margin'], color: "text-green-400", borderColor: "border-green-500/30", isStandby: false },
-  { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", tasks: ['Awaiting Orion directive'], color: "text-purple-400", borderColor: "border-purple-500/30", isStandby: true },
-  { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "RESEARCHING", tasks: ['External site deep-scan', 'Extracting competitor pricing'], color: "text-blue-400", borderColor: "border-blue-500/30", isStandby: false },
-  { id: 4, title: "E-COMMERCE & MEDIA", icon: "ShoppingCart", status: "GENERATING", tasks: ['Creating ad creatives', 'Syncing Shopify inventory'], color: "text-pink-400", borderColor: "border-pink-500/30", isStandby: false }
+  { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", tasks: ['Mollie API synchroniseren', 'Winstmarge berekenen'], color: "text-green-400", borderColor: "border-green-500/30", isStandby: false },
+  { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", tasks: ['Wachten op commando van Orion'], color: "text-purple-400", borderColor: "border-purple-500/30", isStandby: true },
+  { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "AAN HET ZOEKEN", tasks: ['Externe websites scannen', 'Concurrentie prijzen uitlezen'], color: "text-blue-400", borderColor: "border-blue-500/30", isStandby: false },
+  { id: 4, title: "E-COMMERCE & MEDIA", icon: "ShoppingCart", status: "GENEREREN", tasks: ['Advertentie video maken', 'Shopify voorraad updaten'], color: "text-pink-400", borderColor: "border-pink-500/30", isStandby: false }
 ];
 
 export default function WarRoom() {
   const [isListening, setIsListening] = useState(false);
-  const [orionAdvice, setOrionAdvice] = useState('"Henk, all systems are currently nominal. I am awaiting your command."');
+  const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. Ik wacht op je commando."');
   const [isProcessing, setIsProcessing] = useState(false);
   const [agents, setAgents] = useState(INITIAL_AGENTS);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -23,8 +23,8 @@ export default function WarRoom() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel(); // Stop any current speech
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US'; // English is usually more naturally robotic for AI
-      utterance.pitch = 0.8;
+      utterance.lang = 'nl-NL'; // ZET STEM OP NEDERLANDS
+      utterance.pitch = 0.9;
       utterance.rate = 1.0;
       
       utterance.onstart = () => setIsSpeaking(true);
@@ -43,13 +43,13 @@ export default function WarRoom() {
 
     setTimeout(async () => {
       setIsListening(false);
-      setOrionAdvice("Analyzing voice command...");
+      setOrionAdvice("Commando analyseren...");
 
       try {
         const sampleCommands = [
-          "We need more leads, activate the scraper",
-          "What is my profit margin from Mollie?",
-          "Generate a new white label video for Shopify"
+          "We hebben meer leads nodig, start de scraper",
+          "Wat is mijn winstmarge deze maand?",
+          "Maak een nieuwe video voor de Shopify store"
         ];
         const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
 
@@ -65,10 +65,10 @@ export default function WarRoom() {
           setOrionAdvice(data.response);
           speakText(data.response); // ORION SPEAKS HARDOP
         } else {
-          setOrionAdvice("Error processing command. Check API logs.");
+          setOrionAdvice("Fout bij het verwerken. Controleer de logs.");
         }
       } catch (error) {
-        setOrionAdvice("System Error: Connection to Core failed.");
+        setOrionAdvice("Systeem Fout: Geen verbinding met Orion Core.");
       } finally {
         setIsProcessing(false);
       }
@@ -80,8 +80,8 @@ export default function WarRoom() {
       id: Date.now(),
       title: "CUSTOM AI PLUGIN",
       icon: "Code",
-      status: "BOOTING",
-      tasks: ['Initializing custom LLM wrapper', 'Connecting to database'],
+      status: "OPSTARTEN",
+      tasks: ['Opzetten van extra hersencapaciteit', 'Database verbinding testen'],
       color: "text-yellow-400",
       borderColor: "border-yellow-500/30",
       isStandby: false
@@ -96,10 +96,10 @@ export default function WarRoom() {
       <nav className="absolute top-0 w-full h-16 border-b border-white/5 flex items-center justify-between px-8 bg-black/20 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <Shield className="w-5 h-5 text-cyan-400" />
-          <span className="font-mono text-sm tracking-[0.2em] text-cyan-400">VAULT: SECURE</span>
+          <span className="font-mono text-sm tracking-[0.2em] text-cyan-400">KLUIS: BEVEILIGD</span>
         </div>
         <div className="flex items-center gap-6 text-sm font-mono tracking-widest text-white/50">
-          <span className="flex items-center gap-2"><Activity className="w-4 h-4 text-green-400" /> SYSTEM NOMINAL</span>
+          <span className="flex items-center gap-2"><Activity className="w-4 h-4 text-green-400" /> SYSTEEM STABIEL</span>
           <span>CEO: HENK SEMLER</span>
         </div>
       </nav>
@@ -116,11 +116,11 @@ export default function WarRoom() {
             {/* Task List Panel */}
             <div className="mt-auto glass-panel rounded-xl p-5 border border-white/5">
               <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 flex items-center gap-2">
-                <ListTodo className="w-4 h-4" /> GLOBAL TASK QUEUE
+                <ListTodo className="w-4 h-4" /> GLOBALE TAKENLIJST
               </h3>
               <div className="space-y-3 font-mono text-xs text-white/60">
-                <div className="flex items-center justify-between"><span className="text-white/80">Competitor Research</span> <span className="text-blue-400">IN PROGRESS</span></div>
-                <div className="flex items-center justify-between"><span className="text-white/80">Generate Shopify Assets</span> <span className="text-pink-400">QUEUED</span></div>
+                <div className="flex items-center justify-between"><span className="text-white/80">Concurrentie Analyse</span> <span className="text-blue-400">BEZIG</span></div>
+                <div className="flex items-center justify-between"><span className="text-white/80">Shopify Producten</span> <span className="text-pink-400">IN DE WACHT</span></div>
               </div>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function WarRoom() {
             >
               <Lightbulb className={`w-5 h-5 text-cyan-400 shrink-0 mt-1 ${isProcessing ? 'animate-bounce' : 'animate-pulse'}`} />
               <div>
-                <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION'S ADVICE</h4>
+                <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION'S ADVIES</h4>
                 <p className={`text-sm text-white/80 leading-relaxed ${isProcessing ? 'animate-pulse text-cyan-200' : ''}`}>
                   {orionAdvice}
                 </p>
@@ -174,7 +174,7 @@ export default function WarRoom() {
               <motion.button onClick={handleMicClick} className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all ${isListening ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' : 'bg-white/5 border-white/10 text-white/50'}`} whileTap={{ scale: 0.95 }}>
                 <Mic className="w-6 h-6" />
               </motion.button>
-              <p className="font-mono text-xs tracking-widest text-cyan-400">{isListening ? 'LISTENING...' : 'TAP TO SPEAK'}</p>
+              <p className="font-mono text-xs tracking-widest text-cyan-400">{isListening ? 'AAN HET LUISTEREN...' : 'DRUK OM TE PRATEN'}</p>
             </div>
           </div>
 
@@ -189,16 +189,16 @@ export default function WarRoom() {
               <div className="p-2 rounded-full bg-white/5 group-hover:bg-cyan-400/10">
                 <Plus className="w-5 h-5" />
               </div>
-              <span className="font-mono text-xs tracking-widest">INSTALL NEW AGENT PLUGIN</span>
+              <span className="font-mono text-xs tracking-widest">Nieuwe Agent Installeren</span>
             </button>
 
              <div className="mt-auto glass-panel rounded-xl p-5 border border-white/5">
               <h3 className="font-mono text-xs tracking-widest text-purple-400 mb-4 flex items-center gap-2">
-                <Activity className="w-4 h-4" /> LIVE RESEARCH FEED
+                <Activity className="w-4 h-4" /> LIVE ONDERZOEKSFEED
               </h3>
               <div className="space-y-3 font-mono text-[10px] text-white/50">
-                <p>SCAN [EXT]: Found 14 new drop-shipping suppliers.</p>
-                <p>SCAN [INT]: Detected 3% drop in RebuildYourLife conversion on mobile.</p>
+                <p>SCAN [EXT]: 14 nieuwe dropshipping leveranciers gevonden.</p>
+                <p>SCAN [INT]: 3% daling in conversie gedetecteerd op mobiel.</p>
               </div>
             </div>
           </div>
@@ -233,14 +233,14 @@ function AgentCard({ title, icon, status, tasks, color, borderColor, isStandby =
             <span className={`text-[10px] tracking-widest ${standby ? 'text-white/30' : color}`}>{standby ? 'STANDBY' : status}</span>
           </div>
         </div>
-        <button onClick={() => setStandby(!standby)} className={`p-2 rounded-full transition-colors ${standby ? 'bg-white/5 text-white/30 hover:bg-white/10' : 'bg-red-500/20 text-red-400 hover:bg-red-500/40'}`} title={standby ? "Activate Agent" : "Put on Standby"}>
+        <button onClick={() => setStandby(!standby)} className={`p-2 rounded-full transition-colors ${standby ? 'bg-white/5 text-white/30 hover:bg-white/10' : 'bg-red-500/20 text-red-400 hover:bg-red-500/40'}`} title={standby ? "Activeer Agent" : "Zet op Standby"}>
           <Power className="w-4 h-4" />
         </button>
       </div>
       
       {!standby && (
         <div className="space-y-2 mt-4 border-t border-white/5 pt-4">
-          <span className="text-[10px] text-white/40 font-mono">CURRENT TASKS:</span>
+          <span className="text-[10px] text-white/40 font-mono">HUIDIGE TAKEN:</span>
           {tasks.map((task: string, i: number) => (
             <div key={i} className="flex items-start gap-2 text-[11px] text-white/60 font-mono">
               <div className="w-1 h-1 rounded-full bg-white/20 mt-1.5 shrink-0"></div>
