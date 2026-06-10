@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: rebuildyourlife-api
+    env: node
+    buildCommand: npm install && npx turbo run build --filter=@rebuildyourlife/api
+    startCommand: cd apps/api && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

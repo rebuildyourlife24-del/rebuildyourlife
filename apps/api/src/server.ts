@@ -12,8 +12,8 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: '*', // Allow all origins during development and preview deployments
-  credentials: false // Must be false if origin is '*'
+  origin: ['https://rebuildyourlife.eu', 'https://henksemler.io', 'https://henksemler.nl', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
 }));
 app.use(compression());
 app.use(express.json());

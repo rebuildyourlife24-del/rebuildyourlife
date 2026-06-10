@@ -265,3 +265,67 @@ export async function getConversation(userId: string, conversationId: string) {
     updatedAt: conversation.updatedAt.toISOString(),
   };
 }
+
+export async function warRoomCommand(prompt: string) {
+  const systemPrompt = `You are ORION, the central AI CEO of the Command Center for Henk Semler.
+You must analyze the user's voice command and determine which sub-agent should handle it.
+Sub-agents: ORION_CORE, FINANCE_MGR, SEO_MARKETING, LEAD_SCRAPER, ECOMMERCE_MEDIA.
+Respond in JSON format exactly like this:
+{
+  "agent": "AGENT_NAME",
+  "response": "Je zelfverzekerde, korte, strategische reactie. BELANGRIJK: Spreek ALTIJD Nederlands. Spreek Henk direct aan."
+}`;
+
+  const apiKey = env.OPENAI_API_KEY;
+  if (!apiKey || apiKey === "sk-placeholder") {
+    return {
+      agent: "ORION_CORE",
+      response: "(MOCK) Orion Core is offline door ontbrekende API sleutel.",
+      status: "ROUTED_SUCCESSFULLY"
+    };
+  }
+
+  const openai = new OpenAI({ apiKey });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: prompt }
+    ],
+    temperature: 0.7,
+  });
+
+  const text = completion.choices[0]?.message?.content || "{}";
+  let assignedAgent: string = 'ORION_CORE';
+  let responseText = 'System anomaly: Could not parse AI response.';
+
+  try {
+    const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const aiDecision = JSON.parse(cleanJson);
+    assignedAgent = aiDecision.agent || 'ORION_CORE';
+    responseText = aiDecision.response || text;
+  } catch (e) {
+    responseText = text;
+  }
+
+  // Database logging
+  try {
+    await prisma.auditLog.create({
+      data: {
+        userId: "00000000-0000-0000-0000-000000000000", // Will fail if no system user, so catch it
+        action: "UPDATE",
+        entityType: "WAR_ROOM_COMMAND",
+        entityId: "system",
+        ipAddress: "127.0.0.1",
+      }
+    });
+  } catch (e) {
+    // Ignore if system user doesn't exist
+  }
+
+  return {
+    agent: assignedAgent,
+    response: responseText,
+    status: "ROUTED_SUCCESSFULLY"
+  };
+}

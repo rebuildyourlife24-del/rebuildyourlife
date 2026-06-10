@@ -53,10 +53,13 @@ export default function WarRoom() {
         ];
         const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
 
-        const res = await fetch('/api/orion', {
+        const res = await fetch('https://rebuildyourlife-api.onrender.com/api/v1/warroom/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: randomCommand })
+          body: JSON.stringify({ 
+            password: 'Henk123!', 
+            prompt: randomCommand 
+          })
         });
 
         const data = await res.json();

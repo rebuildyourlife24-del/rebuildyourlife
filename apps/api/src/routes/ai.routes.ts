@@ -32,5 +32,23 @@ router.post(
     }
   },
 );
+// POST /warroom/command (For the CEO Vault, bypassing standard JWT, using Vault Password)
+router.post(
+  "/warroom/command",
+  aiLimiter,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { password, prompt } = req.body;
+      if (password !== "Henk123!") {
+        return res.status(401).json({ error: "Ongeautoriseerde toegang tot de Kluis." });
+      }
+      
+      const response = await aiService.warRoomCommand(prompt);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default router;
