@@ -16,7 +16,7 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
-  OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
+  OPENAI_API_KEY: z.string().optional().default("sk-placeholder"),
   OPENAI_MODEL: z.string().default("gpt-4o"),
 
   REDIS_URL: z.string().optional(),
