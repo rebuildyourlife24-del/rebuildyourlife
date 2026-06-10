@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@rebuildyourlife/api": "*",
     "@rebuildyourlife/shared": "*",
     "framer-motion": "^11.2.10",
     "lucide-react": "^0.395.0",

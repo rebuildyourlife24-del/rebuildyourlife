@@ -53,7 +53,7 @@ export default function WarRoom() {
         ];
         const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
 
-        const res = await fetch('https://rebuildyourlife-api.onrender.com/api/v1/warroom/command', {
+        const res = await fetch('https://rebuildyourlife.eu/api/v1/warroom/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 

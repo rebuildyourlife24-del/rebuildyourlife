@@ -35,6 +35,10 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 
 const PORT = process.env.PORT || process.env.API_PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`RebuildYourLife API running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'serverless') {
+  app.listen(PORT, () => {
+    console.log(`RebuildYourLife API running on port ${PORT}`);
+  });
+}
+
+export { app };
