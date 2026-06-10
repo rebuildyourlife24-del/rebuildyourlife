@@ -74,6 +74,6 @@ export default function AgentCard({ id, title, icon, color, isStandby, isOpen, o
           <div className="w-[150%] h-[150%] absolute -top-1/4 -left-1/4 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent)] -rotate-45 animate-sweep"></div>
         </div>
       )}
-    </button>
+    </motion.button>
   );
 }
