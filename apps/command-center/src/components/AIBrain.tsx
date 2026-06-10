@@ -1,28 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-
-interface AgentPulse {
-  id: number;
-  x: number;
-  y: number;
-  color: string;
-  size: number;
-  active: boolean;
-}
 
 export default function AIBrain({ activeAgents }: { activeAgents: any[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Colors corresponding to agents
-  const agentColors: Record<number, string> = {
-    1: '#4ade80', // Green
-    2: '#c084fc', // Purple
-    3: '#60a5fa', // Blue
-    4: '#f472b6', // Pink
-    99: '#facc15' // Yellow (Custom Plugin)
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,18 +11,49 @@ export default function AIBrain({ activeAgents }: { activeAgents: any[] }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let width = 300;
-    let height = 400;
+    const width = 400;
+    const height = 500;
     canvas.width = width;
     canvas.height = height;
 
-    // Define positions for nodes inside the "brain" area of the head
-    const baseNodes: AgentPulse[] = [
-      { id: 1, x: 120, y: 150, color: agentColors[1], size: 15, active: false },
-      { id: 2, x: 180, y: 130, color: agentColors[2], size: 15, active: false },
-      { id: 3, x: 140, y: 220, color: agentColors[3], size: 15, active: false },
-      { id: 4, x: 200, y: 180, color: agentColors[4], size: 15, active: false },
-      { id: 99, x: 160, y: 100, color: agentColors[99], size: 15, active: false }
+    // Generate constellation nodes inside a human silhouette (head + shoulders)
+    const nodes: { x: number, y: number, vx: number, vy: number, baseRadius: number }[] = [];
+    
+    for (let i = 0; i < 250; i++) {
+      let x = Math.random() * width;
+      let y = Math.random() * height;
+      
+      // Basic bounding box for a head and shoulders silhouette
+      const cx = width / 2;
+      const headRadiusY = 120;
+      const headRadiusX = 90;
+      const headCenterY = 150;
+      
+      // Check if point is inside head ellipse
+      const isHead = (Math.pow(x - cx, 2) / Math.pow(headRadiusX, 2)) + (Math.pow(y - headCenterY, 2) / Math.pow(headRadiusY, 2)) <= 1;
+      
+      // Check if point is inside shoulders (bottom half)
+      const isShoulders = y > 250 && y < 500 && Math.abs(x - cx) < (y - 150) * 0.8;
+
+      if (isHead || isShoulders) {
+        nodes.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          baseRadius: Math.random() * 1.5 + 0.5
+        });
+      }
+    }
+
+    // Special Agent Nodes (The glowing pulses in the brain)
+    const agentColors: Record<number, string> = {
+      1: '#4ade80', 2: '#c084fc', 3: '#60a5fa', 4: '#f472b6', 99: '#facc15'
+    };
+    
+    const agentNodes = [
+      { id: 1, x: 180, y: 120 }, { id: 2, x: 220, y: 140 }, 
+      { id: 3, x: 160, y: 170 }, { id: 4, x: 240, y: 160 }, 
+      { id: 99, x: 200, y: 100 }
     ];
 
     let animationId: number;
@@ -49,55 +61,70 @@ export default function AIBrain({ activeAgents }: { activeAgents: any[] }) {
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-      time += 0.05;
+      time += 0.02;
 
-      // Draw neural connections between nodes
+      // Update and draw constellation nodes
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+      ctx.lineWidth = 0.5;
+
+      nodes.forEach(node => {
+        node.x += node.vx;
+        node.y += node.vy;
+
+        // Subtle jiggle
+        node.vx += (Math.random() - 0.5) * 0.05;
+        node.vy += (Math.random() - 0.5) * 0.05;
+        
+        // Dampen velocity
+        node.vx *= 0.95;
+        node.vy *= 0.95;
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.baseRadius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Connect close nodes
       ctx.beginPath();
-      for (let i = 0; i < baseNodes.length; i++) {
-        for (let j = i + 1; j < baseNodes.length; j++) {
-          const n1 = baseNodes[i];
-          const n2 = baseNodes[j];
-          const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-          if (dist < 100) {
-            ctx.moveTo(n1.x, n1.y);
-            ctx.lineTo(n2.x, n2.y);
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          if (dist < 30) {
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
           }
         }
       }
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
-      ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Draw agent nodes
-      baseNodes.forEach(node => {
-        // Check if this agent is in the activeAgents list and not on standby
+      // Draw active agent pulses inside the brain
+      agentNodes.forEach(node => {
         const agent = activeAgents.find(a => a.id === node.id || (node.id === 99 && a.id > 4));
-        const isStandby = agent?.isStandby;
-        const isActive = !!agent;
-
-        if (isActive) {
-          const pulseSize = isStandby ? 0 : Math.sin(time + node.id) * 5;
-          const currentSize = node.size + pulseSize;
-          const alpha = isStandby ? 0.3 : 0.8 + Math.sin(time * 2 + node.id) * 0.2;
+        if (agent) {
+          const isStandby = agent.isStandby;
+          const color = agentColors[node.id];
+          const pulse = isStandby ? 0 : Math.sin(time * 3 + node.id) * 3;
+          const radius = 6 + pulse;
 
           ctx.beginPath();
-          ctx.arc(node.x, node.y, currentSize, 0, Math.PI * 2);
-          ctx.fillStyle = node.color;
-          ctx.globalAlpha = alpha;
-          ctx.shadowBlur = isStandby ? 5 : 20 + pulseSize * 2;
-          ctx.shadowColor = node.color;
+          ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.shadowBlur = isStandby ? 5 : 20;
+          ctx.shadowColor = color;
+          ctx.globalAlpha = isStandby ? 0.4 : 0.9;
           ctx.fill();
           
-          // Inner core
           ctx.beginPath();
-          ctx.arc(node.x, node.y, currentSize * 0.4, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
+          ctx.arc(node.x, node.y, radius * 0.4, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
           ctx.fill();
+          
+          ctx.shadowBlur = 0;
+          ctx.globalAlpha = 1;
         }
       });
-      
-      ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
+
       animationId = requestAnimationFrame(render);
     };
 
@@ -107,36 +134,14 @@ export default function AIBrain({ activeAgents }: { activeAgents: any[] }) {
   }, [activeAgents]);
 
   return (
-    <div className="relative w-[300px] h-[400px] mx-auto z-10 perspective-1000">
-      {/* Abstract Transparent Human Head Silhouette */}
-      <svg 
-        className="absolute inset-0 w-full h-full opacity-30 drop-shadow-[0_0_15px_rgba(0,255,255,0.5)] pointer-events-none" 
-        viewBox="0 0 300 400" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path 
-          d="M150 20C100 20 50 60 40 120C30 180 50 220 60 260C70 300 100 360 140 380C160 390 190 380 210 350C230 320 250 280 260 230C270 180 250 100 210 60C180 30 160 20 150 20Z" 
-          stroke="url(#headGradient)" 
-          strokeWidth="2" 
-          fill="rgba(0, 240, 255, 0.05)"
-        />
-        <defs>
-          <linearGradient id="headGradient" x1="150" y1="20" x2="150" y2="380" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#00f0ff" />
-            <stop offset="1" stopColor="#a855f7" stopOpacity="0.2" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      {/* AI Brain Canvas */}
+    <div className="relative w-[400px] h-[500px] flex items-center justify-center z-10 perspective-1000">
+      {/* Central Core Glow */}
+      <div className="absolute inset-0 bg-cyan-500/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none" />
+      
       <canvas 
         ref={canvasRef} 
         className="absolute inset-0 w-full h-full pointer-events-none mix-blend-screen"
       />
-
-      {/* Ambient Glow */}
-      <div className="absolute inset-0 bg-cyan-500/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none" />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Mic, Lightbulb, DollarSign, BarChart2, Globe, ShoppingCart, Code } from 'lucide-react';
 
 import DeepSpaceBackground from '@/components/DeepSpaceBackground';
+import SciFiHUD from '@/components/SciFiHUD';
 import AIBrain from '@/components/AIBrain';
 import AgentWindow from '@/components/AgentWindow';
 import SettingsMenu from '@/components/SettingsMenu';
@@ -70,6 +71,7 @@ export default function WarRoom() {
   return (
     <div className="min-h-screen bg-[#02000a] text-white overflow-hidden relative font-sans">
       <DeepSpaceBackground />
+      <SciFiHUD />
       <SettingsMenu />
 
       <main className="pt-24 pb-20 px-4 lg:px-8 h-screen flex flex-col relative z-10 pointer-events-none">
@@ -78,7 +80,7 @@ export default function WarRoom() {
         <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8">
           
           {/* Left Side: Agent Windows */}
-          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto custom-scrollbar pr-2">
+          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto custom-scrollbar pr-2 relative z-20">
             {openWindows.map(id => {
               const agent = agents.find(a => a.id === id);
               if (!agent) return null;
@@ -97,13 +99,13 @@ export default function WarRoom() {
           </div>
 
           {/* Center: The AI Brain */}
-          <div className="w-full lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto">
+          <div className="w-full lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
             <AIBrain activeAgents={agents} />
           </div>
 
           {/* Right Side: Available Agents Panel */}
-          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto">
-            <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40">
+          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto relative z-20">
+            <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
               <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 border-b border-white/10 pb-2">HUIDIGE AGENTEN</h3>
               <div className="space-y-2">
                 {agents.map(agent => (
@@ -128,7 +130,7 @@ export default function WarRoom() {
         </div>
 
         {/* Bottom Console: Orion Main Input */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl pointer-events-auto">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl pointer-events-auto z-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
