@@ -21,9 +21,9 @@ export default function WarRoom() {
   // TEXT TO SPEECH FUNCTION
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel(); // Stop any current speech
+      window.speechSynthesis.cancel(); 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'nl-NL'; // ZET STEM OP NEDERLANDS
+      utterance.lang = 'nl-NL'; 
       utterance.pitch = 0.9;
       utterance.rate = 1.0;
       
@@ -63,11 +63,11 @@ export default function WarRoom() {
         
         if (data.response) {
           setOrionAdvice(data.response);
-          speakText(data.response); // ORION SPEAKS HARDOP
+          speakText(data.response);
         } else {
           setOrionAdvice("Fout bij het verwerken. Controleer de logs.");
         }
-      } catch (error) {
+      } catch {
         setOrionAdvice("Systeem Fout: Geen verbinding met Orion Core.");
       } finally {
         setIsProcessing(false);
@@ -89,6 +89,18 @@ export default function WarRoom() {
     setAgents([...agents, newAgent]);
   };
 
+  // Pre-calculated animation sequences to satisfy ESLint hooks purity
+  const barHeights = [
+    [10, 40, 10, 30, 10],
+    [10, 60, 20, 50, 10],
+    [10, 30, 70, 20, 10],
+    [10, 50, 10, 60, 10],
+    [10, 80, 40, 50, 10],
+    [10, 30, 20, 70, 10],
+    [10, 60, 50, 20, 10]
+  ];
+  const barDurations = [0.4, 0.5, 0.35, 0.45, 0.5, 0.38, 0.42];
+
   return (
     <div className="min-h-screen bg-[#05050f] text-white overflow-hidden relative font-sans">
       <div className="stars opacity-50"></div>
@@ -107,13 +119,11 @@ export default function WarRoom() {
       <main className="pt-24 pb-8 px-8 h-screen flex flex-col relative z-10">
         <div className="grid grid-cols-12 gap-8 flex-1">
           
-          {/* Left Column: Agents & Tasks */}
           <div className="col-span-3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
             {agents.slice(0, Math.ceil(agents.length / 2)).map(agent => (
               <AgentCard key={agent.id} {...agent} />
             ))}
             
-            {/* Task List Panel */}
             <div className="mt-auto glass-panel rounded-xl p-5 border border-white/5">
               <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 flex items-center gap-2">
                 <ListTodo className="w-4 h-4" /> GLOBALE TAKENLIJST
@@ -125,7 +135,6 @@ export default function WarRoom() {
             </div>
           </div>
 
-          {/* Center Column: ORION & Advice */}
           <div className="col-span-6 flex flex-col items-center justify-between relative">
             
             <motion.div 
@@ -135,14 +144,13 @@ export default function WarRoom() {
             >
               <Lightbulb className={`w-5 h-5 text-cyan-400 shrink-0 mt-1 ${isProcessing ? 'animate-bounce' : 'animate-pulse'}`} />
               <div>
-                <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION'S ADVIES</h4>
+                <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION&apos;S ADVIES</h4>
                 <p className={`text-sm text-white/80 leading-relaxed ${isProcessing ? 'animate-pulse text-cyan-200' : ''}`}>
                   {orionAdvice}
                 </p>
               </div>
             </motion.div>
 
-            {/* THE HOLOGRAPHIC FACE (ORION CORE) */}
             <motion.div 
               className="relative w-80 h-80 flex items-center justify-center my-8 perspective-1000"
               animate={{ y: [0, -10, 0] }}
@@ -151,25 +159,21 @@ export default function WarRoom() {
               <motion.div className="absolute inset-0 rounded-full border border-cyan-400/20 border-t-cyan-400 glow-blue" animate={{ rotate: 360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 20, repeat: Infinity, ease: "linear" } }} />
               <motion.div className="absolute inset-4 rounded-full border border-purple-500/20 border-b-purple-500 glow-purple" animate={{ rotate: -360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 15, repeat: Infinity, ease: "linear" } }} />
               
-              {/* Dynamic 3D Orb / Face Representation */}
               <div className="absolute inset-12 rounded-full bg-gradient-to-tr from-cyan-900/60 to-purple-900/60 backdrop-blur-xl border border-white/20 flex flex-col items-center justify-center shadow-[0_0_80px_rgba(0,240,255,0.3)] overflow-hidden">
-                {/* Visualizer bars that react when speaking */}
                 <div className="flex gap-1.5 items-end h-16 mt-4">
-                  {[...Array(7)].map((_, i) => (
+                  {barHeights.map((heights, i) => (
                     <motion.div 
                       key={i}
                       className="w-2 bg-cyan-300 rounded-t-full shadow-[0_0_10px_#67e8f9]"
-                      animate={{ height: isSpeaking ? [10, 40 + Math.random() * 40, 10] : 10 }}
-                      transition={{ duration: 0.3 + Math.random() * 0.2, repeat: Infinity, ease: "easeInOut" }}
+                      animate={{ height: isSpeaking ? heights : 10 }}
+                      transition={{ duration: barDurations[i], repeat: Infinity, ease: "easeInOut" }}
                     />
                   ))}
                 </div>
-                {/* Holographic grid lines inside the orb */}
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] rounded-full"></div>
               </div>
             </motion.div>
 
-            {/* Mic */}
             <div className="flex flex-col items-center">
               <motion.button onClick={handleMicClick} className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all ${isListening ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' : 'bg-white/5 border-white/10 text-white/50'}`} whileTap={{ scale: 0.95 }}>
                 <Mic className="w-6 h-6" />
@@ -178,13 +182,11 @@ export default function WarRoom() {
             </div>
           </div>
 
-          {/* Right Column: Agents & Research */}
           <div className="col-span-3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
             {agents.slice(Math.ceil(agents.length / 2)).map(agent => (
               <AgentCard key={agent.id} {...agent} />
             ))}
 
-            {/* Upload Plugin Button */}
             <button onClick={addPlugin} className="w-full glass-panel border border-dashed border-white/20 hover:border-cyan-400/50 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-white/50 hover:text-cyan-400 transition-colors group">
               <div className="p-2 rounded-full bg-white/5 group-hover:bg-cyan-400/10">
                 <Plus className="w-5 h-5" />
@@ -209,11 +211,20 @@ export default function WarRoom() {
   );
 }
 
-function AgentCard({ title, icon, status, tasks, color, borderColor, isStandby = false }: any) {
+interface AgentProps {
+  title: string;
+  icon: string;
+  status: string;
+  tasks: string[];
+  color: string;
+  borderColor: string;
+  isStandby?: boolean;
+}
+
+function AgentCard({ title, icon, status, tasks, color, borderColor, isStandby = false }: AgentProps) {
   const [standby, setStandby] = useState(isStandby);
   
-  // Icon mapper
-  const icons: any = {
+  const icons: Record<string, React.ReactNode> = {
     DollarSign: <DollarSign className="w-5 h-5" />,
     BarChart2: <BarChart2 className="w-5 h-5" />,
     Globe: <Globe className="w-5 h-5" />,

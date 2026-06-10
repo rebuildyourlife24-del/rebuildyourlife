@@ -32,7 +32,7 @@ Respond in JSON format exactly like this:
       prompt: prompt,
     });
 
-    let assignedAgent: any = 'ORION_CORE';
+    let assignedAgent: string = 'ORION_CORE';
     let responseText = 'System anomaly: Could not parse AI response.';
 
     try {
