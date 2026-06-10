@@ -52,8 +52,8 @@ export default function WarRoom() {
           "Maak een nieuwe video voor de Shopify store"
         ];
         const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
-
-        const res = await fetch('https://rebuildyourlife.eu/api/v1/warroom/command', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+        const res = await fetch(`${apiUrl}/warroom/command`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
