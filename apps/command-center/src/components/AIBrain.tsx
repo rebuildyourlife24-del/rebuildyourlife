@@ -20,8 +20,8 @@ export default function AIBrain({ activeAgents }: { activeAgents: { id: number; 
     const nodes: { x: number, y: number, vx: number, vy: number, baseRadius: number }[] = [];
     
     for (let i = 0; i < 250; i++) {
-      let x = Math.random() * width;
-      let y = Math.random() * height;
+      const x = Math.random() * width;
+      const y = Math.random() * height;
       
       // Basic bounding box for a head and shoulders silhouette
       const cx = width / 2;

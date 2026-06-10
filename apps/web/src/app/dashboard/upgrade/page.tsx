@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Building2, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import { api } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -53,15 +54,9 @@ export default function UpgradePage() {
     
     setLoadingPlan(planId);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/v1/payments/checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ plan: planId }),
-      });
-      
-      const data = await response.json();
+      const response = await api.post<{ checkoutUrl: string }>('/payments/checkout', { plan: planId });
+      const data = response.data;
+
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {

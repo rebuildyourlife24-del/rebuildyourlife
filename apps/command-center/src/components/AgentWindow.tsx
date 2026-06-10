@@ -13,8 +13,8 @@ interface AgentWindowProps {
   onClose: () => void;
 }
 
-export default function AgentWindow({ id, title, icon, color, isOpen, onClose }: AgentWindowProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function AgentWindow({ title, icon, color, isOpen, onClose }: AgentWindowProps) {
+   
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{role: 'user'|'agent', text: string}[]>([

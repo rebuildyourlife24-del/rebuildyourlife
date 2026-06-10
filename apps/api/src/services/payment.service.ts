@@ -3,7 +3,7 @@ import { prisma } from "@rebuildyourlife/database";
 import { env } from "../config/env.js";
 import { AppError } from "../middleware/errorHandler.js";
 
-const _mollieClient = createMollieClient({ apiKey: env.MOLLIE_API_KEY });
+const mollieClient = createMollieClient({ apiKey: env.MOLLIE_API_KEY });
 
 export class PaymentService {
   static async createCheckoutSession(userId: string, plan: string) {
@@ -13,19 +13,7 @@ export class PaymentService {
     }
 
     const amount = plan === "PREMIUM" ? "14.95" : "49.95";
-    console.log(`Creating checkout for amount: ${amount} using mollieClient:`, !!_mollieClient);
 
-    // HACK: For local development testing without webhooks, we immediately upgrade the user.
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        subscriptionTier: plan,
-        subscriptionStatus: "ACTIVE",
-      },
-    });
-
-    /*
-    // REAL IMPLEMENTATION (Commented out):
     const payment = await mollieClient.payments.create({
       amount: {
         value: amount,
@@ -41,8 +29,26 @@ export class PaymentService {
     });
 
     return { checkoutUrl: payment.getCheckoutUrl() };
-    */
+  }
 
-    return { checkoutUrl: `${env.FRONTEND_URL}/dashboard` };
+  static async handleWebhook(paymentId: string) {
+    const payment = await mollieClient.payments.get(paymentId);
+    if (!payment.metadata || !payment.metadata.userId || !payment.metadata.plan) {
+      return;
+    }
+
+    const { userId, plan } = payment.metadata as any;
+
+    if (payment.isPaid()) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          subscriptionTier: plan,
+          subscriptionStatus: "ACTIVE",
+        },
+      });
+    } else if (payment.isCanceled() || payment.isExpired() || payment.isFailed()) {
+      // Optional: Handle failure (e.g. log it)
+    }
   }
 }

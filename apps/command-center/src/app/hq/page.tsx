@@ -22,7 +22,7 @@ export default function WarRoom() {
   const [isListening, setIsListening] = useState(false);
   const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. De hersenstam is actief."');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [agents, setAgents] = useState(INITIAL_AGENTS);
+  const [agents] = useState(INITIAL_AGENTS);
 
   const getIcon = (name: string) => {
     switch (name) {

@@ -32,4 +32,26 @@ router.post(
   }
 );
 
+const webhookSchema = z.object({
+  id: z.string(),
+});
+
+router.post(
+  "/webhook",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.body;
+      if (!id) {
+        return res.status(400).send("No ID provided");
+      }
+
+      await PaymentService.handleWebhook(id);
+      res.status(200).send("OK");
+    } catch (error) {
+      console.error("Mollie Webhook Error:", error);
+      res.status(500).send("Webhook failed");
+    }
+  }
+);
+
 export const paymentRoutes = router;

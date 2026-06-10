@@ -56,6 +56,8 @@ Respond in JSON format exactly like this:
       assignedAgent = aiDecision.agent || 'ORION_CORE';
       responseText = aiDecision.response || text;
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ignored = e;
       // Fallback if AI didn't return perfect JSON
       responseText = text;
     }
@@ -67,6 +69,7 @@ Respond in JSON format exactly like this:
     try {
       await db.dailyLog.create({
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           agentType: assignedAgent as any,
           action: `Processed Command: "${prompt}"`,
           costUsd: 0.01,
@@ -76,6 +79,7 @@ Respond in JSON format exactly like this:
 
       await db.aIMemory.create({
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           agentType: assignedAgent as any,
           content: `User requested: ${prompt}. AI Responded: ${responseText}`,
           category: "VOICE_COMMAND",
@@ -92,7 +96,7 @@ Respond in JSON format exactly like this:
       status: "ROUTED_SUCCESSFULLY"
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Orion AI Error:", error);
     return NextResponse.json({ 
       agent: "ORION_CORE",

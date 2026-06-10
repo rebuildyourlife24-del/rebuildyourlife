@@ -1,8 +1,8 @@
 import type { ApiResponse, ApiError } from '@rebuildyourlife/shared';
 
-const API_URL = process.env.NODE_ENV === 'production' 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' 
   ? 'https://rebuildyourlife123.onrender.com/api/v1' 
-  : 'http://localhost:4000/api/v1';
+  : 'http://localhost:5000/api/v1');
 
 class ApiClient {
   private baseUrl: string;
