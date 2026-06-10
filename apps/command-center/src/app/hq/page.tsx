@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mic, Lightbulb, DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu } from 'lucide-react';
 
 import DeepSpaceBackground from '@/components/DeepSpaceBackground';
 import SciFiHUD from '@/components/SciFiHUD';
 import AIBrain from '@/components/AIBrain';
 import AgentWindow from '@/components/AgentWindow';
 import SettingsMenu from '@/components/SettingsMenu';
+import CommandBar, { OrionState } from '@/components/CommandBar';
+import AgentCard from '@/components/AgentCard';
 
 const INITIAL_AGENTS = [
   { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", color: "text-green-400", isStandby: false },
@@ -19,10 +21,26 @@ const INITIAL_AGENTS = [
 ];
 
 export default function WarRoom() {
-  const [isListening, setIsListening] = useState(false);
-  const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. De hersenstam is actief."');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [orionState, setOrionState] = useState<OrionState>('IDLE');
   const [agents] = useState(INITIAL_AGENTS);
+  const [hoveredAgent, setHoveredAgent] = useState<number | null>(null);
+  
+  // Ambient Notifications
+  const [ambientMessage, setAmbientMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (orionState !== 'IDLE') return;
+    
+    const messages = ["ORION OBSERVING", "SYSTEM NOMINAL", "DETECTED NEW TREND IN MARKET", "SYNCHRONIZING DATA STREAMS"];
+    const interval = setInterval(() => {
+      if (Math.random() > 0.5) {
+        setAmbientMessage(messages[Math.floor(Math.random() * messages.length)]);
+        setTimeout(() => setAmbientMessage(null), 4000);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [orionState]);
 
   const getIcon = (name: string) => {
     switch (name) {
@@ -35,8 +53,7 @@ export default function WarRoom() {
     }
   };
   
-  // Track which agent windows are currently open
-  const [openWindows, setOpenWindows] = useState<number[]>([1, 3]);
+  const [openWindows, setOpenWindows] = useState<number[]>([1]);
 
   const toggleWindow = (id: number) => {
     if (openWindows.includes(id)) {
@@ -46,133 +63,118 @@ export default function WarRoom() {
     }
   };
 
-  const handleMicClick = async () => {
-    if (isListening) return; 
-    
-    setIsListening(true);
-    setOrionAdvice("...");
-    setIsProcessing(true);
+  const handleCommandComplete = (cmd: string) => {
+    console.log("Command executed:", cmd);
+  };
 
-    setTimeout(async () => {
-      setIsListening(false);
-      setOrionAdvice("Commando analyseren via Orion Core...");
-
-      try {
-        const res = await fetch('/api/orion', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: "Geef een korte status update over de systemen." })
-        });
-
-        const data = await res.json();
-        
-        if (data.response) {
-          setOrionAdvice(data.response);
-        } else {
-          setOrionAdvice("Fout bij het verwerken. Controleer de logs.");
-        }
-      } catch {
-        setOrionAdvice("Systeem Fout: Geen verbinding met Orion Core.");
-      } finally {
-        setIsProcessing(false);
-      }
-    }, 1500);
+  // Coordinates for the spatial SVG lines (mocked center points for agents)
+  const getAgentYPos = (index: number) => {
+    // Rough calculation based on flex box position (top + padding + height * index)
+    return 100 + index * 60;
   };
 
   return (
-    <div className="min-h-screen bg-[#02000a] text-white overflow-hidden relative font-sans">
+    <div className="relative min-h-screen bg-black text-white font-sans overflow-hidden">
       <DeepSpaceBackground />
-      <SciFiHUD />
       <SettingsMenu />
 
-      <main className="pt-24 pb-20 px-4 lg:px-8 h-screen flex flex-col relative z-10 pointer-events-none">
-        {/* We use pointer-events-none on the container so the canvas behind can be seen, but re-enable it for interactive elements */}
+      <main className="relative z-10 pt-20 px-4 md:px-8 h-screen flex flex-col">
         
-        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8">
+        {/* Layer 1 & 2: Ambient AI Presence */}
+        <AnimatePresence>
+          {ambientMessage && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute top-24 left-1/2 -translate-x-1/2 z-0 font-mono text-[10px] tracking-[0.3em] text-cyan-500/40 pointer-events-none"
+            >
+              {ambientMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Spatial Connection SVG Layer */}
+        {hoveredAgent && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden lg:block">
+            <motion.line 
+              x1="50%" y1="50%" 
+              x2="75%" y2={getAgentYPos(agents.findIndex(a => a.id === hoveredAgent))}
+              stroke="url(#cyanGlow)" 
+              strokeWidth="2"
+              strokeDasharray="5 5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.6 }}
+              className="animate-pulse"
+            />
+            <defs>
+              <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0" />
+                <stop offset="100%" stopColor="#06b6d4" stopOpacity="1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        )}
+
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 mb-24 lg:mb-20">
           
-          {/* Left Side: Agent Windows */}
-          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto custom-scrollbar pr-2 relative z-20">
-            {openWindows.map(id => {
-              const agent = agents.find(a => a.id === id);
-              if (!agent) return null;
-              return (
-                <AgentWindow 
-                  key={id}
-                  id={agent.id}
-                  title={agent.title}
-                  icon={getIcon(agent.icon)}
-                  color={agent.color}
-                  isOpen={true}
-                  onClose={() => toggleWindow(id)}
-                />
-              );
-            })}
-          </div>
+          {/* Mobile Swipe Container */}
+          <div className="w-full h-full flex overflow-x-auto snap-x snap-mandatory custom-scrollbar pb-4 lg:overflow-visible lg:snap-none">
+            
+            {/* View 1: Agent Windows (Left Panel Desktop) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto pr-2 relative z-20">
+              {openWindows.map(id => {
+                const agent = agents.find(a => a.id === id);
+                if (!agent) return null;
+                return (
+                  <AgentWindow 
+                    key={id} id={agent.id} title={agent.title} icon={getIcon(agent.icon)} color={agent.color} isOpen={true} onClose={() => toggleWindow(id)}
+                  />
+                );
+              })}
+            </div>
 
-          {/* Center: The AI Brain */}
-          <div className="w-full lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
-            <AIBrain activeAgents={agents} isTalking={isProcessing || isListening} />
-          </div>
-
-          {/* Right Side: Available Agents Panel */}
-          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto relative z-20">
-            <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
-              <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 border-b border-white/10 pb-2">HUIDIGE AGENTEN</h3>
-              <div className="space-y-2">
-                {agents.map(agent => (
-                  <button 
-                    key={agent.id}
-                    onClick={() => toggleWindow(agent.id)}
-                    className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors border ${openWindows.includes(agent.id) ? `bg-white/10 ${agent.color.replace('text-', 'border-')}` : 'bg-transparent border-white/5 hover:border-white/20'}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-md bg-white/5 ${agent.color}`}>
-                        {getIcon(agent.icon)}
-                      </div>
-                      <span className="font-mono text-[10px] tracking-widest text-white/80">{agent.title}</span>
-                    </div>
-                    <div className={`w-2 h-2 rounded-full ${openWindows.includes(agent.id) ? agent.color.replace('text-', 'bg-') : 'bg-white/20'}`}></div>
-                  </button>
-                ))}
+            {/* View 2: The AI Brain Hologram (Center) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
+              <div className="relative">
+                <SciFiHUD />
+                <AIBrain activeAgents={agents} orionState={orionState} />
               </div>
             </div>
-          </div>
 
+            {/* View 3: Autonomous Agents List (Right Panel) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-1/4 flex flex-col gap-4 pointer-events-auto relative z-20">
+              <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
+                <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 border-b border-white/10 pb-2">HUIDIGE AGENTEN</h3>
+                <div className="space-y-3">
+                  {agents.map(agent => (
+                    <AgentCard 
+                      key={agent.id}
+                      id={agent.id}
+                      title={agent.title}
+                      icon={getIcon(agent.icon)}
+                      color={agent.color}
+                      isStandby={agent.isStandby}
+                      isOpen={openWindows.includes(agent.id)}
+                      onToggle={() => toggleWindow(agent.id)}
+                      hoveredAgent={hoveredAgent}
+                      setHoveredAgent={setHoveredAgent}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        {/* Bottom Console: Orion Main Input */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl pointer-events-auto z-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-panel border border-cyan-500/30 rounded-2xl p-2 flex items-center gap-4 bg-black/60 backdrop-blur-xl shadow-[0_0_50px_rgba(0,240,255,0.1)]"
-          >
-            <button 
-              onClick={handleMicClick} 
-              className={`p-4 rounded-xl transition-all ${isListening ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)] animate-pulse' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-            
-            <div className="flex-1 flex flex-col">
-              <span className="font-mono text-[10px] text-cyan-400 tracking-widest mb-1 flex items-center gap-2">
-                <Lightbulb className="w-3 h-3" /> ORION CORE
-              </span>
-              <input 
-                type="text" 
-                placeholder={isListening ? "Aan het luisteren..." : "Stuur een algemeen commando aan Orion..."}
-                className="w-full bg-transparent border-none outline-none text-sm font-mono text-white placeholder:text-white/30"
-                disabled={isListening}
-              />
-            </div>
-            
-            {/* Minimal visual feedback for Orion Advice */}
-            <div className={`hidden md:flex absolute -top-12 left-0 right-0 justify-center transition-opacity ${isProcessing ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="glass-panel px-4 py-2 rounded-full text-xs font-mono text-cyan-300 border border-cyan-500/30">
-                {orionAdvice}
-              </div>
-            </div>
-          </motion.div>
+        {/* Command Center Input */}
+        <div className="absolute bottom-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[600px] z-40 pointer-events-auto">
+          <CommandBar 
+            orionState={orionState} 
+            setOrionState={setOrionState} 
+            onCommandComplete={handleCommandComplete} 
+          />
         </div>
 
       </main>
