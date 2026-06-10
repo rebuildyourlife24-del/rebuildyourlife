@@ -2,35 +2,35 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, Activity, DollarSign, BarChart2, Globe, ShoppingCart, Shield, Power, ListTodo, Lightbulb, Plus, Code, Cpu } from 'lucide-react';
+import { Mic, Lightbulb, DollarSign, BarChart2, Globe, ShoppingCart, Code } from 'lucide-react';
+
+import DeepSpaceBackground from '@/components/DeepSpaceBackground';
+import AIBrain from '@/components/AIBrain';
+import AgentWindow from '@/components/AgentWindow';
+import SettingsMenu from '@/components/SettingsMenu';
 
 const INITIAL_AGENTS = [
-  { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", tasks: ['Mollie API synchroniseren', 'Winstmarge berekenen'], color: "text-green-400", borderColor: "border-green-500/30", isStandby: false },
-  { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", tasks: ['Wachten op commando van Orion'], color: "text-purple-400", borderColor: "border-purple-500/30", isStandby: true },
-  { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "AAN HET ZOEKEN", tasks: ['Externe websites scannen', 'Concurrentie prijzen uitlezen'], color: "text-blue-400", borderColor: "border-blue-500/30", isStandby: false },
-  { id: 4, title: "E-COMMERCE & MEDIA", icon: "ShoppingCart", status: "GENEREREN", tasks: ['Advertentie video maken', 'Shopify voorraad updaten'], color: "text-pink-400", borderColor: "border-pink-500/30", isStandby: false }
+  { id: 1, title: "FINANCIËN & BETALINGEN", icon: <DollarSign className="w-5 h-5" />, status: "MONITOREN", color: "text-green-400", isStandby: false },
+  { id: 2, title: "SEO & MARKETING", icon: <BarChart2 className="w-5 h-5" />, status: "STANDBY", color: "text-purple-400", isStandby: true },
+  { id: 3, title: "SCRAPER & LEADS", icon: <Globe className="w-5 h-5" />, status: "AAN HET ZOEKEN", color: "text-blue-400", isStandby: false },
+  { id: 4, title: "E-COMMERCE & MEDIA", icon: <ShoppingCart className="w-5 h-5" />, status: "GENEREREN", color: "text-pink-400", isStandby: false },
+  { id: 99, title: "CUSTOM AI PLUGIN", icon: <Code className="w-5 h-5" />, status: "STANDBY", color: "text-yellow-400", isStandby: true },
 ];
 
 export default function WarRoom() {
   const [isListening, setIsListening] = useState(false);
-  const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. Ik wacht op je commando."');
+  const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. De hersenstam is actief."');
   const [isProcessing, setIsProcessing] = useState(false);
   const [agents, setAgents] = useState(INITIAL_AGENTS);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  // Track which agent windows are currently open
+  const [openWindows, setOpenWindows] = useState<number[]>([1, 3]);
 
-  // TEXT TO SPEECH FUNCTION
-  const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel(); 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'nl-NL'; 
-      utterance.pitch = 0.9;
-      utterance.rate = 1.0;
-      
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      
-      window.speechSynthesis.speak(utterance);
+  const toggleWindow = (id: number) => {
+    if (openWindows.includes(id)) {
+      setOpenWindows(openWindows.filter(w => w !== id));
+    } else {
+      setOpenWindows([...openWindows, id]);
     }
   };
 
@@ -43,29 +43,19 @@ export default function WarRoom() {
 
     setTimeout(async () => {
       setIsListening(false);
-      setOrionAdvice("Commando analyseren...");
+      setOrionAdvice("Commando analyseren via Orion Core...");
 
       try {
-        const sampleCommands = [
-          "We hebben meer leads nodig, start de scraper",
-          "Wat is mijn winstmarge deze maand?",
-          "Maak een nieuwe video voor de Shopify store"
-        ];
-        const randomCommand = sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
         const res = await fetch('/api/orion', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            password: 'Henk123!', 
-            prompt: randomCommand 
-          })
+          body: JSON.stringify({ prompt: "Geef een korte status update over de systemen." })
         });
 
         const data = await res.json();
         
         if (data.response) {
           setOrionAdvice(data.response);
-          speakText(data.response);
         } else {
           setOrionAdvice("Fout bij het verwerken. Controleer de logs.");
         }
@@ -74,208 +64,105 @@ export default function WarRoom() {
       } finally {
         setIsProcessing(false);
       }
-    }, 2500);
+    }, 1500);
   };
-
-  const addPlugin = () => {
-    const newAgent = {
-      id: Date.now(),
-      title: "CUSTOM AI PLUGIN",
-      icon: "Code",
-      status: "OPSTARTEN",
-      tasks: ['Opzetten van extra hersencapaciteit', 'Database verbinding testen'],
-      color: "text-yellow-400",
-      borderColor: "border-yellow-500/30",
-      isStandby: false
-    };
-    setAgents([...agents, newAgent]);
-  };
-
-  // Pre-calculated animation sequences to satisfy ESLint hooks purity
-  const barHeights = [
-    [10, 40, 10, 30, 10],
-    [10, 60, 20, 50, 10],
-    [10, 30, 70, 20, 10],
-    [10, 50, 10, 60, 10],
-    [10, 80, 40, 50, 10],
-    [10, 30, 20, 70, 10],
-    [10, 60, 50, 20, 10]
-  ];
-  const barDurations = [0.4, 0.5, 0.35, 0.45, 0.5, 0.38, 0.42];
 
   return (
-    <div className="min-h-screen bg-[#05050f] text-white overflow-hidden relative font-sans">
-      <div className="stars opacity-50"></div>
-      
-      <nav className="absolute top-0 w-full h-16 border-b border-white/5 flex items-center justify-between px-8 bg-black/20 backdrop-blur-md z-50">
-        <div className="flex items-center gap-3">
-          <Shield className="w-5 h-5 text-cyan-400" />
-          <span className="font-mono text-sm tracking-[0.2em] text-cyan-400">KLUIS: BEVEILIGD</span>
-        </div>
-        <div className="flex items-center gap-6 text-sm font-mono tracking-widest text-white/50">
-          <span className="flex items-center gap-2"><Activity className="w-4 h-4 text-green-400" /> SYSTEEM STABIEL</span>
-          <span>CEO: HENK SEMLER</span>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-[#02000a] text-white overflow-hidden relative font-sans">
+      <DeepSpaceBackground />
+      <SettingsMenu />
 
-      <main className="pt-24 pb-8 px-4 lg:px-8 min-h-screen flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 flex-1">
+      <main className="pt-24 pb-20 px-4 lg:px-8 h-screen flex flex-col relative z-10 pointer-events-none">
+        {/* We use pointer-events-none on the container so the canvas behind can be seen, but re-enable it for interactive elements */}
+        
+        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8">
           
-          {/* LEFT SIDEBAR - Agents (Hidden on mobile, or stacked at the bottom) */}
-          <div className="hidden lg:flex lg:col-span-3 flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
-            {agents.slice(0, Math.ceil(agents.length / 2)).map(agent => (
-              <AgentCard key={agent.id} {...agent} />
-            ))}
-            
-            <div className="mt-auto glass-panel rounded-xl p-5 border border-white/5">
-              <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 flex items-center gap-2">
-                <ListTodo className="w-4 h-4" /> GLOBALE TAKENLIJST
-              </h3>
-              <div className="space-y-3 font-mono text-xs text-white/60">
-                <div className="flex items-center justify-between"><span className="text-white/80">Concurrentie Analyse</span> <span className="text-blue-400">BEZIG</span></div>
-                <div className="flex items-center justify-between"><span className="text-white/80">Shopify Producten</span> <span className="text-pink-400">IN DE WACHT</span></div>
+          {/* Left Side: Agent Windows */}
+          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto custom-scrollbar pr-2">
+            {openWindows.map(id => {
+              const agent = agents.find(a => a.id === id);
+              if (!agent) return null;
+              return (
+                <AgentWindow 
+                  key={id}
+                  id={agent.id}
+                  title={agent.title}
+                  icon={agent.icon}
+                  color={agent.color}
+                  isOpen={true}
+                  onClose={() => toggleWindow(id)}
+                />
+              );
+            })}
+          </div>
+
+          {/* Center: The AI Brain */}
+          <div className="w-full lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto">
+            <AIBrain activeAgents={agents} />
+          </div>
+
+          {/* Right Side: Available Agents Panel */}
+          <div className="w-full lg:w-1/4 flex flex-col gap-4 pointer-events-auto">
+            <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40">
+              <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 border-b border-white/10 pb-2">HUIDIGE AGENTEN</h3>
+              <div className="space-y-2">
+                {agents.map(agent => (
+                  <button 
+                    key={agent.id}
+                    onClick={() => toggleWindow(agent.id)}
+                    className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors border ${openWindows.includes(agent.id) ? `bg-white/10 ${agent.color.replace('text-', 'border-')}` : 'bg-transparent border-white/5 hover:border-white/20'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-1.5 rounded-md bg-white/5 ${agent.color}`}>
+                        {agent.icon}
+                      </div>
+                      <span className="font-mono text-[10px] tracking-widest text-white/80">{agent.title}</span>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full ${openWindows.includes(agent.id) ? agent.color.replace('text-', 'bg-') : 'bg-white/20'}`}></div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* CENTER CONSOLE - Orion Orb & Mic (Top on mobile) */}
-          <div className="w-full lg:col-span-6 flex flex-col items-center justify-center relative order-first lg:order-none min-h-[50vh] lg:min-h-0 mb-8 lg:mb-0">
-            
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full max-w-md glass-panel border border-cyan-500/20 rounded-xl p-4 flex gap-4 items-start mb-4 lg:mb-0 lg:absolute lg:top-0"
+        </div>
+
+        {/* Bottom Console: Orion Main Input */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl pointer-events-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel border border-cyan-500/30 rounded-2xl p-2 flex items-center gap-4 bg-black/60 backdrop-blur-xl shadow-[0_0_50px_rgba(0,240,255,0.1)]"
+          >
+            <button 
+              onClick={handleMicClick} 
+              className={`p-4 rounded-xl transition-all ${isListening ? 'bg-cyan-500/20 text-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)] animate-pulse' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
-              <Lightbulb className={`w-5 h-5 text-cyan-400 shrink-0 mt-1 ${isProcessing ? 'animate-bounce' : 'animate-pulse'}`} />
-              <div>
-                <h4 className="font-mono text-xs tracking-widest text-cyan-400 mb-1">ORION&apos;S ADVIES</h4>
-                <p className={`text-sm text-white/80 leading-relaxed ${isProcessing ? 'animate-pulse text-cyan-200' : ''}`}>
-                  {orionAdvice}
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="relative w-64 h-64 lg:w-80 lg:h-80 flex items-center justify-center my-8 perspective-1000"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <motion.div className="absolute inset-0 rounded-full border border-cyan-400/20 border-t-cyan-400 glow-blue" animate={{ rotate: 360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 20, repeat: Infinity, ease: "linear" } }} />
-              <motion.div className="absolute inset-4 rounded-full border border-purple-500/20 border-b-purple-500 glow-purple" animate={{ rotate: -360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 15, repeat: Infinity, ease: "linear" } }} />
-              
-              <div className="absolute inset-8 lg:inset-12 rounded-full bg-gradient-to-tr from-cyan-900/60 to-purple-900/60 backdrop-blur-xl border border-white/20 flex flex-col items-center justify-center shadow-[0_0_80px_rgba(0,240,255,0.3)] overflow-hidden">
-                <div className="flex gap-1.5 items-end h-12 lg:h-16 mt-4">
-                  {barHeights.map((heights, i) => (
-                    <motion.div 
-                      key={i}
-                      className="w-1.5 lg:w-2 bg-cyan-300 rounded-t-full shadow-[0_0_10px_#67e8f9]"
-                      animate={{ height: isSpeaking ? heights : 10 }}
-                      transition={{ duration: barDurations[i], repeat: Infinity, ease: "easeInOut" }}
-                    />
-                  ))}
-                </div>
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] rounded-full"></div>
-              </div>
-            </motion.div>
-
-            <div className="flex flex-col items-center mt-4 lg:mt-0 lg:absolute lg:bottom-0">
-              <motion.button onClick={handleMicClick} className={`w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center mb-4 transition-all ${isListening ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_30px_rgba(0,240,255,0.5)]' : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20'}`} whileTap={{ scale: 0.95 }}>
-                <Mic className="w-8 h-8" />
-              </motion.button>
-              <p className="font-mono text-[10px] lg:text-xs tracking-widest text-cyan-400">{isListening ? 'AAN HET LUISTEREN...' : 'DRUK OM TE PRATEN'}</p>
-            </div>
-          </div>
-
-          {/* RIGHT SIDEBAR / MOBILE STACK */}
-          <div className="w-full lg:col-span-3 flex flex-col gap-4 lg:gap-6 lg:overflow-y-auto lg:pr-2 custom-scrollbar">
-            {/* Show all agents on mobile since left sidebar is hidden */}
-            <div className="flex flex-col gap-4 lg:hidden">
-              <h3 className="font-mono text-xs tracking-widest text-white/50 border-b border-white/10 pb-2">ACTIEVE AGENTEN</h3>
-              {agents.map(agent => (
-                <AgentCard key={agent.id} {...agent} />
-              ))}
-            </div>
-
-            {/* Desktop right sidebar agents */}
-            <div className="hidden lg:flex flex-col gap-6">
-              {agents.slice(Math.ceil(agents.length / 2)).map(agent => (
-                <AgentCard key={agent.id} {...agent} />
-              ))}
-            </div>
-
-            <button onClick={addPlugin} className="w-full glass-panel border border-dashed border-white/20 hover:border-cyan-400/50 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-white/50 hover:text-cyan-400 transition-colors group mt-4 lg:mt-0">
-              <div className="p-2 rounded-full bg-white/5 group-hover:bg-cyan-400/10">
-                <Plus className="w-5 h-5" />
-              </div>
-              <span className="font-mono text-xs tracking-widest">Nieuwe Agent Installeren</span>
+              <Mic className="w-5 h-5" />
             </button>
-
-             <div className="mt-4 lg:mt-auto glass-panel rounded-xl p-5 border border-white/5">
-              <h3 className="font-mono text-xs tracking-widest text-purple-400 mb-4 flex items-center gap-2">
-                <Activity className="w-4 h-4" /> LIVE ONDERZOEKSFEED
-              </h3>
-              <div className="space-y-3 font-mono text-[10px] text-white/50">
-                <p>SCAN [EXT]: 14 nieuwe dropshipping leveranciers gevonden.</p>
-                <p>SCAN [INT]: 3% daling in conversie gedetecteerd op mobiel.</p>
+            
+            <div className="flex-1 flex flex-col">
+              <span className="font-mono text-[10px] text-cyan-400 tracking-widest mb-1 flex items-center gap-2">
+                <Lightbulb className="w-3 h-3" /> ORION CORE
+              </span>
+              <input 
+                type="text" 
+                placeholder={isListening ? "Aan het luisteren..." : "Stuur een algemeen commando aan Orion..."}
+                className="w-full bg-transparent border-none outline-none text-sm font-mono text-white placeholder:text-white/30"
+                disabled={isListening}
+              />
+            </div>
+            
+            {/* Minimal visual feedback for Orion Advice */}
+            <div className={`hidden md:flex absolute -top-12 left-0 right-0 justify-center transition-opacity ${isProcessing ? 'opacity-100' : 'opacity-0'}`}>
+              <div className="glass-panel px-4 py-2 rounded-full text-xs font-mono text-cyan-300 border border-cyan-500/30">
+                {orionAdvice}
               </div>
             </div>
-          </div>
-
+          </motion.div>
         </div>
+
       </main>
-    </div>
-  );
-}
-
-interface AgentProps {
-  title: string;
-  icon: string;
-  status: string;
-  tasks: string[];
-  color: string;
-  borderColor: string;
-  isStandby?: boolean;
-}
-
-function AgentCard({ title, icon, status, tasks, color, borderColor, isStandby = false }: AgentProps) {
-  const [standby, setStandby] = useState(isStandby);
-  
-  const icons: Record<string, React.ReactNode> = {
-    DollarSign: <DollarSign className="w-5 h-5" />,
-    BarChart2: <BarChart2 className="w-5 h-5" />,
-    Globe: <Globe className="w-5 h-5" />,
-    ShoppingCart: <ShoppingCart className="w-5 h-5" />,
-    Code: <Code className="w-5 h-5" />
-  };
-
-  return (
-    <div className={`glass-panel rounded-xl p-5 border-l-4 ${standby ? 'border-white/10 opacity-50' : borderColor} relative transition-all`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg border border-white/5 ${standby ? 'bg-white/5 text-white/30' : `bg-white/10 ${color}`}`}>
-            {icons[icon] || <Cpu className="w-5 h-5" />}
-          </div>
-          <div>
-            <h3 className="font-mono text-xs tracking-widest text-white/80">{title}</h3>
-            <span className={`text-[10px] tracking-widest ${standby ? 'text-white/30' : color}`}>{standby ? 'STANDBY' : status}</span>
-          </div>
-        </div>
-        <button onClick={() => setStandby(!standby)} className={`p-2 rounded-full transition-colors ${standby ? 'bg-white/5 text-white/30 hover:bg-white/10' : 'bg-red-500/20 text-red-400 hover:bg-red-500/40'}`} title={standby ? "Activeer Agent" : "Zet op Standby"}>
-          <Power className="w-4 h-4" />
-        </button>
-      </div>
-      
-      {!standby && (
-        <div className="space-y-2 mt-4 border-t border-white/5 pt-4">
-          <span className="text-[10px] text-white/40 font-mono">HUIDIGE TAKEN:</span>
-          {tasks.map((task: string, i: number) => (
-            <div key={i} className="flex items-start gap-2 text-[11px] text-white/60 font-mono">
-              <div className="w-1 h-1 rounded-full bg-white/20 mt-1.5 shrink-0"></div>
-              {task}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
