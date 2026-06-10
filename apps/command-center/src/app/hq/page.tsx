@@ -118,10 +118,11 @@ export default function WarRoom() {
         </div>
       </nav>
 
-      <main className="pt-24 pb-8 px-8 h-screen flex flex-col relative z-10">
-        <div className="grid grid-cols-12 gap-8 flex-1">
+      <main className="pt-24 pb-8 px-4 lg:px-8 min-h-screen flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 flex-1">
           
-          <div className="col-span-3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
+          {/* LEFT SIDEBAR - Agents (Hidden on mobile, or stacked at the bottom) */}
+          <div className="hidden lg:flex lg:col-span-3 flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
             {agents.slice(0, Math.ceil(agents.length / 2)).map(agent => (
               <AgentCard key={agent.id} {...agent} />
             ))}
@@ -137,12 +138,13 @@ export default function WarRoom() {
             </div>
           </div>
 
-          <div className="col-span-6 flex flex-col items-center justify-between relative">
+          {/* CENTER CONSOLE - Orion Orb & Mic (Top on mobile) */}
+          <div className="w-full lg:col-span-6 flex flex-col items-center justify-center relative order-first lg:order-none min-h-[50vh] lg:min-h-0 mb-8 lg:mb-0">
             
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="w-full glass-panel border border-cyan-500/20 rounded-xl p-4 flex gap-4 items-start"
+              className="w-full max-w-md glass-panel border border-cyan-500/20 rounded-xl p-4 flex gap-4 items-start mb-4 lg:mb-0 lg:absolute lg:top-0"
             >
               <Lightbulb className={`w-5 h-5 text-cyan-400 shrink-0 mt-1 ${isProcessing ? 'animate-bounce' : 'animate-pulse'}`} />
               <div>
@@ -154,19 +156,19 @@ export default function WarRoom() {
             </motion.div>
 
             <motion.div 
-              className="relative w-80 h-80 flex items-center justify-center my-8 perspective-1000"
+              className="relative w-64 h-64 lg:w-80 lg:h-80 flex items-center justify-center my-8 perspective-1000"
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             >
               <motion.div className="absolute inset-0 rounded-full border border-cyan-400/20 border-t-cyan-400 glow-blue" animate={{ rotate: 360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 20, repeat: Infinity, ease: "linear" } }} />
               <motion.div className="absolute inset-4 rounded-full border border-purple-500/20 border-b-purple-500 glow-purple" animate={{ rotate: -360, scale: isListening ? 1.1 : 1 }} transition={{ rotate: { duration: 15, repeat: Infinity, ease: "linear" } }} />
               
-              <div className="absolute inset-12 rounded-full bg-gradient-to-tr from-cyan-900/60 to-purple-900/60 backdrop-blur-xl border border-white/20 flex flex-col items-center justify-center shadow-[0_0_80px_rgba(0,240,255,0.3)] overflow-hidden">
-                <div className="flex gap-1.5 items-end h-16 mt-4">
+              <div className="absolute inset-8 lg:inset-12 rounded-full bg-gradient-to-tr from-cyan-900/60 to-purple-900/60 backdrop-blur-xl border border-white/20 flex flex-col items-center justify-center shadow-[0_0_80px_rgba(0,240,255,0.3)] overflow-hidden">
+                <div className="flex gap-1.5 items-end h-12 lg:h-16 mt-4">
                   {barHeights.map((heights, i) => (
                     <motion.div 
                       key={i}
-                      className="w-2 bg-cyan-300 rounded-t-full shadow-[0_0_10px_#67e8f9]"
+                      className="w-1.5 lg:w-2 bg-cyan-300 rounded-t-full shadow-[0_0_10px_#67e8f9]"
                       animate={{ height: isSpeaking ? heights : 10 }}
                       transition={{ duration: barDurations[i], repeat: Infinity, ease: "easeInOut" }}
                     />
@@ -176,27 +178,39 @@ export default function WarRoom() {
               </div>
             </motion.div>
 
-            <div className="flex flex-col items-center">
-              <motion.button onClick={handleMicClick} className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all ${isListening ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' : 'bg-white/5 border-white/10 text-white/50'}`} whileTap={{ scale: 0.95 }}>
-                <Mic className="w-6 h-6" />
+            <div className="flex flex-col items-center mt-4 lg:mt-0 lg:absolute lg:bottom-0">
+              <motion.button onClick={handleMicClick} className={`w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center mb-4 transition-all ${isListening ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_30px_rgba(0,240,255,0.5)]' : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20'}`} whileTap={{ scale: 0.95 }}>
+                <Mic className="w-8 h-8" />
               </motion.button>
-              <p className="font-mono text-xs tracking-widest text-cyan-400">{isListening ? 'AAN HET LUISTEREN...' : 'DRUK OM TE PRATEN'}</p>
+              <p className="font-mono text-[10px] lg:text-xs tracking-widest text-cyan-400">{isListening ? 'AAN HET LUISTEREN...' : 'DRUK OM TE PRATEN'}</p>
             </div>
           </div>
 
-          <div className="col-span-3 flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
-            {agents.slice(Math.ceil(agents.length / 2)).map(agent => (
-              <AgentCard key={agent.id} {...agent} />
-            ))}
+          {/* RIGHT SIDEBAR / MOBILE STACK */}
+          <div className="w-full lg:col-span-3 flex flex-col gap-4 lg:gap-6 lg:overflow-y-auto lg:pr-2 custom-scrollbar">
+            {/* Show all agents on mobile since left sidebar is hidden */}
+            <div className="flex flex-col gap-4 lg:hidden">
+              <h3 className="font-mono text-xs tracking-widest text-white/50 border-b border-white/10 pb-2">ACTIEVE AGENTEN</h3>
+              {agents.map(agent => (
+                <AgentCard key={agent.id} {...agent} />
+              ))}
+            </div>
 
-            <button onClick={addPlugin} className="w-full glass-panel border border-dashed border-white/20 hover:border-cyan-400/50 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-white/50 hover:text-cyan-400 transition-colors group">
+            {/* Desktop right sidebar agents */}
+            <div className="hidden lg:flex flex-col gap-6">
+              {agents.slice(Math.ceil(agents.length / 2)).map(agent => (
+                <AgentCard key={agent.id} {...agent} />
+              ))}
+            </div>
+
+            <button onClick={addPlugin} className="w-full glass-panel border border-dashed border-white/20 hover:border-cyan-400/50 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-white/50 hover:text-cyan-400 transition-colors group mt-4 lg:mt-0">
               <div className="p-2 rounded-full bg-white/5 group-hover:bg-cyan-400/10">
                 <Plus className="w-5 h-5" />
               </div>
               <span className="font-mono text-xs tracking-widest">Nieuwe Agent Installeren</span>
             </button>
 
-             <div className="mt-auto glass-panel rounded-xl p-5 border border-white/5">
+             <div className="mt-4 lg:mt-auto glass-panel rounded-xl p-5 border border-white/5">
               <h3 className="font-mono text-xs tracking-widest text-purple-400 mb-4 flex items-center gap-2">
                 <Activity className="w-4 h-4" /> LIVE ONDERZOEKSFEED
               </h3>

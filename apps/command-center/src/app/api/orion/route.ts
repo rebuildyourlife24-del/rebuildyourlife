@@ -94,27 +94,9 @@ Respond in JSON format exactly like this:
 
   } catch (error: any) {
     console.error("Orion AI Error:", error);
-    
-    // DEBUG: Fetch available models to see what the API key has access to
-    let availableModels = "Could not fetch models";
-    try {
-      const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      if (apiKey) {
-        const testRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        const modelsData = await testRes.json();
-        if (modelsData.models) {
-          availableModels = modelsData.models.map((m: any) => m.name).join(', ').substring(0, 500);
-        } else {
-          availableModels = JSON.stringify(modelsData);
-        }
-      }
-    } catch (e) {
-      // Ignore
-    }
-
     return NextResponse.json({ 
       agent: "ORION_CORE",
-      response: "Systeemfout in de AI Core: " + (error.message || String(error)) + " | Available: " + availableModels
+      response: "Er is momenteel veel drukte op de AI servers of er ging iets mis. Probeer het over een paar seconden nog eens."
     }, { status: 200 });
   }
 }
