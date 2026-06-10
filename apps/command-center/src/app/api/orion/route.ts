@@ -42,9 +42,6 @@ export async function POST(req: Request) {
     // DATABASE LOGGING: LONG-TERM MEMORY & DAILY OPS
     // ----------------------------------------------------
     
-    // NOTE: This will fail until the user runs `npx prisma db push` with a real Postgres DB.
-    // Uncomment when DATABASE_URL is set in .env.
-    /*
     await db.dailyLog.create({
       data: {
         agentType: assignedAgent,
@@ -62,7 +59,6 @@ export async function POST(req: Request) {
         importance: 5
       }
     });
-    */
 
     return NextResponse.json({
       agent: assignedAgent,
