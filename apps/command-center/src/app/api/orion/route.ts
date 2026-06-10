@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const customOpenAI = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "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",
+});
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +31,7 @@ Respond in JSON format exactly like this:
 }`;
 
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: customOpenAI('gpt-4o-mini'),
       system: systemPrompt,
       prompt: prompt,
     });
