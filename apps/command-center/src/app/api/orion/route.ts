@@ -92,8 +92,11 @@ Respond in JSON format exactly like this:
       status: "ROUTED_SUCCESSFULLY"
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Orion AI Error:", error);
-    return NextResponse.json({ error: "Orion Cognitive Core Offline" }, { status: 500 });
+    return NextResponse.json({ 
+      agent: "ORION_CORE",
+      response: "Systeemfout in de AI Core: " + (error.message || String(error))
+    }, { status: 200 });
   }
 }
