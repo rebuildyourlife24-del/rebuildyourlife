@@ -3,12 +3,21 @@ import { db } from '@/lib/db';
 import { generateText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json({ 
+        agent: "ORION_CORE", 
+        response: "Mijn AI brein is succesvol ingebouwd, maar de Google API sleutel ontbreekt nog in Vercel! Voeg deze toe om me te activeren."
+      });
+    }
+
+    const google = createGoogleGenerativeAI({
+      apiKey: apiKey,
+    });
+
     const body = await req.json();
     const { prompt } = body;
 
@@ -19,6 +28,7 @@ export async function POST(req: Request) {
     // ----------------------------------------------------
     // PHASE 3: TRUE AI INTELLIGENCE (ORION'S BRAIN)
     // ----------------------------------------------------
+
     
     // We ask Gemini to act as Orion, determine the agent, and give a response.
     const systemPrompt = `You are ORION, the central AI CEO of the Command Center for Henk Semler.
