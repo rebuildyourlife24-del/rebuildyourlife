@@ -50,23 +50,27 @@ Respond in JSON format exactly like this:
     // DATABASE LOGGING: LONG-TERM MEMORY & DAILY OPS
     // ----------------------------------------------------
     
-    await db.dailyLog.create({
-      data: {
-        agentType: assignedAgent as any,
-        action: `Processed Command: "${prompt}"`,
-        costUsd: 0.01,
-        status: "SUCCESS"
-      }
-    });
+    const adminUser = await db.user.findFirst({ where: { email: 'admin@rebuildyourlife.eu' } });
+    if (adminUser) {
+      await db.auditLog.create({
+        data: {
+          userId: adminUser.id,
+          action: `Processed Command: "${prompt}"`,
+          entityType: "ORION_COMMAND",
+          newValue: JSON.stringify({ costUsd: 0.01, status: "SUCCESS", agent: assignedAgent })
+        }
+      });
 
-    await db.aIMemory.create({
-      data: {
-        agentType: assignedAgent as any,
-        content: `User requested: ${prompt}. AI Responded: ${responseText}`,
-        category: "VOICE_COMMAND",
-        importance: 5
-      }
-    });
+      await db.aIMemory.create({
+        data: {
+          userId: adminUser.id,
+          agentType: assignedAgent,
+          memoryType: "VOICE_COMMAND",
+          content: `User requested: ${prompt}. AI Responded: ${responseText}`,
+          importance: 0.5
+        }
+      });
+    }
 
     return NextResponse.json({
       agent: assignedAgent,
