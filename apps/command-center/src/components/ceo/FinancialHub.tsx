@@ -1,8 +1,31 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { PiggyBank, Scale, AlertTriangle } from 'lucide-react';
 
 export default function FinancialHub() {
+  const [metrics, setMetrics] = useState({ grossIncome: 0, netProfit: 0, vat: 0, buffer: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch('/api/ceo/metrics');
+        const data = await res.json();
+        if (data.status === 'ok') {
+          setMetrics(data.financials);
+        }
+      } catch (err) {
+        console.error("Failed to fetch metrics", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMetrics();
+  }, []);
+
+  const formatCurrency = (val: number) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(val);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -17,7 +40,7 @@ export default function FinancialHub() {
           <div className="relative h-16 bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
             {/* Net Profit */}
             <div className="h-full bg-green-500 w-[64%] flex items-center justify-center relative group">
-              <span className="font-bold text-white text-sm z-10">64% NET WINST (€ 12.400)</span>
+              <span className="font-bold text-white text-sm z-10">64% NET WINST ({isLoading ? '...' : formatCurrency(metrics.netProfit)})</span>
               <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors cursor-pointer" />
             </div>
             {/* Taxes */}
@@ -30,7 +53,7 @@ export default function FinancialHub() {
             </div>
           </div>
           <div className="mt-4 flex justify-between text-xs font-mono text-slate-500">
-            <span>Totaal Binnen: € 19.375</span>
+            <span>Totaal Binnen: {isLoading ? '...' : formatCurrency(metrics.grossIncome)}</span>
             <span>Gegarandeerd Veilig</span>
           </div>
         </div>

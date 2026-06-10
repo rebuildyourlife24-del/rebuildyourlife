@@ -65,7 +65,7 @@ async function seed(): Promise<void> {
     where: { email: adminEmail },
     update: {
       passwordHash,
-      role: "ADMIN",
+      role: "SUPREME_OVERSEER",
       subscriptionTier: "ENTERPRISE",
       isEmailVerified: true,
       onboardingCompleted: true,
@@ -73,9 +73,9 @@ async function seed(): Promise<void> {
     create: {
       email: adminEmail,
       passwordHash,
-      firstName: "Admin",
-      lastName: "RebuildYourLife",
-      role: "ADMIN",
+      firstName: "Henk",
+      lastName: "Semler",
+      role: "SUPREME_OVERSEER",
       subscriptionTier: "ENTERPRISE",
       isEmailVerified: true,
       onboardingCompleted: true,
