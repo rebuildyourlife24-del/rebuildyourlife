@@ -50,23 +50,27 @@ Respond in JSON format exactly like this:
     // DATABASE LOGGING: LONG-TERM MEMORY & DAILY OPS
     // ----------------------------------------------------
     
-    await db.dailyLog.create({
-      data: {
-        agentType: assignedAgent as any,
-        action: `Processed Command: "${prompt}"`,
-        costUsd: 0.01,
-        status: "SUCCESS"
-      }
-    });
+    try {
+      await db.dailyLog.create({
+        data: {
+          agentType: assignedAgent as any,
+          action: `Processed Command: "${prompt}"`,
+          costUsd: 0.01,
+          status: "SUCCESS"
+        }
+      });
 
-    await db.aIMemory.create({
-      data: {
-        agentType: assignedAgent as any,
-        content: `User requested: ${prompt}. AI Responded: ${responseText}`,
-        category: "VOICE_COMMAND",
-        importance: 5
-      }
-    });
+      await db.aIMemory.create({
+        data: {
+          agentType: assignedAgent as any,
+          content: `User requested: ${prompt}. AI Responded: ${responseText}`,
+          category: "VOICE_COMMAND",
+          importance: 5
+        }
+      });
+    } catch (dbError) {
+      console.error("Non-critical DB logging error:", dbError);
+    }
 
     return NextResponse.json({
       agent: assignedAgent,
