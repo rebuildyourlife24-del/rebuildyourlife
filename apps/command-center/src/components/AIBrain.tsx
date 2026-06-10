@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { OrionState } from './CommandBar';
 
-export default function AIBrain({ activeAgents, orionState = 'IDLE' }: { activeAgents: { id: number; title: string; isStandby?: boolean; [key: string]: unknown }[], orionState?: OrionState }) {
+export default function AIBrain({ orionState = 'IDLE' }: { orionState?: OrionState }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

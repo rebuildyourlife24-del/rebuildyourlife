@@ -154,7 +154,7 @@ export default function WarRoom() {
             <div className="w-full flex-shrink-0 snap-center lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
               <div className="relative">
                 <SciFiHUD />
-                <AIBrain activeAgents={agents} orionState={orionState} />
+                <AIBrain orionState={orionState} />
               </div>
             </div>
 
