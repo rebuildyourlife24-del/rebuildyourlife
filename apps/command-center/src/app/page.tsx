@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, ShieldAlert, Fingerprint } from 'lucide-react';
+import { Lock, ChevronRight, AlertCircle } from 'lucide-react';
 
-export default function VaultLogin() {
+export default function OrionLogin() {
   const [password, setPassword] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState(false);
@@ -14,7 +14,6 @@ export default function VaultLogin() {
     setIsAuthenticating(true);
     setError(false);
     
-    // Simulate complex biometric/neural authentication
     setTimeout(() => {
       if (password === 'Henk123!') { // Placeholder, to be replaced by real auth
         window.location.href = '/hq';
@@ -22,112 +21,78 @@ export default function VaultLogin() {
         setIsAuthenticating(false);
         setError(true);
       }
-    }, 2000);
+    }, 1000);
   };
 
   return (
-    <main className="min-h-screen relative flex items-center justify-center overflow-hidden">
-      {/* Deep Space Background handled in globals.css .stars */}
-      <div className="stars"></div>
-      
-      {/* Central Nebula Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <main className="min-h-screen bg-[#050914] relative flex items-center justify-center overflow-hidden font-sans">
+      {/* Subtle background glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-gradient-to-b from-indigo-900/20 to-transparent blur-[100px] pointer-events-none"></div>
 
-      <div className="z-10 w-full max-w-md p-8 relative flex flex-col items-center">
+      <div className="z-10 w-full max-w-md p-8">
         
-        {/* Abstract Digital Face / AI Core */}
-        <motion.div 
-          className="relative w-48 h-48 mb-12 flex items-center justify-center"
-          animate={{
-            y: [0, -10, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          {/* Outer glowing rings representing the mind */}
-          <motion.div 
-            className="absolute inset-0 rounded-full border border-cyan-400/30 border-t-cyan-400 glow-blue"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div 
-            className="absolute inset-2 rounded-full border border-purple-500/30 border-b-purple-500 glow-purple"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          />
-          
-          {/* Inner core - Abstract transparent face shape */}
-          <div className="absolute inset-8 rounded-[40%] bg-gradient-to-b from-cyan-500/20 to-purple-600/20 backdrop-blur-md border border-white/10 flex items-center justify-center overflow-hidden">
-            <motion.div
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <Cpu className="w-12 h-12 text-cyan-300 opacity-80" />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Text */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-10"
         >
-          <h1 className="text-3xl font-light tracking-[0.3em] text-white/90 mb-2">VAULT ACCESS</h1>
-          <p className="text-cyan-400/60 text-sm font-mono tracking-widest">HENK SEMLER COMMAND CENTER</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border border-white/10 mb-6 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
+            <Lock className="w-8 h-8 text-indigo-400" strokeWidth={1.5} />
+          </div>
+          <h1 className="text-3xl font-light text-white mb-2">Orion Command</h1>
+          <p className="text-gray-400 text-sm">Log in om toegang te krijgen tot het AI Command Center.</p>
         </motion.div>
 
-        {/* Login Form */}
         <motion.form 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           onSubmit={handleLogin}
-          className="w-full glass-panel rounded-2xl p-6 relative overflow-hidden group"
+          className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-8 shadow-2xl"
         >
-          {/* Scanning line animation */}
-          {isAuthenticating && (
-            <motion.div 
-              className="absolute left-0 right-0 h-1 bg-cyan-400 glow-blue z-20 opacity-50"
-              initial={{ top: 0 }}
-              animate={{ top: "100%" }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-            />
-          )}
-
-          <div className="mb-6 relative">
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="ENTER DECRYPTION KEY"
-              className="w-full bg-transparent border-b border-white/10 focus:border-cyan-400 py-3 text-center text-white font-mono tracking-widest outline-none transition-colors placeholder:text-white/20"
-              disabled={isAuthenticating}
-            />
-            <Fingerprint className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
+          <div className="mb-6">
+            <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Wachtwoord</label>
+            <div className="relative">
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Voer je wachtwoord in..."
+                className="w-full bg-black/20 border border-white/10 focus:border-indigo-500/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 outline-none transition-all"
+                disabled={isAuthenticating}
+              />
+            </div>
           </div>
+
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-6 flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <p>Ongeldig wachtwoord. Probeer het opnieuw.</p>
+            </motion.div>
+          )}
 
           <button 
             type="submit"
             disabled={isAuthenticating || !password}
-            className="w-full py-3 bg-gradient-to-r from-cyan-600/20 to-purple-600/20 hover:from-cyan-600/40 hover:to-purple-600/40 border border-white/10 rounded-lg text-white font-mono tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-white text-black hover:bg-gray-100 rounded-xl font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2 group"
           >
-            {isAuthenticating ? 'AUTHENTICATING...' : 'INITIATE OVERRIDE'}
+            {isAuthenticating ? 'Inloggen...' : 'Toegang Verkrijgen'}
+            {!isAuthenticating && <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
           </button>
-
-          {error && (
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-red-400 text-xs font-mono mt-4 text-center flex items-center justify-center gap-1"
-            >
-              <ShieldAlert className="w-3 h-3" /> ACCESS DENIED. INTRUDER LOGGED.
-            </motion.p>
-          )}
         </motion.form>
+        
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-8 text-center"
+        >
+          <p className="text-xs text-gray-600">Beveiligd door RebuildYourLife Security</p>
+        </motion.div>
       </div>
     </main>
   );
