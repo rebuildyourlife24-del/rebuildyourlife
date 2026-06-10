@@ -1,8 +1,6 @@
 import { app } from '@rebuildyourlife/api';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-process.env.NODE_ENV = 'serverless';
-
 export default function api(req: NextApiRequest, res: NextApiResponse) {
   // Let Express handle the native Node.js request and response objects
   return app(req, res);
