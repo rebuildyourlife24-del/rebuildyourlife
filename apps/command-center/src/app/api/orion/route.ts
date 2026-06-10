@@ -52,7 +52,7 @@ Respond in JSON format exactly like this:
     
     await db.dailyLog.create({
       data: {
-        agentType: assignedAgent,
+        agentType: assignedAgent as any,
         action: `Processed Command: "${prompt}"`,
         costUsd: 0.01,
         status: "SUCCESS"
@@ -61,7 +61,7 @@ Respond in JSON format exactly like this:
 
     await db.aIMemory.create({
       data: {
-        agentType: assignedAgent,
+        agentType: assignedAgent as any,
         content: `User requested: ${prompt}. AI Responded: ${responseText}`,
         category: "VOICE_COMMAND",
         importance: 5
