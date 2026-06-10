@@ -13,6 +13,7 @@ import CommandBar, { OrionState } from '@/components/CommandBar';
 import AgentCard from '@/components/AgentCard';
 import AgentTerminal from '@/components/AgentTerminal';
 import { useProactiveEngine } from '@/hooks/useProactiveEngine';
+import { useOrionVoice } from '@/hooks/useOrionVoice';
 
 const INITIAL_AGENTS = [
   { id: 999, title: "WEALTH & OPPORTUNITY ENGINE", icon: "Zap", status: "HUNTING", color: "text-amber-400", isStandby: false },
@@ -34,18 +35,22 @@ export default function WarRoom() {
 
   // Proactive Alert Engine
   const { activeAlert, dismissAlert } = useProactiveEngine();
+  const { speak, isSpeaking, isMuted, toggleMute } = useOrionVoice();
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (activeAlert) {
-      timeoutId = setTimeout(() => setOrionState('ALERT'), 0);
+      timeoutId = setTimeout(() => {
+        setOrionState('ALERT');
+        speak(`Waarschuwing, CEO. ${activeAlert.message}`);
+      }, 0);
     } else if (orionState === 'ALERT') {
       timeoutId = setTimeout(() => setOrionState('IDLE'), 0);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [activeAlert, orionState]);
+  }, [activeAlert, orionState, speak]);
 
   useEffect(() => {
     if (orionState !== 'IDLE') return;
@@ -94,9 +99,16 @@ export default function WarRoom() {
   };
 
   return (
-    <div className="relative min-h-screen bg-black text-white font-sans overflow-hidden">
+    <div className="h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans selection:bg-cyan-500/30 flex flex-col relative">
       <DeepSpaceBackground />
       <SettingsMenu />
+
+      <button 
+        onClick={toggleMute}
+        className="absolute top-4 left-4 z-50 p-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors"
+      >
+        <span className="text-xs font-mono text-cyan-400">{isMuted ? 'MUTE: ON' : 'VOICE: ON'}</span>
+      </button>
 
       <main className="relative z-10 pt-20 px-4 md:px-8 h-screen flex flex-col">
         
@@ -158,7 +170,7 @@ export default function WarRoom() {
             <div className="w-full flex-shrink-0 snap-center lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
               <div className="relative">
                 <SciFiHUD />
-                <AIBrain orionState={orionState} />
+                <AIBrain orionState={orionState} isSpeaking={isSpeaking} />
               </div>
             </div>
 

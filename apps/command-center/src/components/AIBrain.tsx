@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { OrionState } from './CommandBar';
 
-export default function AIBrain({ orionState = 'IDLE' }: { orionState?: OrionState }) {
+export default function AIBrain({ orionState = 'IDLE', isSpeaking = false }: { orionState?: OrionState, isSpeaking?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -19,6 +19,7 @@ export default function AIBrain({ orionState = 'IDLE' }: { orionState?: OrionSta
 
     const cx = width / 2;
     const cy = 120; // Brain center
+    const mouthY = 280; // Approximate mouth level
 
     // Semantic Nodes Definition
     const semanticNodes = [
@@ -125,6 +126,19 @@ export default function AIBrain({ orionState = 'IDLE' }: { orionState?: OrionSta
       }
       ctx.stroke();
 
+      // --- NEW: Audio Visualizer Waves if Speaking ---
+      if (isSpeaking) {
+        ctx.lineWidth = 1.5;
+        for (let w = 0; w < 3; w++) {
+          const waveRadius = 30 + ((time * 15 + w * 20) % 60);
+          const opacity = Math.max(0, 1 - waveRadius / 90);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity * 0.5})`;
+          ctx.beginPath();
+          ctx.arc(cx, mouthY, waveRadius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
       // Draw Semantic Nodes
       ctx.lineWidth = orionState === 'EXECUTING' ? 1.5 : 0.8;
       ctx.strokeStyle = orionState === 'COMPLETED' ? 'rgba(74, 222, 128, 0.8)' : 'rgba(0, 240, 255, 0.5)';
@@ -166,17 +180,17 @@ export default function AIBrain({ orionState = 'IDLE' }: { orionState?: OrionSta
     render();
 
     return () => cancelAnimationFrame(animationId);
-  }, [orionState]);
+  }, [orionState, isSpeaking]);
 
-  const isTalking = orionState === 'THINKING' || orionState === 'EXECUTING';
+  const isTalking = orionState === 'THINKING' || orionState === 'EXECUTING' || isSpeaking;
 
   return (
     <div className="relative w-[400px] h-[500px] flex items-center justify-center z-10 perspective-1000">
       <div 
-        className={`absolute inset-0 w-full h-full bg-center bg-no-repeat bg-contain opacity-80 mix-blend-screen transition-transform duration-100 ${isTalking ? 'scale-[1.02] translate-y-[-2px] brightness-125' : 'scale-100 translate-y-0 brightness-100'}`}
+        className={`absolute inset-0 w-full h-full bg-center bg-no-repeat bg-contain transition-all duration-100 mix-blend-screen ${isTalking ? 'scale-[1.02] translate-y-[-2px] brightness-125 opacity-90' : 'scale-100 translate-y-0 brightness-100 opacity-60'}`}
         style={{ backgroundImage: "url('/hologram_head.png')" }}
       />
-      <div className={`absolute top-[60px] w-[200px] h-[150px] bg-cyan-500/20 blur-[50px] rounded-full mix-blend-screen pointer-events-none transition-all duration-300 ${orionState === 'THINKING' ? 'opacity-100 scale-110' : orionState === 'EXECUTING' ? 'opacity-100 scale-125 bg-cyan-400/40' : 'opacity-60 scale-100'}`} />
+      <div className={`absolute top-[60px] w-[200px] h-[150px] bg-cyan-500/20 blur-[50px] rounded-full mix-blend-screen pointer-events-none transition-all duration-300 ${orionState === 'THINKING' ? 'opacity-100 scale-110' : orionState === 'EXECUTING' ? 'opacity-100 scale-125 bg-cyan-400/40' : 'opacity-40 scale-100'}`} />
       
       <canvas 
         ref={canvasRef} 
