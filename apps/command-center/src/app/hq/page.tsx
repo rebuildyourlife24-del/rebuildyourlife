@@ -36,12 +36,16 @@ export default function WarRoom() {
   const { activeAlert, dismissAlert } = useProactiveEngine();
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
     if (activeAlert) {
-      setOrionState('ALERT');
+      timeoutId = setTimeout(() => setOrionState('ALERT'), 0);
     } else if (orionState === 'ALERT') {
-      setOrionState('IDLE');
+      timeoutId = setTimeout(() => setOrionState('IDLE'), 0);
     }
-  }, [activeAlert]);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [activeAlert, orionState]);
 
   useEffect(() => {
     if (orionState !== 'IDLE') return;
@@ -198,6 +202,7 @@ export default function WarRoom() {
         <AnimatePresence>
           {selectedTerminalAgent && (
             <AgentTerminal 
+              key={selectedTerminalAgent}
               agentTitle={selectedTerminalAgent} 
               onClose={() => setSelectedTerminalAgent(null)} 
             />

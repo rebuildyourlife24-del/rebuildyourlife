@@ -53,15 +53,12 @@ interface AgentTerminalProps {
 }
 
 export default function AgentTerminal({ agentTitle, onClose }: AgentTerminalProps) {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<string[]>([`> Connected to ${agentTitle} daemon...`]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sourceLogs = MOCK_LOGS[agentTitle] || DEFAULT_LOGS;
     let currentIndex = 0;
-    
-    // Clear logs on mount
-    setLogs([`> Connected to ${agentTitle} daemon...`]);
 
     const interval = setInterval(() => {
       if (currentIndex < sourceLogs.length) {
