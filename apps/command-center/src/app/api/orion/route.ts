@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 
 export async function POST(req: Request) {
   try {
@@ -11,31 +13,37 @@ export async function POST(req: Request) {
     }
 
     // ----------------------------------------------------
-    // PHASE 3: ORION'S ROUTING LOGIC
+    // PHASE 3: TRUE AI INTELLIGENCE (ORION'S BRAIN)
     // ----------------------------------------------------
-    // In production, this prompt goes to a fast LLM (like GPT-4o-mini)
-    // to classify WHICH agent needs to be triggered.
     
-    const promptLower = prompt.toLowerCase();
-    let assignedAgent: 'ORION_CORE' | 'FINANCE_MGR' | 'SEO_MARKETING' | 'LEAD_SCRAPER' | 'ECOMMERCE_MEDIA' = 'ORION_CORE';
-    let responseText = '';
+    // We ask GPT-4o-mini to act as Orion, determine the agent, and give a response.
+    const systemPrompt = `You are ORION, the central AI CEO of the Command Center for Henk Semler.
+You must analyze the user's voice command and determine which sub-agent should handle it.
+Sub-agents: ORION_CORE, FINANCE_MGR, SEO_MARKETING, LEAD_SCRAPER, ECOMMERCE_MEDIA.
+Respond in JSON format exactly like this:
+{
+  "agent": "AGENT_NAME",
+  "response": "Your confident, brief, strategic response speaking directly to Henk."
+}`;
 
-    // Simulated Classification Logic
-    if (promptLower.includes('scrape') || promptLower.includes('lead')) {
-      assignedAgent = 'LEAD_SCRAPER';
-      responseText = "I am routing your request to the Scraper Agent. It will begin searching the target databases immediately.";
-    } else if (promptLower.includes('finance') || promptLower.includes('mollie') || promptLower.includes('margin')) {
-      assignedAgent = 'FINANCE_MGR';
-      responseText = "Connecting to the Finance module. I will compile a report on your Mollie payments and current margins.";
-    } else if (promptLower.includes('seo') || promptLower.includes('marketing') || promptLower.includes('ads')) {
-      assignedAgent = 'SEO_MARKETING';
-      responseText = "Activating the SEO Agent. We will adjust the current ad spend and generate new blog posts.";
-    } else if (promptLower.includes('shop') || promptLower.includes('product') || promptLower.includes('video')) {
-      assignedAgent = 'ECOMMERCE_MEDIA';
-      responseText = "Understood. The E-Commerce Agent is generating white-label assets and syncing with Shopify.";
-    } else {
-      assignedAgent = 'ORION_CORE';
-      responseText = "I am processing your command. Analyzing data to determine the best course of action.";
+    const { text } = await generateText({
+      model: openai('gpt-4o-mini'),
+      system: systemPrompt,
+      prompt: prompt,
+    });
+
+    let assignedAgent: any = 'ORION_CORE';
+    let responseText = 'System anomaly: Could not parse AI response.';
+
+    try {
+      // Clean up the response if it has markdown formatting
+      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiDecision = JSON.parse(cleanJson);
+      assignedAgent = aiDecision.agent || 'ORION_CORE';
+      responseText = aiDecision.response || text;
+    } catch (e) {
+      // Fallback if AI didn't return perfect JSON
+      responseText = text;
     }
 
     // ----------------------------------------------------
@@ -45,7 +53,7 @@ export async function POST(req: Request) {
     await db.dailyLog.create({
       data: {
         agentType: assignedAgent,
-        action: `Processed Voice Command: "${prompt}"`,
+        action: `Processed Command: "${prompt}"`,
         costUsd: 0.01,
         status: "SUCCESS"
       }
@@ -54,7 +62,7 @@ export async function POST(req: Request) {
     await db.aIMemory.create({
       data: {
         agentType: assignedAgent,
-        content: `User requested: ${prompt}. Routed to ${assignedAgent}.`,
+        content: `User requested: ${prompt}. AI Responded: ${responseText}`,
         category: "VOICE_COMMAND",
         importance: 5
       }
@@ -67,7 +75,7 @@ export async function POST(req: Request) {
     });
 
   } catch (error) {
-    console.error("Orion API Error:", error);
-    return NextResponse.json({ error: "Internal System Failure" }, { status: 500 });
+    console.error("Orion AI Error:", error);
+    return NextResponse.json({ error: "Orion Cognitive Core Offline" }, { status: 500 });
   }
 }
