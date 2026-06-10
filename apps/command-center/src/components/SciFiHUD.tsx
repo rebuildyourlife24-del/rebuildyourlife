@@ -9,7 +9,7 @@ export default function SciFiHUD() {
       {/* Outer Rotating Ring */}
       <motion.div 
         className="absolute w-[600px] h-[600px] rounded-full border border-cyan-500/20 opacity-50"
-        style={{ borderStyle: 'dashed', borderWidth: '2px', borderDasharray: '4 12' }}
+        style={{ borderStyle: 'dashed', borderWidth: '2px' }}
         animate={{ rotate: 360 }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
       />
@@ -25,7 +25,7 @@ export default function SciFiHUD() {
       {/* Inner Tech Ring */}
       <motion.div 
         className="absolute w-[300px] h-[300px] rounded-full border-2 border-cyan-300/40"
-        style={{ borderDasharray: '50 20 10 20' }}
+        style={{ borderStyle: 'dashed' }}
         animate={{ rotate: 360 }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
       />

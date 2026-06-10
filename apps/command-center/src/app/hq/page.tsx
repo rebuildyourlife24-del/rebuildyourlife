@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, Lightbulb, DollarSign, BarChart2, Globe, ShoppingCart, Code } from 'lucide-react';
+import { Mic, Lightbulb, DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu } from 'lucide-react';
 
 import DeepSpaceBackground from '@/components/DeepSpaceBackground';
 import SciFiHUD from '@/components/SciFiHUD';
@@ -11,11 +11,11 @@ import AgentWindow from '@/components/AgentWindow';
 import SettingsMenu from '@/components/SettingsMenu';
 
 const INITIAL_AGENTS = [
-  { id: 1, title: "FINANCIËN & BETALINGEN", icon: <DollarSign className="w-5 h-5" />, status: "MONITOREN", color: "text-green-400", isStandby: false },
-  { id: 2, title: "SEO & MARKETING", icon: <BarChart2 className="w-5 h-5" />, status: "STANDBY", color: "text-purple-400", isStandby: true },
-  { id: 3, title: "SCRAPER & LEADS", icon: <Globe className="w-5 h-5" />, status: "AAN HET ZOEKEN", color: "text-blue-400", isStandby: false },
-  { id: 4, title: "E-COMMERCE & MEDIA", icon: <ShoppingCart className="w-5 h-5" />, status: "GENEREREN", color: "text-pink-400", isStandby: false },
-  { id: 99, title: "CUSTOM AI PLUGIN", icon: <Code className="w-5 h-5" />, status: "STANDBY", color: "text-yellow-400", isStandby: true },
+  { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", color: "text-green-400", isStandby: false },
+  { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", color: "text-purple-400", isStandby: true },
+  { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "AAN HET ZOEKEN", color: "text-blue-400", isStandby: false },
+  { id: 4, title: "E-COMMERCE & MEDIA", icon: "ShoppingCart", status: "GENEREREN", color: "text-pink-400", isStandby: false },
+  { id: 99, title: "CUSTOM AI PLUGIN", icon: "Code", status: "STANDBY", color: "text-yellow-400", isStandby: true },
 ];
 
 export default function WarRoom() {
@@ -23,6 +23,17 @@ export default function WarRoom() {
   const [orionAdvice, setOrionAdvice] = useState('"Henk, alle systemen zijn online. De hersenstam is actief."');
   const [isProcessing, setIsProcessing] = useState(false);
   const [agents, setAgents] = useState(INITIAL_AGENTS);
+
+  const getIcon = (name: string) => {
+    switch (name) {
+      case "DollarSign": return <DollarSign className="w-5 h-5" />;
+      case "BarChart2": return <BarChart2 className="w-5 h-5" />;
+      case "Globe": return <Globe className="w-5 h-5" />;
+      case "ShoppingCart": return <ShoppingCart className="w-5 h-5" />;
+      case "Code": return <Code className="w-5 h-5" />;
+      default: return <Cpu className="w-5 h-5" />;
+    }
+  };
   
   // Track which agent windows are currently open
   const [openWindows, setOpenWindows] = useState<number[]>([1, 3]);
@@ -89,7 +100,7 @@ export default function WarRoom() {
                   key={id}
                   id={agent.id}
                   title={agent.title}
-                  icon={agent.icon}
+                  icon={getIcon(agent.icon)}
                   color={agent.color}
                   isOpen={true}
                   onClose={() => toggleWindow(id)}
@@ -116,7 +127,7 @@ export default function WarRoom() {
                   >
                     <div className="flex items-center gap-3">
                       <div className={`p-1.5 rounded-md bg-white/5 ${agent.color}`}>
-                        {agent.icon}
+                        {getIcon(agent.icon)}
                       </div>
                       <span className="font-mono text-[10px] tracking-widest text-white/80">{agent.title}</span>
                     </div>

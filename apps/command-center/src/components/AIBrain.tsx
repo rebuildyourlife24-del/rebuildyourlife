@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export default function AIBrain({ activeAgents }: { activeAgents: any[] }) {
+export default function AIBrain({ activeAgents }: { activeAgents: { id: number; title: string; isStandby?: boolean; [key: string]: unknown }[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
