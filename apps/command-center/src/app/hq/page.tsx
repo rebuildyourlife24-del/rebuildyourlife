@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu, Zap } from 'lucide-react';
+import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu, Zap, LayoutDashboard, Users } from 'lucide-react';
 
 import DeepSpaceBackground from '@/components/DeepSpaceBackground';
 import SciFiHUD from '@/components/SciFiHUD';
@@ -119,6 +119,10 @@ export default function WarRoom() {
         <a href="https://enterprise.ai-henksemler.nl" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
           <LayoutDashboard className="w-3 h-3" />
           ENTERPRISE OS
+        </a>
+        <a href="https://rebuildyourlife.eu/admin" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
+          <Users className="w-3 h-3" />
+          ADMIN CRM
         </a>
       </div>
 

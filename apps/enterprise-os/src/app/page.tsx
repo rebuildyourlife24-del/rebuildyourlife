@@ -25,7 +25,8 @@ import {
   Briefcase,
   PlayCircle,
   Image as ImageIcon,
-  Share2
+  Share2,
+  Users
 } from "lucide-react";
 
 type Tab = 
@@ -141,6 +142,10 @@ export default function UltimateSEODashboard() {
               <a href="https://rebuildyourlife.eu/hq" className="px-3 py-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 text-[10px] font-bold tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
                 <Globe className="w-3 h-3" />
                 WAR ROOM
+              </a>
+              <a href="https://rebuildyourlife.eu/admin" className="px-3 py-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 text-[10px] font-bold tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
+                <Users className="w-3 h-3" />
+                ADMIN CRM
               </a>
             </div>
           </div>
