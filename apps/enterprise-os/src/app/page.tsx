@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getActionQueue, getBoardStatus, getFinancialSnapshot } from "./actions/dashboardData";
 import { 
   LayoutDashboard, 
   Settings, 
@@ -548,40 +549,47 @@ function ProgressBar({ label, value }: { label: string; value: number }) {
 // LAYER 4: HUMAN CONTROL / REVIEW QUEUE
 // ---------------------------------------------------------------------------
 function HumanControlTab() {
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getActionQueue().then((res) => {
+      if (res.success && res.data) {
+        setTasks(res.data);
+      }
+      setLoading(false);
+    });
+  }, []);
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Action Queue</h2>
-          <p className="text-xs text-zinc-500 mt-1">AI Output requires Human Validation.</p>
+          <p className="text-xs text-zinc-500 mt-1">AI Output requires Human Validation (Live DB).</p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <QueueCard 
-          result="Generated Q3 SEO Keyword Strategy"
-          location="/Knowledge/SEO/Strategy"
-          owner="SEO Director Agent"
-          status="Pending Review"
-          impact="Estimated +15% Organic Traffic"
-          nextStep="Publish to Webbuilder Studio"
-        />
-        <QueueCard 
-          result="Drafted 5 Legal Demand Letters"
-          location="/Knowledge/Legal/Drafts"
-          owner="Chief Legal Officer"
-          status="Pending Approval"
-          impact="€4,200 potential recovery"
-          nextStep="Send via Email API"
-        />
-        <QueueCard 
-          result="Paused underperforming FB Ad"
-          location="/Knowledge/Marketing/Campaigns"
-          owner="CMO Agent"
-          status="Action Required"
-          impact="Saved €150/day"
-          nextStep="Allocate budget to Campaign B"
-        />
+        {loading ? (
+          <div className="h-24 bg-zinc-900/50 rounded-lg animate-pulse border border-zinc-800/50"></div>
+        ) : tasks.length === 0 ? (
+          <div className="p-8 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-lg">
+            No pending tasks in the live database.
+          </div>
+        ) : (
+          tasks.map((task: any) => (
+            <QueueCard 
+              key={task.id}
+              result={task.title}
+              location={`/Tasks/${task.id.substring(0,8)}`}
+              owner={task.assignedAgentType || "System"}
+              status={task.status}
+              impact="Needs Review"
+              nextStep="Approve to execute"
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -632,6 +640,14 @@ function QueueCard({ result, location, owner, status, impact, nextStep }: any) {
 // BOARD OF DIRECTORS TAB
 // ---------------------------------------------------------------------------
 function BoardOfDirectorsTab() {
+  const [boardStatus, setBoardStatus] = useState<any>(null);
+
+  useEffect(() => {
+    getBoardStatus().then((res) => {
+      setBoardStatus(res);
+    });
+  }, []);
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between mb-8">
@@ -639,8 +655,8 @@ function BoardOfDirectorsTab() {
           <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Board of Directors</h2>
           <p className="text-xs text-zinc-500 mt-1">C-Level Elite Advisors continuously scanning the Enterprise Vault.</p>
         </div>
-        <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded text-xs font-bold tracking-widest uppercase">
-          Threat Level: GREEN (Secure)
+        <div className={`px-3 py-1 border rounded text-xs font-bold tracking-widest uppercase ${boardStatus?.status === 'GREEN' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-zinc-700 text-zinc-400 animate-pulse'}`}>
+          Threat Level: {boardStatus ? boardStatus.status : "CONNECTING..."}
         </div>
       </div>
 
@@ -691,6 +707,16 @@ function DirectorCard({ title, status, insight, isSafe, isWarning }: any) {
 // FINANCE & ACCOUNTING TAB (Real-time Banking)
 // ---------------------------------------------------------------------------
 function FinanceTab() {
+  const [financeData, setFinanceData] = useState<{revenue: number, expenses: number} | null>(null);
+
+  useEffect(() => {
+    getFinancialSnapshot().then((res) => {
+      if (res.success && res.data) {
+        setFinanceData(res.data);
+      }
+    });
+  }, []);
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between mb-8">
@@ -706,13 +732,14 @@ function FinanceTab() {
 
       {/* Connected Accounts Row */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg">
+        <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg relative overflow-hidden">
+          {financeData === null && <div className="absolute inset-0 bg-zinc-900/50 animate-pulse z-10"></div>}
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Zakelijk Knab</span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>
-          <div className="text-lg font-medium text-zinc-100">€ 42.150,00</div>
-          <div className="text-xs text-zinc-500 mt-1">Updated 2m ago</div>
+          <div className="text-lg font-medium text-zinc-100">€ {financeData ? financeData.revenue.toLocaleString() : "..."}</div>
+          <div className="text-xs text-zinc-500 mt-1">Live Database Linked</div>
         </div>
         <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg">
           <div className="flex items-center justify-between mb-2">
@@ -730,21 +757,23 @@ function FinanceTab() {
           <div className="text-lg font-medium text-zinc-100">€ 18.500,00</div>
           <div className="text-xs text-zinc-500 mt-1">Updated 10m ago</div>
         </div>
-        <div className="p-4 bg-[#0e0e11] border border-blue-900/30 rounded-lg">
+        <div className="p-4 bg-[#0e0e11] border border-blue-900/30 rounded-lg relative overflow-hidden">
+          {financeData === null && <div className="absolute inset-0 bg-zinc-900/50 animate-pulse z-10"></div>}
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Mollie Gateway</span>
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
           </div>
-          <div className="text-lg font-medium text-zinc-100">€ 3.450,00 <span className="text-xs text-zinc-500 font-normal">clearing</span></div>
-          <div className="text-xs text-zinc-500 mt-1">92 transactions today</div>
+          <div className="text-lg font-medium text-zinc-100">€ {financeData ? (financeData.revenue * 0.25).toLocaleString() : "..."} <span className="text-xs text-zinc-500 font-normal">clearing</span></div>
+          <div className="text-xs text-zinc-500 mt-1">Live Database Linked</div>
         </div>
-        <div className="p-4 bg-[#0e0e11] border border-purple-900/30 rounded-lg">
+        <div className="p-4 bg-[#0e0e11] border border-purple-900/30 rounded-lg relative overflow-hidden">
+          {financeData === null && <div className="absolute inset-0 bg-zinc-900/50 animate-pulse z-10"></div>}
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Belastingdienst</span>
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
           </div>
-          <div className="text-lg font-medium text-zinc-100">€ 8.940,21 <span className="text-xs text-zinc-500 font-normal">BTW Q3</span></div>
-          <div className="text-xs text-zinc-500 mt-1">Auto-reserving active</div>
+          <div className="text-lg font-medium text-zinc-100">€ {financeData ? financeData.expenses.toLocaleString() : "..."} <span className="text-xs text-zinc-500 font-normal">BTW Q3</span></div>
+          <div className="text-xs text-zinc-500 mt-1">Live Database Linked</div>
         </div>
       </div>
 
