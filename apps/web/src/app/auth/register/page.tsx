@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/Input';
 import { api, formatApiError } from '@/lib/api';
 import type { AuthResponse } from '@rebuildyourlife/shared';
 
+import { registerAction } from '@/app/actions/auth';
+
 export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -55,18 +57,20 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await api.post<AuthResponse>('/auth/register', {
+      const result = await registerAction({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
       });
-      const { tokens } = response.data;
-      localStorage.setItem('ryl_access_token', tokens.accessToken);
-      localStorage.setItem('ryl_refresh_token', tokens.refreshToken);
-      router.push('/dashboard');
+      
+      if (result.success) {
+        router.push('/dashboard');
+      } else {
+        setServerError(result.error || 'Registratie mislukt.');
+      }
     } catch (err) {
-      setServerError(formatApiError(err));
+      setServerError('Er ging iets mis met het verbinden met de beveiligde kluis.');
     } finally {
       setLoading(false);
     }

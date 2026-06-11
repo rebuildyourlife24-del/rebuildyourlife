@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/Input';
 import { api, formatApiError } from '@/lib/api';
 import type { AuthResponse } from '@rebuildyourlife/shared';
 
+import { loginAction } from '@/app/actions/auth';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -23,13 +25,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await api.post<AuthResponse>('/auth/login', { email, password });
-      const { tokens } = response.data;
-      localStorage.setItem('ryl_access_token', tokens.accessToken);
-      localStorage.setItem('ryl_refresh_token', tokens.refreshToken);
-      router.push('/dashboard');
+      const result = await loginAction(email, password);
+      
+      if (result.success) {
+        // We set the secure cookie via Server Actions, so we just redirect
+        router.push('/dashboard');
+      } else {
+        setError(result.error || 'Inloggen mislukt');
+      }
     } catch (err) {
-      setError(formatApiError(err));
+      setError('Er ging iets mis met het verbinden met de beveiligde kluis.');
     } finally {
       setLoading(false);
     }
