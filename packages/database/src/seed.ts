@@ -58,7 +58,7 @@ async function seed(): Promise<void> {
   console.log("\n  → Upserting admin user...");
 
   const adminEmail = "admin@rebuildyourlife.eu";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Ch@ngeMe!2026";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "Imperialdreams2055";
   const passwordHash = await bcrypt.hash(adminPassword, SALT_ROUNDS);
 
   const admin = await prisma.user.upsert({
