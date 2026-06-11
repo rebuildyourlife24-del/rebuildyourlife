@@ -84,6 +84,27 @@ async function seed(): Promise<void> {
 
   console.log(`    ✓ Admin user created/updated: ${admin.email} (${admin.id})`);
 
+  // ------------------------------------------------------------------
+  // Enterprise Folders (Knowledge Vault)
+  // ------------------------------------------------------------------
+  console.log("\n  → Upserting Enterprise Folders...");
+
+  const FOLDERS = [
+    "CEO", "Strategy", "Operations", "Marketing", "SEO", "Paid_Ads", "Social",
+    "Content", "Products", "Suppliers", "Customers", "CRO", "Finance", "Data",
+    "Reports", "Experiments", "Automation", "AI_Memory", "Meetings", "Competitors",
+    "Risk", "Legal", "HR", "Projects", "SOP", "Archive"
+  ];
+
+  for (const folderName of FOLDERS) {
+    await prisma.enterpriseFolder.upsert({
+      where: { name: folderName },
+      update: {},
+      create: { name: folderName },
+    });
+  }
+  console.log(`    ✓ Created/Verified ${FOLDERS.length} Enterprise Folders.`);
+
   console.log("\n✅ Seed completed successfully.\n");
 }
 

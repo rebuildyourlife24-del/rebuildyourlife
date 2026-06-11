@@ -454,3 +454,43 @@ model BusinessInvoice {
   @@index([status])
   @@index([dueDate])
 }
+
+// ============================================================================
+// Phase 6: Enterprise OS (God-Mode Knowledge Vault)
+// ============================================================================
+
+model EnterpriseFolder {
+  id          String   @id @default(uuid())
+  name        String   // /CEO, /Strategy, /Marketing, etc.
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents   EnterpriseDocument[]
+
+  @@unique([name])
+}
+
+model EnterpriseDocument {
+  id          String   @id @default(uuid())
+  folderId    String
+  title       String
+  owner       String   // e.g. "CEO Agent", "Data Intelligence Agent", "Henk"
+  status      String   @default("DRAFT") // DRAFT, REVIEW, APPROVED, ARCHIVED
+  category    String   @default("GENERAL") // RAW, PROCESSED, FINAL, REPORT, DECISION
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  source      String?  // Where did this data come from?
+  content     String   // The actual document content/JSON
+  impact      String?
+  nextStep    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  folder      EnterpriseFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@index([folderId])
+  @@index([status])
+  @@index([category])
+  @@index([owner])
+  @@index([createdAt])
+}
