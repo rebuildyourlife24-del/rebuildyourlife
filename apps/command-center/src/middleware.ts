@@ -6,28 +6,9 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "SUPREME_O
 
 export async function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get('orion_session')?.value;
-  const hostname = request.headers.get('host') || '';
-  const isEnterpriseDomain = hostname.includes('enterprise.ai-henksemler.nl');
   
-  // If user accesses the enterprise domain at the root path, rewrite to /seo
-  if (isEnterpriseDomain && request.nextUrl.pathname === '/') {
-    const url = request.nextUrl.clone();
-    url.pathname = '/seo';
-    return NextResponse.rewrite(url);
-  }
-
   // Routes to protect
-  if (
-    request.nextUrl.pathname.startsWith('/hq') || 
-    request.nextUrl.pathname.startsWith('/ceo') || 
-    request.nextUrl.pathname.startsWith('/seo') ||
-    isEnterpriseDomain
-  ) {
-    // Exclude the login page itself from the redirect loop
-    if (request.nextUrl.pathname === '/login') {
-      return NextResponse.next();
-    }
-
+  if (request.nextUrl.pathname.startsWith('/hq') || request.nextUrl.pathname.startsWith('/ceo')) {
     if (!sessionToken) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -35,14 +16,15 @@ export async function middleware(request: NextRequest) {
     try {
       // Verify JWT
       await jwtVerify(sessionToken, JWT_SECRET);
+      return NextResponse.next();
     } catch (error) {
       console.error('Invalid token in middleware', error);
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
-  // Redirect root to /hq for normal domain (if not authenticated it will bounce to /login)
-  if (!isEnterpriseDomain && request.nextUrl.pathname === '/') {
+  // Redirect root to /hq (which will redirect to /login if not authenticated)
+  if (request.nextUrl.pathname === '/') {
     return NextResponse.redirect(new URL('/hq', request.url));
   }
 
@@ -50,5 +32,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/hq/:path*', '/ceo/:path*', '/'],
 };
