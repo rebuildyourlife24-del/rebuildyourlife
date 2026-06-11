@@ -48,9 +48,9 @@ export async function loginAction(email: string, password: string) {
         firstName: user.firstName
       } 
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login action error:", error);
-    return { success: false, error: "Er is een interne serverfout opgetreden." };
+    return { success: false, error: "Debug Error: " + (error?.message || "Onbekende interne fout") };
   }
 }
 
