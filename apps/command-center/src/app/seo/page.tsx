@@ -189,9 +189,10 @@ export default function UltimateSEODashboard() {
           {activeTab === "Overview" && <ExecutiveModeTab />}
           {activeTab === "AI_Activity" && <HumanControlTab />}
           {activeTab === "Board" && <BoardOfDirectorsTab />}
+          {activeTab === "Finance" && <FinanceTab />}
           
           {/* Work in progress placeholders */}
-          {!["Overview", "AI_Activity", "Board"].includes(activeTab) && (
+          {!["Overview", "AI_Activity", "Board", "Finance"].includes(activeTab) && (
             <div className="flex flex-col items-center justify-center h-full text-zinc-600 font-medium space-y-4">
               <Cpu className="w-12 h-12 text-zinc-800" />
               <p>{navGroups.flatMap(g => g.items).find(i => i.id === activeTab)?.label} Module is initializing...</p>
@@ -407,7 +408,7 @@ function BoardOfDirectorsTab() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <DirectorCard 
           title="Chief Legal Officer"
           status="Scanning contracts..."
@@ -426,6 +427,12 @@ function BoardOfDirectorsTab() {
           insight="Current profit margin across 3 SaaS tiers is 82%. Tax reservations are automatically set aside in Virtual Folder /Finance/Taxes."
           isSafe
         />
+        <DirectorCard 
+          title="Chief Accounting Officer"
+          status="Syncing bank feeds..."
+          insight="Real-time Mollie & Knab sync complete. All new 2026 tax regulations applied to Q3 VAT declarations. No anomalies found."
+          isSafe
+        />
       </div>
     </div>
   );
@@ -433,13 +440,103 @@ function BoardOfDirectorsTab() {
 
 function DirectorCard({ title, status, insight, isSafe, isWarning }: any) {
   return (
-    <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-lg p-6 shadow-sm">
+    <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-lg p-6 shadow-sm flex flex-col">
       <div className="flex items-center gap-3 mb-4">
-        <div className={`w-2 h-2 rounded-full ${isWarning ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse`} />
-        <h3 className="text-xs font-bold text-zinc-100 uppercase tracking-widest">{title}</h3>
+        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isWarning ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse`} />
+        <h3 className="text-[10px] font-bold text-zinc-100 uppercase tracking-widest">{title}</h3>
       </div>
       <div className="text-xs font-mono text-zinc-500 mb-4">{status}</div>
-      <div className="text-sm text-zinc-300 leading-relaxed">"{insight}"</div>
+      <div className="text-xs text-zinc-300 leading-relaxed flex-1">"{insight}"</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// FINANCE & ACCOUNTING TAB (Real-time Banking)
+// ---------------------------------------------------------------------------
+function FinanceTab() {
+  return (
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Real-time Financial Hub</h2>
+          <p className="text-xs text-zinc-500 mt-1">Live Bank Feeds, Mollie API, and AI Bookkeeping Analysis.</p>
+        </div>
+        <button className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded text-xs font-medium transition-colors">
+          <Activity className="w-4 h-4" />
+          Force Sync APIs
+        </button>
+      </div>
+
+      {/* Connected Accounts Row */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Zakelijk Knab</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <div className="text-lg font-medium text-zinc-100">€ 42.150,00</div>
+          <div className="text-xs text-zinc-500 mt-1">Updated 2m ago</div>
+        </div>
+        <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Privé Rabobank</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <div className="text-lg font-medium text-zinc-100">€ 14.280,45</div>
+          <div className="text-xs text-zinc-500 mt-1">Updated 5m ago</div>
+        </div>
+        <div className="p-4 bg-[#0e0e11] border border-blue-900/30 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Mollie Gateway</span>
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+          </div>
+          <div className="text-lg font-medium text-zinc-100">€ 3.450,00 <span className="text-xs text-zinc-500 font-normal">clearing</span></div>
+          <div className="text-xs text-zinc-500 mt-1">92 transactions today</div>
+        </div>
+        <div className="p-4 bg-[#0e0e11] border border-purple-900/30 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Belastingdienst</span>
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          </div>
+          <div className="text-lg font-medium text-zinc-100">€ 8.940,21 <span className="text-xs text-zinc-500 font-normal">BTW Q3</span></div>
+          <div className="text-xs text-zinc-500 mt-1">Auto-reserving active</div>
+        </div>
+      </div>
+
+      {/* Bookkeeper Agent Log */}
+      <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-lg shadow-sm flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-zinc-800/50 bg-zinc-900/20 flex items-center justify-between">
+          <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Chief Accounting Officer (Log)</h3>
+          <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">STATUS: COMPLIANT</span>
+        </div>
+        <div className="divide-y divide-zinc-800/50">
+          <div className="p-4 flex items-start gap-4 hover:bg-zinc-900/30">
+            <div className="mt-0.5 text-blue-400"><DollarSign className="w-4 h-4" /></div>
+            <div>
+              <div className="text-sm font-medium text-zinc-200">Mollie Payout Matched</div>
+              <div className="text-xs text-zinc-500 mt-1">Automatically matched €1,245.00 payout from Mollie to 14 individual SaaS invoices. Books are reconciled.</div>
+            </div>
+            <div className="ml-auto text-[10px] font-mono text-zinc-600">10:42 AM</div>
+          </div>
+          <div className="p-4 flex items-start gap-4 hover:bg-zinc-900/30">
+            <div className="mt-0.5 text-purple-400"><FolderGit2 className="w-4 h-4" /></div>
+            <div>
+              <div className="text-sm font-medium text-zinc-200">New Tax Regulation Applied</div>
+              <div className="text-xs text-zinc-500 mt-1">Detected update in Dutch KOR (Kleineondernemersregeling) limits for 2026. Applied changes to forecasting models. No action required.</div>
+            </div>
+            <div className="ml-auto text-[10px] font-mono text-zinc-600">08:15 AM</div>
+          </div>
+          <div className="p-4 flex items-start gap-4 hover:bg-zinc-900/30">
+            <div className="mt-0.5 text-amber-400"><ShieldAlert className="w-4 h-4" /></div>
+            <div>
+              <div className="text-sm font-medium text-zinc-200">Private Expense Warning</div>
+              <div className="text-xs text-zinc-500 mt-1">Transaction of €45.00 at "Albert Heijn" on Business Account flagged as Private Expense. Pushed to Review Queue for approval to reclassify.</div>
+            </div>
+            <div className="ml-auto text-[10px] font-mono text-zinc-600">YESTERDAY</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
