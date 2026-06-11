@@ -67,25 +67,28 @@ Respond in JSON format exactly like this:
     // ----------------------------------------------------
     
     try {
-      await db.dailyLog.create({
-        data: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          agentType: assignedAgent as any,
-          action: `Processed Command: "${prompt}"`,
-          costUsd: 0.01,
-          status: "SUCCESS"
-        }
-      });
+      // Find the first user or admin to attach logs to (assuming single-tenant for now)
+      const firstUser = await db.user.findFirst();
+      if (firstUser) {
+        await db.auditLog.create({
+          data: {
+            userId: firstUser.id,
+            action: `Processed Command: "${prompt}"`,
+            entityType: 'AI_COMMAND',
+            newValue: JSON.stringify({ agent: assignedAgent, status: "SUCCESS" })
+          }
+        });
 
-      await db.aIMemory.create({
-        data: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          agentType: assignedAgent as any,
-          content: `User requested: ${prompt}. AI Responded: ${responseText}`,
-          category: "VOICE_COMMAND",
-          importance: 5
-        }
-      });
+        await db.aIMemory.create({
+          data: {
+            userId: firstUser.id,
+            agentType: assignedAgent,
+            content: `User requested: ${prompt}. AI Responded: ${responseText}`,
+            memoryType: "SHORT_TERM",
+            importance: 5
+          }
+        });
+      }
     } catch (dbError) {
       console.error("Non-critical DB logging error:", dbError);
     }
