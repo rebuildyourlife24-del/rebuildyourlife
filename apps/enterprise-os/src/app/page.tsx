@@ -466,7 +466,7 @@ function FinanceTab() {
       </div>
 
       {/* Connected Accounts Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <div className="p-4 bg-[#0e0e11] border border-zinc-800/60 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Zakelijk Knab</span>
@@ -482,6 +482,14 @@ function FinanceTab() {
           </div>
           <div className="text-lg font-medium text-zinc-100">€ 14.280,45</div>
           <div className="text-xs text-zinc-500 mt-1">Updated 5m ago</div>
+        </div>
+        <div className="p-4 bg-[#0e0e11] border border-emerald-900/30 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">ASN Bank (SNS)</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <div className="text-lg font-medium text-zinc-100">€ 18.500,00</div>
+          <div className="text-xs text-zinc-500 mt-1">Updated 10m ago</div>
         </div>
         <div className="p-4 bg-[#0e0e11] border border-blue-900/30 rounded-lg">
           <div className="flex items-center justify-between mb-2">
