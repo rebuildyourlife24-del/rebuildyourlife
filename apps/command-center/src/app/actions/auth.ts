@@ -64,9 +64,9 @@ export async function login(formData: FormData) {
     });
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
-    return { error: "Er is een systeemfout opgetreden." };
+    return { error: `Systeemfout: ${error?.message || String(error)}` };
   }
 }
 
