@@ -187,9 +187,10 @@ export default function UltimateSEODashboard() {
           {activeTab === "AI_Activity" && <HumanControlTab />}
           {activeTab === "Board" && <BoardOfDirectorsTab />}
           {activeTab === "Finance" && <FinanceTab />}
+          {activeTab === "Webbuilder" && <WebbuilderTab />}
           
           {/* Work in progress placeholders */}
-          {!["Overview", "AI_Activity", "Board", "Finance"].includes(activeTab) && (
+          {!["Overview", "AI_Activity", "Board", "Finance", "Webbuilder"].includes(activeTab) && (
             <div className="flex flex-col items-center justify-center h-full text-zinc-600 font-medium space-y-4">
               <Cpu className="w-12 h-12 text-zinc-800" />
               <p>{navGroups.flatMap(g => g.items).find(i => i.id === activeTab)?.label} Module is initializing...</p>
@@ -198,6 +199,99 @@ export default function UltimateSEODashboard() {
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// LAYER 3: WEBBUILDER STUDIO
+// ---------------------------------------------------------------------------
+function WebbuilderTab() {
+  return (
+    <div className="h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">Webbuilder Studio</h2>
+          <p className="text-xs text-zinc-500 mt-1">AI-Powered Drag & Drop Interface for RebuildYourLife Network</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="px-4 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded text-xs font-medium transition-colors">
+            Preview
+          </button>
+          <button className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-bold tracking-widest uppercase transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+            Deploy Live
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 flex gap-6 overflow-hidden min-h-[600px]">
+        {/* Left Sidebar - AI & Elements */}
+        <div className="w-80 bg-[#0e0e11] border border-zinc-800/60 rounded-lg flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-zinc-800/50">
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">AI Architect Command</h3>
+            <textarea 
+              className="w-full h-24 bg-zinc-900 border border-zinc-800 rounded p-3 text-sm text-zinc-300 focus:outline-none focus:border-blue-500/50 resize-none custom-scrollbar"
+              placeholder="e.g. 'Build a high-converting landing page for the debt relief program with a dark theme...'"
+            ></textarea>
+            <button className="w-full mt-3 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2">
+              <Cpu className="w-3.5 h-3.5" />
+              Generate Layout
+            </button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3">Drag & Drop Elements</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {['Hero Section', 'Pricing Grid', 'Testimonials', 'Lead Form', 'Video Player', 'Feature List', 'FAQ Accordion', 'Footer'].map((el) => (
+                <div key={el} className="p-3 border border-zinc-800/50 rounded bg-zinc-900/50 flex flex-col items-center justify-center cursor-move hover:bg-zinc-800 hover:border-zinc-700 transition-colors">
+                  <LayoutDashboard className="w-4 h-4 text-zinc-500 mb-2" />
+                  <span className="text-[10px] text-zinc-400 font-medium text-center">{el}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Canvas */}
+        <div className="flex-1 bg-zinc-900/30 border border-zinc-800/60 rounded-lg relative overflow-hidden flex flex-col">
+          {/* Browser Mockup Header */}
+          <div className="h-10 bg-zinc-900 border-b border-zinc-800 flex items-center px-4 gap-4">
+            <div className="flex gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+            </div>
+            <div className="flex-1 max-w-md bg-zinc-950 border border-zinc-800 rounded px-3 py-1 text-[10px] text-zinc-500 font-mono text-center mx-auto">
+              https://rebuildyourlife.eu/landing-page-draft
+            </div>
+            <div className="w-12"></div> {/* Spacer to balance header */}
+          </div>
+          
+          {/* Canvas Area */}
+          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+            <div className="max-w-4xl mx-auto min-h-full border border-dashed border-zinc-700 rounded-lg bg-[#0a0a0a] flex flex-col items-center justify-center relative group">
+              
+              <div className="absolute inset-0 bg-[url('https://transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+              
+              <div className="text-center z-10 p-8">
+                <ImageIcon className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-zinc-400 mb-2">Empty Canvas</h3>
+                <p className="text-xs text-zinc-600 mb-6 max-w-xs mx-auto">Drag elements here from the sidebar, or ask the AI Architect to generate a complete layout.</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Sidebar - Properties */}
+        <div className="w-64 bg-[#0e0e11] border border-zinc-800/60 rounded-lg p-4 flex flex-col">
+          <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Properties & Styling</h3>
+          <div className="flex flex-col items-center justify-center flex-1 text-center border border-dashed border-zinc-800 rounded">
+            <Settings className="w-6 h-6 text-zinc-700 mb-2" />
+            <p className="text-xs text-zinc-500 px-4">Select an element on the canvas to edit its properties.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
