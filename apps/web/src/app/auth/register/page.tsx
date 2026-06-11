@@ -7,8 +7,6 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { api, formatApiError } from '@/lib/api';
-import type { AuthResponse } from '@rebuildyourlife/shared';
 
 import { registerAction } from '@/app/actions/auth';
 
