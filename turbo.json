@@ -1,6 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "OPENAI_API_KEY",
+    "GOOGLE_GENERATIVE_AI_API_KEY"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
