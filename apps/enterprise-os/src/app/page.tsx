@@ -131,9 +131,18 @@ export default function UltimateSEODashboard() {
             <h1 className="text-lg font-medium text-zinc-100 tracking-tight">
               {navGroups.flatMap(g => g.items).find(i => i.id === activeTab)?.label}
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase bg-zinc-800 text-zinc-400">
-              God-Mode
-            </span>
+            
+            {/* System Switcher */}
+            <div className="ml-4 flex bg-zinc-900 rounded-md border border-zinc-800 p-0.5">
+              <a href="https://enterprise.ai-henksemler.nl" className="px-3 py-1 bg-zinc-800 text-zinc-200 text-[10px] font-bold tracking-wider uppercase rounded-sm shadow-sm flex items-center gap-1.5">
+                <LayoutDashboard className="w-3 h-3" />
+                ENTERPRISE OS
+              </a>
+              <a href="https://rebuildyourlife.eu/hq" className="px-3 py-1 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 text-[10px] font-bold tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
+                <Globe className="w-3 h-3" />
+                WAR ROOM
+              </a>
+            </div>
           </div>
           
           <div className="flex items-center gap-6">

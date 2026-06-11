@@ -110,6 +110,18 @@ export default function WarRoom() {
         <span className="text-xs font-mono text-cyan-400">{isMuted ? 'MUTE: ON' : 'VOICE: ON'}</span>
       </button>
 
+      {/* System Switcher */}
+      <div className="absolute top-4 right-4 z-50 flex bg-black/40 backdrop-blur-md rounded-md border border-white/10 p-0.5">
+        <a href="https://rebuildyourlife.eu/hq" className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm shadow-[0_0_10px_rgba(6,182,212,0.2)] flex items-center gap-1.5">
+          <Globe className="w-3 h-3" />
+          WAR ROOM
+        </a>
+        <a href="https://enterprise.ai-henksemler.nl" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
+          <LayoutDashboard className="w-3 h-3" />
+          ENTERPRISE OS
+        </a>
+      </div>
+
       <main className="relative z-10 pt-20 px-4 md:px-8 h-screen flex flex-col">
         
         {/* Layer 1 & 2: Ambient AI Presence */}
