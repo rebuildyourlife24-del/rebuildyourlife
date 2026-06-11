@@ -1,284 +1,258 @@
 "use client";
 
-import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Activity, 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
-  FolderGit2, 
-  Cpu, 
-  FileText, 
-  Library,
-  LogOut,
-  Bell,
-  Search,
-  CheckCircle2,
-  XCircle,
-  Clock
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { logout } from "@/app/actions/auth";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DollarSign, BarChart2, Globe, ShoppingCart, Code, Cpu, Zap } from 'lucide-react';
 
-type Tab = "Overview" | "Operations" | "Marketing" | "SEO" | "Growth" | "Finance" | "Projects" | "AI_Activity" | "Reports" | "Knowledge" | "Settings";
+import DeepSpaceBackground from '@/components/DeepSpaceBackground';
+import SciFiHUD from '@/components/SciFiHUD';
+import AIBrain from '@/components/AIBrain';
+import AgentWindow from '@/components/AgentWindow';
+import SettingsMenu from '@/components/SettingsMenu';
+import CommandBar, { OrionState } from '@/components/CommandBar';
+import AgentCard from '@/components/AgentCard';
+import AgentTerminal from '@/components/AgentTerminal';
+import { useProactiveEngine } from '@/hooks/useProactiveEngine';
+import { useOrionVoice } from '@/hooks/useOrionVoice';
 
-export default function ControlCenter() {
-  const [activeTab, setActiveTab] = useState<Tab>("Overview");
-  const router = useRouter();
+const INITIAL_AGENTS = [
+  { id: 999, title: "WEALTH & OPPORTUNITY ENGINE", icon: "Zap", status: "HUNTING", color: "text-amber-400", isStandby: false },
+  { id: 1, title: "FINANCIËN & BETALINGEN", icon: "DollarSign", status: "MONITOREN", color: "text-green-400", isStandby: false },
+  { id: 2, title: "SEO & MARKETING", icon: "BarChart2", status: "STANDBY", color: "text-purple-400", isStandby: true },
+  { id: 3, title: "SCRAPER & LEADS", icon: "Globe", status: "AAN HET ZOEKEN", color: "text-blue-400", isStandby: false },
+  { id: 4, title: "E-COMMERCE & MEDIA", icon: "ShoppingCart", status: "GENEREREN", color: "text-pink-400", isStandby: false },
+  { id: 99, title: "CUSTOM AI PLUGIN", icon: "Code", status: "STANDBY", color: "text-yellow-400", isStandby: true },
+];
 
-  const handleLogout = async () => {
-    await logout();
-    router.push("/login");
+export default function WarRoom() {
+  const [orionState, setOrionState] = useState<OrionState>('IDLE');
+  const [agents] = useState(INITIAL_AGENTS);
+  const [hoveredAgent, setHoveredAgent] = useState<number | null>(null);
+  const [selectedTerminalAgent, setSelectedTerminalAgent] = useState<string | null>(null);
+  
+  // Ambient Notifications
+  const [ambientMessage, setAmbientMessage] = useState<string | null>(null);
+
+  // Proactive Alert Engine
+  const { activeAlert, dismissAlert } = useProactiveEngine();
+  const { speak, isSpeaking, isMuted, toggleMute } = useOrionVoice();
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (activeAlert) {
+      timeoutId = setTimeout(() => {
+        setOrionState('ALERT');
+        speak(`Waarschuwing, CEO. ${activeAlert.message}`);
+      }, 0);
+    } else if (orionState === 'ALERT') {
+      timeoutId = setTimeout(() => setOrionState('IDLE'), 0);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [activeAlert, orionState, speak]);
+
+  useEffect(() => {
+    if (orionState !== 'IDLE') return;
+    
+    const messages = ["ORION OBSERVING", "SYSTEM NOMINAL", "DETECTED NEW TREND IN MARKET", "SYNCHRONIZING DATA STREAMS"];
+    const interval = setInterval(() => {
+      if (Math.random() > 0.5) {
+        setAmbientMessage(messages[Math.floor(Math.random() * messages.length)]);
+        setTimeout(() => setAmbientMessage(null), 4000);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [orionState]);
+
+  const getIcon = (name: string) => {
+    switch (name) {
+      case "DollarSign": return <DollarSign className="w-5 h-5" />;
+      case "BarChart2": return <BarChart2 className="w-5 h-5" />;
+      case "Globe": return <Globe className="w-5 h-5" />;
+      case "ShoppingCart": return <ShoppingCart className="w-5 h-5" />;
+      case "Code": return <Code className="w-5 h-5" />;
+      case "Zap": return <Zap className="w-5 h-5" />;
+      default: return <Cpu className="w-5 h-5" />;
+    }
+  };
+  
+  const [openWindows, setOpenWindows] = useState<number[]>([1]);
+
+  const toggleWindow = (id: number) => {
+    if (openWindows.includes(id)) {
+      setOpenWindows(openWindows.filter(w => w !== id));
+    } else {
+      setOpenWindows([...openWindows, id]);
+    }
   };
 
-  const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: "Overview", label: "Executive Overview", icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: "Operations", label: "Operations", icon: <Activity className="w-5 h-5" /> },
-    { id: "Marketing", label: "Marketing", icon: <BarChart3 className="w-5 h-5" /> },
-    { id: "SEO", label: "SEO & Content", icon: <TrendingUp className="w-5 h-5" /> },
-    { id: "Growth", label: "Growth", icon: <TrendingUp className="w-5 h-5" /> },
-    { id: "Finance", label: "Finance", icon: <DollarSign className="w-5 h-5" /> },
-    { id: "Projects", label: "Projects", icon: <FolderGit2 className="w-5 h-5" /> },
-    { id: "AI_Activity", label: "AI Orchestration", icon: <Cpu className="w-5 h-5" /> },
-    { id: "Reports", label: "Reports", icon: <FileText className="w-5 h-5" /> },
-    { id: "Knowledge", label: "Knowledge Vault", icon: <Library className="w-5 h-5" /> },
-    { id: "Settings", label: "Settings", icon: <Settings className="w-5 h-5" /> },
-  ];
+  const handleCommandComplete = (cmd: string) => {
+    console.log("Command executed:", cmd);
+  };
+
+  // Coordinates for the spatial SVG lines (mocked center points for agents)
+  const getAgentYPos = (index: number) => {
+    // Rough calculation based on flex box position (top + padding + height * index)
+    return 100 + index * 60;
+  };
 
   return (
-    <div className="flex h-screen w-full bg-[#09090b] text-zinc-300 font-sans selection:bg-zinc-800">
-      
-      {/* SIDEBAR */}
-      <aside className="w-64 border-r border-zinc-800/50 bg-[#0c0c0e] flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-zinc-800/50">
-          <div className="w-6 h-6 rounded bg-zinc-100 flex items-center justify-center mr-3">
-            <div className="w-2 h-2 rounded-full bg-black" />
-          </div>
-          <span className="font-semibold text-zinc-100 tracking-wide text-sm">REBUILD OS</span>
-        </div>
+    <div className="h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans selection:bg-cyan-500/30 flex flex-col relative">
+      <DeepSpaceBackground />
+      <SettingsMenu />
 
-        <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1 custom-scrollbar">
-          <div className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-4 px-3">Control Center</div>
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                activeTab === item.id 
-                  ? "bg-zinc-800/80 text-zinc-100 shadow-sm" 
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30"
-              }`}
+      <button 
+        onClick={toggleMute}
+        className="absolute top-4 left-4 z-50 p-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors"
+      >
+        <span className="text-xs font-mono text-cyan-400">{isMuted ? 'MUTE: ON' : 'VOICE: ON'}</span>
+      </button>
+
+      <main className="relative z-10 pt-20 px-4 md:px-8 h-screen flex flex-col">
+        
+        {/* Layer 1 & 2: Ambient AI Presence */}
+        <AnimatePresence>
+          {ambientMessage && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute top-24 left-1/2 -translate-x-1/2 z-0 font-mono text-[10px] tracking-[0.3em] text-cyan-500/40 pointer-events-none"
             >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-zinc-800/50">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#09090b]">
-        
-        {/* TOPBAR */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-zinc-800/50 bg-[#09090b]/80 backdrop-blur-md z-10 sticky top-0">
-          <h1 className="text-xl font-medium text-zinc-100 tracking-tight">
-            {navItems.find(i => i.id === activeTab)?.label}
-          </h1>
-          
-          <div className="flex items-center gap-6">
-            <div className="relative group cursor-pointer text-zinc-400 hover:text-zinc-100 transition-colors">
-              <Search className="w-5 h-5" />
-            </div>
-            <div className="relative group cursor-pointer text-zinc-400 hover:text-zinc-100 transition-colors">
-              <Bell className="w-5 h-5" />
-              <div className="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full ring-2 ring-[#09090b]" />
-            </div>
-            <div className="flex items-center gap-3 pl-6 border-l border-zinc-800/50">
-              <div className="text-right">
-                <div className="text-sm font-medium text-zinc-200">Henk Semler</div>
-                <div className="text-xs text-zinc-500">Supreme Overseer</div>
-              </div>
-              <div className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400">
-                HS
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* SCROLLABLE CONTENT AREA */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          {activeTab === "Overview" && <OverviewTab />}
-          {activeTab === "AI_Activity" && <AIActivityTab />}
-          {/* Other tabs will go here */}
-          {activeTab !== "Overview" && activeTab !== "AI_Activity" && (
-            <div className="flex items-center justify-center h-full text-zinc-600 font-medium">
-              {navItems.find(i => i.id === activeTab)?.label} module is loading...
-            </div>
+              {ambientMessage}
+            </motion.div>
           )}
-        </div>
-      </main>
+        </AnimatePresence>
 
-    </div>
-  );
-}
+        {/* Spatial Connection SVG Layer */}
+        {hoveredAgent && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden lg:block">
+            <motion.line 
+              x1="50%" y1="50%" 
+              x2="75%" y2={getAgentYPos(agents.findIndex(a => a.id === hoveredAgent))}
+              stroke="url(#cyanGlow)" 
+              strokeWidth="2"
+              strokeDasharray="5 5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.6 }}
+              className="animate-pulse"
+            />
+            <defs>
+              <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0" />
+                <stop offset="100%" stopColor="#06b6d4" stopOpacity="1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        )}
 
-// ---------------------------------------------------------------------------
-// LAYER 5: EXECUTIVE OVERVIEW WIDGETS
-// ---------------------------------------------------------------------------
-function OverviewTab() {
-  return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Revenue" value="€24,500" trend="+12.5%" />
-        <StatCard title="Active Campaigns" value="14" trend="Optimal" isNeutral />
-        <StatCard title="System Alerts" value="2" trend="-1 from yesterday" isNeutral />
-        <StatCard title="AI Tasks Completed" value="842" trend="+124 today" />
-      </div>
-
-      {/* Main Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* CEO Widget */}
-        <div className="lg:col-span-2 bg-[#0c0c0e] border border-zinc-800/60 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-medium text-zinc-100 tracking-wide">Revenue Forecast</h3>
-            <select className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-400 rounded-md px-2 py-1 outline-none">
-              <option>This Quarter</option>
-              <option>This Year</option>
-            </select>
-          </div>
-          <div className="h-64 flex items-center justify-center border border-dashed border-zinc-800/50 rounded-lg bg-zinc-900/20 text-zinc-600 text-sm">
-            [Chart Area: Revenue Progression]
-          </div>
-        </div>
-
-        {/* COO / Action Widget */}
-        <div className="bg-[#0c0c0e] border border-zinc-800/60 rounded-xl p-6 shadow-sm flex flex-col">
-          <h3 className="text-sm font-medium text-zinc-100 tracking-wide mb-6">Action Queue (Review Mode)</h3>
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 mb-24 lg:mb-20">
           
-          <div className="flex-1 space-y-3">
-            <ActionCard title="Publish new SEO Strategy" agent="SEO Agent" priority="High" />
-            <ActionCard title="Approve Ad Spend Increase" agent="CMO Agent" priority="Medium" />
-            <ActionCard title="Merge Duplicate Leads" agent="Data Agent" priority="Low" />
-          </div>
+          {/* Mobile Swipe Container */}
+          <div className="w-full h-full flex overflow-x-auto snap-x snap-mandatory custom-scrollbar pb-4 lg:overflow-visible lg:snap-none">
+            
+            {/* View 1: Agent Windows (Left Panel Desktop) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-1/4 flex flex-col gap-4 pointer-events-auto max-h-full overflow-y-auto pr-2 relative z-20">
+              {openWindows.map(id => {
+                const agent = agents.find(a => a.id === id);
+                if (!agent) return null;
+                return (
+                  <AgentWindow 
+                    key={id} id={agent.id} title={agent.title} icon={getIcon(agent.icon)} color={agent.color} isOpen={true} onClose={() => toggleWindow(id)}
+                  />
+                );
+              })}
+            </div>
 
-          <button className="w-full mt-4 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-medium transition-colors">
-            Go to Review Queue
-          </button>
-        </div>
+            {/* View 2: The AI Brain Hologram (Center) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-2/4 flex flex-col items-center justify-center pointer-events-auto relative z-10">
+              <div className="relative">
+                <SciFiHUD />
+                <AIBrain orionState={orionState} isSpeaking={isSpeaking} />
+              </div>
+            </div>
 
-      </div>
-    </div>
-  );
-}
+            {/* View 3: Autonomous Agents List (Right Panel) */}
+            <div className="w-full flex-shrink-0 snap-center lg:w-1/4 flex flex-col gap-4 pointer-events-auto relative z-20">
+              <div className="glass-panel p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
+                <h3 className="font-mono text-xs tracking-widest text-cyan-400 mb-4 border-b border-white/10 pb-2">HUIDIGE AGENTEN</h3>
+                <div className="space-y-3">
+                  {agents.map(agent => (
+                    <AgentCard 
+                      key={agent.id}
+                      id={agent.id}
+                      title={agent.title}
+                      icon={getIcon(agent.icon)}
+                      color={agent.color}
+                      isStandby={agent.isStandby}
+                      isOpen={openWindows.includes(agent.id)}
+                      onToggle={() => toggleWindow(agent.id)}
+                      onClick={() => setSelectedTerminalAgent(agent.title)}
+                      hoveredAgent={hoveredAgent}
+                      setHoveredAgent={setHoveredAgent}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
 
-function StatCard({ title, value, trend, isNeutral = false }: { title: string; value: string; trend: string; isNeutral?: boolean }) {
-  return (
-    <div className="bg-[#0c0c0e] border border-zinc-800/60 rounded-xl p-5 shadow-sm">
-      <h4 className="text-xs font-medium text-zinc-500 tracking-wide mb-2">{title}</h4>
-      <div className="text-2xl font-semibold text-zinc-100 mb-2">{value}</div>
-      <div className={`text-xs font-medium ${isNeutral ? 'text-zinc-500' : 'text-emerald-500'}`}>
-        {trend}
-      </div>
-    </div>
-  );
-}
-
-function ActionCard({ title, agent, priority }: { title: string; agent: string; priority: string }) {
-  return (
-    <div className="p-3 bg-zinc-900/50 border border-zinc-800 rounded-lg flex items-start gap-3 hover:bg-zinc-800/50 transition-colors cursor-pointer group">
-      <div className="mt-0.5">
-        <Clock className="w-4 h-4 text-amber-500/70" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-zinc-200 truncate">{title}</div>
-        <div className="text-xs text-zinc-500 mt-1">Suggested by {agent}</div>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// LAYER 4: HUMAN CONTROL / AI ACTIVITY QUEUE
-// ---------------------------------------------------------------------------
-function AIActivityTab() {
-  return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-medium text-zinc-100">Review Queue</h2>
-          <p className="text-sm text-zinc-500 mt-1">Items waiting for Human Approval before execution.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors">
-            Reject All
-          </button>
-          <button className="px-4 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-medium transition-colors">
-            Approve Selected
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-[#0c0c0e] border border-zinc-800/60 rounded-xl shadow-sm divide-y divide-zinc-800/50">
-        <ReviewItem 
-          title="Update Meta Tags for 15 URLs" 
-          agent="SEO Agent" 
-          impact="+12% CTR expected" 
-          location="/SEO/Technical SEO"
-        />
-        <ReviewItem 
-          title="Pause Underperforming Campaign (AdSet-4)" 
-          agent="CMO Agent" 
-          impact="€45/day savings" 
-          location="/Marketing/Campaigns"
-        />
-        <ReviewItem 
-          title="Archive 104 dead leads" 
-          agent="Data Intelligence Agent" 
-          impact="Database cleanup" 
-          location="/Data/Scraper leads"
-        />
-      </div>
-    </div>
-  );
-}
-
-function ReviewItem({ title, agent, impact, location }: { title: string; agent: string; impact: string; location: string }) {
-  return (
-    <div className="p-5 flex items-center justify-between group hover:bg-zinc-900/50 transition-colors">
-      <div className="flex items-start gap-4">
-        <div className="mt-1 w-4 h-4 rounded border border-zinc-700 bg-zinc-900 cursor-pointer" />
-        <div>
-          <div className="text-sm font-medium text-zinc-200 mb-1">{title}</div>
-          <div className="flex items-center gap-4 text-xs text-zinc-500">
-            <span className="flex items-center gap-1.5"><Cpu className="w-3.5 h-3.5" /> {agent}</span>
-            <span className="flex items-center gap-1.5"><FolderGit2 className="w-3.5 h-3.5" /> {location}</span>
-            <span className="text-emerald-500/80">{impact}</span>
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors" title="Reject">
-          <XCircle className="w-5 h-5" />
-        </button>
-        <button className="p-2 text-zinc-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-lg transition-colors" title="Approve">
-          <CheckCircle2 className="w-5 h-5" />
-        </button>
-      </div>
+
+        {/* Command Center Input */}
+        <div className="absolute bottom-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[600px] z-40 pointer-events-auto">
+          <CommandBar 
+            orionState={orionState} 
+            setOrionState={setOrionState} 
+            onCommandComplete={handleCommandComplete} 
+          />
+        </div>
+
+        {/* Live Terminal Overlay */}
+        <AnimatePresence>
+          {selectedTerminalAgent && (
+            <AgentTerminal 
+              key={selectedTerminalAgent}
+              agentTitle={selectedTerminalAgent} 
+              onClose={() => setSelectedTerminalAgent(null)} 
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Proactive Alert Overlay */}
+        <AnimatePresence>
+          {activeAlert && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] md:w-[500px] glass-panel bg-amber-950/80 border-amber-500 shadow-[0_0_50px_rgba(245,158,11,0.3)] z-50 p-6 rounded-2xl flex flex-col items-center text-center"
+            >
+              <Zap className="w-12 h-12 text-amber-400 mb-4 animate-pulse" />
+              <h2 className="text-xl font-bold font-mono text-amber-400 mb-2">{activeAlert.title}</h2>
+              <p className="text-amber-100/80 text-sm mb-6">{activeAlert.message}</p>
+              
+              <div className="flex gap-4 w-full">
+                <button 
+                  onClick={dismissAlert}
+                  className="flex-1 py-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-400 font-mono rounded-lg transition-colors"
+                >
+                  YES, SHOW DATA
+                </button>
+                <button 
+                  onClick={dismissAlert}
+                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 font-mono rounded-lg transition-colors"
+                >
+                  DISMISS
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+      </main>
     </div>
   );
 }
