@@ -7,13 +7,15 @@ import { Lock } from 'lucide-react';
 import { Button } from './Button';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
-type Tier = 'FREE' | 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
+type Tier = 'FREE' | 'BASIC' | 'PREMIUM' | 'ENTERPRISE' | 'ADMIN' | 'SUPREME_OVERSEER';
 
 const TIER_ORDER: Record<Tier, number> = {
   FREE: 0,
   BASIC: 1,
   PREMIUM: 2,
   ENTERPRISE: 3,
+  ADMIN: 99,
+  SUPREME_OVERSEER: 100,
 };
 
 interface PaywallProps {
