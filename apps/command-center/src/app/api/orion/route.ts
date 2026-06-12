@@ -209,9 +209,10 @@ export async function POST(req: Request) {
     // Auth
     let userId: string | null = null;
     try {
-      const token = cookies().get("cc_session")?.value
-        || cookies().get("orion_session")?.value
-        || cookies().get("ryl_session")?.value;
+      const cookieStore = await cookies();
+      const token = cookieStore.get("cc_session")?.value
+        || cookieStore.get("orion_session")?.value
+        || cookieStore.get("ryl_session")?.value;
       if (token) {
         const decoded = jwt.verify(token, JWT_SECRET) as any;
         userId = decoded.userId;

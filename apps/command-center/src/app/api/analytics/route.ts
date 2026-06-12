@@ -38,7 +38,8 @@ export async function GET(req: Request) {
     const type = searchParams.get('type') || 'full';
 
     // Auth check
-    const token = cookies().get("cc_session")?.value || cookies().get("ryl_session")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("cc_session")?.value || cookieStore.get("ryl_session")?.value;
     let userId: string | null = null;
 
     if (token) {

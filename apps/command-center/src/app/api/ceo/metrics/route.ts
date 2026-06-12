@@ -12,7 +12,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild"
 export async function GET() {
   try {
     // Verifieer authenticatie
-    const token = cookies().get("ryl_session")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("ryl_session")?.value;
     if (!token) {
       return NextResponse.json({ error: "Niet geautoriseerd" }, { status: 401 });
     }
