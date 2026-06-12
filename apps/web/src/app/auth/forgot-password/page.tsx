@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { requestPasswordResetAction } from '@/app/actions/passwordReset';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -15,12 +16,9 @@ export default function ForgotPasswordPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API call for now since backend doesn't have email sending yet
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-    }, 1000);
+    await requestPasswordResetAction(email);
+    setLoading(false);
+    setSubmitted(true);
   }
 
   return (

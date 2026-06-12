@@ -57,8 +57,9 @@ async function seed(): Promise<void> {
   // ------------------------------------------------------------------
   console.log("\n  → Upserting admin user...");
 
-  const adminEmail = "admin@rebuildyourlife.eu";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Imperialdreams2055";
+  // Primaire admin: hendriksemler / imperialdreams2055
+  const adminEmail = "hendriksemler@rebuildyourlife.eu";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "imperialdreams2055";
   const passwordHash = await bcrypt.hash(adminPassword, SALT_ROUNDS);
 
   const admin = await prisma.user.upsert({
@@ -73,10 +74,28 @@ async function seed(): Promise<void> {
     create: {
       email: adminEmail,
       passwordHash,
+      firstName: "Hendrik",
+      lastName: "Semler",
+      role: "SUPREME_OVERSEER",
+      subscriptionTier: "ENTERPRISE",
+      clearanceLevel: 5,
+      isEmailVerified: true,
+      onboardingCompleted: true,
+    },
+  });
+
+  // Legacy admin fallback
+  await prisma.user.upsert({
+    where: { email: "admin@rebuildyourlife.eu" },
+    update: { passwordHash, role: "SUPREME_OVERSEER", subscriptionTier: "ENTERPRISE" },
+    create: {
+      email: "admin@rebuildyourlife.eu",
+      passwordHash,
       firstName: "Henk",
       lastName: "Semler",
       role: "SUPREME_OVERSEER",
       subscriptionTier: "ENTERPRISE",
+      clearanceLevel: 5,
       isEmailVerified: true,
       onboardingCompleted: true,
     },

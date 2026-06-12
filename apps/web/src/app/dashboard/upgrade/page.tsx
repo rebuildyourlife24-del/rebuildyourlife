@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Building2, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
-import { api } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { createMollieCheckoutAction } from '@/app/actions/payments';
 
 export default function UpgradePage() {
   const { user } = useAuth();
@@ -54,13 +54,18 @@ export default function UpgradePage() {
     
     setLoadingPlan(planId);
     try {
-      const response = await api.post<{ checkoutUrl: string }>('/payments/checkout', { plan: planId });
-      const data = response.data;
+      const result = await createMollieCheckoutAction(planId as 'PREMIUM' | 'ENTERPRISE');
 
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
+      if (result.success && result.redirectUrl) {
+        if (result.devMode) {
+          // Development modus: direct naar dashboard
+          window.location.href = result.redirectUrl;
+        } else {
+          // Productie: redirect naar Mollie checkout
+          window.location.href = result.redirectUrl;
+        }
       } else {
-        alert("Fout bij aanmaken checkout sessie. Probeer het later opnieuw.");
+        alert(result.error || "Fout bij aanmaken checkout sessie. Probeer het later opnieuw.");
       }
     } catch (error) {
       console.error("Checkout error", error);

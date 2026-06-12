@@ -134,6 +134,11 @@ const navItems = [
     ),
   },
   {
+    defaultLabel: '💎 Wealth Engine',
+    href: '/dashboard/wealth',
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  },
+  {
     defaultLabel: 'Help Center',
     href: '/dashboard/help',
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>,
@@ -147,10 +152,10 @@ const navItems = [
 ];
 
 
-import { api } from '@/lib/api';
 import { NotificationDropdown, AppNotification } from '@/components/ui/NotificationDropdown';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { getNotificationsAction, markNotificationReadAction, markAllNotificationsReadAction } from '@/app/actions/dashboard';
 
 
 function NotificationBell() {
@@ -166,20 +171,19 @@ function NotificationBell() {
 
   const loadNotifications = async () => {
     try {
-      const [notifsRes, countRes] = await Promise.all([
-        api.get<{ data: any[] }>('/notifications'),
-        api.get<{ data: number }>('/notifications/unread-count')
-      ]);
-      setNotifications((notifsRes.data as any) || []);
-      setUnreadCount((countRes.data as any) || 0);
+      const result = await getNotificationsAction();
+      if (result.success) {
+        setNotifications((result.notifications as any) || []);
+        setUnreadCount(result.unreadCount || 0);
+      }
     } catch (err) {
-      console.error(err);
+      // Notificaties zijn niet kritiek — stil falen
     }
   };
 
   const handleMarkAsRead = async (id: string) => {
     try {
-      await api.patch(`/notifications/${id}/read`, {});
+      await markNotificationReadAction(id);
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
@@ -189,7 +193,7 @@ function NotificationBell() {
 
   const handleMarkAllRead = async () => {
     try {
-      await api.post('/notifications/mark-all-read', {});
+      await markAllNotificationsReadAction();
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (err) {

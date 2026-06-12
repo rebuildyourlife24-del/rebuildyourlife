@@ -1,204 +1,367 @@
 "use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, Globe, LayoutDashboard, Users, Activity, BarChart2, Video, PenTool, Database, MonitorPlay, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  LineChart, Line, Area, AreaChart, Legend
+} from 'recharts';
+import {
+  TrendingUp, TrendingDown, DollarSign, AlertTriangle, RefreshCw,
+  Globe, Users, Target, Zap, ArrowUpRight, ArrowDownRight,
+  BarChart2, Activity, Clock, CheckCircle
+} from 'lucide-react';
 
-export default function SeoDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+interface AnalyticsData {
+  summary: {
+    totalRevenue: number;
+    totalExpenses: number;
+    netProfit: number;
+    missedRevenue: number;
+    totalDebt: number;
+    debtProgress: number;
+    mrr: number;
+    arr: number;
+    revenueGrowth: string;
+    premiumUsers: number;
+    enterpriseUsers: number;
+  };
+  growthData: Array<{
+    period: string;
+    inkomsten: number;
+    uitgaven: number;
+    winst: number;
+    spaarquote: number;
+  }>;
+  beforeAfter: {
+    before: { period: string; revenue: number; expenses: number; profit: number };
+    after: { period: string; revenue: number; expenses: number; profit: number };
+  };
+  fromCache: boolean;
+  timestamp: string;
+}
+
+function formatEur(n: number) {
+  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(n);
+}
+
+function KPICard({ title, value, sub, trend, icon, color = 'cyan' }: {
+  title: string; value: string; sub?: string; trend?: 'up' | 'down' | 'neutral';
+  icon: React.ReactNode; color?: string;
+}) {
+  return (
+    <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-xl p-5 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{title}</span>
+        <div className={`text-${color}-400`}>{icon}</div>
+      </div>
+      <div className="text-2xl font-bold text-zinc-100">{value}</div>
+      {sub && (
+        <div className={`flex items-center gap-1 text-xs ${
+          trend === 'up' ? 'text-emerald-400' : trend === 'down' ? 'text-red-400' : 'text-zinc-500'
+        }`}>
+          {trend === 'up' && <ArrowUpRight className="w-3 h-3" />}
+          {trend === 'down' && <ArrowDownRight className="w-3 h-3" />}
+          {sub}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BeforeAfterCard({ before, after }: { before: any; after: any }) {
+  const revenueChange = before.revenue > 0 ? ((after.revenue - before.revenue) / before.revenue * 100).toFixed(1) : '0';
+  const profitChange = before.profit > 0 ? ((after.profit - before.profit) / before.profit * 100).toFixed(1) : '0';
+  const isRevenueUp = after.revenue >= before.revenue;
+  const isProfitUp = after.profit >= before.profit;
 
   return (
-    <div className="flex h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans selection:bg-cyan-500/30">
-      
-      {/* Background Effects */}
-      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none mix-blend-screen">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-900/30 blur-[150px] rounded-full"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-900/20 blur-[150px] rounded-full"></div>
-      </div>
+    <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-xl p-6">
+      <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Voor / Na Analyse</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {/* VOOR */}
+        <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
+          <div className="text-[10px] font-mono text-zinc-500 mb-3 uppercase">◀ VORIG PERIOD</div>
+          <div className="space-y-2">
+            <div>
+              <div className="text-[10px] text-zinc-600">Inkomsten</div>
+              <div className="text-sm font-semibold text-zinc-300">{formatEur(before.revenue)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-zinc-600">Uitgaven</div>
+              <div className="text-sm font-semibold text-zinc-300">{formatEur(before.expenses)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-zinc-600">Winst</div>
+              <div className={`text-sm font-semibold ${before.profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{formatEur(before.profit)}</div>
+            </div>
+          </div>
+        </div>
 
-      {/* System Switcher (Top Right) */}
-      <div className="absolute top-4 right-4 z-50 flex bg-black/60 backdrop-blur-md rounded-md border border-white/10 p-0.5">
-        <a href="https://rebuildyourlife.eu/hq" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
-          <MonitorPlay className="w-3 h-3" />
-          WAR ROOM
-        </a>
-        <a href="https://enterprise.ai-henksemler.nl" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
-          <LayoutDashboard className="w-3 h-3" />
-          ENTERPRISE OS
-        </a>
-        <a href="https://rebuildyourlife.eu/admin" className="px-3 py-1.5 text-white/50 hover:text-white hover:bg-white/10 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm transition-all flex items-center gap-1.5">
-          <Users className="w-3 h-3" />
-          ADMIN CRM
-        </a>
-        <div className="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 text-[10px] font-bold font-mono tracking-wider uppercase rounded-sm shadow-[0_0_10px_rgba(6,182,212,0.2)] flex items-center gap-1.5 border-l border-white/10 ml-1">
-          <BarChart2 className="w-3 h-3" />
-          SEO ENGINE
+        {/* NA */}
+        <div className="p-4 bg-cyan-950/30 rounded-lg border border-cyan-900/30">
+          <div className="text-[10px] font-mono text-cyan-600 mb-3 uppercase">▶ HUIDIG PERIOD</div>
+          <div className="space-y-2">
+            <div>
+              <div className="text-[10px] text-zinc-600">Inkomsten</div>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-zinc-100">{formatEur(after.revenue)}</span>
+                {parseFloat(revenueChange) !== 0 && (
+                  <span className={`text-[10px] ${isRevenueUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isRevenueUp ? '▲' : '▼'} {Math.abs(parseFloat(revenueChange))}%
+                  </span>
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="text-[10px] text-zinc-600">Uitgaven</div>
+              <div className="text-sm font-semibold text-zinc-100">{formatEur(after.expenses)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-zinc-600">Winst</div>
+              <div className="flex items-center gap-1">
+                <span className={`text-sm font-semibold ${after.profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{formatEur(after.profit)}</span>
+                {parseFloat(profitChange) !== 0 && (
+                  <span className={`text-[10px] ${isProfitUp ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isProfitUp ? '▲' : '▼'} {Math.abs(parseFloat(profitChange))}%
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Sidebar */}
-      <aside className="w-72 border-r border-white/10 bg-black/40 backdrop-blur-xl z-20 flex flex-col relative">
-        <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-            <Globe className="w-6 h-6" />
+export default function SEOAnalyticsPage() {
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('MONTHLY');
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+
+  const loadData = async (p: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/analytics?period=${p}&type=full`);
+      if (res.ok) {
+        const json = await res.json();
+        setData(json);
+        setLastRefresh(new Date());
+      }
+    } catch (e) {
+      console.error('Analytics load error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadData(period); }, [period]);
+
+  // Auto-refresh elke 5 minuten
+  useEffect(() => {
+    const interval = setInterval(() => loadData(period), 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [period]);
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-xs">
+        <p className="text-zinc-400 mb-2 font-mono">{label}</p>
+        {payload.map((p: any) => (
+          <div key={p.name} className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
+            <span className="text-zinc-300">{p.name}: {formatEur(p.value)}</span>
           </div>
-          <div>
-            <h1 className="font-bold text-white tracking-wide">SEO COMMAND</h1>
-            <div className="text-[10px] font-mono text-cyan-500/70 tracking-widest uppercase">Global Control Unit</div>
-          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-sans p-6 lg:p-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-xl font-bold text-zinc-100 uppercase tracking-widest">Revenue Intelligence</h1>
+          <p className="text-xs text-zinc-500 mt-1 font-mono">
+            Cloud Analytics — {data?.fromCache ? '⚡ Cache' : '🔄 Live'} •{' '}
+            {lastRefresh ? `Bijgewerkt: ${lastRefresh.toLocaleTimeString('nl-NL')}` : 'Laden...'}
+          </p>
         </div>
-
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
-          <div className="text-xs font-mono tracking-widest text-white/30 px-3 pb-2 pt-4 uppercase">Directives</div>
-          
-          <button onClick={() => setActiveTab('overview')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'overview' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <Activity className="w-5 h-5" /> Executive Overview
+        <div className="flex items-center gap-3 flex-wrap">
+          {['DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY'].map(p => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold tracking-widest transition-all ${
+                period === p ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              {p === 'DAILY' ? 'DAG' : p === 'WEEKLY' ? 'WEEK' : p === 'MONTHLY' ? 'MAAND' : 'KWARTAAL'}
+            </button>
+          ))}
+          <button
+            onClick={() => loadData(period)}
+            className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-zinc-400 hover:text-zinc-100"
+            title="Forceer refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          
-          <button onClick={() => setActiveTab('queue')} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'queue' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <div className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5" /> Review Queue</div>
-            <span className="bg-amber-500/20 text-amber-400 text-xs py-0.5 px-2 rounded-md font-mono border border-amber-500/30">12 Pending</span>
-          </button>
-
-          <div className="text-xs font-mono tracking-widest text-white/30 px-3 pb-2 pt-6 uppercase">Production Studio</div>
-          
-          <button onClick={() => setActiveTab('webbuilder')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'webbuilder' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <LayoutDashboard className="w-5 h-5" /> Webbuilder Studio
-          </button>
-          
-          <button onClick={() => setActiveTab('video')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'video' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <Video className="w-5 h-5" /> Media & Video Editor
-          </button>
-
-          <div className="text-xs font-mono tracking-widest text-white/30 px-3 pb-2 pt-6 uppercase">Intelligence</div>
-
-          <button onClick={() => setActiveTab('board')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'board' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <ShieldAlert className="w-5 h-5" /> Board of Directors
-          </button>
-
-          <button onClick={() => setActiveTab('logs')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === 'logs' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent'}`}>
-            <Database className="w-5 h-5" /> Black Box Logs
-          </button>
-        </nav>
-
-        {/* CISO Status Widget */}
-        <div className="p-4 border-t border-white/10 bg-black/20">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono text-slate-400 uppercase">CISO Security Agent</span>
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-          </div>
-          <div className="text-xs text-slate-500 font-mono">0 Threats Detected</div>
         </div>
-      </aside>
+      </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 relative z-10 flex flex-col h-full overflow-hidden">
-        
-        {/* Topbar: Action / Context */}
-        <header className="h-20 border-b border-white/10 bg-black/20 backdrop-blur-sm flex items-center justify-between px-8">
-          <div>
-            <h2 className="text-xl font-semibold text-white capitalize">{activeTab.replace('-', ' ')}</h2>
-            <p className="text-sm text-slate-400 font-mono mt-1">Live data synchronisatie actief.</p>
-          </div>
-          
-          {/* Noodknop (Kill Switch) */}
-          <button className="group flex items-center gap-2 px-4 py-2 bg-danger/10 hover:bg-danger/20 border border-danger/30 rounded-lg transition-all shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_25px_rgba(239,68,68,0.3)]">
-            <AlertTriangle className="w-4 h-4 text-danger group-hover:animate-pulse" />
-            <span className="text-danger font-bold text-sm tracking-wider uppercase">Emergency Kill Switch</span>
-          </button>
-        </header>
-
-        {/* Dynamic Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <AnimatePresence mode="wait">
-            {activeTab === 'overview' && (
-              <motion.div 
-                key="overview"
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-              >
-                {/* Placeholder Widgets */}
-                <div className="glass-panel p-6 rounded-2xl border border-white/5 bg-black/40 backdrop-blur-md">
-                  <div className="text-sm text-slate-400 font-medium mb-1">Global Traffic</div>
-                  <div className="text-3xl font-bold text-white mb-2">124.5K</div>
-                  <div className="text-xs text-emerald-400 flex items-center gap-1">+12.4% vs last month</div>
-                </div>
-                <div className="glass-panel p-6 rounded-2xl border border-white/5 bg-black/40 backdrop-blur-md">
-                  <div className="text-sm text-slate-400 font-medium mb-1">SEO Leads Generated</div>
-                  <div className="text-3xl font-bold text-white mb-2">3,492</div>
-                  <div className="text-xs text-emerald-400 flex items-center gap-1">+5.2% vs last month</div>
-                </div>
-                <div className="glass-panel p-6 rounded-2xl border border-white/5 bg-black/40 backdrop-blur-md">
-                  <div className="text-sm text-slate-400 font-medium mb-1">Active Campaigns</div>
-                  <div className="text-3xl font-bold text-white mb-2">14</div>
-                  <div className="text-xs text-slate-500 flex items-center gap-1">Across 4 platforms</div>
-                </div>
-                <div className="glass-panel p-6 rounded-2xl border border-white/5 bg-black/40 backdrop-blur-md border-t-2 border-t-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                  <div className="text-sm text-amber-400/80 font-medium mb-1 font-mono">Agent Workload</div>
-                  <div className="text-3xl font-bold text-amber-400 mb-2">89%</div>
-                  <div className="text-xs text-amber-400/60 flex items-center gap-1">Operating at peak efficiency</div>
-                </div>
-                
-                {/* Large Chart Placeholder */}
-                <div className="col-span-1 lg:col-span-4 glass-panel h-96 mt-4 rounded-2xl border border-white/5 bg-black/40 flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart2 className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                    <p className="text-slate-500 font-mono text-sm">Real-time Traffic Graph Placeholder</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === 'queue' && (
-              <motion.div key="queue" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-3">
-                  Human Control Queue <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded border border-amber-500/30">Action Required</span>
-                </h3>
-                <div className="space-y-4">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="glass-panel p-6 rounded-xl border border-white/5 bg-black/40 flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-xs font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded border border-purple-400/20">SEO AGENT</span>
-                          <span className="text-sm text-slate-400">Targeting keyword: "Schuldsanering 2026"</span>
-                        </div>
-                        <p className="text-white font-medium">Proposed 14 meta-title changes and 2 new blog drafts.</p>
-                      </div>
-                      <div className="flex gap-3">
-                        <button className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium border border-emerald-500/30 rounded-lg transition-colors flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4" /> Approve
-                        </button>
-                        <button className="px-4 py-2 bg-danger/10 hover:bg-danger/20 text-danger text-sm font-medium border border-danger/30 rounded-lg transition-colors flex items-center gap-2">
-                          <XCircle className="w-4 h-4" /> Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Other Placeholders */}
-            {['webbuilder', 'video', 'board', 'logs'].includes(activeTab) && (
-              <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="h-full flex items-center justify-center">
-                <div className="text-center max-w-md">
-                  <div className="w-20 h-20 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-                    <PenTool className="w-8 h-8 text-cyan-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-3 capitalize">{activeTab.replace('-', ' ')} Environment</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    This module is currently establishing secure database connections and preparing the AI sandbox environment. Full deployment scheduled for next phase.
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {loading && !data ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[1,2,3,4].map(i => <div key={i} className="h-28 bg-zinc-900/50 rounded-xl animate-pulse border border-zinc-800/50" />)}
         </div>
-      </main>
+      ) : data ? (
+        <>
+          {/* KPI Strip */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <KPICard
+              title="Totale Inkomsten"
+              value={formatEur(data.summary.totalRevenue)}
+              sub={`+${data.summary.revenueGrowth}% vs vorige periode`}
+              trend={parseFloat(data.summary.revenueGrowth) >= 0 ? 'up' : 'down'}
+              icon={<DollarSign className="w-4 h-4" />}
+              color="emerald"
+            />
+            <KPICard
+              title="Netto Winst"
+              value={formatEur(data.summary.netProfit)}
+              sub={`Marge: ${data.summary.totalRevenue > 0 ? Math.round(data.summary.netProfit / data.summary.totalRevenue * 100) : 0}%`}
+              trend={data.summary.netProfit >= 0 ? 'up' : 'down'}
+              icon={<TrendingUp className="w-4 h-4" />}
+              color="cyan"
+            />
+            <KPICard
+              title="Gemiste Inkomsten"
+              value={formatEur(data.summary.missedRevenue)}
+              sub="Geïdentificeerd als verlies"
+              trend={data.summary.missedRevenue > 0 ? 'down' : 'neutral'}
+              icon={<AlertTriangle className="w-4 h-4" />}
+              color="amber"
+            />
+            <KPICard
+              title="MRR"
+              value={formatEur(data.summary.mrr)}
+              sub={`ARR: ${formatEur(data.summary.arr)}`}
+              trend="up"
+              icon={<Zap className="w-4 h-4" />}
+              color="purple"
+            />
+          </div>
+
+          {/* Tweede KPI rij */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <KPICard
+              title="Totale Schuld"
+              value={formatEur(data.summary.totalDebt)}
+              sub={`${data.summary.debtProgress}% afbetaald`}
+              trend="up"
+              icon={<Target className="w-4 h-4" />}
+              color="red"
+            />
+            <KPICard
+              title="Premium Klanten"
+              value={String(data.summary.premiumUsers)}
+              sub="Operator abonnement"
+              trend="up"
+              icon={<Users className="w-4 h-4" />}
+              color="blue"
+            />
+            <KPICard
+              title="Enterprise Klanten"
+              value={String(data.summary.enterpriseUsers)}
+              sub="Business abonnement"
+              trend="up"
+              icon={<Globe className="w-4 h-4" />}
+              color="purple"
+            />
+            <KPICard
+              title="Totale Uitgaven"
+              value={formatEur(data.summary.totalExpenses)}
+              sub={`vs ${formatEur(data.summary.totalRevenue)} inkomsten`}
+              trend={data.summary.totalExpenses < data.summary.totalRevenue ? 'up' : 'down'}
+              icon={<Activity className="w-4 h-4" />}
+              color="zinc"
+            />
+          </div>
+
+          {/* Grafieken */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Inkomsten vs Uitgaven grafiek */}
+            <div className="lg:col-span-2 bg-[#0e0e11] border border-zinc-800/60 rounded-xl p-5">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-5">Inkomsten vs Uitgaven vs Winst</h3>
+              {data.growthData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={data.growthData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                    <defs>
+                      <linearGradient id="colorInkomsten" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorWinst" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                    <XAxis dataKey="period" tick={{ fill: '#52525b', fontSize: 10 }} />
+                    <YAxis tick={{ fill: '#52525b', fontSize: 10 }} tickFormatter={v => `€${v}`} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Area type="monotone" dataKey="inkomsten" stroke="#34d399" fill="url(#colorInkomsten)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="winst" stroke="#06b6d4" fill="url(#colorWinst)" strokeWidth={2} />
+                    <Line type="monotone" dataKey="uitgaven" stroke="#f87171" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[220px] flex items-center justify-center text-zinc-600 text-sm">
+                  Nog geen budget data. Voeg maandbudgetten toe via het dashboard.
+                </div>
+              )}
+            </div>
+
+            {/* Voor/Na analyse */}
+            <BeforeAfterCard before={data.beforeAfter.before} after={data.beforeAfter.after} />
+          </div>
+
+          {/* Spaarquote grafiek */}
+          {data.growthData.length > 0 && (
+            <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-xl p-5 mb-6">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-5">Spaarquote per Periode (%)</h3>
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={data.growthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                  <XAxis dataKey="period" tick={{ fill: '#52525b', fontSize: 10 }} />
+                  <YAxis tick={{ fill: '#52525b', fontSize: 10 }} tickFormatter={v => `${v}%`} />
+                  <Tooltip formatter={(v: any) => [`${v}%`, 'Spaarquote']} contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="spaarquote" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Cloud sync status */}
+          <div className="flex items-center gap-3 p-4 bg-zinc-900/30 border border-zinc-800/40 rounded-xl text-xs text-zinc-500 font-mono">
+            <CheckCircle className="w-4 h-4 text-emerald-500" />
+            <span>Cloud Analytics actief •</span>
+            <Clock className="w-3 h-3" />
+            <span>Cache TTL: 5 min •</span>
+            <BarChart2 className="w-3 h-3" />
+            <span>Data gesynchroniseerd: {data.timestamp ? new Date(data.timestamp).toLocaleString('nl-NL') : '—'}</span>
+          </div>
+        </>
+      ) : (
+        <div className="text-center py-20 text-zinc-600">
+          <AlertTriangle className="w-10 h-10 mx-auto mb-3" />
+          <p>Geen data beschikbaar. Voeg budget data toe via het klantdashboard.</p>
+        </div>
+      )}
     </div>
   );
 }

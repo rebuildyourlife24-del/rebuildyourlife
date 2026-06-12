@@ -47,6 +47,17 @@ export type {
   Notification,
   AuditLog,
   FeatureFlag,
+  PasswordResetToken,
+  ApiKey,
+  HealthLog,
+  SocialContact,
+  BusinessClient,
+  BusinessInvoice,
+  EnterpriseFolder,
+  EnterpriseDocument,
+  OrionMemory,
+  RevenueSnapshot,
+  AnalyticsCache,
 } from "@prisma/client";
 
 

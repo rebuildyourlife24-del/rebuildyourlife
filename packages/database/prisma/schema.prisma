@@ -422,6 +422,80 @@ model BusinessInvoice {
   @@index([dueDate])
 }
 
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Orion gedragsgeheugen — leert van communicatie patronen
+model OrionMemory {
+  id            String   @id @default(uuid())
+  userId        String
+  sessionId     String?
+  memoryType    String   // BEHAVIORAL, EMOTIONAL, PREFERENCE, FACT, WARNING
+  trigger       String?  // wat triggerde dit geheugen
+  content       String   // het geleerde patroon
+  emotionalTone String?  // AGGRESSIVE, NEUTRAL, POSITIVE, FRUSTRATED
+  intensity     Int      @default(5) // 1-10 intensiteitsschaal
+  response      String?  // hoe Orion reageerde
+  wasEffective  Boolean? // was de respons effectief
+  learnWeight   Float    @default(1.0) // hoe zwaar weegt dit geheugen
+  tags          String?  // komma-gescheiden tags
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([memoryType])
+  @@index([emotionalTone])
+  @@index([createdAt])
+}
+
+// Analytics cloud — inkomsten/verliezen/gemiste kansen
+model RevenueSnapshot {
+  id              String   @id @default(uuid())
+  userId          String
+  snapshotDate    DateTime
+  period          String   // DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY
+  totalRevenue    Float    @default(0)
+  totalExpenses   Float    @default(0)
+  netProfit       Float    @default(0)
+  missedRevenue   Float    @default(0) // gemiste inkomsten
+  projectedRevenue Float   @default(0) // verwachte inkomsten
+  actualVsBudget  Float    @default(0) // verschil budget vs werkelijk
+  vatReserve      Float    @default(0)
+  safetyBuffer    Float    @default(0)
+  source          String   @default("MANUAL") // MOLLIE, MANUAL, AI_PROJECTED
+  notes           String?
+  cachedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([period])
+  @@index([snapshotDate])
+  @@index([userId, period])
+}
+
+// Cache voor realtime analytics
+model AnalyticsCache {
+  id         String   @id @default(uuid())
+  cacheKey   String   @unique
+  data       String   // JSON data als string
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([cacheKey])
+  @@index([expiresAt])
+}
+
 model EnterpriseFolder {
   id          String               @id @default(uuid())
   name        String               @unique
