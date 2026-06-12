@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { fetchWithCache } from '@/lib/redis';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const db = globalForPrisma.prisma || new PrismaClient();
@@ -9,27 +10,6 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 const CACHE_TTL_MINUTES = 5; // Cache 5 minuten geldig
-
-async function getOrCreateCache(key: string, builder: () => Promise<any>) {
-  // Check cache
-  const cached = await db.analyticsCache.findUnique({ where: { cacheKey: key } }).catch(() => null);
-  if (cached && new Date() < cached.expiresAt) {
-    return { data: JSON.parse(cached.data), fromCache: true };
-  }
-
-  // Bouw nieuwe data
-  const data = await builder();
-  const expiresAt = new Date(Date.now() + CACHE_TTL_MINUTES * 60 * 1000);
-
-  // Sla op in cache
-  await db.analyticsCache.upsert({
-    where: { cacheKey: key },
-    update: { data: JSON.stringify(data), expiresAt, updatedAt: new Date() },
-    create: { cacheKey: key, data: JSON.stringify(data), expiresAt },
-  }).catch(() => {});
-
-  return { data, fromCache: false };
-}
 
 export async function GET(req: Request) {
   try {
@@ -55,7 +35,7 @@ export async function GET(req: Request) {
 
     const cacheKey = `analytics_${userId}_${period}_${type}`;
 
-    const { data, fromCache } = await getOrCreateCache(cacheKey, async () => {
+    const data = await fetchWithCache(cacheKey, async () => {
       const now = new Date();
       const startDate = period === 'DAILY' ? new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) :
                         period === 'WEEKLY' ? new Date(now.getTime() - 12 * 7 * 24 * 60 * 60 * 1000) :
@@ -156,7 +136,6 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       success: true,
-      fromCache,
       period,
       ...data,
     });

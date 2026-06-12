@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { fetchWithCache } from '@/lib/redis';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
@@ -37,7 +38,9 @@ export async function GET() {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [
+    const cacheKey = `ceo_metrics_${decoded.userId}`;
+    const cachedData = await fetchWithCache(cacheKey, async () => {
+      const [
       totalUsers,
       activeUsers,
       freeUsers,
@@ -66,6 +69,29 @@ export async function GET() {
     const enterpriseMRR = enterpriseUsers * 49.95;
     const totalMRR = premiumMRR + enterpriseMRR;
 
+      return {
+        kpis: {
+          totalUsers,
+          activeUsers,
+          freeUsers,
+          premiumUsers,
+          enterpriseUsers,
+          mrr: totalMRR,
+          arr: totalMRR * 12,
+        },
+        operations: {
+          pendingTasks,
+          completedTasksThisMonth,
+          auditLogsToday,
+        },
+        financials: {
+          totalDebtManaged: totalDebts._sum.currentBalance || 0,
+          currentMonthIncome: recentBudget?.totalIncome || 0,
+          currentMonthExpenses: recentBudget?.totalExpenses || 0,
+        }
+      };
+    }, 300); // 5 minuten cache
+
     return NextResponse.json({
       status: 'ok',
       overseer: {
@@ -73,25 +99,7 @@ export async function GET() {
         email: user.email,
         role: user.role,
       },
-      kpis: {
-        totalUsers,
-        activeUsers,
-        freeUsers,
-        premiumUsers,
-        enterpriseUsers,
-        mrr: totalMRR,
-        arr: totalMRR * 12,
-      },
-      operations: {
-        pendingTasks,
-        completedTasksThisMonth,
-        auditLogsToday,
-      },
-      financials: {
-        totalDebtManaged: totalDebts._sum.currentBalance || 0,
-        currentMonthIncome: recentBudget?.totalIncome || 0,
-        currentMonthExpenses: recentBudget?.totalExpenses || 0,
-      },
+      ...cachedData,
       timestamp: now.toISOString(),
     });
   } catch (error) {

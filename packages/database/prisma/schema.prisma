@@ -1,11 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
 }
 
 model User {
@@ -270,7 +272,7 @@ model AIMemory {
   agentType  String
   memoryType String
   content    String
-  embedding  String?
+  embedding  Unsupported("vector(1536)")?
   importance Float     @default(0.5)
   expiresAt  DateTime?
   createdAt  DateTime  @default(now())
@@ -443,6 +445,7 @@ model OrionMemory {
   memoryType    String   // BEHAVIORAL, EMOTIONAL, PREFERENCE, FACT, WARNING
   trigger       String?  // wat triggerde dit geheugen
   content       String   // het geleerde patroon
+  embedding     Unsupported("vector(1536)")?
   emotionalTone String?  // AGGRESSIVE, NEUTRAL, POSITIVE, FRUSTRATED
   intensity     Int      @default(5) // 1-10 intensiteitsschaal
   response      String?  // hoe Orion reageerde
@@ -515,6 +518,7 @@ model EnterpriseDocument {
   priority  String           @default("MEDIUM")
   source    String?
   content   String
+  embedding Unsupported("vector(1536)")?
   impact    String?
   nextStep  String?
   createdAt DateTime         @default(now())
