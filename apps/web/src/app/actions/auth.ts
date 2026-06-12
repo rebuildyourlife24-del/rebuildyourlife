@@ -112,3 +112,21 @@ export async function registerAction(data: any) {
     return { success: false, error: "Er is een interne serverfout opgetreden." };
   }
 }
+
+export async function getSessionAction() {
+  const token = cookies().get("ryl_session")?.value;
+  if (!token) return { success: false };
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { id: true, email: true, role: true, firstName: true, lastName: true, avatarUrl: true }
+    });
+    
+    if (!user) return { success: false };
+    return { success: true, user };
+  } catch (error) {
+    return { success: false };
+  }
+}

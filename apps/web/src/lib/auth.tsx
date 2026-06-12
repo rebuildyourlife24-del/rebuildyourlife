@@ -8,8 +8,8 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { UserProfile as User, AuthResponse, LoginRequest, RegisterRequest } from '@rebuildyourlife/shared';
-import { api, formatApiError } from './api';
+import type { UserProfile as User, LoginRequest, RegisterRequest } from '@rebuildyourlife/shared';
+import { getSessionAction, logoutAction } from '@/app/actions/auth';
 
 interface AuthState {
   user: User | null;
@@ -20,26 +20,11 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function setTokens(accessToken: string, refreshToken: string) {
-  localStorage.setItem('ryl_access_token', accessToken);
-  localStorage.setItem('ryl_refresh_token', refreshToken);
-}
-
-function clearTokens() {
-  localStorage.removeItem('ryl_access_token');
-  localStorage.removeItem('ryl_refresh_token');
-}
-
-function getAccessToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('ryl_access_token');
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -49,21 +34,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const refreshUser = useCallback(async () => {
-    const token = getAccessToken();
-    if (!token) {
-      setState({ user: null, isLoading: false, isAuthenticated: false });
-      return;
-    }
-
     try {
-      const response = await api.get<User>('/user/me');
-      setState({
-        user: response.data,
-        isLoading: false,
-        isAuthenticated: true,
-      });
+      const result = await getSessionAction();
+      if (result.success && result.user) {
+        setState({
+          user: result.user as any,
+          isLoading: false,
+          isAuthenticated: true,
+        });
+      } else {
+        setState({ user: null, isLoading: false, isAuthenticated: false });
+      }
     } catch {
-      clearTokens();
       setState({ user: null, isLoading: false, isAuthenticated: false });
     }
   }, []);
@@ -72,22 +54,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
-  const login = useCallback(async (credentials: LoginRequest) => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    const { user, tokens } = response.data;
-    setTokens(tokens.accessToken, tokens.refreshToken);
-    setState({ user, isLoading: false, isAuthenticated: true });
-  }, []);
+  // login and register are bypassed by LoginPage and RegisterPage using actions directly
+  const login = useCallback(async (_credentials: LoginRequest) => {}, []);
+  const register = useCallback(async (_data: RegisterRequest) => {}, []);
 
-  const register = useCallback(async (data: RegisterRequest) => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    const { user, tokens } = response.data;
-    setTokens(tokens.accessToken, tokens.refreshToken);
-    setState({ user, isLoading: false, isAuthenticated: true });
-  }, []);
-
-  const logout = useCallback(() => {
-    clearTokens();
+  const logout = useCallback(async () => {
+    await logoutAction();
     setState({ user: null, isLoading: false, isAuthenticated: false });
     window.location.href = '/auth/login';
   }, []);
@@ -126,5 +98,3 @@ export function useRequireAuth(): AuthContextValue {
 
   return auth;
 }
-
-export { formatApiError };
