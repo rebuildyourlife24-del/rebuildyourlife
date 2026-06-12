@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild"
 
 // Haal de huidige ingelogde gebruiker op
 async function getCurrentUser() {
-  const token = cookies().get("ryl_session")?.value;
+  const token = (await cookies()).get("ryl_session")?.value;
   if (!token) return null;
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -22,21 +22,9 @@ async function getCurrentUser() {
   }
 }
 
-// Tier hiërarchie
-const TIER_LEVELS: Record<string, number> = {
-  FREE: 0,
-  BASIC: 1,
-  PREMIUM: 2,
-  ENTERPRISE: 3,
-  ADMIN: 99,
-  SUPREME_OVERSEER: 100,
-};
+// TIER_LEVELS was here
 
-function getUserLevel(tier: string, role: string): number {
-  if (role === 'SUPREME_OVERSEER') return 100;
-  if (role === 'ADMIN') return 99;
-  return TIER_LEVELS[tier] ?? 0;
-}
+// getUserLevel was here
 
 // Feature matrix per tier
 export const FEATURE_ACCESS = {

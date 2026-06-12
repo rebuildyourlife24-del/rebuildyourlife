@@ -92,7 +92,7 @@ export async function registerAction(data: any) {
     );
 
     // Set HTTP-only cookie for secure session
-    cookies().set("ryl_session", token, {
+    (await cookies()).set("ryl_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -116,7 +116,7 @@ export async function registerAction(data: any) {
 }
 
 export async function getSessionAction() {
-  const token = cookies().get("ryl_session")?.value;
+  const token = (await cookies()).get("ryl_session")?.value;
   if (!token) return { success: false };
 
   try {

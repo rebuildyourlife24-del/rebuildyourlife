@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
+
 
 // Redirect pagina na succesvolle betaling
 export async function GET(request: Request) {

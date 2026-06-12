@@ -85,7 +85,6 @@ export async function resetPasswordAction(token: string, newPassword: string) {
     // Zoek geldig token
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { token },
-      include: { user: true },
     });
 
     if (!resetToken) {

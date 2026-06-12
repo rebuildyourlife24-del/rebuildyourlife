@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type ReactNode } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getUserFeaturesAction, type FeatureName } from '@/app/actions/featureFlags';
 
 interface PaywallGateProps {
@@ -33,7 +33,7 @@ export default function PaywallGate({ feature, children, fallback, overlay = fal
   const [requiredTier, setRequiredTier] = useState<string>('PREMIUM');
 
   useEffect(() => {
-    getUserFeaturesAction().then(({ features, tier, role }) => {
+    getUserFeaturesAction().then(({ features }) => {
       setHasAccess(features[feature]);
       // Bepaal welke tier nodig is
       // Simpele mapping gebaseerd op feature naam

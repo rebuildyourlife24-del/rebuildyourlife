@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 
 async function getAuthenticatedUser() {
-  const token = cookies().get("ryl_session")?.value;
+  const token = (await cookies()).get("ryl_session")?.value;
   if (!token) return null;
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, TrendingUp, DollarSign, Target, ExternalLink, ChevronRight, Lock, ArrowRight, Flame, Brain, RefreshCw } from 'lucide-react';
+import { Zap, TrendingUp, Target, ExternalLink, ChevronRight, Lock, ArrowRight, Flame, Brain, RefreshCw } from 'lucide-react';
 import { getCommissionOpportunities, generateWealthPlan, findNicheOpportunities } from '@/app/actions/commissionAgent';
 
 const PHASES = [

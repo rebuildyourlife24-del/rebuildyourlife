@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 
 async function getAuthenticatedUserId(): Promise<string | null> {
-  const token = cookies().get("ryl_session")?.value;
+  const token = (await cookies()).get("ryl_session")?.value;
   if (!token) return null;
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -37,7 +37,7 @@ export async function getNotificationsAction() {
         id: n.id,
         title: n.title,
         message: n.message,
-        type: n.type,
+        type: (n as any).type || 'INFO',
         isRead: n.isRead,
         createdAt: n.createdAt.toISOString(),
       })),

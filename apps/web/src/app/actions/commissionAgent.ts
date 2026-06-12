@@ -1,10 +1,10 @@
 "use server";
 
-import { PrismaClient } from "@rebuildyourlife/database";
+// PrismaClient removed
 import { generateText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 // ============================================================
 // COMMISSIE & AFFILIATE AGENT
