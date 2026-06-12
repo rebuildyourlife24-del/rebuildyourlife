@@ -4,7 +4,7 @@ import { jwtVerify } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "SUPREME_OVERSEER_FALLBACK_SECRET_KEY_2026");
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const sessionToken = request.cookies.get('orion_session')?.value;
   
   // Routes to protect

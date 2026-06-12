@@ -12,6 +12,7 @@
     "@ai-sdk/google": "^3.0.80",
     "@ai-sdk/openai": "latest",
     "@rebuildyourlife/database": "*",
+    "@upstash/redis": "^1.38.0",
     "ai": "latest",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^12.40.0",

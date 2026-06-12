@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 
 // Fetch AI task queue (actions that require human validation)
 export async function getActionQueue() {

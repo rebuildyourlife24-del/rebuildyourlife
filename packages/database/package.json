@@ -18,6 +18,7 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx src/seed.ts",
+    "seed:toolkits": "tsx src/seed_toolkits.ts",
     "db:studio": "prisma studio",
     "build": "npm run db:generate && tsc",
     "clean": "rimraf dist node_modules/.prisma"

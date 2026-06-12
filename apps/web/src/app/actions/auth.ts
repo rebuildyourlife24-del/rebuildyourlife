@@ -31,7 +31,8 @@ export async function loginAction(email: string, password: string) {
     );
 
     // Set HTTP-only cookie for secure session
-    cookies().set("ryl_session", token, {
+    const cookieStore = await cookies();
+    cookieStore.set("ryl_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -55,7 +56,8 @@ export async function loginAction(email: string, password: string) {
 }
 
 export async function logoutAction() {
-  cookies().delete("ryl_session");
+  const cookieStore = await cookies();
+  cookieStore.delete("ryl_session");
   return { success: true };
 }
 

@@ -133,7 +133,6 @@ export default function AIBrain({ orionState = 'IDLE', isSpeaking = false }: { o
       // === SCANNING RADAR ===
       if (state !== 'IDLE') {
         const radarAngle = t * 2;
-        const radarGrad = ctx.createConicGradient ? null : null;
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(radarAngle);

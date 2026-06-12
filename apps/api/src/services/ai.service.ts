@@ -177,7 +177,6 @@ export async function chat(userId: string, input: ChatInput) {
       memoryType: "SHORT_TERM",
       content: input.message,
       importance: 0.8,
-      embedding: null,
     },
   });
 
