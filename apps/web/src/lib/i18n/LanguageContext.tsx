@@ -1,75 +1,77 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { dictionaries, Language } from './dictionaries';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import nl from './nl.json';
+import en from './en.json';
 
-type LanguageContextType = {
+export type Language = 'nl' | 'en';
+type Translations = typeof nl;
+
+interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string, variables?: Record<string, string>) => string;
-};
+  t: (key: string, params?: Record<string, string | number>) => string;
+}
+
+const dictionaries: Record<Language, Translations> = { nl, en };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('nl');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('rylos_language') as Language;
-    if (saved && dictionaries[saved]) {
+    // Check localStorage on mount
+    const saved = localStorage.getItem('language') as Language;
+    if (saved && (saved === 'nl' || saved === 'en')) {
       setLanguageState(saved);
     }
+    setMounted(true);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.dir = (language === 'ar' || language === 'fa') ? 'rtl' : 'ltr';
-    document.documentElement.lang = language;
-  }, [language]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('rylos_language', lang);
+    localStorage.setItem('language', lang);
   };
 
-  const t = (key: string, variables?: Record<string, string>): string => {
-    const keys = key.split('.');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const t = (path: string, params?: Record<string, string | number>): string => {
+    const keys = path.split('.');
     let current: any = dictionaries[language];
-
-    for (const k of keys) {
-      if (current[k] === undefined) {
-        console.warn(`Translation key missing: ${key} for language: ${language}`);
-        return key;
+    
+    for (const key of keys) {
+      if (current === undefined || current[key] === undefined) {
+        console.warn(`Translation key not found: ${path}`);
+        return path;
       }
-      current = current[k];
+      current = current[key];
     }
-
-    if (typeof current !== 'string') {
-      console.warn(`Translation key does not resolve to string: ${key}`);
-      return key;
+    
+    let text = current as string;
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        text = text.replace(new RegExp(`{${key}}`, 'g'), String(value));
+      });
     }
-
-    let result = current;
-    if (variables) {
-      for (const [vKey, vValue] of Object.entries(variables)) {
-        result = result.replace(new RegExp(`{${vKey}}`, 'g'), vValue);
-      }
-    }
-
-    return result;
+    
+    return text;
   };
+
+  if (!mounted) {
+    return <div className="min-h-screen bg-black" />; // Prevent hydration mismatch
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
-};
+}
 
-export const useLanguage = () => {
+export function useLanguage() {
   const context = useContext(LanguageContext);
   if (context === undefined) {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
-};
+}

@@ -189,6 +189,8 @@ export interface UpdateProfileRequest {
 
 // ---- API Response Types ----
 
+export * from './banking/vtlb-calculator';
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

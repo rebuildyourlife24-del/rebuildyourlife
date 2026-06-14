@@ -7,15 +7,18 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { useAuth } from '@/lib/auth';
 
 import { loginAction } from '@/app/actions/auth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -23,10 +26,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await loginAction(email, password);
+      const result = await loginAction(email, password, rememberMe);
       
       if (result.success) {
-        // We set the secure cookie via Server Actions, so we just redirect
+        setUser(result.user as any);
         router.push('/dashboard');
       } else {
         setError(result.error || 'Inloggen mislukt');
@@ -113,7 +116,23 @@ export default function LoginPage() {
               }
             />
 
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div className="relative flex items-center justify-center">
+                  <input 
+                    type="checkbox" 
+                    className="peer sr-only" 
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <div className="w-5 h-5 rounded border border-white/20 bg-surface/50 peer-checked:bg-gold peer-checked:border-gold transition-all duration-200"></div>
+                  <svg className="absolute w-3 h-3 text-navy opacity-0 peer-checked:opacity-100 transition-opacity duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-textSecondary group-hover:text-textPrimary transition-colors">Onthoud mij</span>
+              </label>
+              
               <Link
                 href="/auth/forgot-password"
                 className="text-sm text-gold transition-colors hover:text-goldLight"

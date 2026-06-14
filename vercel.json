@@ -1,0 +1,5 @@
+{
+  "regions": ["iad1"],
+  "buildCommand": "turbo run build",
+  "installCommand": "npm install --prefix=../.."
+}

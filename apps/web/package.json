@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "@rebuildyourlife/api": "*",
     "@rebuildyourlife/database": "^1.0.0",
     "@rebuildyourlife/shared": "*",
@@ -17,9 +20,12 @@
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.395.0",
     "next": "16.2.9",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "recharts": "^3.8.1"
+    "pdf-lib": "^1.17.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-is": "^18.3.1",
+    "recharts": "^3.8.1",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

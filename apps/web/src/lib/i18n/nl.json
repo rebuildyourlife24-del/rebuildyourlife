@@ -1,0 +1,55 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "concierge": "AI Concierge",
+    "opportunities": "Kansen",
+    "godMode": "Commandocentrum",
+    "settings": "Instellingen"
+  },
+  "concierge": {
+    "title": "The AI Concierge",
+    "subtitle": "Jouw 24/7 Private Banker. Beheer spaardoelen of vraag direct noodkapitaal aan.",
+    "securityBanner": "AES-256-GCM Military-Grade Encryptie Actief",
+    "securityText": "Alle verzoeken, persoonlijke noodgevallen en financiële data die u in The Concierge deelt, worden lokaal versleuteld voordat ze de database raken. Alleen de AI en de CEO kunnen dit uitlezen. Uw kwetsbare momenten zijn 100% beveiligd.",
+    "emergencyTitle": "Emergency Request",
+    "emergencyDesc": "Noodgeval (bijv. wasmachine stuk)? Voer het bedrag in. De AI beslist binnen 5 minuten. Bij gevaar voor uw VTLB, escaleert dit naar de CEO voor goedkeuring.",
+    "amountLabel": "Benodigd Bedrag (€)",
+    "reasonLabel": "Reden (Versleuteld opgeslagen)",
+    "requestBtn": "Vraag Kapitaal Aan (5-Min Release)",
+    "goalTitle": "Nieuw Spaardoel",
+    "goalDesc": "Stel een Luxe-doel in (bijv. Vakantie of Auto). Orion onttrekt automatisch en onzichtbaar micro-bedragen van uw winst, totdat het doel bereikt is.",
+    "goalNameLabel": "Doel Naam",
+    "goalAmountLabel": "Doelbedrag (€)",
+    "goalBtn": "Start Spaar-Protocol"
+  },
+  "opportunities": {
+    "title": "The Opportunity Engine",
+    "subtitle": "Orion scant wereldwijde trends, genereert businesscases en bouwt autonome ad-campagnes.",
+    "newTarget": "Nieuw Doelwit Gedetecteerd",
+    "chartTitle": "30-Dagen Winstprojectie Matrix",
+    "testingGround": "De Live Testfase",
+    "testingDesc": "Lanceer micro-budget ads om de tractie live te valideren.",
+    "initiateBtn": "Start Testfase (Lanceer)",
+    "testingBtn": "Testfase Gestart...",
+    "forgeTitle": "De Content Fabriek",
+    "forgeDesc": "AI-Gegenereerde media staat klaar voor A/B testing. Geen menselijke input benodigd.",
+    "videoUgc": "TikTok UGC Video",
+    "carousel": "Insta Carousel"
+  },
+  "godMode": {
+    "title": "Het Commandocentrum",
+    "subtitle": "Jouw overkoepelende dashboard. Beheer noodsituaties en lanceer aanvallen op de markt.",
+    "vaultTotal": "Totaal Waarborgfonds",
+    "defenseTitle": "VERDEDIGING: Noodgevallen",
+    "pending": "In Wachtrij",
+    "aiAnalysis": "AI Analyse",
+    "reject": "Afwijzen",
+    "approve": "Goedkeuren",
+    "offenseTitle": "AANVAL: Kansen (Trends)",
+    "ready": "Klaar",
+    "expectedRoi": "Verwachte Winst",
+    "forgeStatus": "Content Machine Status",
+    "adsReady": "Advertenties Klaar",
+    "initiateBtn": "Start Testfase (Lanceer)"
+  }
+}

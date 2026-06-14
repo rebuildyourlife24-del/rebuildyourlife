@@ -14,17 +14,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Accepteer zowel "hendriksemler" als "hendriksemler@rebuildyourlife.eu" als "admin@rebuildyourlife.eu"
+  // Accepteer zowel volledig e-mailadres als shorthand gebruikersnamen
   const resolveEmail = (input: string): string => {
     if (input.includes('@')) return input;
-    // Simpele gebruikersnaam → email mapping
+    // Shorthand → echte email mapping
     const mapping: Record<string, string> = {
-      'hendriksemler': 'hendriksemler@rebuildyourlife.eu',
-      'admin': 'admin@rebuildyourlife.eu',
-      'henk': 'hendriksemler@rebuildyourlife.eu',
-      'henksemler': 'hendriksemler@rebuildyourlife.eu',
+      'henk': 'hsemler50@gmail.com',
+      'henksemler': 'hsemler50@gmail.com',
+      'hendriksemler': 'hsemler50@gmail.com',
+      'admin': 'hsemler50@gmail.com',
+      'hsemler': 'hsemler50@gmail.com',
     };
-    return mapping[input.toLowerCase()] || `${input}@rebuildyourlife.eu`;
+    return mapping[input.toLowerCase()] || input;
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -119,7 +120,7 @@ export default function LoginPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
-                placeholder="hendriksemler"
+                placeholder="hsemler50@gmail.com"
                 autoComplete="username"
                 className="w-full bg-white/[0.03] border border-white/[0.08] text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-cyan-500/60 focus:bg-white/[0.05] transition-all font-mono text-sm placeholder:text-white/20"
               />
@@ -170,7 +171,7 @@ export default function LoginPage() {
           {/* Hint */}
           <div className="mt-6 text-center">
             <p className="text-[10px] font-mono text-white/20">
-              LOGIN: hendriksemler • WACHTWOORD: imperialdreams2055
+              ORION SUPREME ACCESS — AUTHORIZED USERS ONLY
             </p>
           </div>
         </div>

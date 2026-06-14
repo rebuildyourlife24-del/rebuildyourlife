@@ -32,6 +32,21 @@ const PLAN_CONFIG = {
   },
 } as const;
 
+type MolliePaymentResponse = {
+  id: string;
+  status?: string;
+  metadata?: {
+    userId?: string;
+    plan?: 'PREMIUM' | 'ENTERPRISE';
+    userEmail?: string;
+  };
+  _links?: {
+    checkout?: {
+      href?: string;
+    };
+  };
+};
+
 export async function createMollieCheckoutAction(plan: 'PREMIUM' | 'ENTERPRISE') {
   const user = await getAuthenticatedUser();
   if (!user) return { success: false, error: "Niet ingelogd" };
@@ -74,7 +89,7 @@ export async function createMollieCheckoutAction(plan: 'PREMIUM' | 'ENTERPRISE')
       }),
     });
 
-    const payment = await mollieResponse.json();
+    const payment = await mollieResponse.json() as MolliePaymentResponse;
 
     if (!mollieResponse.ok) {
       console.error("Mollie error:", payment);
@@ -83,7 +98,7 @@ export async function createMollieCheckoutAction(plan: 'PREMIUM' | 'ENTERPRISE')
 
     return {
       success: true,
-      redirectUrl: payment._links.checkout.href,
+      redirectUrl: payment._links?.checkout?.href,
       paymentId: payment.id,
     };
   } catch (error) {
@@ -103,10 +118,14 @@ export async function processMollieWebhookAction(paymentId: string) {
       headers: { Authorization: `Bearer ${mollieKey}` },
     });
 
-    const payment = await response.json();
+    const payment = await response.json() as MolliePaymentResponse;
 
     if (payment.status === "paid") {
-      const { userId, plan } = payment.metadata;
+      const { userId, plan } = payment.metadata || {};
+
+      if (!userId || !plan) {
+        return { success: false, error: "Ontbrekende Mollie metadata" };
+      }
 
       // Update gebruiker in database
       await prisma.user.update({

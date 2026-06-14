@@ -3,21 +3,23 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { Paywall } from '@/components/ui/Paywall';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const data = [
-  { month: 'Jan', balance: 40, debt: 24500 },
-  { month: 'Feb', balance: 45, debt: 23800 },
-  { month: 'Mar', balance: 42, debt: 23100 },
-  { month: 'Apr', balance: 50, debt: 22000 },
-  { month: 'May', balance: 55, debt: 21500 },
-  { month: 'Jun', balance: 58, debt: 20200 },
-  { month: 'Jul', balance: 65, debt: 19000 },
-  { month: 'Aug', balance: 60, debt: 18500 },
-  { month: 'Sep', balance: 72, debt: 17200 },
-  { month: 'Oct', balance: 75, debt: 16000 },
-  { month: 'Nov', balance: 82, debt: 14500 },
-  { month: 'Dec', balance: 85, debt: 13000 },
+  { month: 'Jan', balance: 0, debt: 0 },
+  { month: 'Feb', balance: 0, debt: 0 },
+  { month: 'Mar', balance: 0, debt: 0 },
+  { month: 'Apr', balance: 0, debt: 0 },
+  { month: 'May', balance: 0, debt: 0 },
+  { month: 'Jun', balance: 0, debt: 0 },
+  { month: 'Jul', balance: 0, debt: 0 },
+  { month: 'Aug', balance: 0, debt: 0 },
+  { month: 'Sep', balance: 0, debt: 0 },
+  { month: 'Oct', balance: 0, debt: 0 },
+  { month: 'Nov', balance: 0, debt: 0 },
+  { month: 'Dec', balance: 0, debt: 0 },
 ];
 
 const containerVariants = {
@@ -62,7 +64,7 @@ export default function WarRoomPage() {
                 System Alert // AI Prognosis
               </h2>
               <p className="text-xl md:text-2xl font-light text-textPrimary leading-relaxed">
-                Based on current trajectory, <strong className="font-bold text-white">financial independence</strong> is estimated in <span className="text-[#00f0ff] font-mono font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">412 DAYS</span>.
+                Based on current trajectory, <strong className="font-bold text-white">financial independence</strong> is estimated in <span className="text-[#00f0ff] font-mono font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">AWAITING LIVE DATA</span>.
               </p>
             </div>
           </Card>
@@ -175,6 +177,83 @@ export default function WarRoomPage() {
               </ResponsiveContainer>
             </div>
           </Card>
+        </motion.div>
+
+        {/* === OPPORTUNITY ENGINE === */}
+        <motion.div variants={itemVariants} className="mt-8">
+          <h2 className="text-2xl font-bold text-[#00f0ff] mb-4 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]">
+            Opportunity Engine // The Strike Force
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* Jip-en-Janneke Matrix */}
+            <Card className="border border-[#00f0ff]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(0,240,255,0.1)] p-6">
+              <h3 className="text-xl font-bold text-white mb-2">Live Opportunity: Viral Titanium Ring</h3>
+              <p className="text-textSecondary mb-4">
+                <strong>Orion Conclusie:</strong> "Dit product gaat viraal op TikTok onder tech-liefhebbers. De inkoop ligt extreem laag, waardoor de winstmarge ons in staat stelt de markt agressief te domineren zonder risico."
+              </p>
+              
+              <div className="bg-[#111827] rounded-lg border border-[#374151] overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-[#1f2937] text-white">
+                    <tr>
+                      <th className="p-3">Scenario</th>
+                      <th className="p-3">Verwachte Winst (30d)</th>
+                      <th className="p-3">Actie Orion</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#374151]">
+                    <tr className="bg-success/5">
+                      <td className="p-3 font-bold text-success">Good (Conservatief)</td>
+                      <td className="p-3 text-white">€ 4.500,-</td>
+                      <td className="p-3 text-textSecondary">Test loopt, lichte winst.</td>
+                    </tr>
+                    <tr className="bg-blue-500/5">
+                      <td className="p-3 font-bold text-blue-400">Better (Baseline)</td>
+                      <td className="p-3 text-white">€ 28.000,-</td>
+                      <td className="p-3 text-textSecondary">Opschalen naar alle netwerken.</td>
+                    </tr>
+                    <tr className="bg-gold/5">
+                      <td className="p-3 font-bold text-gold">Best (Viral Domination)</td>
+                      <td className="p-3 text-white">€ 150.000+</td>
+                      <td className="p-3 text-textSecondary">Volledige supply-chain overname.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            {/* The Content Forge */}
+            <Card className="border border-[#00f0ff]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(0,240,255,0.1)] p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-white">The Content Forge</h3>
+                <Badge variant="success" className="animate-pulse">MEDIA READY</Badge>
+              </div>
+              <p className="text-sm text-textSecondary mb-4">
+                Hyper-Realistische UGC (Imperfecties & 3+ Hoeken gegenereerd). Geen ads-budget nodig.
+              </p>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
+                  <span className="text-white font-mono text-sm">▶ TikTok (POV Unboxing)</span>
+                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
+                  <span className="text-white font-mono text-sm">▶ Insta Reels (Straat Review)</span>
+                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
+                  <span className="text-white font-mono text-sm">▶ X (Viral Thread)</span>
+                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                </div>
+              </div>
+
+              <Button className="w-full bg-[#ef4444] hover:bg-[#dc2626] text-white font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+                [ INITIEER LIVE TEST ]
+              </Button>
+            </Card>
+
+          </div>
         </motion.div>
       </Paywall>
     </motion.div>

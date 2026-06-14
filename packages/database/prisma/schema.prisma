@@ -27,6 +27,13 @@ model User {
   profileType          String           @default("PERSONAL")
   mollieCustomerId     String?
   mollieSubscriptionId String?
+  
+  // Stripe Integration
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  stripeCurrentPeriodEnd DateTime?
+
   subscriptionStatus   String           @default("ACTIVE")
   onboardingCompleted  Boolean          @default(false)
   openaiKey            String?
@@ -51,6 +58,21 @@ model User {
   bankConnections      BankConnection[]
   tasks                Task[]
   agentActions         AgentAction[]    @relation("UserActionReviews")
+  
+  agentDossiers      AgentDossier[]
+  shopifyStores      ShopifyStore[]
+  socialMediaPosts   SocialMediaPost[]
+  interceptionAlerts InterceptionAlert[] @relation("TargetedUser")
+  treasuryVaults     TreasuryVault[]
+  taxStrategies      TaxStrategy[]
+  creditorDossiers   CreditorDossier[]
+  legalContacts      LegalContact[]
+  justiceLedgers     JusticeLedger[]
+  goalDossiers       GoalDossier[]
+  emergencyRequests  EmergencyRequest[]
+  opportunityReports OpportunityReport[]
+  marketingConversions MarketingConversion[]
+  aiConciergeLogs    AIConciergeLog[]
 
   @@index([email])
   @@index([role])
@@ -387,7 +409,6 @@ model SocialContact {
   @@index([userId, type])
   @@index([lastContactAt])
 }
-
 model BusinessClient {
   id            String            @id @default(uuid())
   userId        String
@@ -702,3 +723,347 @@ model FinancialTransaction {
   @@index([bankConnectionId])
   @@index([type])
 }
+
+// ==========================================
+// PHASE 3: EMPIRE EXPANSION (THE SWARM)
+// ==========================================
+
+model AgentDossier {
+  id              String   @id @default(uuid())
+  agentType       String   // e.g. 'SOCIAL_MEDIA', 'SHOPIFY_BUILDER'
+  action          String
+  target          String?
+  status          String   @default("SUCCESS")
+  details         String?  @db.Text
+  timestamp       DateTime @default(now())
+  
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  
+  @@index([agentType])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+model ShopifyStore {
+  id              String   @id @default(uuid())
+  userId          String
+  shopUrl         String
+  accessToken     String
+  status          String   @default("ACTIVE")
+  totalRevenue    Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products        ShopifyProduct[]
+  
+  @@unique([userId, shopUrl])
+  @@index([userId])
+}
+
+model ShopifyProduct {
+  id              String   @id @default(uuid())
+  storeId         String
+  shopifyId       String   @unique
+  title           String
+  description     String?  @db.Text
+  price           Float
+  margin          Float?
+  status          String   @default("DRAFT") // DRAFT -> PENDING_APPROVAL -> ACTIVE
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  store           ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  @@index([storeId])
+  @@index([status])
+}
+
+model SocialMediaPost {
+  id              String   @id @default(uuid())
+  userId          String
+  platform        String   // 'TIKTOK', 'INSTAGRAM', 'X'
+  content         String   @db.Text
+  mediaUrl        String?
+  status          String   @default("SCHEDULED") // SCHEDULED, PUBLISHED, FAILED
+  publishAt       DateTime
+  views           Int      @default(0)
+  engagement      Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([platform])
+  @@index([status])
+}
+
+model InterceptionAlert {
+  id              String   @id @default(uuid())
+  targetUserId    String
+  triggerType     String   // 'HIGH_REVENUE', 'VIRAL_PRODUCT', 'CASHFLOW_ISSUE'
+  metrics         String   @db.Text // JSON string of metrics
+  status          String   @default("UNREAD") // UNREAD, INVESTIGATING, INTERCEPTED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  targetUser      User     @relation("TargetedUser", fields: [targetUserId], references: [id])
+  
+  @@index([targetUserId])
+  @@index([status])
+  @@index([triggerType])
+}
+
+model TreasuryVault {
+  id              String   @id @default(uuid())
+  userId          String
+  balance         Float    @default(0.0) // Liquide middelen in de kluis
+  reservedRiskCap Float    @default(0.0) // Geld gereserveerd voor risk testing (max 1-2%)
+  status          String   @default("ACTIVE") // ACTIVE, LOCKED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model TaxStrategy {
+  id              String   @id @default(uuid())
+  userId          String
+  potName         String   // e.g. "Pensioen FOR", "Herinvesteringsreserve", "Vpb Reservering"
+  allocatedAmount Float    @default(0.0)
+  taxAdvantage    Float    @default(0.0) // Geschatte bespaarde belasting
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+// ==========================================
+// PHASE 7: AUTONOMOUS DEBT NEGOTIATOR & LUXURY RECEIVER
+// ==========================================
+
+model CreditorDossier {
+  id              String   @id @default(uuid())
+  userId          String
+  creditorName    String   // Naam van de eiser (kan Encrypted opgeslagen worden)
+  dossierNumber   String   // Kenmerk of dossiernummer
+  encryptedData   String   @db.Text // AES-256-GCM versleutelde string met openstaand bedrag, rentes, communicatie
+  status          String   @default("SCANNING") // SCANNING, NEGOTIATING, AGREEMENT, RESOLVED
+  monthlyRepayment Float   @default(0.0) // Het door Orion onderhandelde aflossingsbedrag
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model LegalContact {
+  id              String   @id @default(uuid())
+  userId          String
+  organizationName String  // Gemeente, Kredietbank, Incassobureau
+  contactType     String   // MUNICIPALITY, DEBT_AGENCY, CREDITOR
+  municipality    String?  // Gekoppelde gemeente voor lokale wetgeving
+  email           String?  // Kan Encrypted zijn
+  phone           String?  // Kan Encrypted zijn
+  encryptedNotes  String?  @db.Text // AES-256-GCM versleutelde gespreksverslagen/contactgeschiedenis
+  trustScore      Int      @default(50) // Hoeveel vertrouwen heeft deze instantie in RebuildYourLife (0-100)
+  lastContactedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([contactType])
+}
+
+model JusticeLedger {
+  id              String   @id @default(uuid())
+  userId          String
+  actionType      String   // DEBT_PAYMENT, VTLB_DISTRIBUTION, EMAIL_SENT
+  description     String   @db.Text
+  amount          Float?   // Betrokken bedrag
+  cryptographicHash String // SHA-256 hash om onveranderlijkheid te bewijzen
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([actionType])
+  @@index([createdAt])
+}
+
+// ==========================================
+// PHASE 8: AI CONCIERGE & EMERGENCY PROTOCOL
+// ==========================================
+
+model GoalDossier {
+  id              String   @id @default(uuid())
+  userId          String
+  title           String   // Bijv. "Nieuwe Auto", "Vakantie"
+  targetAmount    Float
+  currentAmount   Float    @default(0.0)
+  status          String   @default("ACTIVE") // ACTIVE, REACHED, CANCELLED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model EmergencyRequest {
+  id              String   @id @default(uuid())
+  userId          String
+  encryptedReason String   @db.Text // AES-256-GCM versleutelde omschrijving (bijv. Wasmachine stuk)
+  requestedAmount Float
+  status          String   @default("PENDING_CEO_APPROVAL") // AUTO_APPROVED, PENDING_CEO_APPROVAL, APPROVED, REJECTED
+  aiAnalysis      String?  @db.Text // Versleutelde wiskundige analyse waarom het is doorgestuurd of goedgekeurd
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ==========================================
+// PHASE 9: THE OPPORTUNITY ENGINE
+// ==========================================
+
+model OpportunityReport {
+  id              String   @id @default(uuid())
+  userId          String
+  title           String   // e.g. "Viral TikTok Trend: LED Glasses"
+  niche           String   
+  summary         String   @db.Text
+  goodROI         Float    // Baseline
+  betterROI       Float    // Expected
+  bestROI         Float    // Viral Scale
+  status          String   @default("REVIEW") // REVIEW, TESTING, SCALING, KILLED
+  media           OpportunityMedia[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OpportunityMedia {
+  id              String   @id @default(uuid())
+  reportId        String
+  platform        String   // TIKTOK, INSTAGRAM, X
+  mediaUrl        String   // S3 or Vercel Blob URL
+  mediaType       String   // VIDEO_UGC, IMAGE_CAROUSEL
+  adCopy          String   @db.Text
+  status          String   @default("GENERATED")
+  performanceScore Int     @default(0) // Traction during testing
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  report          OpportunityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([platform])
+}
+
+// ==========================================
+// MARKETING FUNNEL
+// ==========================================
+
+model MarketingCampaign {
+  id              String   @id @default(uuid())
+  name            String
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  clicks          MarketingClick[]
+  conversions     MarketingConversion[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([utmSource])
+  @@index([utmCampaign])
+}
+
+model MarketingClick {
+  id              String   @id @default(uuid())
+  campaignId      String
+  ipAddress       String?
+  userAgent       String?
+  referer         String?
+  clickedAt       DateTime @default(now())
+
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+}
+
+model MarketingConversion {
+  id              String   @id @default(uuid())
+  campaignId      String
+  userId          String?
+  value           Float    @default(0.0)
+  currency        String   @default("EUR")
+  convertedAt     DateTime @default(now())
+
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([campaignId])
+  @@index([userId])
+}
+
+// ==========================================
+// AI CONCIERGE LOGS
+// ==========================================
+
+model AIConciergeLog {
+  id              String   @id @default(uuid())
+  userId          String
+  decisionType    String   // VTLB_ADJUSTMENT, EMERGENCY_FUNDING, DEBT_REPAYMENT
+  rationale       String   @db.Text
+  previousVtlb    Float?
+  newVtlb         Float?
+  confidenceScore Float    @default(0.0)
+  status          String   @default("APPLIED") // APPLIED, REJECTED_BY_USER, PENDING
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([decisionType])
+}
+
+// ==========================================
+// WEBHOOKS
+// ==========================================
+
+model WebhookEvent {
+  id              String   @id @default(uuid())
+  provider        String   // MOLLIE, STRIPE
+  eventId         String   @unique
+  eventType       String
+  payload         String   @db.Text
+  status          String   @default("PENDING") // PENDING, PROCESSED, FAILED
+  errorMessage    String?  @db.Text
+  createdAt       DateTime @default(now())
+  processedAt     DateTime?
+
+  @@index([provider])
+  @@index([status])
+  @@index([eventType])
+}
+

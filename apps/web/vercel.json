@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && npm run db:generate && npx turbo run build --filter=@rebuildyourlife/web",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "regions": ["ams1"]
+}

@@ -30,6 +30,7 @@ if (process.env.NODE_ENV !== "production") {
 export { PrismaClient } from "@prisma/client";
 
 export type {
+  // Core
   User,
   Session,
   LifeArea,
@@ -53,11 +54,60 @@ export type {
   SocialContact,
   BusinessClient,
   BusinessInvoice,
+
+  // Enterprise Documents
   EnterpriseFolder,
   EnterpriseDocument,
+
+  // Orion Memory & Analytics
   OrionMemory,
   RevenueSnapshot,
   AnalyticsCache,
+
+  // Agent Systems (Phase 2+)
+  AgentAction,
+  AgentBudget,
+  VirtualCard,
+
+  // Social Engine (Phase 3+)
+  SocialPlatformIntegration,
+  SocialCampaign,
+  SystemHealthLog,
+
+  // Banking (Phase 6)
+  BankConnection,
+  FinancialTransaction,
+
+  // Swarm (Phase 3)
+  AgentDossier,
+  ShopifyStore,
+  ShopifyProduct,
+  SocialMediaPost,
+  InterceptionAlert,
+
+  // Wealth & Tax (Phase 3+)
+  TreasuryVault,
+  TaxStrategy,
+
+  // Debt Negotiator (Phase 7)
+  CreditorDossier,
+  LegalContact,
+  JusticeLedger,
+
+  // AI Concierge (Phase 8)
+  GoalDossier,
+  EmergencyRequest,
+  AIConciergeLog,
+
+  // Opportunity Engine (Phase 9)
+  OpportunityReport,
+  OpportunityMedia,
+
+  // Marketing
+  MarketingCampaign,
+  MarketingClick,
+  MarketingConversion,
+
+  // Webhooks
+  WebhookEvent,
 } from "@prisma/client";
-
-

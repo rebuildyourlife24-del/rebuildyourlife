@@ -8,7 +8,27 @@ const PROTECTED_ROUTES = ['/dashboard'];
 const AUTH_ROUTES = ['/auth/login', '/auth/register', '/auth/forgot-password'];
 
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const url = request.nextUrl.clone();
+  const pathname = url.pathname;
+  const hostname = request.headers.get('host') || '';
+
+  // === FASE 2: DOMAIN ROUTING ===
+  if (hostname === 'ai.ai-henksemler.nl') {
+    if (!pathname.startsWith('/dashboard/war-room') && !pathname.startsWith('/auth')) {
+      url.pathname = `/dashboard/war-room${pathname === '/' ? '' : pathname}`;
+      return NextResponse.rewrite(url);
+    }
+  } else if (hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl') {
+    if (!pathname.startsWith('/dashboard/ai-team') && !pathname.startsWith('/auth')) {
+      url.pathname = `/dashboard/ai-team${pathname === '/' ? '' : pathname}`;
+      return NextResponse.rewrite(url);
+    }
+  } else if (hostname === 'rebuildyourlife.eu' || hostname === 'www.rebuildyourlife.eu') {
+    if (pathname === '/') {
+      url.pathname = '/dashboard';
+      return NextResponse.rewrite(url);
+    }
+  }
 
   const sessionCookie = request.cookies.get('ryl_session');
   const isLoggedIn = !!sessionCookie?.value;

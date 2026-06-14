@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Role } from '@rebuildyourlife/shared';
 import Link from 'next/link';
-import { ShieldAlert, Activity, Users, Settings, Database } from 'lucide-react';
+import { ShieldAlert, Activity, Users, Settings, Database, Wand2 } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 function AdminShell({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useRequireAuth();
@@ -42,7 +43,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
             <span className="text-sm font-medium text-danger uppercase tracking-wider">Live System Access</span>
           </div>
           <div className="h-6 w-px bg-danger/30 mx-2"></div>
-          <span className="text-sm text-textPrimary font-medium">{user?.firstName || 'Super Admin'}</span>
+          <LanguageSwitcher />
+          <span className="text-sm text-textPrimary font-medium ml-2">{user?.firstName || 'Super Admin'}</span>
           <Link href="/dashboard" className="text-sm text-textSecondary hover:text-white transition-colors ml-4 bg-white/5 px-3 py-1 rounded border border-white/10 hover:bg-white/10">
             Exit
           </Link>
@@ -60,6 +62,10 @@ function AdminShell({ children }: { children: React.ReactNode }) {
             <Link href="/admin/users" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-colors">
               <Users className="w-5 h-5" />
               Gebruikers
+            </Link>
+            <Link href="/admin/content-forge" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gold-500 hover:bg-gold-500/10 hover:text-gold-400 transition-colors">
+              <Wand2 className="w-5 h-5" />
+              Content Forge
             </Link>
             <Link href="/admin/database" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-colors">
               <Database className="w-5 h-5" />

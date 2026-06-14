@@ -6,7 +6,9 @@ import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "SUPREME_OVERSEER_FALLBACK_SECRET_KEY_2026");
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || (() => { throw new Error("JWT_SECRET environment variable is not set"); })()
+);
 
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;

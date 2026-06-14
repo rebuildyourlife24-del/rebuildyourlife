@@ -1,368 +1,187 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, TrendingUp, Target, ExternalLink, ChevronRight, Lock, ArrowRight, Flame, Brain, RefreshCw } from 'lucide-react';
-import { getCommissionOpportunities, generateWealthPlan, findNicheOpportunities } from '@/app/actions/commissionAgent';
-
-const PHASES = [
-  { from: 100, to: 1000, label: 'Fase 1', color: 'emerald', time: '2-4 weken', method: 'Affiliate + Digitale Producten' },
-  { from: 1000, to: 10000, label: 'Fase 2', color: 'cyan', time: '2-3 maanden', method: 'Bol.com + Niche Website' },
-  { from: 10000, to: 100000, label: 'Fase 3', color: 'purple', time: '6-12 maanden', method: 'SaaS B2B + Schalen' },
-  { from: 100000, to: 1000000, label: 'Fase 4', color: 'amber', time: '1-3 jaar', method: 'Investeren + Passief' },
-];
+import { Lock, Shield, DollarSign, Activity } from 'lucide-react';
+import { getCFOData } from '@/app/actions/cfo';
 
 function formatEur(n: number) {
-  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n);
 }
 
-function PhaseCard({ phase, currentCapital }: { phase: typeof PHASES[0]; currentCapital: number }) {
-  const isActive = currentCapital >= phase.from && currentCapital < phase.to;
-  const isDone = currentCapital >= phase.to;
-  const progress = isDone ? 100 : isActive ? Math.round(((currentCapital - phase.from) / (phase.to - phase.from)) * 100) : 0;
-  const colors: Record<string, string> = {
-    emerald: 'border-emerald-500/30 bg-emerald-500/5',
-    cyan: 'border-cyan-500/30 bg-cyan-500/5',
-    purple: 'border-purple-500/30 bg-purple-500/5',
-    amber: 'border-amber-500/30 bg-amber-500/5',
-  };
-  const textColors: Record<string, string> = {
-    emerald: 'text-emerald-400',
-    cyan: 'text-cyan-400',
-    purple: 'text-purple-400',
-    amber: 'text-amber-400',
-  };
-
-  return (
-    <div className={`p-5 rounded-xl border ${colors[phase.color]} ${isActive ? 'ring-1 ring-' + phase.color + '-500/40' : ''}`}>
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <span className={`text-[10px] font-mono font-bold tracking-widest ${textColors[phase.color]}`}>{phase.label}</span>
-          {isActive && <span className="ml-2 text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-mono">ACTIEF</span>}
-          {isDone && <span className="ml-2 text-[9px] bg-white/10 text-white/40 px-2 py-0.5 rounded-full font-mono">✓ KLAAR</span>}
-        </div>
-        <span className={`text-xs font-mono text-white/40`}>{phase.time}</span>
-      </div>
-      <div className="flex items-center gap-2 mb-3">
-        <span className={`text-lg font-bold ${isDone ? 'text-white/40 line-through' : 'text-white'}`}>{formatEur(phase.from)}</span>
-        <ArrowRight className="w-4 h-4 text-white/20" />
-        <span className={`text-lg font-bold ${textColors[phase.color]}`}>{formatEur(phase.to)}</span>
-      </div>
-      <div className="text-xs text-white/40 mb-3">{phase.method}</div>
-      {(isActive || isDone) && (
-        <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-white/30">
-            <span>Voortgang</span>
-            <span>{progress}%</span>
-          </div>
-          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-              className={`h-full rounded-full bg-${phase.color}-500`}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function OpportunityCard({ opp }: { opp: any }) {
-  const typeColors: Record<string, string> = {
-    AFFILIATE: 'text-cyan-400 bg-cyan-400/10',
-    DROPSHIP: 'text-purple-400 bg-purple-400/10',
-    REFERRAL: 'text-amber-400 bg-amber-400/10',
-    WHITE_LABEL: 'text-pink-400 bg-pink-400/10',
-    RESELLER: 'text-emerald-400 bg-emerald-400/10',
-  };
-  const diffColors: Record<string, string> = {
-    LAAG: 'text-emerald-400 bg-emerald-400/10',
-    MEDIUM: 'text-amber-400 bg-amber-400/10',
-    HOOG: 'text-red-400 bg-red-400/10',
-  };
-
-  return (
-    <div className="p-5 bg-[#0e0e11] border border-zinc-800/60 rounded-xl hover:border-zinc-700/60 transition-colors group">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="font-semibold text-zinc-100 text-sm group-hover:text-white transition-colors">{opp.name}</h3>
-          <div className="flex items-center gap-2 mt-1.5">
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${typeColors[opp.type] || 'text-zinc-400 bg-zinc-800'}`}>
-              {opp.type}
-            </span>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${diffColors[opp.difficulty]}`}>
-              {opp.difficulty}
-            </span>
-          </div>
-        </div>
-        <a href={opp.url} target="_blank" rel="noopener noreferrer"
-          className="p-1.5 text-zinc-600 hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100"
-        >
-          <ExternalLink className="w-4 h-4" />
-        </a>
-      </div>
-
-      <p className="text-xs text-zinc-400 mb-4 leading-relaxed">{opp.description}</p>
-
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="text-center p-2 bg-zinc-900/50 rounded-lg">
-          <div className="text-[10px] text-zinc-600 mb-1">Commissie</div>
-          <div className="text-xs font-bold text-emerald-400">{opp.commissionRate}</div>
-        </div>
-        <div className="text-center p-2 bg-zinc-900/50 rounded-lg">
-          <div className="text-[10px] text-zinc-600 mb-1">Per Maand</div>
-          <div className="text-xs font-bold text-cyan-400">{opp.estimatedMonthly}</div>
-        </div>
-        <div className="text-center p-2 bg-zinc-900/50 rounded-lg">
-          <div className="text-[10px] text-zinc-600 mb-1">Startkosten</div>
-          <div className="text-xs font-bold text-white">{opp.startCost}</div>
-        </div>
-      </div>
-
-      {/* Quick Start stappen */}
-      <details className="group/details">
-        <summary className="text-[11px] font-mono text-zinc-500 hover:text-zinc-300 cursor-pointer list-none flex items-center gap-1.5">
-          <ChevronRight className="w-3 h-3 transition-transform group-open/details:rotate-90" />
-          Snelstart stappen
-        </summary>
-        <div className="mt-3 pl-4 border-l border-zinc-800">
-          {opp.quickStart.split('\n').filter(Boolean).map((step: string, i: number) => (
-            <p key={i} className="text-[11px] text-zinc-400 mb-1.5 leading-relaxed">{step.trim()}</p>
-          ))}
-        </div>
-      </details>
-
-      <div className="mt-3 flex items-center gap-1 text-[10px] text-emerald-500/60">
-        <Lock className="w-3 h-3" />
-        {opp.legalStatus.replace('_', ' ')}
-      </div>
-    </div>
-  );
-}
-
-export default function WealthEnginePage() {
-  const [opportunities, setOpportunities] = useState<any[]>([]);
-  const [wealthPlan, setWealthPlan] = useState<string>('');
-  const [niches, setNiches] = useState<any[]>([]);
+export default function WealthDashboard() {
+  const [cfoData, setCfoData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [planLoading, setPlanLoading] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<string>('ALL');
-  const [currentCapital, setCurrentCapital] = useState(100);
-  const [activeTab, setActiveTab] = useState<'kansen' | 'plan' | 'niches'>('kansen');
 
   useEffect(() => {
+    async function loadData() {
+      const res = await getCFOData();
+      if (res.success) {
+        setCfoData(res.data);
+      }
+      setLoading(false);
+    }
     loadData();
   }, []);
 
-  const loadData = async () => {
-    setLoading(true);
-    const [opps, nicheData] = await Promise.all([
-      getCommissionOpportunities({ startCost: 'LOW' }),
-      findNicheOpportunities(currentCapital),
-    ]);
-    setOpportunities(opps);
-    setNiches(nicheData.opportunities || []);
-    setLoading(false);
-  };
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gold-500"></div>
+      </div>
+    );
+  }
 
-  const loadPlan = async () => {
-    setPlanLoading(true);
-    const result = await generateWealthPlan(currentCapital);
-    setWealthPlan(result.plan || '');
-    setPlanLoading(false);
-    setActiveTab('plan');
-  };
-
-  const filtered = activeFilter === 'ALL' ? opportunities
-    : opportunities.filter(o => o.type === activeFilter || o.difficulty === activeFilter || o.startCost === '€0');
+  const balance = cfoData?.vault?.balance || 0;
+  const maxRisk = balance * 0.02; // 2% Rule
+  const totalTaxShield = cfoData?.totalTaxShield || 0;
+  const totalNetWorth = balance + totalTaxShield;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-            <Zap className="w-6 h-6 text-amber-400" />
-            Wealth Engine
-          </h1>
-          <p className="text-sm text-white/40 mt-1 font-mono">€100 → €1.000.000 — Jouw missie met Orion</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-xl px-4 py-2">
-            <span className="text-xs text-white/40 font-mono">Startkapitaal:</span>
-            <input
-              type="number"
-              value={currentCapital}
-              onChange={e => setCurrentCapital(Number(e.target.value))}
-              className="w-24 bg-transparent text-amber-400 font-mono font-bold text-sm outline-none"
-              min={0}
-            />
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-white tracking-tight">The God Mode</h1>
+            <span className="px-3 py-1 text-[10px] font-bold tracking-widest text-gold-400 bg-gold-400/10 rounded-full border border-gold-400/20 uppercase">CFO & Tax Engine Online</span>
           </div>
-          <button
-            onClick={loadPlan}
-            disabled={planLoading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl text-sm font-bold hover:bg-amber-500/30 transition-colors disabled:opacity-50"
-          >
-            {planLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
-            AI Actieplan
-          </button>
+          <p className="text-zinc-400">Jouw financiële vesting. Volledig geautomatiseerd kapitaalbehoud en fiscale optimalisatie.</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-zinc-500 uppercase tracking-wider font-semibold mb-1">Total Net Worth</p>
+          <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+            {formatEur(totalNetWorth)}
+          </p>
         </div>
       </div>
 
-      {/* Voortgang fasen */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {PHASES.map(phase => (
-          <PhaseCard key={phase.label} phase={phase} currentCapital={currentCapital} />
-        ))}
-      </div>
-
-      {/* Missie stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-5 bg-[#0e0e11] border border-zinc-800/60 rounded-xl text-center">
-          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-2">Huidige Fase</div>
-          <div className="text-2xl font-bold text-amber-400">
-            {PHASES.find(p => currentCapital >= p.from && currentCapital < p.to)?.label || (currentCapital >= 1000000 ? '🏆 MILJOENAIR' : 'Fase 1')}
-          </div>
-        </div>
-        <div className="p-5 bg-[#0e0e11] border border-zinc-800/60 rounded-xl text-center">
-          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-2">Doel</div>
-          <div className="text-2xl font-bold text-emerald-400">{formatEur(1000000)}</div>
-        </div>
-        <div className="p-5 bg-[#0e0e11] border border-zinc-800/60 rounded-xl text-center">
-          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-2">Nog nodig</div>
-          <div className="text-2xl font-bold text-cyan-400">{formatEur(Math.max(0, 1000000 - currentCapital))}</div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2">
-        {[
-          { id: 'kansen', label: `Kansen (${opportunities.length})`, icon: <TrendingUp className="w-4 h-4" /> },
-          { id: 'plan', label: 'AI Actieplan', icon: <Brain className="w-4 h-4" /> },
-          { id: 'niches', label: 'Niche Radar', icon: <Flame className="w-4 h-4" /> },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
-                : 'text-zinc-500 hover:text-zinc-300'
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
-      <AnimatePresence mode="wait">
-        {/* KANSEN TAB */}
-        {activeTab === 'kansen' && (
-          <motion.div key="kansen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {/* Filters */}
-            <div className="flex items-center gap-2 mb-6 flex-wrap">
-              {['ALL', 'GRATIS', 'AFFILIATE', 'DROPSHIP', 'LAAG', 'REFERRAL'].map(f => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wide transition-all ${
-                    activeFilter === f
-                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
-                      : 'text-zinc-600 hover:text-zinc-400'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* The Treasury Vault */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="p-6 rounded-2xl bg-[#0e0e11] border border-zinc-800/60 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <Lock className="w-48 h-48" />
+            </div>
+            
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-emerald-500/10 rounded-xl">
+                <DollarSign className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Treasury Vault</h2>
+                <p className="text-sm text-zinc-400">Vrij opneembaar en liquide kapitaal.</p>
+              </div>
             </div>
 
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[1,2,3].map(i => <div key={i} className="h-64 bg-zinc-900/50 rounded-xl animate-pulse border border-zinc-800/50" />)}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filtered.map((opp, i) => <OpportunityCard key={i} opp={opp} />)}
-              </div>
-            )}
-          </motion.div>
-        )}
+            <div className="text-5xl font-bold text-white mb-2">
+              {formatEur(balance)}
+            </div>
+            <p className="text-sm text-emerald-400/80 font-mono mb-8">Ready for deployment.</p>
 
-        {/* ACTIEPLAN TAB */}
-        {activeTab === 'plan' && (
-          <motion.div key="plan" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {planLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Brain className="w-12 h-12 text-amber-400 animate-pulse" />
-                <p className="text-zinc-400 font-mono text-sm">Orion berekent jouw pad naar €1.000.000...</p>
-              </div>
-            ) : wealthPlan ? (
-              <div className="bg-[#0e0e11] border border-zinc-800/60 rounded-xl p-6 lg:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <Zap className="w-5 h-5 text-amber-400" />
-                  <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-widest">
-                    Jouw Persoonlijk €{currentCapital} → €1.000.000 Plan
-                  </h2>
-                  <span className="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-mono border border-amber-500/20">
-                    ORION GEGENEREERD
-                  </span>
+            {/* Risk Protocol */}
+            <div className="p-5 rounded-xl border border-red-500/20 bg-red-500/5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-red-400" />
+                  <h3 className="font-semibold text-red-100">Orion 2% Risk Protocol</h3>
                 </div>
-                <div className="prose prose-invert prose-sm max-w-none">
-                  {wealthPlan.split('\n').map((line, i) => {
-                    if (line.startsWith('###')) return <h3 key={i} className="text-amber-400 font-bold mt-6 mb-2 text-sm">{line.replace(/#{2,3}/g, '').trim()}</h3>;
-                    if (line.startsWith('##')) return <h2 key={i} className="text-cyan-400 font-bold mt-8 mb-3">{line.replace(/#{1,2}/g, '').trim()}</h2>;
-                    if (line.startsWith('**')) return <p key={i} className="font-bold text-zinc-200 mt-3">{line.replace(/\*\*/g, '')}</p>;
-                    if (line.match(/^\d+\./)) return <p key={i} className="text-zinc-300 ml-4 mb-1 text-sm">{line}</p>;
-                    if (line.trim() === '') return <br key={i} />;
-                    return <p key={i} className="text-zinc-400 text-sm leading-relaxed">{line}</p>;
-                  })}
-                </div>
+                <span className="text-xs font-mono text-red-400/60">Strict Enforcement</span>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20 gap-6 text-center">
-                <Target className="w-16 h-16 text-amber-400/50" />
+              <div className="flex justify-between items-end">
                 <div>
-                  <h3 className="text-lg font-bold text-zinc-300 mb-2">Klaar om te starten?</h3>
-                  <p className="text-zinc-500 text-sm max-w-md">Orion genereert een persoonlijk actieplan gebaseerd op jouw startkapitaal van {formatEur(currentCapital)}.</p>
+                  <p className="text-xs text-red-200/60 mb-1">Maximaal test-budget (Opportunity Engine)</p>
+                  <p className="text-2xl font-bold text-red-400">{formatEur(maxRisk)}</p>
                 </div>
-                <button onClick={loadPlan} className="flex items-center gap-2 px-6 py-3 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl font-bold hover:bg-amber-500/30 transition-colors">
-                  <Brain className="w-5 h-5" />
-                  Genereer Mijn Plan
-                </button>
+                <div className="w-1/2 h-2 bg-black/40 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 w-[2%]" />
+                </div>
               </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* NICHE RADAR TAB */}
-        {activeTab === 'niches' && (
-          <motion.div key="niches" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {niches.map((niche, i) => (
-                <div key={i} className="p-5 bg-[#0e0e11] border border-zinc-800/60 rounded-xl hover:border-zinc-700 transition-colors">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-zinc-100 text-sm">{niche.niche}</h3>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      niche.potential === 'HOOG' ? 'text-emerald-400 bg-emerald-400/10' : 'text-amber-400 bg-amber-400/10'
-                    }`}>
-                      {niche.potential}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">{niche.reason}</p>
-                  <div className="mt-4 flex items-center gap-2">
-                    <Flame className={`w-3.5 h-3.5 ${niche.potential === 'HOOG' ? 'text-emerald-400' : 'text-amber-400'}`} />
-                    <span className="text-[10px] text-zinc-500 font-mono">Geschikt voor Hendrik's verhaal</span>
-                  </div>
-                </div>
-              ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+
+        {/* The Tax Shield */}
+        <div className="space-y-6">
+          <div className="p-6 rounded-2xl bg-[#0e0e11] border border-cyan-500/20 shadow-[0_0_30px_-15px_rgba(6,182,212,0.3)] h-full">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 bg-cyan-500/10 rounded-xl">
+                <Shield className="w-6 h-6 text-cyan-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">The Tax Shield</h2>
+                <p className="text-sm text-zinc-400">Veiliggesteld voor de fiscus.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-end pb-4 border-b border-zinc-800/60">
+                <span className="text-zinc-400">Totaal Afgeschermd</span>
+                <span className="text-xl font-bold text-cyan-400">{formatEur(totalTaxShield)}</span>
+              </div>
+
+              {cfoData?.taxStrategies?.length > 0 ? (
+                cfoData.taxStrategies.map((tax: any) => (
+                  <div key={tax.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/40">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-semibold text-zinc-200">{tax.potName}</span>
+                      <span className="text-sm font-mono text-white">{formatEur(tax.allocatedAmount)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-zinc-500">Geschat belastingvoordeel</span>
+                      <span className="text-emerald-400">+{formatEur(tax.taxAdvantage)}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Shield className="w-12 h-12 text-zinc-800 mx-auto mb-3" />
+                  <p className="text-sm text-zinc-500">Nog geen fiscale vluchtroutes geactiveerd. Orion optimaliseert automatisch bij de eerste winst.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Luxury Receiver / Debt Negotiator Module */}
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-red-900/20 to-zinc-900/40 border border-red-500/20 mt-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-red-500/10 rounded-xl">
+              <Shield className="w-6 h-6 text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Autonomous Debt Negotiator</h2>
+              <p className="text-sm text-zinc-400">Military-Grade Encrypted Justice Ledger (AES-256-GCM)</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 text-xs font-bold text-red-400 bg-red-400/10 rounded-full border border-red-500/20">
+            SYSTEM ACTIVE
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
+            <p className="text-sm text-zinc-500 mb-1">Onaantastbaar Leefgeld (VTLB)</p>
+            <p className="text-2xl font-bold text-emerald-400">~ €5.000,-</p>
+            <p className="text-xs text-emerald-500/60 mt-1">Gegarandeerd 2x Modaal ZZP</p>
+          </div>
+          
+          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
+            <p className="text-sm text-zinc-500 mb-1">Actieve Dossiers</p>
+            <p className="text-2xl font-bold text-white">0</p>
+            <p className="text-xs text-zinc-600 mt-1">Orion scant momenteel je mailbox...</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
+            <p className="text-sm text-zinc-500 mb-1">Lokale Juridische Engine</p>
+            <p className="text-lg font-bold text-cyan-400">Verbonden</p>
+            <p className="text-xs text-cyan-500/60 mt-1">Klaar om gemeentelijk beleid te handhaven.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

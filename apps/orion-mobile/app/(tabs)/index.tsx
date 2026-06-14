@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-react-native';
-// Note: We use basic RN components here as placeholders for Expo.
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 export default function RedBlackBoxMobile() {
   return (

@@ -10,8 +10,13 @@ import { Input } from '@/components/ui/Input';
 
 import { registerAction } from '@/app/actions/auth';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const plan = searchParams?.get('plan');
+
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -22,6 +27,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreedToGuarantee, setAgreedToGuarantee] = useState(false);
 
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
@@ -63,6 +69,23 @@ export default function RegisterPage() {
       });
       
       if (result.success) {
+        if (plan === 'operator') {
+          // --- OMEGA PROTOCOL MOLLIE CHECKOUT ---
+          const checkoutRes = await fetch('/api/mollie/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              priceId: 'price_omega_operator_1995', // Or Mollie amount config
+              successUrl: window.location.origin + '/dashboard?payment=success',
+              cancelUrl: window.location.origin + '/dashboard?payment=cancelled'
+            })
+          });
+          const checkoutData = await checkoutRes.json();
+          if (checkoutData.url) {
+            window.location.href = checkoutData.url;
+            return;
+          }
+        }
         router.push('/dashboard');
       } else {
         setServerError(result.error || 'Registratie mislukt.');
@@ -205,7 +228,24 @@ export default function RegisterPage() {
               }
             />
 
-            <Button type="submit" fullWidth loading={loading} size="lg">
+            <div className="flex items-start gap-3 py-2">
+              <input 
+                type="checkbox" 
+                id="guarantee-check" 
+                checked={agreedToGuarantee}
+                onChange={(e) => setAgreedToGuarantee(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-gold-500 focus:ring-gold-500 focus:ring-offset-black"
+              />
+              <label htmlFor="guarantee-check" className="text-sm text-zinc-400 leading-snug">
+                Ik heb de{' '}
+                <Link href="/info/guarantee" target="_blank" className="text-gold-400 hover:text-gold-300 font-semibold underline">
+                  100% Recovery Guarantee & Opt-In Bewindvoering
+                </Link>
+                {' '}gelezen en begrepen dat The Luxury Receiver vrijwillig is.
+              </label>
+            </div>
+
+            <Button type="submit" fullWidth loading={loading} size="lg" disabled={!agreedToGuarantee}>
               Create Account
             </Button>
           </form>

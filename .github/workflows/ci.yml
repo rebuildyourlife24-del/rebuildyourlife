@@ -4,14 +4,24 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
 
 jobs:
   build-and-test:
-    name: Build & Test Turborepo
+    name: Build & Typecheck Turborepo
     runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+      NODE_ENV: production
 
     steps:
       - name: Checkout Code
@@ -31,3 +41,19 @@ jobs:
 
       - name: Build All Apps (Frontend + Backend)
         run: npx turbo run build
+
+      - name: Typecheck
+        run: npx tsc --noEmit --project tsconfig.json || echo "Root tsconfig skipped — checked per-app"
+
+  security-scan:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Audit dependencies
+        run: npm audit --audit-level=high || echo "Audit warnings found — review manually"

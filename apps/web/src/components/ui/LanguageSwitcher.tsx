@@ -2,24 +2,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { Language } from '@/lib/i18n/dictionaries';
+import { Language } from '@/lib/i18n/LanguageContext';
 import { Globe } from 'lucide-react';
 
 const languages: { code: Language; label: string; flag: string }[] = [
   { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'pl', label: 'Polski', flag: '🇵🇱' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'bg', label: 'Български', flag: '🇧🇬' },
-  { code: 'af', label: 'Afrikaans', flag: '🇿🇦' },
-  { code: 'sr', label: 'Српски', flag: '🇷🇸' },
-  { code: 'el', label: 'Ελληνικά', flag: '🇬🇷' },
-  { code: 'ku', label: 'Kurdî', flag: '🇹🇯' },
-  { code: 'fa', label: 'فارسی', flag: '🇮🇷' },
 ];
 
 export const LanguageSwitcher = () => {

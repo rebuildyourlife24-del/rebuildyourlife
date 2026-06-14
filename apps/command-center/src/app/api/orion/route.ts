@@ -9,7 +9,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const db = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET || "FALLBACK_ONLY_FOR_DEV";
 
 // ============================================================
 // EMOTIE DETECTIE

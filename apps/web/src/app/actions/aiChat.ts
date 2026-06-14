@@ -158,7 +158,13 @@ export async function sendAIMessageAction(agentType: string, message: string, co
         }
       );
 
-      const data = await response.json();
+      const data = await response.json() as {
+        candidates?: Array<{
+          content?: {
+            parts?: Array<{ text?: string }>;
+          };
+        }>;
+      };
       aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Ik kon geen antwoord genereren. Probeer het opnieuw.';
     } else {
       aiResponse = `[API Key niet geconfigureerd] Ik ben de ${agentType} agent. Je bericht: "${message}" is ontvangen. Zodra de GOOGLE_GENERATIVE_AI_API_KEY is ingesteld, zal ik echt antwoorden.`;

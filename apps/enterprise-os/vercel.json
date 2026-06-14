@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && npm run db:generate && npx turbo run build --filter=enterprise-os",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "regions": ["ams1"]
+}

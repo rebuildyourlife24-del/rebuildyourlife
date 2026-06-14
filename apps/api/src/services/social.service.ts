@@ -125,6 +125,96 @@ export async function deleteContact(userId: string, contactId: string) {
   await prisma.socialContact.delete({ where: { id: contactId } });
 }
 
+// ==========================================
+// THE BILLIONAIRE SOCIAL ENGINE (THE SWARM)
+// ==========================================
+
+export interface CreateCampaignInput {
+  title: string;
+  platform: 'TIKTOK' | 'META' | 'LINKEDIN';
+  budget: number;
+  contentCaption?: string;
+  aiPromptUsed?: string;
+}
+
+export async function getSocialIntegrations(userId: string) {
+  return prisma.socialPlatformIntegration.findMany({
+    where: { userId }
+  });
+}
+
+export async function connectPlatform(userId: string, platform: string, accessToken: string) {
+  return prisma.socialPlatformIntegration.upsert({
+    where: { userId_platform: { userId, platform } },
+    update: { accessToken, status: 'CONNECTED' },
+    create: { userId, platform, accessToken, status: 'CONNECTED' }
+  });
+}
+
+export async function createCampaign(userId: string, input: CreateCampaignInput) {
+  const integration = await prisma.socialPlatformIntegration.findUnique({
+    where: { userId_platform: { userId, platform: input.platform } }
+  });
+
+  if (!integration || integration.status !== 'CONNECTED') {
+    throw new Error(`Platform ${input.platform} is niet gekoppeld.`);
+  }
+
+  return prisma.socialCampaign.create({
+    data: {
+      platformId: integration.id,
+      campaignName: input.title,
+      campaignType: 'PAID_AD',
+      budgetDaily: input.budget,
+      status: 'PENDING_APPROVAL',
+      caption: input.contentCaption,
+    }
+  });
+}
+
+export async function getCampaigns(userId: string) {
+  return prisma.socialCampaign.findMany({
+    where: { platform: { userId } },
+    orderBy: { createdAt: 'desc' },
+    include: { platform: true }
+  });
+}
+
+export async function approveCampaign(userId: string, campaignId: string) {
+  const campaign = await prisma.socialCampaign.findUnique({ 
+    where: { id: campaignId },
+    include: { platform: true }
+  });
+  if (!campaign) throw new NotFoundError("Campaign");
+  if (campaign.platform.userId !== userId) throw new ForbiddenError();
+
+  // In real life, trigger the Ads API here (e.g. Meta Graph API or TikTok Ads API)
+  
+  return prisma.socialCampaign.update({
+    where: { id: campaignId },
+    data: {
+      status: 'ACTIVE',
+      publishedAt: new Date()
+    }
+  });
+}
+
+export async function updateCampaignStats(userId: string, campaignId: string, spent: number, revenue: number, impressions: number) {
+  const campaign = await prisma.socialCampaign.findUnique({ 
+    where: { id: campaignId },
+    include: { platform: true }
+  });
+  if (!campaign) throw new NotFoundError("Campaign");
+  if (campaign.platform.userId !== userId) throw new ForbiddenError();
+  
+  const roas = spent > 0 ? Number((revenue / spent).toFixed(2)) : 0;
+
+  return prisma.socialCampaign.update({
+    where: { id: campaignId },
+    data: { totalSpend: spent, roas, impressions }
+  });
+}
+
 /**
  * Returns contacts whose (lastContactAt + reminderFrequencyDays) has passed today.
  * Contacts without a lastContactAt but WITH a reminderFrequencyDays set are also included

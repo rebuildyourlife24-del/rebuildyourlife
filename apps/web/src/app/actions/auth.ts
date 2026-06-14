@@ -6,9 +6,12 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is not set");
+}
 
-export async function loginAction(email: string, password: string) {
+export async function loginAction(email: string, password: string, rememberMe: boolean = false) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -24,21 +27,28 @@ export async function loginAction(email: string, password: string) {
     }
 
     // Generate JWT
+    const expiresIn = rememberMe ? "30d" : "24h";
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn }
     );
 
     // Set HTTP-only cookie for secure session
     const cookieStore = await cookies();
-    cookieStore.set("ryl_session", token, {
+    const cookieOptions: any = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: "/",
-    });
+    };
+    
+    // Only set maxAge if rememberMe is true. Otherwise it becomes a session cookie.
+    if (rememberMe) {
+      cookieOptions.maxAge = 30 * 24 * 60 * 60; // 30 days
+    }
+
+    cookieStore.set("ryl_session", token, cookieOptions);
 
     return { 
       success: true, 

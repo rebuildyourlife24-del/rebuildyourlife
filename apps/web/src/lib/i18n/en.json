@@ -1,0 +1,55 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "concierge": "AI Concierge",
+    "opportunities": "Opportunities",
+    "godMode": "Command Center",
+    "settings": "Settings"
+  },
+  "concierge": {
+    "title": "The AI Concierge",
+    "subtitle": "Your 24/7 Private Banker. Manage savings goals or request emergency capital instantly.",
+    "securityBanner": "AES-256-GCM Military-Grade Encryption Active",
+    "securityText": "All requests, personal emergencies, and financial data shared with The Concierge are locally encrypted before reaching the database. Only the AI and the CEO can decrypt this. Your vulnerable moments are 100% secure.",
+    "emergencyTitle": "Emergency Request",
+    "emergencyDesc": "Emergency (e.g., broken washing machine)? Enter the amount. The AI decides within 5 minutes. If it risks your living allowance (VTLB), it escalates to the CEO for approval.",
+    "amountLabel": "Required Amount (€)",
+    "reasonLabel": "Reason (Stored Encrypted)",
+    "requestBtn": "Request Capital (5-Min Release)",
+    "goalTitle": "New Savings Goal",
+    "goalDesc": "Set a Luxury goal (e.g., Vacation or Car). Orion automatically and invisibly deducts micro-amounts from your profits until the goal is reached.",
+    "goalNameLabel": "Goal Name",
+    "goalAmountLabel": "Target Amount (€)",
+    "goalBtn": "Initiate Savings Protocol"
+  },
+  "opportunities": {
+    "title": "The Opportunity Engine",
+    "subtitle": "Orion scans global trends, generates business cases, and builds autonomous ad campaigns.",
+    "newTarget": "New Target Detected",
+    "chartTitle": "30-Day Profit Projection Matrix",
+    "testingGround": "The Live Testing Ground",
+    "testingDesc": "Launch micro-budget ads to validate traction live.",
+    "initiateBtn": "Initiate Testing",
+    "testingBtn": "Testing Initiated...",
+    "forgeTitle": "The Content Forge",
+    "forgeDesc": "AI-Generated media is ready for A/B testing. No human input required.",
+    "videoUgc": "TikTok UGC Video",
+    "carousel": "Insta Carousel"
+  },
+  "godMode": {
+    "title": "The Command Center",
+    "subtitle": "Your overarching dashboard. Manage emergencies and launch attacks on the market.",
+    "vaultTotal": "Total Treasury Vault",
+    "defenseTitle": "DEFENSE: Emergencies",
+    "pending": "Pending",
+    "aiAnalysis": "AI Analysis",
+    "reject": "Reject",
+    "approve": "Approve",
+    "offenseTitle": "OFFENSE: Opportunities",
+    "ready": "Ready",
+    "expectedRoi": "Expected ROI",
+    "forgeStatus": "Content Forge Status",
+    "adsReady": "Ads Ready",
+    "initiateBtn": "Initiate Testing (Launch)"
+  }
+}
