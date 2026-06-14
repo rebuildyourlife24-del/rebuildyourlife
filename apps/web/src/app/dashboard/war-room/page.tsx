@@ -47,7 +47,7 @@ export default function WarRoomPage() {
       className="space-y-6"
     >
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-textPrimary uppercase tracking-widest text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">
+        <h1 className="text-3xl font-bold text-textPrimary uppercase tracking-widest text-[#ef4444] drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
           WAR ROOM
         </h1>
         <p className="mt-2 text-textSecondary font-mono text-sm uppercase tracking-wider">
@@ -57,22 +57,22 @@ export default function WarRoomPage() {
 
       {/* Swarm Avatar 3D Visualizer & Command Interface */}
       <motion.div variants={itemVariants} className="w-full">
-        <SwarmAvatar />
+        <SwarmAvatar theme='red' />
       </motion.div>
 
       {/* AI Prognosis Block */}
       <Paywall requiredTier="PREMIUM">
         <motion.div variants={itemVariants}>
-          <Card variant="glass" padding="lg" className="border-l-4 border-l-[#00f0ff] bg-navy/50 relative overflow-hidden">
+          <Card variant="glass" padding="lg" className="border-l-4 border-l-[#ef4444] bg-navy/50 relative overflow-hidden">
             <div className="absolute -right-10 -top-10 opacity-10 blur-xl">
-               <div className="w-40 h-40 bg-[#00f0ff] rounded-full"></div>
+               <div className="w-40 h-40 bg-[#ef4444] rounded-full"></div>
             </div>
             <div className="relative z-10">
-              <h2 className="text-xs uppercase tracking-[0.25em] text-[#00f0ff] font-bold mb-2">
+              <h2 className="text-xs uppercase tracking-[0.25em] text-[#ef4444] font-bold mb-2">
                 Systeem Melding // AI Prognose
               </h2>
               <p className="text-xl md:text-2xl font-light text-textPrimary leading-relaxed">
-                Op basis van het huidige traject wordt <strong className="font-bold text-white">financiële onafhankelijkheid</strong> geschat in <span className="text-[#00f0ff] font-mono font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">WACHTEN OP LIVE DATA</span>.
+                Op basis van het huidige traject wordt <strong className="font-bold text-white">financiële onafhankelijkheid</strong> geschat in <span className="text-[#ef4444] font-mono font-bold drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]">WACHTEN OP LIVE DATA</span>.
               </p>
             </div>
           </Card>
@@ -80,7 +80,7 @@ export default function WarRoomPage() {
 
         {/* Complex Datavisualization */}
         <motion.div variants={itemVariants}>
-          <Card variant="default" padding="lg" className="border-t border-white/5 bg-[#0a0e1a]/80 shadow-[inset_0_0_40px_rgba(0,240,255,0.02)]">
+          <Card variant="default" padding="lg" className="border-t border-white/5 bg-[#0a0e1a]/80 shadow-[inset_0_0_40px_rgba(239,68,68,0.02)]">
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div>
                 <h3 className="text-lg font-bold text-textPrimary tracking-wide">Tactische Traject Overlay</h3>
@@ -88,7 +88,7 @@ export default function WarRoomPage() {
               </div>
               <div className="flex gap-4 mt-4 sm:mt-0 font-mono text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_5px_#00f0ff]"></span>
+                  <span className="w-2 h-2 rounded-full bg-[#ef4444] shadow-[0_0_5px_#ef4444]"></span>
                   <span className="text-textSecondary">BALANS</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function WarRoomPage() {
                   {/* Left Y Axis for Balance (0-100) */}
                   <YAxis 
                     yAxisId="left" 
-                    stroke="#00f0ff" 
+                    stroke="#ef4444" 
                     fontSize={12} 
                     tickLine={false} 
                     axisLine={false} 
@@ -163,10 +163,10 @@ export default function WarRoomPage() {
                     type="monotone" 
                     dataKey="balance" 
                     name="Levensbalans Score"
-                    stroke="#00f0ff" 
+                    stroke="#ef4444" 
                     strokeWidth={3}
-                    dot={{ r: 4, fill: '#0a0e1a', stroke: '#00f0ff', strokeWidth: 2 }}
-                    activeDot={{ r: 6, fill: '#00f0ff', stroke: '#fff', strokeWidth: 2 }}
+                    dot={{ r: 4, fill: '#0a0e1a', stroke: '#ef4444', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#ef4444', stroke: '#fff', strokeWidth: 2 }}
                     filter="url(#glow-balance)"
                   />
                   
@@ -189,13 +189,13 @@ export default function WarRoomPage() {
 
         {/* === OPPORTUNITY ENGINE === */}
         <motion.div variants={itemVariants} className="mt-8">
-          <h2 className="text-2xl font-bold text-[#00f0ff] mb-4 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]">
+          <h2 className="text-2xl font-bold text-[#ef4444] mb-4 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">
             Opportunity Engine // De Aanvalseenheid
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* Jip-en-Janneke Matrix */}
-            <Card className="border border-[#00f0ff]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(0,240,255,0.1)] p-6">
+            <Card className="border border-[#ef4444]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(239,68,68,0.1)] p-6">
               <h3 className="text-xl font-bold text-white mb-2">Live Opportunity: Viral Titanium Ring</h3>
               <p className="text-textSecondary mb-4">
                 <strong>Orion Conclusie:</strong> "Dit product gaat viraal op TikTok onder tech-liefhebbers. De inkoop ligt extreem laag, waardoor de winstmarge ons in staat stelt de markt agressief te domineren zonder risico."
@@ -232,7 +232,7 @@ export default function WarRoomPage() {
             </Card>
 
             {/* The Content Forge */}
-            <Card className="border border-[#00f0ff]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(0,240,255,0.1)] p-6">
+            <Card className="border border-[#ef4444]/30 bg-[#0a0e1a]/80 shadow-[0_0_20px_rgba(239,68,68,0.1)] p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-white">The Content Forge</h3>
                 <Badge variant="success" className="animate-pulse">MEDIA READY</Badge>
@@ -244,15 +244,15 @@ export default function WarRoomPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
                   <span className="text-white font-mono text-sm">▶ TikTok (POV Unboxing)</span>
-                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                  <span className="text-[#ef4444] text-xs">Ready</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
                   <span className="text-white font-mono text-sm">▶ Insta Reels (Straat Review)</span>
-                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                  <span className="text-[#ef4444] text-xs">Ready</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-[#111827] border border-[#374151] rounded">
                   <span className="text-white font-mono text-sm">▶ X (Viral Thread)</span>
-                  <span className="text-[#00f0ff] text-xs">Ready</span>
+                  <span className="text-[#ef4444] text-xs">Ready</span>
                 </div>
               </div>
 
