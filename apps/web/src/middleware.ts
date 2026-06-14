@@ -89,14 +89,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard/war-room', request.url));
   }
 
-  // RBAC: Alleen admins mogen op /admin routes
-  if (isLoggedIn && pathname.startsWith('/admin')) {
-    // We checken de rol uit de user_metadata (ingesteld tijdens login of via database sync)
-    // Omdat middleware edge-compatible moet zijn en we geen Prisma kunnen draaien hier,
-    // vertrouwen we op Supabase JWT of sturen we door naar een client-side check.
-    // Dit is een simpele check voor nu:
+  // RBAC: Alleen admins mogen op /admin routes of /dashboard/war-room (Godmode)
+  const isGodmodeRoute = pathname.startsWith('/admin') || pathname === '/dashboard/war-room';
+  if (isLoggedIn && isGodmodeRoute) {
+    // We checken de rol uit de user_metadata of email
     if (user.email !== 'hsemler50@gmail.com') {
-       return NextResponse.redirect(new URL('/dashboard/war-room', request.url));
+       return NextResponse.redirect(new URL('/dashboard/ai-team', request.url));
     }
   }
 
