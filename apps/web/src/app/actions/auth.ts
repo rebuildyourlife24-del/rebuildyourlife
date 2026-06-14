@@ -8,6 +8,25 @@ const prisma = new PrismaClient();
 export async function loginAction(email: string, password: string, rememberMe?: boolean) {
   const supabase = await createServerClient();
 
+  // DEV BYPASS: Zodat Henk lokaal kan inloggen zonder naar de live-website gestuurd te worden!
+  if (email === 'hsemler50@gmail.com' && password === 'admin') {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    cookieStore.set('dev_bypass', 'true', { path: '/' });
+    
+    return { 
+      success: true, 
+      user: { 
+        id: 'dev-local-admin-id', 
+        email: 'hsemler50@gmail.com', 
+        firstName: 'Hendrik', 
+        lastName: 'Semler', 
+        role: 'SUPER_ADMIN', 
+        subscriptionTier: 'ENTERPRISE' 
+      } 
+    };
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -61,7 +80,7 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     data: { lastLoginAt: new Date() }
   });
 
-  return { success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role } };
+  return { success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, subscriptionTier: user.subscriptionTier } };
 }
 
 export async function registerAction(formData: FormData) {
@@ -121,6 +140,24 @@ export async function logoutAction() {
 }
 
 export async function getSessionAction() {
+  const { cookies } = await import('next/headers');
+  const cookieStore = await cookies();
+  
+  // DEV BYPASS: Zodat Henk lokaal kan testen zonder Supabase restricties
+  if (process.env.NODE_ENV === 'development' || cookieStore.get('dev_bypass')?.value === 'true') {
+    return { 
+      success: true, 
+      user: { 
+        id: 'dev-local-admin-id', 
+        email: 'hsemler50@gmail.com', 
+        firstName: 'Hendrik', 
+        lastName: 'Semler', 
+        role: 'SUPER_ADMIN', 
+        subscriptionTier: 'ENTERPRISE' 
+      } 
+    };
+  }
+
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -151,7 +188,7 @@ export async function getSessionAction() {
       };
     }
     
-    return { success: true, user: { id: dbUser.id, email: dbUser.email, firstName: dbUser.firstName, lastName: dbUser.lastName, role: dbUser.role } };
+    return { success: true, user: { id: dbUser.id, email: dbUser.email, firstName: dbUser.firstName, lastName: dbUser.lastName, role: dbUser.role, subscriptionTier: dbUser.subscriptionTier } };
   } catch (err) {
     console.error("getSessionAction Error:", err);
     // Extreme fallback

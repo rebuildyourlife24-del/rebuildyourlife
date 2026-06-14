@@ -67,17 +67,21 @@ export class OmegaProtocol {
   static async executeCommand(command: string): Promise<string> {
     console.log(`[ORION CORE] Received command: ${command}`);
 
-    // Fallback structuur
+    // Als de Cloud Bypass aan staat, gebruik die direct (omdat zijn laptop traag is)
+    if (process.env.GROQ_API_KEY) {
+      console.log('[ORION CORE] Routing directly to Groq Cloud Bypass.');
+      return await this.queryCloudLLM(command);
+    }
+
+    console.log('[ORION CORE] No Groq key found. Attempting local Ollama...');
     try {
-      // 1. Probeer Lokale Llama 3 (Ultra secure, no internet)
       const localResponse = await this.queryLocalLLM(command);
       if (localResponse) return localResponse;
     } catch (e) {
-      console.log('[ORION CORE] Local LLM unreachable. Falling back to Cloud (Gemini/OpenAI).');
+      console.log('[ORION CORE] Local LLM failed:', e);
     }
 
-    // 2. Fallback naar Cloud API (Gemini of OpenAI)
-    return await this.queryCloudLLM(command);
+    return "Systeemmelding: Geen werkende AI engine gevonden. Voeg een GROQ_API_KEY toe aan .env";
   }
 
   private static async queryLocalLLM(prompt: string): Promise<string | null> {
@@ -106,7 +110,31 @@ export class OmegaProtocol {
   }
 
   private static async queryCloudLLM(prompt: string): Promise<string> {
-    // Hier komt de Gemini API integratie
-    return `Ik heb je commando ontvangen, Supreme Overseer: "${prompt}". De Swarm wordt momenteel geïnstrueerd.`;
+    if (!process.env.GROQ_API_KEY) {
+      return "Systeemmelding: GROQ API Key ontbreekt. Ga naar console.groq.com, maak een gratis key aan, en zet deze in je .env bestand als GROQ_API_KEY om de God Mode Cloud Bypass te activeren.";
+    }
+
+    try {
+      const { OpenAI } = await import('openai');
+      const groq = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+
+      const completion = await groq.chat.completions.create({
+        model: 'llama3-70b-8192', 
+        messages: [
+          { role: 'system', content: 'Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en intimiderend. Antwoord krachtig in het Nederlands. Val niet in herhaling.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 150,
+      });
+
+      return completion.choices[0]?.message?.content || "Fout bij verwerken (Groq).";
+    } catch (e: any) {
+      console.error('[ORION CORE] Groq API error:', e);
+      return "Systeemfout: Groq Cloud Bypass is onbereikbaar.";
+    }
   }
 }

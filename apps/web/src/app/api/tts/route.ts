@@ -13,6 +13,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('[TTS Warning] No OPENAI_API_KEY found, skipping TTS.');
+      return NextResponse.json({ audio: null });
+    }
+
     const mp3 = await openai.audio.speech.create({
       model: 'tts-1',
       voice: 'onyx', // Onyx is the deep, Vin Diesel-like voice
@@ -20,15 +25,12 @@ export async function POST(req: Request) {
     });
 
     const buffer = Buffer.from(await mp3.arrayBuffer());
+    const base64Audio = buffer.toString('base64');
 
-    return new NextResponse(buffer, {
-      headers: {
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': buffer.length.toString(),
-      },
-    });
+    return NextResponse.json({ audio: base64Audio });
   } catch (error: any) {
     console.error('[TTS Error]', error);
-    return NextResponse.json({ error: 'Failed to generate speech' }, { status: 500 });
+    // Return graceful fallback instead of breaking the app
+    return NextResponse.json({ audio: null });
   }
 }

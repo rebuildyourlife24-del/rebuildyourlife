@@ -7,7 +7,7 @@ import { SwarmBrain } from './SwarmBrain';
 import { Button } from './Button';
 import { Input } from './Input';
 
-export function SwarmAvatar() {
+export function SwarmAvatar({ theme = 'blue' }: { theme?: 'blue' | 'red' }) {
   const [input, setInput] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,6 +83,13 @@ export function SwarmAvatar() {
         body: JSON.stringify({ command: input }),
       });
       const chatData = await chatRes.json();
+      
+      if (!chatRes.ok || !chatData.response) {
+        setResponse("Systeemfout: Kan niet verbinden met Ollama. Zorg dat de Ollama app draait en 'llama3' is geïnstalleerd (typ 'ollama run llama3' in je terminal).");
+        setLoading(false);
+        return;
+      }
+
       setResponse(chatData.response);
 
       // 2. Convert Text to Speech (Vin Diesel / Onyx)
@@ -98,7 +105,7 @@ export function SwarmAvatar() {
       }
     } catch (err) {
       console.error("Swarm Avatar Error:", err);
-      setResponse("System Error. Audio synthesis failed.");
+      setResponse("Systeemfout: De verbinding is verbroken.");
     } finally {
       setLoading(false);
       setInput('');
@@ -106,21 +113,21 @@ export function SwarmAvatar() {
   };
 
   return (
-    <div className="relative w-full h-[500px] bg-[#050810] rounded-2xl border border-[#00f0ff]/20 overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,240,255,0.05)]">
+    <div className={`relative w-full h-[500px] bg-[#050810] rounded-2xl border ${theme === 'red' ? 'border-[#ef4444]/20 shadow-[0_0_50px_rgba(239,68,68,0.05)]' : 'border-[#00f0ff]/20 shadow-[0_0_50px_rgba(0,240,255,0.05)]'} overflow-hidden flex flex-col`}>
       {/* 3D Canvas rendering the SwarmBrain */}
       <div className="flex-1 relative cursor-move">
         <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
           <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1} color="#00f0ff" />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} color="#d4a853" />
-          <SwarmBrain isSpeaking={isSpeaking} analyserRef={analyserRef} />
+          <pointLight position={[10, 10, 10]} intensity={1} color={theme === 'red' ? '#ef4444' : '#00f0ff'} />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} color={theme === 'red' ? '#dc2626' : '#d4a853'} />
+          <SwarmBrain isSpeaking={isSpeaking} analyserRef={analyserRef} theme={theme} />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate={!isSpeaking} autoRotateSpeed={0.5} />
           <Environment preset="city" />
         </Canvas>
 
         {/* Overlay Badges */}
         <div className="absolute top-4 left-4 flex gap-2">
-          <div className={`px-3 py-1 rounded-full text-xs font-mono border ${isSpeaking ? 'border-[#00f0ff] bg-[#00f0ff]/10 text-[#00f0ff]' : 'border-white/10 bg-black/50 text-white/50'}`}>
+          <div className={`px-3 py-1 rounded-full text-xs font-mono border ${isSpeaking ? (theme === 'red' ? 'border-[#ef4444] bg-[#ef4444]/10 text-[#ef4444]' : 'border-[#00f0ff] bg-[#00f0ff]/10 text-[#00f0ff]') : 'border-white/10 bg-black/50 text-white/50'}`}>
             {isSpeaking ? '● TRANSMITTING' : '○ IDLE'}
           </div>
           <div className="px-3 py-1 rounded-full text-xs font-mono border border-[#d4a853]/50 bg-[#d4a853]/10 text-[#d4a853]">
@@ -130,9 +137,9 @@ export function SwarmAvatar() {
       </div>
 
       {/* Control Interface */}
-      <div className="p-4 bg-black/60 border-t border-[#00f0ff]/10 backdrop-blur-md">
+      <div className={`p-4 bg-black/60 border-t ${theme === 'red' ? 'border-[#ef4444]/10' : 'border-[#00f0ff]/10'} backdrop-blur-md`}>
         {response && (
-          <div className="mb-4 p-3 bg-[#00f0ff]/5 border-l-2 border-[#00f0ff] font-mono text-sm text-[#00f0ff]">
+          <div className={`mb-4 p-3 ${theme === 'red' ? 'bg-[#ef4444]/5 border-[#ef4444] text-[#ef4444]' : 'bg-[#00f0ff]/5 border-[#00f0ff] text-[#00f0ff]'} border-l-2 font-mono text-sm`}>
             &gt; {response}
           </div>
         )}
@@ -145,13 +152,13 @@ export function SwarmAvatar() {
             placeholder="Command the Swarm..."
             disabled={loading}
             fullWidth
-            className="bg-black/50 border-[#00f0ff]/30 focus:border-[#00f0ff] text-[#00f0ff] font-mono"
+            className={`bg-black/50 border-${theme === 'red' ? '[#ef4444]/30 focus:border-[#ef4444] text-[#ef4444]' : '[#00f0ff]/30 focus:border-[#00f0ff] text-[#00f0ff]'} font-mono`}
           />
           <Button 
             onClick={handleCommand} 
             disabled={!input.trim() || loading}
             loading={loading}
-            className="bg-[#00f0ff]/10 border border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff]/20 font-mono tracking-widest uppercase min-w-[120px]"
+            className={`${theme === 'red' ? 'bg-[#ef4444]/10 border-[#ef4444]/50 text-[#ef4444] hover:bg-[#ef4444]/20' : 'bg-[#00f0ff]/10 border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff]/20'} border font-mono tracking-widest uppercase min-w-[120px]`}
           >
             EXECUTE
           </Button>

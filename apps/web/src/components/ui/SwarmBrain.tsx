@@ -8,9 +8,10 @@ import { Points, PointMaterial } from '@react-three/drei';
 interface SwarmBrainProps {
   isSpeaking: boolean;
   analyserRef: React.MutableRefObject<AnalyserNode | null>;
+  theme?: 'blue' | 'red';
 }
 
-export function SwarmBrain({ isSpeaking, analyserRef }: SwarmBrainProps) {
+export function SwarmBrain({ isSpeaking, analyserRef, theme = 'blue' }: SwarmBrainProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const shellRef = useRef<THREE.Mesh>(null);
   const dataArrayRef = useRef<Uint8Array>(new Uint8Array(128));
@@ -87,7 +88,7 @@ export function SwarmBrain({ isSpeaking, analyserRef }: SwarmBrainProps) {
       <mesh ref={shellRef}>
         <sphereGeometry args={[2.5, 32, 32]} />
         <meshBasicMaterial 
-          color="#00f0ff" 
+          color={theme === 'red' ? '#ef4444' : '#00f0ff'} 
           wireframe={true} 
           transparent={true} 
           opacity={0.05} 
@@ -98,7 +99,7 @@ export function SwarmBrain({ isSpeaking, analyserRef }: SwarmBrainProps) {
       <Points ref={pointsRef} positions={positions} stride={3}>
         <PointMaterial
           transparent
-          color="#d4a853" // Gold color for the brain nodes
+          color={theme === 'red' ? '#dc2626' : '#d4a853'} // Darker red or Gold
           size={0.05}
           sizeAttenuation={true}
           depthWrite={false}

@@ -10,7 +10,7 @@ export type Dictionary = {
     health: string;
     social: string;
     growth: string;
-    business: string;
+    enterprise: string;
     settings: string;
   };
   common: {
@@ -67,7 +67,7 @@ export const nl: Dictionary = {
     health: "Welzijn",
     social: "Sociaal",
     growth: "Groei & Hobby's",
-    business: "Ondernemer",
+    enterprise: "Enterprise OS",
     settings: "Instellingen",
   },
   common: {
@@ -124,7 +124,7 @@ export const en: Dictionary = {
     health: "Wellbeing",
     social: "Social",
     growth: "Growth & Hobbies",
-    business: "Business",
+    enterprise: "Enterprise OS",
     settings: "Settings",
   },
   common: {

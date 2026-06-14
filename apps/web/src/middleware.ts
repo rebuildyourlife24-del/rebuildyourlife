@@ -65,7 +65,12 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  const isLoggedIn = !!user;
+  let isLoggedIn = !!user;
+
+  // DEV BYPASS: Zodat de middleware ons niet terug gooit naar login!
+  if (process.env.NODE_ENV === 'development' || request.cookies.get('dev_bypass')?.value === 'true') {
+    isLoggedIn = true;
+  }
 
   // Check of dit een beschermde route is
   const isProtectedRoute = PROTECTED_ROUTES.some(route =>

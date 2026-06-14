@@ -51,7 +51,7 @@ export default function WarRoomPage() {
           WAR ROOM
         </h1>
         <p className="mt-2 text-textSecondary font-mono text-sm uppercase tracking-wider">
-          Strategic Overview & Trajectory Analysis
+          Strategisch Overzicht & Traject Analyse
         </p>
       </motion.div>
 
@@ -69,10 +69,10 @@ export default function WarRoomPage() {
             </div>
             <div className="relative z-10">
               <h2 className="text-xs uppercase tracking-[0.25em] text-[#00f0ff] font-bold mb-2">
-                System Alert // AI Prognosis
+                Systeem Melding // AI Prognose
               </h2>
               <p className="text-xl md:text-2xl font-light text-textPrimary leading-relaxed">
-                Based on current trajectory, <strong className="font-bold text-white">financial independence</strong> is estimated in <span className="text-[#00f0ff] font-mono font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">AWAITING LIVE DATA</span>.
+                Op basis van het huidige traject wordt <strong className="font-bold text-white">financiële onafhankelijkheid</strong> geschat in <span className="text-[#00f0ff] font-mono font-bold drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">WACHTEN OP LIVE DATA</span>.
               </p>
             </div>
           </Card>
@@ -83,17 +83,17 @@ export default function WarRoomPage() {
           <Card variant="default" padding="lg" className="border-t border-white/5 bg-[#0a0e1a]/80 shadow-[inset_0_0_40px_rgba(0,240,255,0.02)]">
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div>
-                <h3 className="text-lg font-bold text-textPrimary tracking-wide">Tactical Trajectory Overlay</h3>
-                <p className="text-sm text-textSecondary font-mono mt-1">Life Balance vs. Outstanding Debt</p>
+                <h3 className="text-lg font-bold text-textPrimary tracking-wide">Tactische Traject Overlay</h3>
+                <p className="text-sm text-textSecondary font-mono mt-1">Levensbalans vs. Openstaande Schuld</p>
               </div>
               <div className="flex gap-4 mt-4 sm:mt-0 font-mono text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_5px_#00f0ff]"></span>
-                  <span className="text-textSecondary">BALANCE</span>
+                  <span className="text-textSecondary">BALANS</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[#ef4444] shadow-[0_0_5px_#ef4444]"></span>
-                  <span className="text-textSecondary">DEBT</span>
+                  <span className="text-textSecondary">SCHULD</span>
                 </div>
               </div>
             </div>
@@ -162,7 +162,7 @@ export default function WarRoomPage() {
                     yAxisId="left"
                     type="monotone" 
                     dataKey="balance" 
-                    name="Life Balance Score"
+                    name="Levensbalans Score"
                     stroke="#00f0ff" 
                     strokeWidth={3}
                     dot={{ r: 4, fill: '#0a0e1a', stroke: '#00f0ff', strokeWidth: 2 }}
@@ -174,7 +174,7 @@ export default function WarRoomPage() {
                     yAxisId="right"
                     type="monotone" 
                     dataKey="debt" 
-                    name="Debt Level"
+                    name="Schuld Niveau"
                     stroke="#ef4444" 
                     strokeWidth={3}
                     dot={{ r: 4, fill: '#0a0e1a', stroke: '#ef4444', strokeWidth: 2 }}
@@ -190,7 +190,7 @@ export default function WarRoomPage() {
         {/* === OPPORTUNITY ENGINE === */}
         <motion.div variants={itemVariants} className="mt-8">
           <h2 className="text-2xl font-bold text-[#00f0ff] mb-4 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]">
-            Opportunity Engine // The Strike Force
+            Opportunity Engine // De Aanvalseenheid
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             

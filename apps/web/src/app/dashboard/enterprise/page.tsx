@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Paywall } from '@/components/ui/Paywall';
+import { SwarmAvatar } from '@/components/ui/SwarmAvatar';
 
 // Simuleer recharts (zou in een echte implementatie geïnstalleerd moeten zijn)
 export default function EnterpriseOSPage() {
@@ -20,15 +21,20 @@ export default function EnterpriseOSPage() {
               Red Billionaire OS
             </h1>
             <p className="text-red-500/60 mt-1 uppercase text-xs tracking-widest">
-              Supreme Command Center // Access Level: GODMODE
+              Hoofdcommando Centrum // Toegangsniveau: GODMODE
             </p>
           </div>
           <div className="flex gap-4">
             <div className="flex items-center gap-2 bg-red-950/30 border border-red-500/50 px-4 py-2 rounded-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]">
               <Activity className="w-4 h-4 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-widest">System Online</span>
+              <span className="text-xs font-bold uppercase tracking-widest">Systeem Online</span>
             </div>
           </div>
+        </div>
+
+        {/* Swarm Avatar 3D Visualizer & Command Interface */}
+        <div className="w-full mb-8">
+          <SwarmAvatar theme="red" />
         </div>
 
         {/* 3 Kernmodules */}
@@ -44,7 +50,7 @@ export default function EnterpriseOSPage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-900 via-red-500 to-red-900 opacity-50" />
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold uppercase flex items-center gap-2">
-                  <Database className="w-5 h-5" /> Global Cashflow Radar
+                  <Database className="w-5 h-5" /> Wereldwijde Kasstroom Radar
                 </h2>
                 <span className="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded border border-red-500/20">LIVE</span>
               </div>
@@ -64,16 +70,16 @@ export default function EnterpriseOSPage() {
 
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="p-4 bg-red-500/5 border border-red-500/10 rounded">
-                  <p className="text-xs text-red-500/50 uppercase">Total Revenue</p>
+                  <p className="text-xs text-red-500/50 uppercase">Totale Omzet</p>
                   <p className="text-2xl font-bold mt-1">€12.4M</p>
                 </div>
                 <div className="p-4 bg-red-500/5 border border-red-500/10 rounded">
                   <p className="text-xs text-red-500/50 uppercase">AI Output</p>
-                  <p className="text-2xl font-bold mt-1">84,203 OPS</p>
+                  <p className="text-2xl font-bold mt-1">84.203 OPS</p>
                 </div>
                 <div className="p-4 bg-red-500/5 border border-red-500/10 rounded">
-                  <p className="text-xs text-red-500/50 uppercase">Risk Level</p>
-                  <p className="text-2xl font-bold mt-1 text-green-500">LOW</p>
+                  <p className="text-xs text-red-500/50 uppercase">Risico Niveau</p>
+                  <p className="text-2xl font-bold mt-1 text-green-500">LAAG</p>
                 </div>
               </div>
             </div>
@@ -90,7 +96,7 @@ export default function EnterpriseOSPage() {
               className="bg-[#0a0a0a] border border-red-500/20 p-6 rounded-lg shadow-[0_0_20px_rgba(239,68,68,0.05)]"
             >
               <h2 className="text-xl font-bold uppercase flex items-center gap-2 mb-4">
-                <Lock className="w-5 h-5" /> The Office (Legal Vault)
+                <Lock className="w-5 h-5" /> Het Kantoor (Juridische Kluis)
               </h2>
               <div className="space-y-3">
                 {['NDA_Alibaba_Supplier.pdf', 'Tax_Audit_Q3_2026.pdf', 'IP_Transfer_Agreement.pdf'].map((doc, i) => (
@@ -104,7 +110,7 @@ export default function EnterpriseOSPage() {
                 ))}
               </div>
               <button className="w-full mt-4 py-2 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest hover:bg-red-500 hover:text-black transition-colors">
-                + NEW LEGAL DOCUMENT
+                + NIEUW JURIDISCH DOCUMENT
               </button>
             </motion.div>
 
@@ -118,18 +124,18 @@ export default function EnterpriseOSPage() {
               <div className="absolute inset-0 bg-red-500/5 animate-pulse" />
               <div className="relative z-10">
                 <h2 className="text-xl font-bold uppercase flex items-center gap-2 mb-2">
-                  <Search className="w-5 h-5" /> Intelligence Engine
+                  <Search className="w-5 h-5" /> Inlichtingen Motor
                 </h2>
-                <p className="text-xs text-red-500/70 mb-4">Generate 10-page market research PDFs via Swarm AI.</p>
+                <p className="text-xs text-red-500/70 mb-4">Genereer 10-pagina marktonderzoek PDFs via Swarm AI.</p>
                 
                 <input 
                   type="text" 
-                  placeholder="Subject (e.g. Real Estate Dubai 2027)" 
+                  placeholder="Onderwerp (bijv. Vastgoed Dubai 2027)" 
                   className="w-full bg-black border border-red-500/30 rounded p-3 text-sm focus:outline-none focus:border-red-500 mb-3 text-red-500 placeholder:text-red-500/30"
                 />
                 
                 <button className="w-full py-3 bg-red-600 text-black font-black uppercase tracking-widest hover:bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all">
-                  GENERATE DOSSIER [PDF]
+                  GENEREER DOSSIER [PDF]
                 </button>
               </div>
             </motion.div>
