@@ -7,12 +7,13 @@ import { Points, PointMaterial } from '@react-three/drei';
 
 interface SwarmBrainProps {
   isSpeaking: boolean;
-  audioDataArray: Uint8Array | null;
+  analyserRef: React.MutableRefObject<AnalyserNode | null>;
 }
 
-export function SwarmBrain({ isSpeaking, audioDataArray }: SwarmBrainProps) {
+export function SwarmBrain({ isSpeaking, analyserRef }: SwarmBrainProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const shellRef = useRef<THREE.Mesh>(null);
+  const dataArrayRef = useRef<Uint8Array>(new Uint8Array(128));
 
   // Generate brain-like point cloud
   const particleCount = 2500;
@@ -61,18 +62,16 @@ export function SwarmBrain({ isSpeaking, audioDataArray }: SwarmBrainProps) {
 
     // Audio Reactivity (Pulsing)
     let targetScale = 1.0;
-    if (isSpeaking && audioDataArray) {
-      // Calculate average frequency
+    if (isSpeaking && analyserRef.current) {
+      analyserRef.current.getByteFrequencyData(dataArrayRef.current);
       let sum = 0;
-      for (let i = 0; i < audioDataArray.length; i++) {
-        sum += audioDataArray[i];
+      for (let i = 0; i < dataArrayRef.current.length; i++) {
+        sum += dataArrayRef.current[i];
       }
-      const avg = sum / audioDataArray.length;
-      // Map audio level (0-255) to scale (1.0 - 1.25)
+      const avg = sum / dataArrayRef.current.length;
       const intensity = avg / 255.0;
       targetScale = 1.0 + intensity * 0.25;
     } else {
-      // Idle heartbeat pulse
       targetScale = 1.0 + Math.sin(time * 2) * 0.02;
     }
 

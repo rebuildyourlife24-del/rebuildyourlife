@@ -16,11 +16,6 @@ export function SwarmAvatar() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
-  const animationRef = useRef<number>();
-
-  // State to trigger re-renders for the 3D component
-  const [audioData, setAudioData] = useState<Uint8Array | null>(null);
 
   useEffect(() => {
     // Initialize AudioContext on first interaction
@@ -29,33 +24,14 @@ export function SwarmAvatar() {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
         analyserRef.current = audioContextRef.current.createAnalyser();
         analyserRef.current.fftSize = 256;
-        dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
       }
     };
 
     document.addEventListener('click', initAudio, { once: true });
     return () => {
       document.removeEventListener('click', initAudio);
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, []);
-
-  const updateAudioData = () => {
-    if (analyserRef.current && dataArrayRef.current && isSpeaking) {
-      analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-      setAudioData(new Uint8Array(dataArrayRef.current));
-      animationRef.current = requestAnimationFrame(updateAudioData);
-    }
-  };
-
-  useEffect(() => {
-    if (isSpeaking) {
-      updateAudioData();
-    } else {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      setAudioData(null);
-    }
-  }, [isSpeaking]);
 
   const playAudio = async (base64Audio: string) => {
     if (!audioContextRef.current || !analyserRef.current) return;
@@ -137,7 +113,7 @@ export function SwarmAvatar() {
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1} color="#00f0ff" />
           <pointLight position={[-10, -10, -10]} intensity={0.5} color="#d4a853" />
-          <SwarmBrain isSpeaking={isSpeaking} audioDataArray={audioData} />
+          <SwarmBrain isSpeaking={isSpeaking} analyserRef={analyserRef} />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate={!isSpeaking} autoRotateSpeed={0.5} />
           <Environment preset="city" />
         </Canvas>
