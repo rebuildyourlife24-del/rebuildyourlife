@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
@@ -30,16 +32,37 @@ export default function LoginPage() {
       
       if (result.success) {
         setUser(result.user as any);
-        router.push('/dashboard');
+        router.push('/dashboard/war-room');
       } else {
         setError(result.error || 'Inloggen mislukt');
       }
-    } catch (err) {
-      setError('Er ging iets mis met het verbinden met de beveiligde kluis.');
+    } catch (err: any) {
+      setError(err.message || 'Er is een fout opgetreden bij het inloggen.');
     } finally {
       setLoading(false);
     }
   }
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    setError('');
+    try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setError(err.message || 'Google inloggen mislukt.');
+      setGoogleLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
@@ -141,22 +164,37 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <Button type="submit" fullWidth loading={loading} size="lg">
-              Activeer Sessie
+            <Button 
+              type="submit" 
+              className="w-full bg-[#d4a853] hover:bg-[#b38d45] text-black font-bold tracking-widest uppercase mt-6 transition-all shadow-[0_0_15px_rgba(212,168,83,0.3)]"
+              disabled={loading || googleLoading}
+            >
+              {loading ? 'Bezig met identificeren...' : '[ ONTGRENDEL KLUIS ]'}
+            </Button>
+            
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-800"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase tracking-widest">
+                <span className="bg-[#050505] px-2 text-zinc-500">Of log in met</span>
+              </div>
+            </div>
+
+            <Button 
+              type="button" 
+              onClick={handleGoogleLogin}
+              className="w-full bg-white hover:bg-zinc-200 text-black font-bold tracking-widest uppercase transition-all shadow-md flex items-center justify-center gap-3"
+              disabled={loading || googleLoading}
+            >
+              {googleLoading ? 'Bezig...' : (
+                <>
+                  <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                  GOOGLE
+                </>
+              )}
             </Button>
           </form>
-
-          <div className="mt-8 text-center border-t border-white/5 pt-6">
-            <p className="text-sm text-textSecondary mb-2">
-              Klaar om de controle over je leven te herpakken?
-            </p>
-            <Link
-              href="/auth/register"
-              className="inline-block rounded-lg px-4 py-2 font-bold text-navy bg-gold transition-all hover:scale-105 hover:bg-goldLight hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
-            >
-              Start Je Ontwikkeling Nu
-            </Link>
-          </div>
         </Card>
       </motion.div>
     </div>

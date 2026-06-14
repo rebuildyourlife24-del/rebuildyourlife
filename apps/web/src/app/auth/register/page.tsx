@@ -7,107 +7,36 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-
 import { registerAction } from '@/app/actions/auth';
-
-import { useSearchParams } from 'next/navigation';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const plan = searchParams?.get('plan');
-
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [agreedToGuarantee, setAgreedToGuarantee] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  function validate(): boolean {
-    const newErrors: Record<string, string> = {};
-
-    if (form.firstName.trim().length < 2) {
-      newErrors.firstName = 'First name must be at least 2 characters';
-    }
-    if (form.lastName.trim().length < 2) {
-      newErrors.lastName = 'Last name must be at least 2 characters';
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    if (form.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-    if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
-
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setServerError('');
-
-    if (!validate()) return;
-
+    setError('');
+    setSuccess('');
     setLoading(true);
 
+    const formData = new FormData(e.currentTarget);
+
     try {
-      const result = await registerAction({
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        email: form.email.trim().toLowerCase(),
-        password: form.password,
-      });
+      const result = await registerAction(formData);
       
       if (result.success) {
-        if (plan === 'operator') {
-          // --- OMEGA PROTOCOL MOLLIE CHECKOUT ---
-          const checkoutRes = await fetch('/api/mollie/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              priceId: 'price_omega_operator_1995', // Or Mollie amount config
-              successUrl: window.location.origin + '/dashboard?payment=success',
-              cancelUrl: window.location.origin + '/dashboard?payment=cancelled'
-            })
-          });
-          const checkoutData = await checkoutRes.json();
-          if (checkoutData.url) {
-            window.location.href = checkoutData.url;
-            return;
-          }
-        }
-        router.push('/dashboard');
+        setSuccess(result.message || 'Registratie succesvol! Controleer je e-mail.');
+        // router.push('/auth/login?registered=true'); // Optioneel
       } else {
-        setServerError(result.error || 'Registratie mislukt.');
+        setError(result.error || 'Registratie mislukt');
       }
-    } catch (err) {
-      setServerError('Er ging iets mis met het verbinden met de beveiligde kluis.');
+    } catch (err: any) {
+      setError(err.message || 'Er is een fout opgetreden.');
     } finally {
       setLoading(false);
     }
-  }
-
-  function updateField(field: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      if (errors[field]) {
-        setErrors((prev) => {
-          const next = { ...prev };
-          delete next[field];
-          return next;
-        });
-      }
-    };
   }
 
   return (
@@ -118,7 +47,6 @@ export default function RegisterPage() {
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
         className="w-full max-w-md"
       >
-        {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-gold">
@@ -136,143 +64,81 @@ export default function RegisterPage() {
 
         <Card variant="glass" padding="lg">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-textPrimary">Create your account</h1>
+            <h1 className="text-2xl font-bold text-textPrimary">Nieuwe Registratie</h1>
             <p className="mt-1 text-sm text-textSecondary">
-              Start your journey to a rebuilt future
+              Meld je aan voor toegang tot the Swarm.
             </p>
           </div>
 
-          {serverError && (
+          {error && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="mb-4 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3"
             >
-              <p className="text-sm text-danger">{serverError}</p>
+              <p className="text-sm text-danger">{error}</p>
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-4 rounded-xl border border-success/20 bg-success/5 px-4 py-3"
+            >
+              <p className="text-sm text-success">{success}</p>
             </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <Input
-                label="First Name"
+                name="firstName"
+                label="Voornaam"
                 type="text"
-                placeholder="John"
-                value={form.firstName}
-                onChange={updateField('firstName')}
-                error={errors.firstName}
                 required
-                autoComplete="given-name"
               />
               <Input
-                label="Last Name"
+                name="lastName"
+                label="Achternaam"
                 type="text"
-                placeholder="Doe"
-                value={form.lastName}
-                onChange={updateField('lastName')}
-                error={errors.lastName}
                 required
-                autoComplete="family-name"
               />
             </div>
 
             <Input
-              label="Email"
+              name="email"
+              label="E-mailadres"
               type="email"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={updateField('email')}
-              error={errors.email}
               required
-              autoComplete="email"
-              icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M22 4L12 13 2 4" />
-                </svg>
-              }
             />
 
             <Input
-              label="Password"
+              name="password"
+              label="Wachtwoord"
               type="password"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={updateField('password')}
-              error={errors.password}
-              hint="Must be at least 8 characters"
+              placeholder="Minimaal 12 tekens"
               required
-              autoComplete="new-password"
-              icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-              }
             />
 
-            <Input
-              label="Confirm Password"
-              type="password"
-              placeholder="••••••••"
-              value={form.confirmPassword}
-              onChange={updateField('confirmPassword')}
-              error={errors.confirmPassword}
-              required
-              autoComplete="new-password"
-              icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 11l3 3L22 4" />
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                </svg>
-              }
-            />
-
-            <div className="flex items-start gap-3 py-2">
-              <input 
-                type="checkbox" 
-                id="guarantee-check" 
-                checked={agreedToGuarantee}
-                onChange={(e) => setAgreedToGuarantee(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-gold-500 focus:ring-gold-500 focus:ring-offset-black"
-              />
-              <label htmlFor="guarantee-check" className="text-sm text-zinc-400 leading-snug">
-                Ik heb de{' '}
-                <Link href="/info/guarantee" target="_blank" className="text-gold-400 hover:text-gold-300 font-semibold underline">
-                  100% Recovery Guarantee & Opt-In Bewindvoering
-                </Link>
-                {' '}gelezen en begrepen dat The Luxury Receiver vrijwillig is.
-              </label>
-            </div>
-
-            <Button type="submit" fullWidth loading={loading} size="lg" disabled={!agreedToGuarantee}>
-              Create Account
+            <Button 
+              type="submit" 
+              className="w-full bg-[#d4a853] hover:bg-[#b38d45] text-black font-bold tracking-widest uppercase mt-6 transition-all shadow-[0_0_15px_rgba(212,168,83,0.3)]"
+              disabled={loading}
+            >
+              {loading ? 'Bezig...' : '[ MAAK ACCOUNT AAN ]'}
             </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-textSecondary">
-              Already have an account?{' '}
+            
+            <div className="mt-6 text-center">
               <Link
                 href="/auth/login"
-                className="font-medium text-gold transition-colors hover:text-gold-light"
+                className="text-sm text-textSecondary hover:text-gold transition-colors"
               >
-                Sign in
+                Heb je al een account? Log in.
               </Link>
-            </p>
-          </div>
+            </div>
+          </form>
         </Card>
-
-        <p className="mt-6 text-center text-xs text-textSecondary/60">
-          By creating an account, you agree to our{' '}
-          <Link href="#" className="text-textSecondary hover:text-textPrimary transition-colors">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="#" className="text-textSecondary hover:text-textPrimary transition-colors">
-            Privacy Policy
-          </Link>
-        </p>
       </motion.div>
     </div>
   );

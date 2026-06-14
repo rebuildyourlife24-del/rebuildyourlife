@@ -1,12 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { Paywall } from '@/components/ui/Paywall';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-
+import { OrionEye } from '@/components/ui/OrionEye';
 const data = [
   { month: 'Jan', balance: 0, debt: 0 },
   { month: 'Feb', balance: 0, debt: 0 },
@@ -36,6 +37,42 @@ const itemVariants = {
 };
 
 export default function WarRoomPage() {
+  const [orionStatus, setOrionStatus] = useState<'IDLE' | 'THINKING' | 'ALERT'>('IDLE');
+  const [command, setCommand] = useState('');
+  const [orionResponse, setOrionResponse] = useState<string | null>(null);
+
+  const sendCommand = async () => {
+    if (!command.trim()) return;
+    setOrionStatus('THINKING');
+    setOrionResponse(null);
+    try {
+      const res = await fetch('/api/orion/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command }),
+      });
+      const data = await res.json();
+      setOrionResponse(data.response);
+      setOrionStatus('IDLE');
+    } catch (e) {
+      setOrionResponse('Error contacting Omega Core.');
+      setOrionStatus('ALERT');
+    }
+  };
+
+  const triggerPulse = async () => {
+    setOrionStatus('THINKING');
+    try {
+      const res = await fetch('/api/orion/pulse');
+      const data = await res.json();
+      setOrionStatus(data.state);
+      setOrionResponse(data.message);
+    } catch (e) {
+      setOrionStatus('ALERT');
+      setOrionResponse('Pulse failed.');
+    }
+  };
+
   return (
     <motion.div
       variants={containerVariants}
@@ -50,6 +87,37 @@ export default function WarRoomPage() {
         <p className="mt-2 text-textSecondary font-mono text-sm uppercase tracking-wider">
           Strategic Overview & Trajectory Analysis
         </p>
+      </motion.div>
+
+      {/* Orion's Eye 3D Visualizer & Command Interface */}
+      <motion.div variants={itemVariants} className="w-full flex flex-col items-center py-4 bg-[#0a0e1a]/80 rounded-xl border border-white/5 relative overflow-hidden">
+        <OrionEye status={orionStatus} />
+        
+        {/* Command Line Interface */}
+        <div className="z-10 w-full max-w-2xl px-6 pb-6">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendCommand()}
+              placeholder="Enter command for Orion..." 
+              className="flex-1 bg-black/50 border border-[#00f0ff]/30 text-[#00f0ff] font-mono p-3 rounded focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]"
+            />
+            <Button onClick={sendCommand} className="bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/50 hover:bg-[#00f0ff]/20 font-mono">
+              EXECUTE
+            </Button>
+            <Button onClick={triggerPulse} className="bg-transparent text-textSecondary border border-white/10 hover:text-white font-mono">
+              PULSE
+            </Button>
+          </div>
+          
+          {orionResponse && (
+            <div className="mt-4 p-4 border-l-2 border-[#00f0ff] bg-[#00f0ff]/5 font-mono text-sm text-[#00f0ff] animate-fade-in">
+              &gt; {orionResponse}
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* AI Prognosis Block */}

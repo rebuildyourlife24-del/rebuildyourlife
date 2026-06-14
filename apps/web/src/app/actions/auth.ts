@@ -1,685 +1,138 @@
 "use server";
 
-import { PrismaClient } from "@rebuildyourlife/database";
-import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { createServerClient } from "@/lib/supabase/server";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
+export async function loginAction(email: string, password: string, rememberMe?: boolean) {
+  const supabase = await createServerClient();
 
-  if (!secret) {
-    throw new Error("JWT_SECRET environment variable is not set");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error || !data.user) {
+    // Log mislukte poging
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (user) {
+      await prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          action: "LOGIN_FAILED",
+          entityType: "AUTH",
+        }
+      });
+    }
+    return { success: false, error: "Ongeldige logingegevens." };
   }
 
-  return secret;
+  // Zorg dat gebruiker in Prisma staat
+  let user = await prisma.user.findUnique({ where: { id: data.user.id } });
+  
+  if (!user) {
+    // Fallback voor als de sync mislukt was
+    user = await prisma.user.upsert({
+      where: { email },
+      update: { id: data.user.id },
+      create: {
+        id: data.user.id,
+        email,
+        passwordHash: '',
+        firstName: data.user.user_metadata?.first_name || '',
+        lastName: data.user.user_metadata?.last_name || '',
+        role: email === 'hsemler50@gmail.com' ? 'SUPER_ADMIN' : 'USER',
+      }
+    });
+  }
+
+  // Log succesvolle login
+  await prisma.auditLog.create({
+    data: {
+      userId: user.id,
+      action: "LOGIN_SUCCESS",
+      entityType: "AUTH",
+    }
+  });
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLoginAt: new Date() }
+  });
+
+  return { success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role } };
 }
 
-export async function loginAction(
-  email: string,
-  password: string,
-  rememberMe: boolean = false
-) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email },
+export async function registerAction(formData: FormData) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  const firstName = formData.get('firstName') as string;
+  const lastName = formData.get('lastName') as string;
+
+  if (!email || !password) {
+    return { success: false, error: "E-mail en wachtwoord zijn verplicht." };
+  }
+
+  if (password.length < 12) {
+    return { success: false, error: "Wachtwoord moet minimaal 12 tekens bevatten (Apex Protocol)." };
+  }
+
+  const supabase = await createServerClient();
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+      }
+    }
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  if (data.user) {
+    // Sla direct op in Prisma
+    await prisma.user.create({
+      data: {
+        id: data.user.id,
+        email,
+        passwordHash: '', // Wordt beheerd door Supabase
+        firstName: firstName || '',
+        lastName: lastName || '',
+        role: email === 'hsemler50@gmail.com' ? 'SUPER_ADMIN' : 'USER',
+      }
     });
 
-    if (!user) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isMatch) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const expiresIn = rememberMe ? "30d" : "24h";
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      { expiresIn }
-    );
-
-    const cookieStore = await cookies();
-
-    const cookieOptions: any = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    };
-
-    if (rememberMe) {
-      cookieOptions.maxAge = 30 * 24 * 60 * 60;
-    }
-
-    cookieStore.set("ryl_session", token, cookieOptions);
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error: any) {
-    console.error("Login action error:", error);
-
-    return {
-      success: false,
-      error:
-        "Debug Error: " +
-        (error?.message || "Onbekende interne fout"),
-    };
+    return { success: true, message: "Controleer je e-mail voor de verificatielink." };
   }
+
+  return { success: false, error: "Onbekende fout bij registratie." };
 }
 
 export async function logoutAction() {
-  const cookieStore = await cookies();
-
-  cookieStore.delete("ryl_session");
-
-  return {
-    success: true,
-  };
-}
-
-export async function registerAction(data: any) {
-  try {
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
-
-    if (existingUser) {
-      return {
-        success: false,
-        error: "Dit e-mailadres is al in gebruik.",
-      };
-    }
-
-    const passwordHash = await bcrypt.hash(
-      data.password,
-      12
-    );
-
-    const user = await prisma.user.create({
-      data: {
-        email: data.email,
-        passwordHash,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        role: "USER",
-        subscriptionTier: "FREE",
-      },
-    });
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    (await cookies()).set(
-      "ryl_session",
-      token,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60,
-        path: "/",
-      }
-    );
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error) {
-    console.error(
-      "Register action error:",
-      error
-    );
-
-    return {
-      success: false,
-      error:
-        "Er is een interne serverfout opgetreden.",
-    };
-  }
+  const supabase = await createServerClient();
+  await supabase.auth.signOut();
+  return { success: true };
 }
 
 export async function getSessionAction() {
-  const token =
-    (await cookies()).get(
-      "ryl_session"
-    )?.value;
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!token) {
-    return {
-      success: false,
-    };
-  }
+  if (!user) return { success: false };
 
   try {
-    const decoded = jwt.verify(
-      token,
-      getJwtSecret()
-    ) as any;
-
-    const user =
-      await prisma.user.findUnique({
-        where: {
-          id: decoded.userId,
-        },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          firstName: true,
-          lastName: true,
-          avatarUrl: true,
-        },
-      });
-
-    if (!user) {
-      return {
-        success: false,
-      };
-    }
-
-    return {
-      success: true,
-      user,
-    };
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id }
+    });
+    if (!dbUser) return { success: false };
+    return { success: true, user: { id: dbUser.id, email: dbUser.email, firstName: dbUser.firstName, lastName: dbUser.lastName, role: dbUser.role } };
   } catch {
-    return {
-      success: false,
-    };
-  }
-}"use server";
-
-import { PrismaClient } from "@rebuildyourlife/database";
-import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
-
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-
-  if (!secret) {
-    throw new Error("JWT_SECRET environment variable is not set");
-  }
-
-  return secret;
-}
-
-export async function loginAction(
-  email: string,
-  password: string,
-  rememberMe: boolean = false
-) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isMatch) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const expiresIn = rememberMe ? "30d" : "24h";
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      { expiresIn }
-    );
-
-    const cookieStore = await cookies();
-
-    const cookieOptions: any = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    };
-
-    if (rememberMe) {
-      cookieOptions.maxAge = 30 * 24 * 60 * 60;
-    }
-
-    cookieStore.set("ryl_session", token, cookieOptions);
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error: any) {
-    console.error("Login action error:", error);
-
-    return {
-      success: false,
-      error:
-        "Debug Error: " +
-        (error?.message || "Onbekende interne fout"),
-    };
-  }
-}
-
-export async function logoutAction() {
-  const cookieStore = await cookies();
-
-  cookieStore.delete("ryl_session");
-
-  return {
-    success: true,
-  };
-}
-
-export async function registerAction(data: any) {
-  try {
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
-
-    if (existingUser) {
-      return {
-        success: false,
-        error: "Dit e-mailadres is al in gebruik.",
-      };
-    }
-
-    const passwordHash = await bcrypt.hash(
-      data.password,
-      12
-    );
-
-    const user = await prisma.user.create({
-      data: {
-        email: data.email,
-        passwordHash,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        role: "USER",
-        subscriptionTier: "FREE",
-      },
-    });
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    (await cookies()).set(
-      "ryl_session",
-      token,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60,
-        path: "/",
-      }
-    );
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error) {
-    console.error(
-      "Register action error:",
-      error
-    );
-
-    return {
-      success: false,
-      error:
-        "Er is een interne serverfout opgetreden.",
-    };
-  }
-}
-
-export async function getSessionAction() {
-  const token =
-    (await cookies()).get(
-      "ryl_session"
-    )?.value;
-
-  if (!token) {
-    return {
-      success: false,
-    };
-  }
-
-  try {
-    const decoded = jwt.verify(
-      token,
-      getJwtSecret()
-    ) as any;
-
-    const user =
-      await prisma.user.findUnique({
-        where: {
-          id: decoded.userId,
-        },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          firstName: true,
-          lastName: true,
-          avatarUrl: true,
-        },
-      });
-
-    if (!user) {
-      return {
-        success: false,
-      };
-    }
-
-    return {
-      success: true,
-      user,
-    };
-  } catch {
-    return {
-      success: false,
-    };
-  }
-}"use server";
-
-import { PrismaClient } from "@rebuildyourlife/database";
-import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
-
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-
-  if (!secret) {
-    throw new Error("JWT_SECRET environment variable is not set");
-  }
-
-  return secret;
-}
-
-export async function loginAction(
-  email: string,
-  password: string,
-  rememberMe: boolean = false
-) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isMatch) {
-      return {
-        success: false,
-        error: "Ongeldig e-mailadres of wachtwoord.",
-      };
-    }
-
-    const expiresIn = rememberMe ? "30d" : "24h";
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      { expiresIn }
-    );
-
-    const cookieStore = await cookies();
-
-    const cookieOptions: any = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    };
-
-    if (rememberMe) {
-      cookieOptions.maxAge = 30 * 24 * 60 * 60;
-    }
-
-    cookieStore.set("ryl_session", token, cookieOptions);
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error: any) {
-    console.error("Login action error:", error);
-
-    return {
-      success: false,
-      error:
-        "Debug Error: " +
-        (error?.message || "Onbekende interne fout"),
-    };
-  }
-}
-
-export async function logoutAction() {
-  const cookieStore = await cookies();
-
-  cookieStore.delete("ryl_session");
-
-  return {
-    success: true,
-  };
-}
-
-export async function registerAction(data: any) {
-  try {
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
-
-    if (existingUser) {
-      return {
-        success: false,
-        error: "Dit e-mailadres is al in gebruik.",
-      };
-    }
-
-    const passwordHash = await bcrypt.hash(
-      data.password,
-      12
-    );
-
-    const user = await prisma.user.create({
-      data: {
-        email: data.email,
-        passwordHash,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        role: "USER",
-        subscriptionTier: "FREE",
-      },
-    });
-
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      getJwtSecret(),
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    (await cookies()).set(
-      "ryl_session",
-      token,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60,
-        path: "/",
-      }
-    );
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-      },
-    };
-  } catch (error) {
-    console.error(
-      "Register action error:",
-      error
-    );
-
-    return {
-      success: false,
-      error:
-        "Er is een interne serverfout opgetreden.",
-    };
-  }
-}
-
-export async function getSessionAction() {
-  const token =
-    (await cookies()).get(
-      "ryl_session"
-    )?.value;
-
-  if (!token) {
-    return {
-      success: false,
-    };
-  }
-
-  try {
-    const decoded = jwt.verify(
-      token,
-      getJwtSecret()
-    ) as any;
-
-    const user =
-      await prisma.user.findUnique({
-        where: {
-          id: decoded.userId,
-        },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          firstName: true,
-          lastName: true,
-          avatarUrl: true,
-        },
-      });
-
-    if (!user) {
-      return {
-        success: false,
-      };
-    }
-
-    return {
-      success: true,
-      user,
-    };
-  } catch {
-    return {
-      success: false,
-    };
+    return { success: false };
   }
 }

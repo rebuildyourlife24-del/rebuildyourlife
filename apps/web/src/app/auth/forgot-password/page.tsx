@@ -6,19 +6,37 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { requestPasswordResetAction } from '@/app/actions/passwordReset';
+import { createBrowserClient } from '@supabase/ssr';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     setLoading(true);
-    await requestPasswordResetAction(email);
-    setLoading(false);
-    setSubmitted(true);
+
+    try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (error) throw error;
+      setSuccess('Als dit e-mailadres bij ons bekend is, heb je een link ontvangen om je toegangscode te resetten.');
+    } catch (err: any) {
+      setError(err.message || 'Er is een fout opgetreden.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -46,69 +64,59 @@ export default function ForgotPasswordPage() {
 
         <Card variant="glass" padding="lg">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-textPrimary">Reset Password</h1>
+            <h1 className="text-2xl font-bold text-textPrimary">Systeemherstel</h1>
             <p className="mt-1 text-sm text-textSecondary">
-              Enter your email address to receive a password reset link.
+              Voer je e-mailadres in om je toegangscode te resetten.
             </p>
           </div>
 
-          {submitted ? (
+          {error && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="rounded-xl border border-success/20 bg-success/5 px-4 py-6 text-center"
+              className="mb-4 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3"
             >
-              <div className="mb-3 flex justify-center text-success">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-textPrimary">Check your email</h3>
-              <p className="text-sm text-textSecondary">
-                We have sent a password reset link to {email}.
-              </p>
-              <Link href="/auth/login">
-                <Button variant="secondary" className="mt-6 w-full">
-                  Return to login
-                </Button>
-              </Link>
+              <p className="text-sm text-danger">{error}</p>
             </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Email address"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                icon={
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                    <path d="M22 4L12 13 2 4" />
-                  </svg>
-                }
-              />
-
-              <Button type="submit" fullWidth loading={loading} size="lg">
-                Send Reset Link
-              </Button>
-
-              <div className="mt-6 text-center">
-                <p className="text-sm text-textSecondary">
-                  Remember your password?{' '}
-                  <Link
-                    href="/auth/login"
-                    className="font-medium text-gold transition-colors hover:text-gold-light"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            </form>
           )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-4 rounded-xl border border-success/20 bg-success/5 px-4 py-3"
+            >
+              <p className="text-sm text-success">{success}</p>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="E-mailadres"
+              type="email"
+              placeholder="operator@rebuildyourlife.eu"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <Button 
+              type="submit" 
+              className="w-full bg-[#d4a853] hover:bg-[#b38d45] text-black font-bold tracking-widest uppercase mt-6 transition-all shadow-[0_0_15px_rgba(212,168,83,0.3)]"
+              disabled={loading}
+            >
+              {loading ? 'Bezig met zoeken...' : '[ STUUR RESET LINK ]'}
+            </Button>
+            
+            <div className="mt-6 text-center">
+              <Link
+                href="/auth/login"
+                className="text-sm text-textSecondary hover:text-gold transition-colors"
+              >
+                Terug naar Inloggen
+              </Link>
+            </div>
+          </form>
         </Card>
       </motion.div>
     </div>

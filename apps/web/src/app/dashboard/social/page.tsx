@@ -108,7 +108,7 @@ export default function SwarmDashboard() {
             </h3>
             <Badge className="bg-red-500/10 text-red-500 border-red-500/20">DISCONNECTED</Badge>
           </div>
-          <Button variant="outline" className="w-full mt-2 border-zinc-700 text-zinc-400">Connect</Button>
+          <Button variant="secondary" className="w-full mt-2 border-zinc-700 text-zinc-400">Connect</Button>
         </Card>
       </div>
 
@@ -133,7 +133,7 @@ export default function SwarmDashboard() {
                 <div>
                   <h3 className="font-medium text-white text-lg">{campaign.title}</h3>
                   <div className="flex gap-3 mt-1">
-                    <Badge variant="outline" className={getStatusColor(campaign.status)}>{campaign.status}</Badge>
+                    <Badge className={getStatusColor(campaign.status)}>{campaign.status}</Badge>
                     <span className="text-zinc-500 text-sm">Budget: €{campaign.budget.toLocaleString()}</span>
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export default function SwarmDashboard() {
                     APPROVE
                   </Button>
                 ) : (
-                  <Button variant="outline" className="border-zinc-700 text-zinc-300">
+                  <Button variant="secondary" className="border-zinc-700 text-zinc-300">
                     Manage
                   </Button>
                 )}

@@ -54,3 +54,5 @@ coverage/
 
 # Turbo
 .turbo/runs/
+
+.vercel

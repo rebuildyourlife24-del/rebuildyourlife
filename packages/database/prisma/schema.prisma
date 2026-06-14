@@ -7,72 +7,69 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   directUrl  = env("DIRECT_URL")
-  extensions = [vector]
+  extensions = [postgis(schema: "topology"), uuid_ossp(map: "uuid-ossp", schema: "extensions"), vector]
 }
 
 model User {
-  id                   String           @id @default(uuid())
-  email                String           @unique
-  passwordHash         String
-  firstName            String
-  lastName             String
-  role                 String           @default("USER")
-  avatarUrl            String?
-  isEmailVerified      Boolean          @default(false)
-  mfaEnabled           Boolean          @default(false)
-  mfaSecret            String?
-  subscriptionTier     String           @default("FREE")
-  clearanceLevel       Int              @default(1)
-  experiencePoints     Int              @default(0)
-  profileType          String           @default("PERSONAL")
-  mollieCustomerId     String?
-  mollieSubscriptionId String?
-  
-  // Stripe Integration
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
-  stripePriceId        String?
+  id                     String                      @id @default(uuid())
+  email                  String                      @unique
+  passwordHash           String
+  firstName              String
+  lastName               String
+  role                   String                      @default("USER")
+  avatarUrl              String?
+  isEmailVerified        Boolean                     @default(false)
+  mfaEnabled             Boolean                     @default(false)
+  mfaSecret              String?
+  subscriptionTier       String                      @default("FREE")
+  clearanceLevel         Int                         @default(1)
+  experiencePoints       Int                         @default(0)
+  profileType            String                      @default("PERSONAL")
+  mollieCustomerId       String?
+  mollieSubscriptionId   String?
+  subscriptionStatus     String                      @default("ACTIVE")
+  onboardingCompleted    Boolean                     @default(false)
+  openaiKey              String?
+  lastLoginAt            DateTime?
+  createdAt              DateTime                    @default(now())
+  updatedAt              DateTime                    @updatedAt
+  deletedAt              DateTime?
   stripeCurrentPeriodEnd DateTime?
-
-  subscriptionStatus   String           @default("ACTIVE")
-  onboardingCompleted  Boolean          @default(false)
-  openaiKey            String?
-  lastLoginAt          DateTime?
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  aiConversations      AIConversation[]
-  aiMemories           AIMemory[]
-  apiKeys              ApiKey[]
-  auditLogs            AuditLog[]
-  budgets              Budget[]
-  businessClients      BusinessClient[]
-  debts                Debt[]
-  goals                Goal[]
-  healthLogs           HealthLog[]
-  lifeAreas            LifeArea[]
-  notifications        Notification[]
-  rebuildPrograms      RebuildProgram[]
-  sessions             Session[]
-  socialContacts       SocialContact[]
-  socialIntegrations   SocialPlatformIntegration[]
-  bankConnections      BankConnection[]
-  tasks                Task[]
-  agentActions         AgentAction[]    @relation("UserActionReviews")
-  
-  agentDossiers      AgentDossier[]
-  shopifyStores      ShopifyStore[]
-  socialMediaPosts   SocialMediaPost[]
-  interceptionAlerts InterceptionAlert[] @relation("TargetedUser")
-  treasuryVaults     TreasuryVault[]
-  taxStrategies      TaxStrategy[]
-  creditorDossiers   CreditorDossier[]
-  legalContacts      LegalContact[]
-  justiceLedgers     JusticeLedger[]
-  goalDossiers       GoalDossier[]
-  emergencyRequests  EmergencyRequest[]
-  opportunityReports OpportunityReport[]
-  marketingConversions MarketingConversion[]
-  aiConciergeLogs    AIConciergeLog[]
+  stripeCustomerId       String?                     @unique
+  stripePriceId          String?
+  stripeSubscriptionId   String?                     @unique
+  aiConciergeLogs        AIConciergeLog[]
+  aiConversations        AIConversation[]
+  aiMemories             AIMemory[]
+  agentActions           AgentAction[]               @relation("UserActionReviews")
+  agentDossiers          AgentDossier[]
+  apiKeys                ApiKey[]
+  auditLogs              AuditLog[]
+  bankConnections        BankConnection[]
+  budgets                Budget[]
+  businessClients        BusinessClient[]
+  creditorDossiers       CreditorDossier[]
+  debts                  Debt[]
+  emergencyRequests      EmergencyRequest[]
+  goals                  Goal[]
+  goalDossiers           GoalDossier[]
+  healthLogs             HealthLog[]
+  interceptionAlerts     InterceptionAlert[]         @relation("TargetedUser")
+  justiceLedgers         JusticeLedger[]
+  legalContacts          LegalContact[]
+  lifeAreas              LifeArea[]
+  marketingConversions   MarketingConversion[]
+  notifications          Notification[]
+  opportunityReports     OpportunityReport[]
+  rebuildPrograms        RebuildProgram[]
+  sessions               Session[]
+  shopifyStores          ShopifyStore[]
+  socialContacts         SocialContact[]
+  socialMediaPosts       SocialMediaPost[]
+  socialIntegrations     SocialPlatformIntegration[]
+  tasks                  Task[]
+  taxStrategies          TaxStrategy[]
+  treasuryVaults         TreasuryVault[]
 
   @@index([email])
   @@index([role])
@@ -292,17 +289,17 @@ model AIMessage {
 }
 
 model AIMemory {
-  id         String    @id @default(uuid())
-  userId     String
-  agentType  String
-  memoryType String
-  content          String
-  vectorEmbedding  Unsupported("vector(1536)")?
-  importance Float     @default(0.5)
-  expiresAt  DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String                 @id @default(uuid())
+  content         String
+  importance      Float                  @default(0.5)
+  createdAt       DateTime               @default(now())
+  expiresAt       DateTime?
+  memoryType      String
+  updatedAt       DateTime               @updatedAt
+  userId          String
+  agentType       String
+  vectorEmbedding Unsupported("vector")?
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([userId, agentType])
@@ -409,6 +406,7 @@ model SocialContact {
   @@index([userId, type])
   @@index([lastContactAt])
 }
+
 model BusinessClient {
   id            String            @id @default(uuid())
   userId        String
@@ -449,35 +447,34 @@ model BusinessInvoice {
 }
 
 model PasswordResetToken {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
-  token     String   @unique
+  token     String    @unique
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   @@index([token])
   @@index([userId])
   @@index([expiresAt])
 }
 
-// Orion gedragsgeheugen — leert van communicatie patronen
 model OrionMemory {
-  id            String   @id @default(uuid())
-  userId        String
-  sessionId     String?
-  memoryType    String   // BEHAVIORAL, EMOTIONAL, PREFERENCE, FACT, WARNING
-  trigger       String?  // wat triggerde dit geheugen
-  content         String   // het geleerde patroon
-  vectorEmbedding Unsupported("vector(1536)")?
-  emotionalTone String?  // AGGRESSIVE, NEUTRAL, POSITIVE, FRUSTRATED
-  intensity     Int      @default(5) // 1-10 intensiteitsschaal
-  response      String?  // hoe Orion reageerde
-  wasEffective  Boolean? // was de respons effectief
-  learnWeight   Float    @default(1.0) // hoe zwaar weegt dit geheugen
-  tags          String?  // komma-gescheiden tags
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String                 @id @default(uuid())
+  userId          String
+  sessionId       String?
+  memoryType      String
+  trigger         String?
+  content         String
+  emotionalTone   String?
+  intensity       Int                    @default(5)
+  response        String?
+  wasEffective    Boolean?
+  learnWeight     Float                  @default(1.0)
+  tags            String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  vectorEmbedding Unsupported("vector")?
 
   @@index([userId])
   @@index([memoryType])
@@ -485,24 +482,23 @@ model OrionMemory {
   @@index([createdAt])
 }
 
-// Analytics cloud — inkomsten/verliezen/gemiste kansen
 model RevenueSnapshot {
-  id              String   @id @default(uuid())
-  userId          String
-  snapshotDate    DateTime
-  period          String   // DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY
-  totalRevenue    Float    @default(0)
-  totalExpenses   Float    @default(0)
-  netProfit       Float    @default(0)
-  missedRevenue   Float    @default(0) // gemiste inkomsten
-  projectedRevenue Float   @default(0) // verwachte inkomsten
-  actualVsBudget  Float    @default(0) // verschil budget vs werkelijk
-  vatReserve      Float    @default(0)
-  safetyBuffer    Float    @default(0)
-  source          String   @default("MANUAL") // MOLLIE, MANUAL, AI_PROJECTED
-  notes           String?
-  cachedAt        DateTime @default(now())
-  createdAt       DateTime @default(now())
+  id               String   @id @default(uuid())
+  userId           String
+  snapshotDate     DateTime
+  period           String
+  totalRevenue     Float    @default(0)
+  totalExpenses    Float    @default(0)
+  netProfit        Float    @default(0)
+  missedRevenue    Float    @default(0)
+  projectedRevenue Float    @default(0)
+  actualVsBudget   Float    @default(0)
+  vatReserve       Float    @default(0)
+  safetyBuffer     Float    @default(0)
+  source           String   @default("MANUAL")
+  notes            String?
+  cachedAt         DateTime @default(now())
+  createdAt        DateTime @default(now())
 
   @@index([userId])
   @@index([period])
@@ -510,14 +506,13 @@ model RevenueSnapshot {
   @@index([userId, period])
 }
 
-// Cache voor realtime analytics
 model AnalyticsCache {
-  id         String   @id @default(uuid())
-  cacheKey   String   @unique
-  data       String   // JSON data als string
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  cacheKey  String   @unique
+  data      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([cacheKey])
   @@index([expiresAt])
@@ -533,21 +528,21 @@ model EnterpriseFolder {
 }
 
 model EnterpriseDocument {
-  id        String           @id @default(uuid())
-  folderId  String
-  title     String
-  owner     String
-  status    String           @default("DRAFT")
-  category  String           @default("GENERAL")
-  priority  String           @default("MEDIUM")
-  source    String?
+  id              String                 @id @default(uuid())
+  folderId        String
+  title           String
+  owner           String
+  status          String                 @default("DRAFT")
+  category        String                 @default("GENERAL")
+  priority        String                 @default("MEDIUM")
+  source          String?
   content         String
-  vectorEmbedding Unsupported("vector(1536)")?
-  impact    String?
-  nextStep  String?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  folder    EnterpriseFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  impact          String?
+  nextStep        String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  vectorEmbedding Unsupported("vector")?
+  folder          EnterpriseFolder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@index([folderId])
   @@index([status])
@@ -557,87 +552,75 @@ model EnterpriseDocument {
 }
 
 model AgentAction {
-  id                String       @id @default(uuid())
-  agentType         String
-  title             String
-  description       String
-  status            String       @default("PENDING") // PENDING, APPROVED, REJECTED, EXECUTED, FAILED
-  
-  // Financiële impact (extreem precies)
-  estimatedCost     Float        @default(0)
-  estimatedRevenue  Float        @default(0)
-  transactionFees   Float        @default(0) // Stripe kosten, gas fees, server kosten
-  netProfitImpact   Float        @default(0)
-  riskLevel         String       @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
-  
-  // Audit trail en executie
-  suggestedAt       DateTime     @default(now())
-  reviewedAt        DateTime?
-  reviewedBy        String?
-  executedAt        DateTime?
-  errorMessage      String?
-  
-  // Data payload
-  payload           String?      // Opslag als stringified JSON
-  
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-
-  reviewer          User?        @relation("UserActionReviews", fields: [reviewedBy], references: [id])
+  id               String    @id @default(uuid())
+  agentType        String
+  title            String
+  description      String
+  status           String    @default("PENDING")
+  estimatedCost    Float     @default(0)
+  estimatedRevenue Float     @default(0)
+  transactionFees  Float     @default(0)
+  netProfitImpact  Float     @default(0)
+  riskLevel        String    @default("LOW")
+  suggestedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+  reviewedBy       String?
+  executedAt       DateTime?
+  errorMessage     String?
+  payload          String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  reviewer         User?     @relation("UserActionReviews", fields: [reviewedBy], references: [id])
 
   @@index([agentType])
   @@index([status])
   @@index([reviewedBy])
 }
 
-// Autonoom AI Bankieren
 model AgentBudget {
-  id              String       @id @default(uuid())
-  agentType       String       @unique
-  totalAllocated  Float        @default(0)
-  currentBalance  Float        @default(0)
-  spentAmount     Float        @default(0)
-  profitGenerated Float        @default(0)
-  status          String       @default("ACTIVE") // ACTIVE, FROZEN, DEPLETED
+  id              String        @id @default(uuid())
+  agentType       String        @unique
+  totalAllocated  Float         @default(0)
+  currentBalance  Float         @default(0)
+  spentAmount     Float         @default(0)
+  profitGenerated Float         @default(0)
+  status          String        @default("ACTIVE")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   cards           VirtualCard[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
 
   @@index([agentType])
   @@index([status])
 }
 
 model VirtualCard {
-  id              String       @id @default(uuid())
-  budgetId        String
-  cardProvider    String       @default("STRIPE_ISSUING")
-  last4           String?
-  spendingLimit   Float        @default(50) // Standaard veiligheidslimiet
-  isFrozen        Boolean      @default(false)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  budget          AgentBudget  @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  id            String      @id @default(uuid())
+  budgetId      String
+  cardProvider  String      @default("STRIPE_ISSUING")
+  last4         String?
+  spendingLimit Float       @default(50)
+  isFrozen      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  budget        AgentBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
   @@index([budgetId])
 }
 
-// Billionaire Social Engine
 model SocialPlatformIntegration {
-  id             String       @id @default(uuid())
-  userId         String
-  platform       String       // TIKTOK, INSTAGRAM, FACEBOOK, LINKEDIN, YOUTUBE
-  accessToken    String?
-  refreshToken   String?
-  accountId      String?      // Business/Ad Account ID
-  status         String       @default("DISCONNECTED") // CONNECTED, DISCONNECTED, ERROR
-  scopes         String?      // Welke permissies (ads, post, read)
-  expiresAt      DateTime?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  campaigns      SocialCampaign[]
+  id           String           @id @default(uuid())
+  userId       String
+  platform     String
+  accessToken  String?
+  refreshToken String?
+  accountId    String?
+  status       String           @default("DISCONNECTED")
+  scopes       String?
+  expiresAt    DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  campaigns    SocialCampaign[]
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, platform])
   @@index([platform])
@@ -645,172 +628,155 @@ model SocialPlatformIntegration {
 }
 
 model SocialCampaign {
-  id              String       @id @default(uuid())
-  platformId      String
-  campaignName    String
-  campaignType    String       // ORGANIC_POST, PAID_AD, BLOG
-  status          String       @default("DRAFT") // DRAFT, SCHEDULED, ACTIVE, PAUSED, COMPLETED
-  contentUrl      String?      // URL naar media (afbeelding/video)
-  caption         String?
-  budgetDaily     Float        @default(0)
-  totalSpend      Float        @default(0)
-  roas            Float        @default(0) // Return on Ad Spend
-  impressions     Int          @default(0)
-  clicks          Int          @default(0)
-  conversions     Int          @default(0)
-  publishedAt     DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  platform        SocialPlatformIntegration @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  id           String                    @id @default(uuid())
+  platformId   String
+  campaignName String
+  campaignType String
+  status       String                    @default("DRAFT")
+  contentUrl   String?
+  caption      String?
+  budgetDaily  Float                     @default(0)
+  totalSpend   Float                     @default(0)
+  roas         Float                     @default(0)
+  impressions  Int                       @default(0)
+  clicks       Int                       @default(0)
+  conversions  Int                       @default(0)
+  publishedAt  DateTime?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  platform     SocialPlatformIntegration @relation(fields: [platformId], references: [id], onDelete: Cascade)
 
   @@index([platformId])
   @@index([status])
   @@index([campaignType])
 }
 
-// Agent 15: The Live-In Handyman (DevOps/QA Agent Logs)
 model SystemHealthLog {
-  id             String       @id @default(uuid())
-  component      String       // VERCEL, SUPABASE, OLLAMA, SOCIAL_API, NEXTJS
-  status         String       // HEALTHY, DEGRADED, OFFLINE, RECOVERED
-  latencyMs      Int?         // Responstijd in milliseconden
-  errorLog       String?      // Exacte error message
-  actionTaken    String?      // Wat The Handyman heeft gedaan (bijv. "Cache Cleared", "Tokens Refreshed")
-  resolvedAt     DateTime?
-  createdAt      DateTime     @default(now())
+  id          String    @id @default(uuid())
+  component   String
+  status      String
+  latencyMs   Int?
+  errorLog    String?
+  actionTaken String?
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
 
   @@index([component])
   @@index([status])
   @@index([createdAt])
 }
 
-// ==========================================
-// PHASE 6: FINANCIAL WAR ROOM
-// ==========================================
-
 model BankConnection {
-  id             String   @id @default(uuid())
-  userId         String
-  provider       String   // e.g., 'STRIPE', 'PLAID'
-  accountId      String   @unique
-  accountName    String
-  accessToken    String   // Encrypted
-  status         String   @default("ACTIVE")
-  lastSyncAt     DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String                 @id @default(uuid())
+  userId       String
+  provider     String
+  accountId    String                 @unique
+  accountName  String
+  accessToken  String
+  status       String                 @default("ACTIVE")
+  lastSyncAt   DateTime               @default(now())
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions FinancialTransaction[]
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions   FinancialTransaction[]
-  
   @@index([userId])
 }
 
 model FinancialTransaction {
-  id               String   @id @default(uuid())
+  id               String         @id @default(uuid())
   bankConnectionId String
   amount           Float
-  currency         String   @default("EUR")
-  type             String   // 'INCOME', 'EXPENSE'
-  category         String   // 'ADS', 'SUBSCRIPTION', 'REVENUE'
-  status           String   @default("COMPLETED")
+  currency         String         @default("EUR")
+  type             String
+  category         String
+  status           String         @default("COMPLETED")
   description      String?
-  timestamp        DateTime @default(now())
-  
+  timestamp        DateTime       @default(now())
   bankConnection   BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
-  
+
   @@index([bankConnectionId])
   @@index([type])
 }
 
-// ==========================================
-// PHASE 3: EMPIRE EXPANSION (THE SWARM)
-// ==========================================
-
 model AgentDossier {
-  id              String   @id @default(uuid())
-  agentType       String   // e.g. 'SOCIAL_MEDIA', 'SHOPIFY_BUILDER'
-  action          String
-  target          String?
-  status          String   @default("SUCCESS")
-  details         String?  @db.Text
-  timestamp       DateTime @default(now())
-  
-  userId          String?
-  user            User?    @relation(fields: [userId], references: [id])
-  
+  id        String   @id @default(uuid())
+  agentType String
+  action    String
+  target    String?
+  status    String   @default("SUCCESS")
+  details   String?
+  timestamp DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
   @@index([agentType])
   @@index([userId])
   @@index([timestamp])
 }
 
 model ShopifyStore {
-  id              String   @id @default(uuid())
-  userId          String
-  shopUrl         String
-  accessToken     String
-  status          String   @default("ACTIVE")
-  totalRevenue    Float    @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  products        ShopifyProduct[]
-  
+  id           String           @id @default(uuid())
+  userId       String
+  shopUrl      String
+  accessToken  String
+  status       String           @default("ACTIVE")
+  totalRevenue Float            @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  products     ShopifyProduct[]
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, shopUrl])
   @@index([userId])
 }
 
 model ShopifyProduct {
-  id              String   @id @default(uuid())
-  storeId         String
-  shopifyId       String   @unique
-  title           String
-  description     String?  @db.Text
-  price           Float
-  margin          Float?
-  status          String   @default("DRAFT") // DRAFT -> PENDING_APPROVAL -> ACTIVE
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  store           ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
+  id          String       @id @default(uuid())
+  storeId     String
+  shopifyId   String       @unique
+  title       String
+  description String?
+  price       Float
+  margin      Float?
+  status      String       @default("DRAFT")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   @@index([storeId])
   @@index([status])
 }
 
 model SocialMediaPost {
-  id              String   @id @default(uuid())
-  userId          String
-  platform        String   // 'TIKTOK', 'INSTAGRAM', 'X'
-  content         String   @db.Text
-  mediaUrl        String?
-  status          String   @default("SCHEDULED") // SCHEDULED, PUBLISHED, FAILED
-  publishAt       DateTime
-  views           Int      @default(0)
-  engagement      Float    @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id         String   @id @default(uuid())
+  userId     String
+  platform   String
+  content    String
+  mediaUrl   String?
+  status     String   @default("SCHEDULED")
+  publishAt  DateTime
+  views      Int      @default(0)
+  engagement Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([platform])
   @@index([status])
 }
 
 model InterceptionAlert {
-  id              String   @id @default(uuid())
-  targetUserId    String
-  triggerType     String   // 'HIGH_REVENUE', 'VIRAL_PRODUCT', 'CASHFLOW_ISSUE'
-  metrics         String   @db.Text // JSON string of metrics
-  status          String   @default("UNREAD") // UNREAD, INVESTIGATING, INTERCEPTED
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  targetUser      User     @relation("TargetedUser", fields: [targetUserId], references: [id])
-  
+  id           String   @id @default(uuid())
+  targetUserId String
+  triggerType  String
+  metrics      String
+  status       String   @default("UNREAD")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  targetUser   User     @relation("TargetedUser", fields: [targetUserId], references: [id])
+
   @@index([targetUserId])
   @@index([status])
   @@index([triggerType])
@@ -819,104 +785,90 @@ model InterceptionAlert {
 model TreasuryVault {
   id              String   @id @default(uuid())
   userId          String
-  balance         Float    @default(0.0) // Liquide middelen in de kluis
-  reservedRiskCap Float    @default(0.0) // Geld gereserveerd voor risk testing (max 1-2%)
-  status          String   @default("ACTIVE") // ACTIVE, LOCKED
+  balance         Float    @default(0.0)
+  reservedRiskCap Float    @default(0.0)
+  status          String   @default("ACTIVE")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
 model TaxStrategy {
   id              String   @id @default(uuid())
   userId          String
-  potName         String   // e.g. "Pensioen FOR", "Herinvesteringsreserve", "Vpb Reservering"
+  potName         String
   allocatedAmount Float    @default(0.0)
-  taxAdvantage    Float    @default(0.0) // Geschatte bespaarde belasting
+  taxAdvantage    Float    @default(0.0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
-// ==========================================
-// PHASE 7: AUTONOMOUS DEBT NEGOTIATOR & LUXURY RECEIVER
-// ==========================================
-
 model CreditorDossier {
-  id              String   @id @default(uuid())
-  userId          String
-  creditorName    String   // Naam van de eiser (kan Encrypted opgeslagen worden)
-  dossierNumber   String   // Kenmerk of dossiernummer
-  encryptedData   String   @db.Text // AES-256-GCM versleutelde string met openstaand bedrag, rentes, communicatie
-  status          String   @default("SCANNING") // SCANNING, NEGOTIATING, AGREEMENT, RESOLVED
-  monthlyRepayment Float   @default(0.0) // Het door Orion onderhandelde aflossingsbedrag
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id               String   @id @default(uuid())
+  userId           String
+  creditorName     String
+  dossierNumber    String
+  encryptedData    String
+  status           String   @default("SCANNING")
+  monthlyRepayment Float    @default(0.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([status])
 }
 
 model LegalContact {
-  id              String   @id @default(uuid())
-  userId          String
-  organizationName String  // Gemeente, Kredietbank, Incassobureau
-  contactType     String   // MUNICIPALITY, DEBT_AGENCY, CREDITOR
-  municipality    String?  // Gekoppelde gemeente voor lokale wetgeving
-  email           String?  // Kan Encrypted zijn
-  phone           String?  // Kan Encrypted zijn
-  encryptedNotes  String?  @db.Text // AES-256-GCM versleutelde gespreksverslagen/contactgeschiedenis
-  trustScore      Int      @default(50) // Hoeveel vertrouwen heeft deze instantie in RebuildYourLife (0-100)
-  lastContactedAt DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String    @id @default(uuid())
+  userId           String
+  organizationName String
+  contactType      String
+  municipality     String?
+  email            String?
+  phone            String?
+  encryptedNotes   String?
+  trustScore       Int       @default(50)
+  lastContactedAt  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   @@index([userId])
   @@index([contactType])
 }
 
 model JusticeLedger {
-  id              String   @id @default(uuid())
-  userId          String
-  actionType      String   // DEBT_PAYMENT, VTLB_DISTRIBUTION, EMAIL_SENT
-  description     String   @db.Text
-  amount          Float?   // Betrokken bedrag
-  cryptographicHash String // SHA-256 hash om onveranderlijkheid te bewijzen
-  createdAt       DateTime @default(now())
+  id                String   @id @default(uuid())
+  userId            String
+  actionType        String
+  description       String
+  amount            Float?
+  cryptographicHash String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   @@index([userId])
   @@index([actionType])
   @@index([createdAt])
 }
 
-// ==========================================
-// PHASE 8: AI CONCIERGE & EMERGENCY PROTOCOL
-// ==========================================
-
 model GoalDossier {
-  id              String   @id @default(uuid())
-  userId          String
-  title           String   // Bijv. "Nieuwe Auto", "Vakantie"
-  targetAmount    Float
-  currentAmount   Float    @default(0.0)
-  status          String   @default("ACTIVE") // ACTIVE, REACHED, CANCELLED
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  targetAmount  Float
+  currentAmount Float    @default(0.0)
+  status        String   @default("ACTIVE")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   @@index([userId])
   @@index([status])
 }
@@ -924,146 +876,123 @@ model GoalDossier {
 model EmergencyRequest {
   id              String   @id @default(uuid())
   userId          String
-  encryptedReason String   @db.Text // AES-256-GCM versleutelde omschrijving (bijv. Wasmachine stuk)
+  encryptedReason String
   requestedAmount Float
-  status          String   @default("PENDING_CEO_APPROVAL") // AUTO_APPROVED, PENDING_CEO_APPROVAL, APPROVED, REJECTED
-  aiAnalysis      String?  @db.Text // Versleutelde wiskundige analyse waarom het is doorgestuurd of goedgekeurd
+  status          String   @default("PENDING_CEO_APPROVAL")
+  aiAnalysis      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
-// ==========================================
-// PHASE 9: THE OPPORTUNITY ENGINE
-// ==========================================
-
 model OpportunityReport {
-  id              String   @id @default(uuid())
-  userId          String
-  title           String   // e.g. "Viral TikTok Trend: LED Glasses"
-  niche           String   
-  summary         String   @db.Text
-  goodROI         Float    // Baseline
-  betterROI       Float    // Expected
-  bestROI         Float    // Viral Scale
-  status          String   @default("REVIEW") // REVIEW, TESTING, SCALING, KILLED
-  media           OpportunityMedia[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String             @id @default(uuid())
+  userId    String
+  title     String
+  niche     String
+  summary   String
+  goodROI   Float
+  betterROI Float
+  bestROI   Float
+  status    String             @default("REVIEW")
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  media     OpportunityMedia[]
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
 model OpportunityMedia {
-  id              String   @id @default(uuid())
-  reportId        String
-  platform        String   // TIKTOK, INSTAGRAM, X
-  mediaUrl        String   // S3 or Vercel Blob URL
-  mediaType       String   // VIDEO_UGC, IMAGE_CAROUSEL
-  adCopy          String   @db.Text
-  status          String   @default("GENERATED")
-  performanceScore Int     @default(0) // Traction during testing
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  report          OpportunityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  id               String            @id @default(uuid())
+  reportId         String
+  platform         String
+  mediaUrl         String
+  mediaType        String
+  adCopy           String
+  status           String            @default("GENERATED")
+  performanceScore Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  report           OpportunityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   @@index([reportId])
   @@index([platform])
 }
 
-// ==========================================
-// MARKETING FUNNEL
-// ==========================================
-
 model MarketingCampaign {
-  id              String   @id @default(uuid())
-  name            String
-  utmSource       String?
-  utmMedium       String?
-  utmCampaign     String?
-  clicks          MarketingClick[]
-  conversions     MarketingConversion[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String                @id @default(uuid())
+  name        String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  clicks      MarketingClick[]
+  conversions MarketingConversion[]
 
   @@index([utmSource])
   @@index([utmCampaign])
 }
 
 model MarketingClick {
-  id              String   @id @default(uuid())
-  campaignId      String
-  ipAddress       String?
-  userAgent       String?
-  referer         String?
-  clickedAt       DateTime @default(now())
-
-  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  id         String            @id @default(uuid())
+  campaignId String
+  ipAddress  String?
+  userAgent  String?
+  referer    String?
+  clickedAt  DateTime          @default(now())
+  campaign   MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
 }
 
 model MarketingConversion {
-  id              String   @id @default(uuid())
-  campaignId      String
-  userId          String?
-  value           Float    @default(0.0)
-  currency        String   @default("EUR")
-  convertedAt     DateTime @default(now())
-
-  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id          String            @id @default(uuid())
+  campaignId  String
+  userId      String?
+  value       Float             @default(0.0)
+  currency    String            @default("EUR")
+  convertedAt DateTime          @default(now())
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user        User?             @relation(fields: [userId], references: [id])
 
   @@index([campaignId])
   @@index([userId])
 }
 
-// ==========================================
-// AI CONCIERGE LOGS
-// ==========================================
-
 model AIConciergeLog {
   id              String   @id @default(uuid())
   userId          String
-  decisionType    String   // VTLB_ADJUSTMENT, EMERGENCY_FUNDING, DEBT_REPAYMENT
-  rationale       String   @db.Text
+  decisionType    String
+  rationale       String
   previousVtlb    Float?
   newVtlb         Float?
   confidenceScore Float    @default(0.0)
-  status          String   @default("APPLIED") // APPLIED, REJECTED_BY_USER, PENDING
+  status          String   @default("APPLIED")
   createdAt       DateTime @default(now())
-
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([decisionType])
 }
 
-// ==========================================
-// WEBHOOKS
-// ==========================================
-
 model WebhookEvent {
-  id              String   @id @default(uuid())
-  provider        String   // MOLLIE, STRIPE
-  eventId         String   @unique
-  eventType       String
-  payload         String   @db.Text
-  status          String   @default("PENDING") // PENDING, PROCESSED, FAILED
-  errorMessage    String?  @db.Text
-  createdAt       DateTime @default(now())
-  processedAt     DateTime?
+  id           String    @id @default(uuid())
+  provider     String
+  eventId      String    @unique
+  eventType    String
+  payload      String
+  status       String    @default("PENDING")
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+  processedAt  DateTime?
 
   @@index([provider])
   @@index([status])
   @@index([eventType])
 }
-
