@@ -63,7 +63,7 @@ export function SwarmBrain({ isSpeaking, analyserRef }: SwarmBrainProps) {
     // Audio Reactivity (Pulsing)
     let targetScale = 1.0;
     if (isSpeaking && analyserRef.current) {
-      analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+      analyserRef.current.getByteFrequencyData(dataArrayRef.current as any);
       let sum = 0;
       for (let i = 0; i < dataArrayRef.current.length; i++) {
         sum += dataArrayRef.current[i];
