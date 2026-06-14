@@ -81,9 +81,28 @@ export class OmegaProtocol {
   }
 
   private static async queryLocalLLM(prompt: string): Promise<string | null> {
-    // Simulate checking a local server (e.g., LM Studio at localhost:1234)
-    // For now, it fails immediately because it's not set up.
-    throw new Error('Local server offline');
+    try {
+      // Connect directly to local Ollama instance
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3', // Standaard model voor Ollama
+          prompt: `Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en ietwat intimiderend. Antwoord kort en krachtig in het Nederlands. Commando: ${prompt}`,
+          stream: false
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Ollama not responding properly');
+      }
+
+      const data = await response.json();
+      return data.response;
+    } catch (e) {
+      console.log('[ORION CORE] Local Ollama unreachable:', e);
+      return null;
+    }
   }
 
   private static async queryCloudLLM(prompt: string): Promise<string> {
