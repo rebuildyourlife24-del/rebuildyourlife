@@ -9,32 +9,44 @@ const PROTECTED_ROUTES = ['/dashboard', '/admin'];
 const AUTH_ROUTES = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
 
 export async function middleware(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  const pathname = url.pathname;
+  const hostname = request.headers.get('host') || '';
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
+  
+  response.headers.set('x-tenant-domain', hostname);
+  // === FASE 2: DOMAIN ROUTING (MULTI-TENANT) ===
+  const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1') || hostname.includes('[::1]');
+  const isMainDomain = hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl';
+  const isAppDomain = hostname === 'app.ai-henksemler.nl' || hostname === 'ai.ai-henksemler.nl';
+  const isLegacyDomain = hostname === 'rebuildyourlife.eu' || hostname === 'www.rebuildyourlife.eu';
 
-  const url = request.nextUrl.clone();
-  const pathname = url.pathname;
-  const hostname = request.headers.get('host') || '';
-
-  // === FASE 2: DOMAIN ROUTING ===
-  if (hostname === 'ai.ai-henksemler.nl') {
-    if (pathname === '/') {
+  // Als het een van onze beheerders-domeinen is, doe normale routing:
+  if (isLocalhost || isMainDomain || isAppDomain || isLegacyDomain) {
+    if (hostname === 'ai.ai-henksemler.nl' && pathname === '/') {
       url.pathname = '/dashboard/war-room';
-      return NextResponse.rewrite(url);
-    }
-  } else if (hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl') {
-    if (pathname === '/') {
+      response = NextResponse.rewrite(url);
+      response.headers.set('x-tenant-domain', hostname);
+      return response;
+    } else if ((hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl') && pathname === '/') {
       url.pathname = '/dashboard/ai-team';
-      return NextResponse.rewrite(url);
+      response = NextResponse.rewrite(url);
+      response.headers.set('x-tenant-domain', hostname);
+      return response;
     }
-  } else if (hostname === 'rebuildyourlife.eu' || hostname === 'www.rebuildyourlife.eu') {
-    if (pathname === '/') {
-      url.pathname = '/dashboard';
-      return NextResponse.rewrite(url);
-    }
+  } else {
+    // === WILDCARD SUBDOMEIN DETECTIE ===
+    // Als we hier komen, is het een custom subdomein (bijv. shop1.ai-henksemler.nl)
+    // We herschrijven dit naar een speciale map in Next.js: /_sites/[domein]/[pad]
+    url.pathname = `/_sites/${hostname}${url.pathname}`;
+    response = NextResponse.rewrite(url);
+    response.headers.set('x-tenant-domain', hostname);
+    return response;
   }
 
   // === SUPABASE AUTHENTICATIE ===
