@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth';
-
 import { loginAction } from '@/app/actions/auth';
 
 export default function LoginPage() {
@@ -34,7 +33,7 @@ export default function LoginPage() {
         setUser(result.user as any);
         router.push('/dashboard/war-room');
       } else {
-        setError(result.error || 'Inloggen mislukt');
+        setError(result.error || 'Inloggen mislukt. Controleer je gegevens.');
       }
     } catch (err: any) {
       setError(err.message || 'Er is een fout opgetreden bij het inloggen.');
@@ -65,136 +64,109 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
-        className="w-full max-w-md"
-      >
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-gold">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0e1a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5Z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-textPrimary">
-              Rebuild<span className="gradient-text-gold">YourLife</span>
-            </span>
-          </Link>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-black px-4 py-12 relative selection:bg-gold-500 selection:text-black">
+      
+      {/* Subtle gold glow behind card */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold-500/5 blur-[120px] pointer-events-none rounded-full" />
 
-        <Card variant="glass" padding="lg">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-textPrimary">Commandocentrum</h1>
-            <p className="mt-1 text-sm text-textSecondary">
-              Activeer je sessie om je missie voort te zetten.
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
+      >
+        <Card className="bg-zinc-950 border border-zinc-900 p-8 rounded-xl shadow-2xl">
+          
+          {/* Logo / Header */}
+          <div className="mb-8 text-center">
+            <span className="text-xl font-black tracking-tighter text-white uppercase block mb-2">
+              Rebuild<span className="text-gold-500">YourLife</span>
+            </span>
+            <h1 className="text-2xl font-bold text-white tracking-tight uppercase">
+              Inloggen
+            </h1>
+            <p className="text-zinc-500 text-xs mt-1 font-medium">
+              Voer je gegevens in om toegang te krijgen tot het portaal
             </p>
           </div>
 
           {error && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="mb-4 rounded-xl border border-danger/20 bg-danger/5 px-4 py-3"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="mb-6 border-l-2 border-red-500 bg-red-950/20 px-4 py-3 rounded-r"
             >
-              <p className="text-sm text-danger">{error}</p>
+              <p className="text-xs font-bold text-red-400">{error}</p>
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Identificatie (E-mail)"
-              type="email"
-              placeholder="operator@rebuildyourlife.eu"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M22 4L12 13 2 4" />
-                </svg>
-              }
-            />
-
-            <Input
-              label="Toegangscode"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              icon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-              }
-            />
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <div className="relative flex items-center justify-center">
-                  <input 
-                    type="checkbox" 
-                    className="peer sr-only" 
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <div className="w-5 h-5 rounded border border-white/20 bg-surface/50 peer-checked:bg-gold peer-checked:border-gold transition-all duration-200"></div>
-                  <svg className="absolute w-3 h-3 text-navy opacity-0 peer-checked:opacity-100 transition-opacity duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-sm text-textSecondary group-hover:text-textPrimary transition-colors">Onthoud mij</span>
-              </label>
-              
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm text-gold transition-colors hover:text-goldLight"
-              >
-                Code vergeten?
-              </Link>
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full bg-[#d4a853] hover:bg-[#b38d45] text-black font-bold tracking-widest uppercase mt-6 transition-all shadow-[0_0_15px_rgba(212,168,83,0.3)]"
-              disabled={loading || googleLoading}
-            >
-              {loading ? 'Bezig met identificeren...' : '[ ONTGRENDEL KLUIS ]'}
-            </Button>
+          <form onSubmit={handleSubmit} className="space-y-5">
             
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-800"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase tracking-widest">
-                <span className="bg-[#050505] px-2 text-zinc-500">Of log in met</span>
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">E-mailadres</label>
+              <input 
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="naam@voorbeeld.nl"
+                required
+                className="w-full bg-black border border-zinc-800 text-white rounded px-4 py-3 outline-none focus:border-gold-500 transition-all text-sm"
+              />
             </div>
 
-            <Button 
-              type="button" 
-              onClick={handleGoogleLogin}
-              className="w-full bg-white hover:bg-zinc-200 text-black font-bold tracking-widest uppercase transition-all shadow-md flex items-center justify-center gap-3"
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Wachtwoord</label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-zinc-500 hover:text-gold-500 transition-colors font-semibold"
+                >
+                  Wachtwoord vergeten?
+                </Link>
+              </div>
+              <input 
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full bg-black border border-zinc-800 text-white rounded px-4 py-3 outline-none focus:border-gold-500 transition-all text-sm"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <input 
+                type="checkbox" 
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 border border-zinc-800 bg-black text-gold-500 focus:ring-0 rounded cursor-pointer"
+              />
+              <label htmlFor="remember" className="text-xs text-zinc-400 cursor-pointer select-none font-bold">
+                Aangemeld blijven
+              </label>
+            </div>
+
+            <button 
+              type="submit" 
               disabled={loading || googleLoading}
+              className={`w-full py-3.5 bg-gold-500 text-black hover:bg-gold-400 hover:scale-[1.01] transition-all font-black text-sm uppercase tracking-widest rounded shadow-[0_0_15px_rgba(212,168,83,0.2)] mt-6`}
             >
-              {googleLoading ? 'Bezig...' : (
-                <>
-                  <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-                  GOOGLE
-                </>
-              )}
-            </Button>
+              {loading ? 'Laden...' : 'Inloggen'}
+            </button>
+            
           </form>
+
+          {/* Registration link */}
+          <div className="mt-8 text-center border-t border-zinc-900 pt-6">
+            <p className="text-zinc-500 text-xs font-bold">
+              Nog geen account?{' '}
+              <Link href="/auth/register" className="text-gold-500 hover:text-gold-400 transition-colors">
+                Registreer nu
+              </Link>
+            </p>
+          </div>
+          
         </Card>
       </motion.div>
     </div>

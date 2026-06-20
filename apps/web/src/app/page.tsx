@@ -24,9 +24,6 @@ export default function MarketingFunnelPage() {
             </span>
           </div>
           <div className="flex gap-4 sm:gap-6 items-center">
-            <Link href="/auth/login" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest hidden sm:block">
-              Client Login
-            </Link>
             <Link href="#operator" className="px-5 py-2 text-sm font-black bg-gold-500 text-black rounded uppercase tracking-wider transition-all hover:bg-gold-400 hover:scale-105 shadow-[0_0_15px_rgba(212,168,83,0.4)]">
               Start Systeem
             </Link>
