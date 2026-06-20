@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@rebuildyourlife/database';
-import { generateText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+// Removed ai SDK and Google imports, using native fetch to Groq.
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -268,25 +267,45 @@ export async function POST(req: Request) {
       }
     }
 
-    if (!apiKey) {
+    const groqApiKey = process.env.GROQ_API_KEY;
+    if (!groqApiKey) {
       return NextResponse.json({
         agent: selectedAgent,
         response: tone === 'AGGRESSIVE'
-          ? `Begrepen Hendrik. Ik zit er klaar voor maar mijn AI kern mist nog de Google API sleutel in Vercel. Voeg GOOGLE_GENERATIVE_AI_API_KEY toe en ik ben volledig operationeel.`
-          : `Agent ${selectedAgent} staat klaar maar mijn AI kern mist de GOOGLE_GENERATIVE_AI_API_KEY in Vercel. Even toevoegen en ik ben live.`,
+          ? `Begrepen Hendrik. Ik zit er klaar voor maar mijn AI kern mist nog de GROQ_API_KEY in Vercel. Voeg GROQ_API_KEY toe en ik ben volledig operationeel.`
+          : `Agent ${selectedAgent} staat klaar maar mijn AI kern mist de GROQ_API_KEY in Vercel. Even toevoegen en ik ben live.`,
         emotion: 'CALM',
         agentInfo: AGENT_MANIFEST[selectedAgent],
       });
     }
 
-    const google = createGoogleGenerativeAI({ apiKey });
     const systemPrompt = userId ? await buildMasterSystemPrompt(userId) : `Je bent ORION. Spreek Nederlands. JSON output: { "agent": "NAAM", "response": "tekst", "emotion": "CALM" }`;
+    const promptText = `[Agent context: ${selectedAgent} — ${AGENT_MANIFEST[selectedAgent].role}]\n\nHendrik zegt: ${prompt}`;
 
-    const { text } = await generateText({
-      model: google('gemini-2.0-flash'),
-      system: systemPrompt,
-      prompt: `[Agent context: ${selectedAgent} — ${AGENT_MANIFEST[selectedAgent].role}]\n\nHendrik zegt: ${prompt}`,
+    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${groqApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: promptText }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+        response_format: { type: 'json_object' }
+      })
     });
+
+    if (!groqResponse.ok) {
+      throw new Error(`Groq API Error: ${groqResponse.statusText}`);
+    }
+
+    const groqData = await groqResponse.json();
+    const text = groqData.choices?.[0]?.message?.content || '{}';
 
     let agentResult = selectedAgent as string;
     let responseText = text;
