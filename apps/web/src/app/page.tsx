@@ -69,8 +69,8 @@ export default function ExtremeLandingPage() {
             transition={{ duration: 1, delay: 0.4 }}
             className="text-xl md:text-2xl text-textSecondary max-w-3xl mx-auto font-light tracking-wide leading-relaxed"
           >
-            De concurrentie verkoopt theorie. Wij leveren een <strong className="text-white">Autonoom AI-Systeem</strong>. 
-            Installeer de infrastructuur, stuur de machines aan, en domineer de schaduwmarkten.
+            De concurrentie verkoopt motivatie en theorie. Wij verkopen keiharde, onbreekbare <strong className="text-white">consistentie</strong> door middel van een Autonoom AI-Systeem. 
+            Installeer de infrastructuur, forceer discipline en domineer de schaduwmarkten.
           </motion.p>
         </motion.header>
 
@@ -143,10 +143,10 @@ export default function ExtremeLandingPage() {
 
             {/* Bento 2: Small right */}
             <motion.div variants={fadeUp} className="bg-surfaceLight/20 backdrop-blur-xl border border-white/10 rounded-2xl p-10 hover:border-danger/40 transition-colors group relative overflow-hidden">
-              <div className="text-danger font-bold text-sm tracking-widest mb-4">ENGINE</div>
-              <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">Motivatie & Stimulering</h3>
+              <div className="text-danger font-bold text-sm tracking-widest mb-4">ENGINE OF CONSISTENCY</div>
+              <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">Geen Motivatie, Maar Systeem</h3>
               <p className="text-textSecondary leading-relaxed">
-                Een kille machine werkt niet als de mens faalt. Onze AI pusht je, trekt je door dalen heen en forceert onbreekbare discipline.
+                Motivatie is een leugen voor amateurs. Wij bouwen systemen die onmenselijke, onbreekbare consistentie forceren. Zelfs als jij wilt opgeven, pusht de AI je genadeloos door.
               </p>
             </motion.div>
 
