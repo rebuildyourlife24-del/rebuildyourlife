@@ -404,9 +404,9 @@ export const MAX_DEBTS_PER_USER = 150;
 export const AGENT_DEFINITIONS: AgentInfo[] = [
   {
     type: AgentType.CEO,
-    name: 'CEO Coach',
-    description: 'Jouw strategische leider. Bewaakt je visie, stelt prioriteiten en houdt het overzicht.',
-    specializations: ['Strategie', 'Prioriteiten', 'Besluitvorming', 'Overzicht'],
+    name: 'Orion (Global CEO)',
+    description: 'Jouw meedogenloze Billionaire CEO. Volledig uitgerust voor bedrijfskunde, crypto, trading, M&A, en vermogensopbouw.',
+    specializations: ['Bedrijfskunde', 'Crypto & Trading', 'Kapitaalallocatie', 'Werelddominantie'],
     avatarEmoji: '👔',
   },
   {

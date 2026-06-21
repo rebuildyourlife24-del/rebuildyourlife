@@ -12,7 +12,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, icon, iconPosition = 'left', className = '', id, ...props }, ref) => {
+  ({ label, error, hint, icon, iconPosition = 'left', fullWidth, className = '', id, ...props }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Paywall } from '@/components/ui/Paywall';
-import { SwarmAvatar } from '@/components/ui/SwarmAvatar';
+import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
 
 // Simuleer recharts (zou in een echte implementatie geïnstalleerd moeten zijn)
 export default function EnterpriseOSPage() {
@@ -33,9 +33,7 @@ export default function EnterpriseOSPage() {
         </div>
 
         {/* Swarm Avatar 3D Visualizer & Command Interface */}
-        <div className="w-full mb-8">
-          <SwarmAvatar theme="red" />
-        </div>
+          <NeuralSwarm theme="red" />
 
         {/* 3 Kernmodules */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

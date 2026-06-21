@@ -14,6 +14,7 @@ import webhookRoutes from "./webhook.routes.js";
 import socialRoutes from "./social.routes.js";
 import businessRoutes from "./business.routes.js";
 import { paymentRoutes } from "./payment.routes.js";
+import orionOpenAIRouter from './orion-openai.js';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use("/webhooks", webhookRoutes);
 router.use("/social", socialRoutes);
 router.use("/business", businessRoutes);
 router.use("/payments", paymentRoutes);
+router.use('/orion', orionOpenAIRouter);
 
 export default router;

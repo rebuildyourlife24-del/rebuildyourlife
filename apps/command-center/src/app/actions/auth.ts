@@ -11,28 +11,37 @@ const JWT_SECRET = new TextEncoder().encode(
 );
 
 export async function login(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
+  const rawEmail = formData.get("email") as string;
+  const rawPassword = formData.get("password") as string;
+  
+  if (!rawEmail || !rawPassword) {
     return { error: "Vul je e-mailadres en wachtwoord in." };
   }
+
+  const email = rawEmail.trim();
+  const password = rawPassword.trim();
+  
+  console.log(`[AUTH ATTEMPT] Email: "${email}", Password Length: ${password.length}`);
 
   try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
+    console.log(`[AUTH RESULT] User found: ${!!user}`);
+
     if (!user) {
       return { error: "Toegang Geweigerd." };
     }
 
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+    console.log(`[AUTH RESULT] Password match: ${isValidPassword}`);
 
     if (!isValidPassword) {
       return { error: "Toegang Geweigerd." };
     }
 
+    console.log(`[AUTH RESULT] User role: ${user.role}`);
     // Only allow ADMIN or SUPREME_OVERSEER for now
     if (user.role !== "ADMIN" && user.role !== "SUPREME_OVERSEER") {
       return { error: "Onvoldoende rechten." };

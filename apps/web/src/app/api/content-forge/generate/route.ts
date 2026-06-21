@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// OpenAI client will be instantiated inside the function to prevent build-time errors
 
 export async function POST(req: Request) {
   try {
@@ -29,6 +27,10 @@ Format the response EXACTLY as a valid JSON object with the following keys:
 }`;
 
     const userPrompt = `Write a script about: ${topic}.`;
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || "dummy_key",
+    });
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",

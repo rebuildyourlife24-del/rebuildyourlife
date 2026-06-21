@@ -1,13 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
-  extensions = [postgis(schema: "topology"), uuid_ossp(map: "uuid-ossp", schema: "extensions"), vector]
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -61,6 +59,10 @@ model User {
   marketingConversions   MarketingConversion[]
   notifications          Notification[]
   opportunityReports     OpportunityReport[]
+  
+  // Neo-Bank Relations
+  godbrainAccount        GodbrainAccount?
+  walletTransactions     WalletTransaction[]
   rebuildPrograms        RebuildProgram[]
   sessions               Session[]
   shopifyStores          ShopifyStore[]
@@ -70,6 +72,9 @@ model User {
   tasks                  Task[]
   taxStrategies          TaxStrategy[]
   treasuryVaults         TreasuryVault[]
+  syndicateCampaigns     SyndicateCampaign[]
+  opportunities          Opportunity[]               @relation("AssignedOpportunities")
+  courseProgress         UserCourseProgress[]
 
   @@index([email])
   @@index([role])
@@ -298,7 +303,7 @@ model AIMemory {
   updatedAt       DateTime               @updatedAt
   userId          String
   agentType       String
-  vectorEmbedding Unsupported("vector")?
+  // vectorEmbedding Unsupported("vector")?
   user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -474,7 +479,7 @@ model OrionMemory {
   tags            String?
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
-  vectorEmbedding Unsupported("vector")?
+  // vectorEmbedding Unsupported("vector")?
 
   @@index([userId])
   @@index([memoryType])
@@ -541,7 +546,7 @@ model EnterpriseDocument {
   nextStep        String?
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
-  vectorEmbedding Unsupported("vector")?
+  // vectorEmbedding Unsupported("vector")?
   folder          EnterpriseFolder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@index([folderId])
@@ -782,17 +787,56 @@ model InterceptionAlert {
   @@index([triggerType])
 }
 
+// ==========================================
+// NEO-BANK & TRADING INFRASTRUCTURE
+// ==========================================
+
+model GodbrainAccount {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  iban            String   @unique
+  swift           String
+  accountHolder   String   // Name of the business/user
+  status          String   @default("ACTIVE") // "ACTIVE", "FROZEN", "PENDING_KYC"
+  currency        String   @default("EUR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WalletTransaction {
+  id              String   @id @default(uuid())
+  userId          String
+  vaultId         String?  // The specific vault this transaction affected
+  amount          Float
+  type            String   // "DEPOSIT", "WITHDRAWAL", "TRADE_EXECUTION", "TAX_RESERVE"
+  executedBy      String   // "USER", "SWARM_EXECUTOR", "SYSTEM"
+  status          String   @default("COMPLETED")
+  description     String?
+  createdAt       DateTime @default(now())
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vault           TreasuryVault? @relation(fields: [vaultId], references: [id])
+
+  @@index([userId])
+  @@index([vaultId])
+  @@index([type])
+}
+
 model TreasuryVault {
   id              String   @id @default(uuid())
   userId          String
+  vaultType       String   @default("OPERATIONS") // "OPERATIONS", "TAX", "SYNDICATE_CAPITAL", "TRADING"
   balance         Float    @default(0.0)
   reservedRiskCap Float    @default(0.0)
   status          String   @default("ACTIVE")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions    WalletTransaction[]
 
   @@index([userId])
+  @@index([vaultType])
 }
 
 model TaxStrategy {
@@ -995,4 +1039,175 @@ model WebhookEvent {
   @@index([provider])
   @@index([status])
   @@index([eventType])
+}
+
+model SyndicateCampaign {
+  id              String             @id @default(uuid())
+  userId          String
+  name            String
+  description     String?
+  status          String             @default("DRAFT")
+  emailTemplateId String?
+  budget          Float              @default(0.0)
+  totalSent       Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targets         SyndicateTarget[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model SyndicateTarget {
+  id              String            @id @default(uuid())
+  campaignId      String
+  name            String
+  email           String
+  company         String?
+  debtAmount      Float?
+  status          String            @default("PENDING")
+  lastEmailedAt   DateTime?
+  encryptedNotes  String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  campaign        SyndicateCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([status])
+  @@index([email])
+}
+
+model Opportunity {
+  id                String    @id @default(uuid())
+  title             String
+  description       String
+  payout            Float
+  category          String    // e.g., "LEAD_GEN", "SEO", "SALES", "SUPPORT"
+  status            String    @default("AVAILABLE") // "AVAILABLE", "IN_PROGRESS", "COMPLETED"
+  
+  // AI Autonomous Economy Fields
+  executionType     String    @default("CLIENT_BROKERED") // "AI_AUTONOMOUS" | "CLIENT_BROKERED"
+  commissionRate    Float     @default(0.0) // Percentage Orion takes
+  guaranteedSuccess Boolean   @default(false) // 100% ROI check for AI
+  
+  assignedToId      String?
+  assignedTo        User?     @relation("AssignedOpportunities", fields: [assignedToId], references: [id])
+  
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime?
+
+  @@index([status])
+  @@index([category])
+  @@index([assignedToId])
+  @@index([executionType])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  thumbnail   String?
+  tierAccess  String   @default("FREE") // "FREE" or "PREMIUM"
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lessons     Lesson[]
+  userProgress UserCourseProgress[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  content     String   // Can be video URL or markdown
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userProgress UserCourseProgress[]
+
+  @@index([courseId])
+}
+
+model UserCourseProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  courseId    String
+  lessonId    String
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+// ==========================================
+// ENTERPRISE SWARM ARCHITECTURE
+// ==========================================
+
+model SwarmMemo {
+  id              String   @id @default(uuid())
+  title           String
+  department      String   // e.g. "MARKETING", "FINANCE", "OPERATIONS", "LEGAL"
+  originRole      String   // e.g. "RESEARCHER", "SUPERVISOR", "EXECUTOR"
+  destinationRole String   // e.g. "SUPERVISOR", "EXECUTOR"
+  content         String   // The actual research dossier or execution brief
+  status          String   @default("DRAFT") // "DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "EXECUTED"
+  relatedEntityId String?  // ID of the Opportunity, Client, or Project this refers to
+  courierNotes    String?  // Notes from the Courier agent who archived this
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([department])
+  @@index([status])
+  @@index([relatedEntityId])
+}
+
+// ==========================================
+// AI RACE ECONOMY (SWARM FUND)
+// ==========================================
+
+model SystemTreasury {
+  id              String   @id @default(uuid())
+  totalRevenue    Float    @default(0.0)
+  totalAiFund     Float    @default(0.0) // 10% of totalRevenue is locked here
+  availableAiFund Float    @default(0.0) // Funds not yet distributed to agents
+  updatedAt       DateTime @updatedAt
+}
+
+model AiAgent {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  role            String
+  
+  // Shift (Ploegendienst) System
+  shiftType       String   @default("DAY") // DAY, NIGHT, FLEX
+  partnerAgentId  String?  // The agent they swap with
+  shiftWeek       Int      @default(1)     // Tracks rotation
+
+  // Economy System
+  totalEarned     Float    @default(0.0) // In USD/EUR
+  currentBalance  Float    @default(0.0) // In USD/EUR
+  tasksCompleted  Int      @default(0)
+  tasks           AiBountyTask[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AiBountyTask {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  bountyAmount    Float
+  status          String   @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, FAILED
+  winnerAgentId   String?
+  winnerAgent     AiAgent? @relation(fields: [winnerAgentId], references: [id])
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
 }

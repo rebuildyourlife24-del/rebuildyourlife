@@ -3,7 +3,7 @@
 import { forwardRef } from 'react';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
@@ -23,6 +23,10 @@ const variantStyles: Record<ButtonVariant, string> = {
     'bg-transparent text-textSecondary hover:text-textPrimary hover:bg-white/5',
   danger:
     'bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20',
+  outline:
+    'bg-transparent border border-white/10 text-textSecondary hover:border-white/20 hover:text-white',
+  destructive:
+    'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

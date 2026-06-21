@@ -9,21 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#000000", // Intense pure black
-        navyLight: "#000000", // Pure black
-        gold: "#00f0ff", // Bright ice cyan for accents
-        goldLight: "#bdfcff", // Pale ice
-        surface: "rgba(255, 255, 255, 0.05)", // Ice glass
-        surfaceLight: "rgba(255, 255, 255, 0.1)", // Lighter ice glass
-        textPrimary: "#ffffff", // Pure bright white
-        textSecondary: "#a8c5d6", // Icy light blue-grey
-        success: "#00ffcc", // Bright neon mint
-        warning: "#ffd500", // Bright star yellow
-        danger: "#ff3366" // Bright crimson
+        navy: "#000000", // Vantablack
+        navyLight: "#050505", // Deep Obsidian
+        gold: "#ffffff", // Pure white for text
+        goldLight: "#cccccc", // Muted white
+        surface: "rgba(10, 10, 10, 0.8)", // Dark terminal glass
+        surfaceLight: "rgba(20, 20, 20, 0.9)", // Lighter terminal glass
+        textPrimary: "#ffffff", // Pure white
+        textSecondary: "#666666", // Stealth grey
+        success: "#00ff33", // Terminal/Matrix Green
+        warning: "#ffaa00", // System yellow
+        danger: "#ff003c" // DARPA Red
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #00f0ff55 0deg, #030014 180deg, #00f0ff55 360deg)',
+        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #ff003c22 0deg, #000000 180deg, #ff003c22 360deg)',
       },
       animation: {
         'aurora': 'aurora 15s ease infinite',

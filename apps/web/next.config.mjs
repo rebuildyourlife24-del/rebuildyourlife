@@ -2,8 +2,9 @@
 const nextConfig = {
   transpilePackages: ["@rebuildyourlife/shared", "@rebuildyourlife/database"],
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs', 'jsonwebtoken'],
+    optimizePackageImports: ["lucide-react"],
   },
+  serverExternalPackages: ["@prisma/client", "bcryptjs", "jsonwebtoken"],
 };
 
 export default nextConfig;

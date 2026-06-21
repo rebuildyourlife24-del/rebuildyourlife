@@ -1,27 +1,34 @@
 import { NextResponse } from 'next/server';
-// MOCK WEBHOOK - Prisma not used yet
 
 export async function POST(req: Request) {
   try {
-    // --- MOCK MOLLIE WEBHOOK LOGIC ---
-    // Mollie sends form-data with the `id` of the payment
-    const formData = await req.formData();
-    const paymentId = formData.get('id');
+    // In productie ontvangt deze route de Mollie Webhook Payload (id)
+    // De webhook payload bevat payment_id.
+    const body = await req.json();
+    const { paymentId, amount, franchiseId } = body;
 
-    console.log(`[OMEGA PROTOCOL] Mollie Webhook received for payment: ${paymentId}`);
+    console.log(`[MOLLIE WEBHOOK] Processing payment ${paymentId} for Franchise ${franchiseId}`);
 
-    // In a real scenario, we fetch the payment status from Mollie API:
-    // const payment = await mollieClient.payments.get(paymentId);
-    // if (payment.isPaid()) { ... }
+    // Simulatie van de 25% Tolpoort (Revenue Share Interceptor)
+    const totalAmount = parseFloat(amount);
+    const platformCut = totalAmount * 0.25;
+    const franchiseCut = totalAmount * 0.75;
 
-    // We will simulate a successful payment for now
-    // NOTE: Without a user context in the webhook (unless passed via metadata),
-    // we would look up the user by the mollieCustomerId or payment metadata.
-    
-    // Return a 200 OK so Mollie knows we received it
-    return NextResponse.json({ received: true });
+    console.log(`[SPLIT PAYMENT ROUTING]`);
+    console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
+    console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
+
+    return NextResponse.json({ 
+      success: true,
+      status: 'paid',
+      split: {
+        franchise: franchiseCut,
+        treasury: platformCut
+      }
+    });
+
   } catch (error: any) {
-    console.error("Mollie Webhook Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Mollie webhook error:', error);
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }

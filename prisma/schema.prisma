@@ -5,11 +5,280 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER              // Normale gebruiker in Fase 1-4
+  OPERATOR          // Dagelijkse admin (klantenservice, testen)
+  SUPREME_OVERSEER  // God Modus (Volledige systeemcontrole)
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIAL
 }
 
 model User {
-  id        String @id @default(cuid())
-  email     String @unique
-  password  String
-  createdAt DateTime @default(now())
+  id             String             @id @default(cuid())
+  email          String             @unique
+  password       String
+  firstName      String?
+  lastName       String?
+  role           Role               @default(USER)
+  phase          Int                @default(1) // Fase 1 t/m 4 (De Progression Wall)
+  
+  // Abonnement & Mollie
+  mollieCustomerId String?          @unique
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  // Relaties
+  bankAccounts   BankAccount[]
+  franchises     Franchise[]
+  tradingBot     TradingBot?
+}
+
+// Actie 1: Bank Koppeling (PSD2) Portaal
+model BankAccount {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bankName       String        // bijv. "ING", "Rabobank"
+  iban           String        @unique // Geanonimiseerd opslaan in productie!
+  balance        Float         @default(0.0)
+  currency       String        @default("EUR")
+  
+  // Nordigen / GoCardless / Plaid integratie ID
+  externalBankId String?       @unique 
+  
+  lastSyncedAt   DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id             String      @id @default(cuid())
+  bankAccountId  String
+  bankAccount    BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  
+  amount         Float
+  currency       String      @default("EUR")
+  description    String
+  date           DateTime
+  category       String?     // Boodschappen, Luxe, Onzin, Vaste Lasten (Orion AI categorie)
+  isAnalyzed     Boolean     @default(false) // Heeft de AI dit al gelezen?
+
+  createdAt      DateTime    @default(now())
+}
+
+// Actie 2: Mollie API & 25% Tolpoort (E-Commerce Franchises)
+model Franchise {
+  id             String      @id @default(cuid())
+  ownerId        String
+  owner          User        @relation(fields: [ownerId], references: [id])
+  
+  storeName      String      @unique
+  domainUrl      String      // bijv. "shop1.ai-henksemler.nl"
+  niche          String      // bijv. "Luxe Horloges", "Sauna's"
+  
+  isActive       Boolean     @default(true)
+  totalRevenue   Float       @default(0.0)
+  platformCut    Float       @default(0.0) // De 25% die naar de Supreme Overseer gaat
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  // Relaties naar PR & Omega
+  prCampaigns    PRCampaign[]
+  omegaSite      OmegaSite?
+}
+
+// Omega Web Builder & PR Sector
+model OmegaSite {
+  id             String      @id @default(cuid())
+  franchiseId    String      @unique
+  franchise      Franchise   @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
+  
+  templateUsed   String      @default("HIGH_CONVERSION_LUXURY_V1")
+  conversionRate Float       @default(0.0)
+  isLive         Boolean     @default(true)
+  
+  deployedAt     DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model PRCampaign {
+  id             String      @id @default(cuid())
+  franchiseId    String
+  franchise      Franchise   @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
+  
+  campaignName   String      // bijv. "Dubai Lifestyle Hooks"
+  platform       String      @default("TIKTOK")
+  totalViews     Int         @default(0)
+  status         String      @default("ACTIVE") // ACTIVE, VIRAL, COMPLETED
+  
+  // Gekoppelde Media vanuit de 'Centrale Materialen'
+  mediaPath      String?     // bijv. "/materials/Render_Dubai_001.mp4"
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// Alpha Algo-Trading Sector
+model TradingBot {
+  id             String      @id @default(cuid())
+  userId         String      @unique
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  exchange       String      @default("BINANCE") // of BYBIT, KRAKEN
+  apiKey         String?     // Moet encrypted worden opgeslagen
+  apiSecret      String?     
+  
+  status         String      @default("IDLE") // IDLE, TRADING, EMERGENCY_STOP
+  mode           String      @default("CONSERVATIVE") // CONSERVATIVE, APEX_AGGRESSIVE
+  allocatedFunds Float       @default(0.0) // Het budget vanuit de kluis
+  currentPnl     Float       @default(0.0)
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  trades         TradeRecord[]
+}
+
+model TradeRecord {
+  id             String      @id @default(cuid())
+  botId          String
+  bot            TradingBot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  
+  symbol         String      // bijv. "BTC/USDT", "SOL/USDT"
+  type           String      // "LONG", "SHORT"
+  entryPrice     Float
+  exitPrice      Float?
+  leverage       Int         @default(1)
+  
+  pnlAmount      Float       @default(0.0)
+  pnlPercentage  Float       @default(0.0)
+  
+  status         String      @default("OPEN") // OPEN, CLOSED
+  
+  openedAt       DateTime    @default(now())
+  closedAt       DateTime?
+}
+
+// Apex Land Acquisition Sector
+model LandAsset {
+  id             String      @id @default(cuid())
+  
+  targetName     String      // bijv. "Verlaten Bedrijventerrein A4", "Weesgrond Perceel 89"
+  location       String      
+  assetType      String      // ORPHAN_LAND, TAX_LIEN, DISTRESSED_COMMERCIAL
+  
+  estimatedValue Float       // Wat is de marktwaarde?
+  acquisitionCost Float      // Wat kost het om de claim/tax-lien te kopen?
+  
+  status         String      @default("SCANNING") // SCANNING, TARGET_LOCKED, CLAIM_PENDING, ACQUIRED
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  legalClaims    LegalClaim[]
+}
+
+model LegalClaim {
+  id             String      @id @default(cuid())
+  assetId        String
+  asset          LandAsset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  notary         String?     // Naam van de gekoppelde notaris/kantoor
+  documentHash   String?     // AES-256 hash van het AI-gegenereerde eigendomsdocument
+  status         String      @default("GENERATING") // GENERATING, SENT_TO_NOTARY, APPROVED
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// The Shadow Syndicate
+model IntellectualProperty {
+  id             String      @id @default(cuid())
+  
+  targetName     String      // De verlopen merknaam of patent naam
+  category       String      // TRADEMARK, PATENT, DOMAIN
+  registry       String      // BOIP, EUIPO, WIPO
+  
+  estimatedValue Float       // Wat is de potentiële licentiewaarde?
+  registrationCost Float     // Wat kost het ons om het nu te claimen?
+  
+  status         String      @default("SCANNING") // SCANNING, CLAIMABLE, CLAIMED, LICENSED
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model TaxEntity {
+  id             String      @id @default(cuid())
+  
+  country        String      // bijv. "Estonia", "UAE (Dubai)", "Delaware"
+  entityType     String      // E_RESIDENCY, LLC, FZCO
+  taxRate        Float       // 0.0 voor Dubai, 20.0 voor Estland etc.
+  
+  currentBalance Float       @default(0.0) // Het vermogen geparkeerd in deze jurisdictie
+  status         String      @default("ACTIVE") // ACTIVE, DORMANT, ROUTING_FUNDS
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model EspionageReport {
+  id             String      @id @default(cuid())
+  
+  targetCompany  String      // Concurrent naam
+  sector         String      // E-commerce, Tech, etc.
+  
+  intelligenceLevel String   // LOW, MEDIUM, HIGH, CRITICAL_VULNERABILITY
+  reportHash     String?     // PDF/Data hash
+  marketValue    Float       // Waarvoor kunnen we deze info B2B verkopen?
+  
+  status         String      @default("GATHERING") // GATHERING, COMPILED, FOR_SALE, SOLD
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// Stellar Ascension Sector
+model OrbitalNode {
+  id             String      @id @default(cuid())
+  
+  satelliteId    String      // bijv. "STARLINK-3921", "BLOCKSTREAM-NODE-4"
+  orbitType      String      // LEO, MEO, GEO
+  function       String      // DATA_VAULT, COMMS_RELAY, SENSOR
+  
+  storageCapacity Float      // GBs
+  uplinkSpeed    Float       // Mbps
+  
+  status         String      @default("ONLINE") // ONLINE, ORBIT_SHIFT, OFFLINE
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model AerospaceAsset {
+  id             String      @id @default(cuid())
+  
+  targetName     String      // "SpaceX Equity", "Asteroid Psyche 16 Mining Claim"
+  assetType      String      // EQUITY, SPECULATIVE_CLAIM, RARE_MINERALS
+  
+  estimatedValue Float       
+  riskLevel      String      // EXTREME, HIGH, MODERATE
+  
+  status         String      @default("TRACKING") // TRACKING, INVESTED, CLAIMED
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }

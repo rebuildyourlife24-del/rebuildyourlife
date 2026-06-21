@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { AuthProvider } from "@/lib/auth";
+import { VoiceOrb } from "@/components/ui/VoiceOrb";
+import { OrionVisor } from "@/components/ui/OrionVisor";
+import { AppHeader } from "@/components/ui/AppHeader";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: 'swap' });
@@ -56,7 +59,10 @@ export default function RootLayout({
         
         <LanguageProvider>
           <AuthProvider>
+            <AppHeader />
             {children}
+            <OrionVisor />
+            <VoiceOrb />
           </AuthProvider>
         </LanguageProvider>
       </body>

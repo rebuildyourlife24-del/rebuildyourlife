@@ -1,194 +1,246 @@
-'use client';
+"use client";
 
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Check, ChevronRight, ShieldCheck, PlayCircle, Target, Lock, Cpu } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ParticleGrid } from '@/components/ui/ParticleGrid';
 
-export default function MarketingFunnelPage() {
-  const fadeIn = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6, ease: "easeOut" }
+export default function ExtremeLandingPage() {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
+  // Framer Motion variants
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      }
+    }
+  };
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-gold-500 selection:text-black font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-navy text-textPrimary font-mono overflow-x-hidden selection:bg-danger/30 selection:text-danger">
       
-      {/* Navbar */}
-      <nav className="relative z-50 border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-black tracking-tighter text-white uppercase">
-              Rebuild<span className="text-gold-500">YourLife</span>
-            </span>
-          </div>
-          <div className="flex gap-4 sm:gap-6 items-center">
-            <Link href="#operator" className="px-5 py-2 text-sm font-black bg-gold-500 text-black rounded uppercase tracking-wider transition-all hover:bg-gold-400 hover:scale-105 shadow-[0_0_15px_rgba(212,168,83,0.4)]">
-              Start Systeem
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {/* 3D WEBGL PARTICLE SYSTEM (4K-16K Fidelity) */}
+      <div className="fixed inset-0 z-0 opacity-80">
+        <ParticleGrid />
+      </div>
 
-      {/* Hero Section (The Hook) */}
-      <section className="relative pt-24 pb-20 px-6 flex flex-col items-center text-center">
-        {/* Glow effect behind hero */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/10 blur-[150px] pointer-events-none rounded-full" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20 flex flex-col items-center">
         
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-5xl mx-auto relative z-10"
+        {/* HEADER / HERO */}
+        <motion.header 
+          style={{ y, opacity }}
+          className="text-center mb-24 space-y-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-500 font-bold text-sm mb-8 uppercase tracking-widest">
-            <ShieldCheck className="w-4 h-4" /> 100% Recovery Guarantee Actief
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 border border-danger/40 bg-danger/5 backdrop-blur-md px-4 py-1.5 text-xs tracking-[0.3em] uppercase mb-4 text-danger shadow-[0_0_20px_rgba(255,0,60,0.15)]"
+          >
+            <span className="w-2 h-2 rounded-full bg-danger animate-pulse"></span>
+            System Status: Online
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+            className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9] text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+          >
+            Een paar uur werk.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-danger to-red-500">
+              De rest vrijheid.
+            </span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="text-xl md:text-2xl text-textSecondary max-w-3xl mx-auto font-light tracking-wide leading-relaxed"
+          >
+            De concurrentie verkoopt theorie. Wij leveren een <strong className="text-white">Autonoom AI-Systeem</strong>. 
+            Installeer de infrastructuur, stuur de machines aan, en domineer de schaduwmarkten.
+          </motion.p>
+        </motion.header>
+
+        {/* 4K MANIFESTO FILMS PLACEHOLDER */}
+        <motion.section 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-5xl mb-40 relative group"
+        >
+          {/* Outer glow */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-danger/30 via-transparent to-danger/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+          
+          {/* Glassmorphism Video Container */}
+          <div className="relative aspect-video bg-navyLight/80 backdrop-blur-3xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center flex-col">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+            
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="z-10 text-danger mb-6"
+            >
+              <svg className="w-20 h-20 drop-shadow-[0_0_15px_rgba(255,0,60,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1">
+                <path strokeLinecap="square" strokeLinejoin="miter" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="square" strokeLinejoin="miter" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </motion.div>
+            
+            <div className="z-10 text-center">
+              <p className="text-white tracking-[0.2em] text-sm uppercase font-bold drop-shadow-md">Manifesto Film [ 4K-16K Ready ]</p>
+              <p className="text-textSecondary/50 text-xs mt-2 font-mono">Awaiting High-Bitrate Video Inject</p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ASYMMETRIC BENTO GRID: DE 4 ZUILEN */}
+        <section className="w-full mb-40">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-16"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="h-[1px] bg-danger/50 flex-grow"></div>
+              <h2 className="text-sm text-danger font-bold uppercase tracking-[0.3em]">Architectuur van the Grid</h2>
+              <div className="h-[1px] bg-danger/50 flex-grow"></div>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {/* Bento 1: Large left */}
+            <motion.div variants={fadeUp} className="md:col-span-2 bg-surfaceLight/20 backdrop-blur-xl border border-white/10 rounded-2xl p-10 hover:border-danger/40 transition-colors group relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <span className="text-8xl font-black text-white leading-none">01</span>
+              </div>
+              <div className="text-danger font-bold text-sm tracking-widest mb-4">SYSTEM CORE</div>
+              <h3 className="text-4xl font-bold mb-6 text-white uppercase tracking-tight">De AI Infrastructuur</h3>
+              <p className="text-textSecondary text-lg leading-relaxed max-w-md">
+                Wij verkopen geen theorie. Je installeert jouw persoonlijke AI-bankier, strateeg en code-schrijvers. Het systeem doet het zware rekenwerk, jij zit in de commandostoel.
+              </p>
+            </motion.div>
+
+            {/* Bento 2: Small right */}
+            <motion.div variants={fadeUp} className="bg-surfaceLight/20 backdrop-blur-xl border border-white/10 rounded-2xl p-10 hover:border-danger/40 transition-colors group relative overflow-hidden">
+              <div className="text-danger font-bold text-sm tracking-widest mb-4">ENGINE</div>
+              <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">Motivatie & Stimulering</h3>
+              <p className="text-textSecondary leading-relaxed">
+                Een kille machine werkt niet als de mens faalt. Onze AI pusht je, trekt je door dalen heen en forceert onbreekbare discipline.
+              </p>
+            </motion.div>
+
+            {/* Bento 3: Small left */}
+            <motion.div variants={fadeUp} className="bg-surfaceLight/20 backdrop-blur-xl border border-white/10 rounded-2xl p-10 hover:border-danger/40 transition-colors group relative overflow-hidden">
+              <div className="text-danger font-bold text-sm tracking-widest mb-4">NETWORK</div>
+              <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">The Syndicate</h3>
+              <p className="text-textSecondary leading-relaxed">
+                Geen openbaar Discord forum voor kinderen. Een decentrale, versleutelde community via Signal, Telegram en WhatsApp.
+              </p>
+            </motion.div>
+
+            {/* Bento 4: Large right (Verdienmodellen) */}
+            <motion.div variants={fadeUp} className="md:col-span-2 bg-surfaceLight/20 backdrop-blur-xl border border-white/10 rounded-2xl p-10 hover:border-danger/40 transition-colors group relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <span className="text-8xl font-black text-white leading-none">04</span>
+              </div>
+              <div className="text-danger font-bold text-sm tracking-widest mb-4">REVENUE STREAMS</div>
+              <h3 className="text-4xl font-bold mb-6 text-white uppercase tracking-tight">The Opportunity Engine</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                <div>
+                  <h4 className="text-white font-bold mb-2">SaaS App Cloning</h4>
+                  <p className="text-textSecondary text-sm">Laat AI winstgevende micro-apps herschrijven en lanceer je software-imperium binnen dagen.</p>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">Agentic Commerce</h4>
+                  <p className="text-textSecondary text-sm">Autonome AI-agenten vinden producten, bouwen webshops en schrijven advertenties.</p>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">High-Ticket AI Sales</h4>
+                  <p className="text-textSecondary text-sm">Verkoop onzichtbare AI-infrastructuur (receptionistes/chatbots) aan fysieke bedrijven.</p>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">Synthetische Media</h4>
+                  <p className="text-textSecondary text-sm">Genereer massaal organische views met AI-clones voor faceless YouTube & TikTok kanalen.</p>
+                </div>
+              </div>
+            </motion.div>
+
+          </motion.div>
+        </section>
+
+        {/* THE VAULT CTA (GLASSMORPHISM) */}
+        <motion.section 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="w-full relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 backdrop-blur-2xl p-16 text-center shadow-2xl mb-24"
+        >
+          {/* Subtle radar ping in background */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none">
+            <div className="absolute inset-0 border border-danger/10 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+            <div className="absolute inset-4 border border-danger/5 rounded-full animate-ping" style={{ animationDuration: '4s' }}></div>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-6 text-white uppercase leading-[0.9]">
-            We Herbouwen Je Leven.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600 drop-shadow-lg">
-              En We Garanderen Het.
-            </span>
-          </h1>
-          
-          <p className="text-xl sm:text-2xl text-zinc-400 mb-10 max-w-3xl mx-auto leading-tight font-medium">
-            Jouw persoonlijke AI Private Banker en Debt Negotiator. Wij structureren je schulden, genereren autonoom winst, en trekken je uit de overlevingsstand.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="#operator" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gold-500 text-black px-12 py-5 rounded font-black text-xl uppercase tracking-wider transition-all hover:bg-white hover:scale-105 shadow-[0_0_30px_rgba(212,168,83,0.3)]">
-              Claim Jouw Toegang
-              <ChevronRight className="w-6 h-6" />
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-6xl font-black mb-6 text-white uppercase tracking-tighter drop-shadow-md">
+              Enter The Vault
+            </h2>
+            <p className="text-lg text-textSecondary max-w-2xl mx-auto mb-10 font-light">
+              Wij verbergen ons niet achter theorie. Krijg exclusieve toegang tot onze Intelligence Databank met <strong>200+ geclassificeerde onderzoeken</strong> over AI-systemen en bedrijfsmodellen.
+            </p>
+            
+            <Link href="/vault">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-transparent border border-white/30 text-white px-10 py-4 font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-colors"
+              >
+                Access Databank
+              </motion.button>
             </Link>
           </div>
-        </motion.div>
-      </section>
+        </motion.section>
 
-      {/* Video Placeholder (Content Forge) */}
-      <section className="relative px-6 pb-32">
-        <div className="max-w-4xl mx-auto">
-          <motion.div 
-            {...fadeIn}
-            className="aspect-video w-full bg-zinc-900 border border-zinc-800 rounded-2xl relative overflow-hidden group cursor-pointer shadow-2xl"
+        {/* INITIATE PROTOCOL CTA */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="text-center pb-20 relative z-10"
+        >
+          <p className="text-textSecondary mb-6 uppercase tracking-[0.3em] text-xs font-bold">Systeemcapaciteit is gelimiteerd</p>
+          <motion.button 
+            whileHover={{ scale: 1.05, boxShadow: "0px 0px 40px rgba(255,0,60,0.6)" }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-danger text-white px-16 py-6 text-xl font-black uppercase tracking-[0.2em] transition-shadow shadow-[0_0_20px_rgba(255,0,60,0.3)]"
           >
-            {/* Fake Video Thumbnail / Pattern */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-700 via-black to-black" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-              <PlayCircle className="w-20 h-20 text-gold-500 mb-4 group-hover:scale-110 transition-transform duration-300" strokeWidth={1} />
-              <p className="text-zinc-400 font-bold tracking-widest uppercase">Bekijk de Systeem Uitleg (2:14)</p>
-              <p className="text-xs text-zinc-600 mt-2">[Content Forge UGC Video Placeholder]</p>
-            </div>
-            
-            {/* Play overlay gradient */}
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-          </motion.div>
-        </div>
-      </section>
+            [ INITIATE PROTOCOL ]
+          </motion.button>
+        </motion.section>
 
-      {/* De Belofte (100% Guarantee) */}
-      <section className="py-24 px-6 bg-zinc-950 border-y border-zinc-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <motion.div {...fadeIn} className="space-y-6">
-              <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tight">Geen Excuses.<br/><span className="text-gold-500">Keiharde Resultaten.</span></h2>
-              <p className="text-lg text-zinc-400 leading-relaxed font-medium">
-                Als onze systemen er niet in slagen om jouw financiële situatie meetbaar te verbeteren, dan faalt dit platform. We hebben The AI Concierge zo geprogrammeerd dat het een wiskundige onmogelijkheid is om niet vooruit te gaan.
-              </p>
-              <div className="flex items-center gap-4 bg-black p-5 border border-red-900/50 rounded-lg">
-                <Lock className="w-8 h-8 text-red-500 shrink-0" />
-                <p className="text-sm font-bold text-red-100">
-                  Valt de AI-optimalisatie stil? Dan breekt de code uit en escaleert jouw dossier direct naar de menselijke CEO voor handmatige redding.
-                </p>
-              </div>
-            </motion.div>
-            
-            <motion.div {...fadeIn} transition={{ delay: 0.2 }} className="grid grid-cols-1 gap-6">
-              <div className="bg-black p-6 border border-zinc-800 rounded-xl">
-                <Target className="w-8 h-8 text-gold-500 mb-4" />
-                <h3 className="text-xl font-bold uppercase mb-2">Autonome Debt Engine</h3>
-                <p className="text-zinc-400 text-sm">Onderhandelt met schuldeisers en pauzeert incasso's namens jou.</p>
-              </div>
-              <div className="bg-black p-6 border border-zinc-800 rounded-xl">
-                <Cpu className="w-8 h-8 text-gold-500 mb-4" />
-                <h3 className="text-xl font-bold uppercase mb-2">The Opportunity Engine</h3>
-                <p className="text-zinc-400 text-sm">Creëert actieve inkomstenstromen (SaaS/E-com) op de achtergrond voor jou.</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Prijsstrategie (Aggressieve Upsell) */}
-      <section id="operator" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div {...fadeIn} className="text-center mb-20">
-            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight mb-4">Toegang Tot Het Systeem</h2>
-            <p className="text-zinc-400 text-xl font-medium">Word onderdeel van de architectuur.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
-            
-            {/* Starter (Demphasized) */}
-            <motion.div {...fadeIn} className="bg-zinc-950 border border-zinc-900 p-8 flex flex-col rounded-xl opacity-80 hover:opacity-100 transition-opacity">
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-zinc-500 uppercase mb-2">Starter</h3>
-                <div className="text-4xl font-light text-zinc-300 mb-4">€0<span className="text-lg text-zinc-600 ml-1">/mnd</span></div>
-                <p className="text-zinc-500 text-sm font-medium">Zelfstandige toegang tot basis dashboards. Geen AI support.</p>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {['Basic Overzicht', 'Handmatige data invoer'].map((feature, i) => (
-                  <li key={i} className="flex items-center text-zinc-500 text-sm font-bold">
-                    <Check className="w-4 h-4 mr-3 text-zinc-700" /> {feature}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/auth/register" className="w-full py-4 text-center border border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider rounded">
-                Kies Starter
-              </Link>
-            </motion.div>
-
-            {/* Operator (The No-Brainer CTA) */}
-            <motion.div {...fadeIn} transition={{ delay: 0.1 }} className="bg-black border-2 border-gold-500 p-10 flex flex-col relative transform md:-translate-y-6 shadow-[0_0_50px_rgba(212,168,83,0.15)] rounded-2xl">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold-500 text-black px-6 py-1.5 text-xs font-black tracking-widest uppercase rounded shadow-lg">
-                Apex Operator
-              </div>
-              <div className="mb-8 mt-4 text-center">
-                <h3 className="text-2xl font-black text-white uppercase mb-2">Volledig Arsenaal</h3>
-                <div className="text-6xl font-black text-white mb-4 tracking-tighter">€19<span className="text-2xl text-gold-500">,95</span><span className="text-lg text-zinc-500 ml-1 font-medium">/mnd</span></div>
-                <p className="text-gold-400 text-sm font-bold">Jouw persoonlijke legioen van AI's. 100% Garantie.</p>
-              </div>
-              <div className="bg-zinc-900/50 p-4 rounded-lg mb-8 border border-zinc-800">
-                <ul className="space-y-3">
-                  {[
-                    '24/7 AI Private Banker (The Concierge)', 
-                    'Autonome Debt Negotiator (Schuldeisers blokkeren)', 
-                    'Toegang tot Opportunity Engine (Autonoom Inkomen)', 
-                    '100% Recovery Garantie Protocol'
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-start text-white text-sm font-bold">
-                      <Check className="w-5 h-5 mr-3 text-gold-500 shrink-0 mt-0.5" /> 
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Link href="/auth/register?plan=operator" className="w-full py-5 text-center bg-gold-500 text-black hover:bg-white hover:scale-[1.02] transition-all text-lg font-black uppercase tracking-widest rounded shadow-[0_0_20px_rgba(212,168,83,0.4)]">
-                Activeer Operator Systeem
-              </Link>
-            </motion.div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-12 px-6 bg-black text-center">
-        <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">
-          &copy; {new Date().getFullYear()} RebuildYourLife. System Architecture Active.
-        </p>
-      </footer>
+      </div>
     </div>
   );
 }

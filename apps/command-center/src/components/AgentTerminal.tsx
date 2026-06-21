@@ -5,46 +5,50 @@ import { Terminal, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const MOCK_LOGS: Record<string, string[]> = {
-  "WEALTH & OPPORTUNITY ENGINE": [
-    "> Initializing Meta Ad Library Crawler v2.4...",
-    "> Bypassing rate limits (Proxy pool active: 142 nodes)",
-    "> Scanning 'Dropshipping' and 'Print on Demand' keywords...",
-    "> Found 1,402 active campaigns running > 30 days.",
-    "> Analyzing ROI indicators (engagement-to-ad-spend ratio)...",
-    "> ALERT: High potential niche identified: 'Ergonomic Home Office'.",
-    "> Competitor A ad spend: ~$4k/day. Margin est: 62%.",
-    "> Scraping supplier catalogs via AliExpress API...",
-    "> Found 12 viable suppliers with <7 days shipping to EU/US.",
-    "> Generating 0€ investment strategy...",
-    "> Compiling TikTok organic viral hook templates...",
-    "> Strategy ready. Waiting for user authorization."
+  "AFFILIATE SWARM": [
+    "> Scanning affiliate networks for high-converting offers...",
+    "> Found 47 programs with >8% conversion rate.",
+    "> Deploying link rotation across 12 content pages...",
+    "> Revenue attribution tracking: ACTIVE",
+    "> Daily commission estimate: €142.30",
   ],
-  "FINANCIËN & BETALINGEN": [
-    "> Connecting to Stripe API...",
-    "> Fetching recent transactions...",
-    "> Verified 14 successful payments.",
-    "> Parsing invoice PDF attachments from inbox...",
-    "> Warning: 2 unpaid invoices detected (overdue > 5 days).",
-    "> Re-calculating cashflow runway...",
-    "> Cashflow runway: 142 days.",
-    "> Pinging Bank API for balance updates..."
+  "ADS OPTIMIZER": [
+    "> Initializing Meta Ad Library analysis...",
+    "> Scanning 1,402 active campaigns (>30 days).",
+    "> High potential niche: 'Ergonomic Home Office' — margin 62%.",
+    "> A/B test batch #47 deployed — 3 creative variants.",
+    "> Budget reallocation: shifting €200 from Set B → Set A.",
   ],
-  "SEO & MARKETING": [
-    "> Running Google Lighthouse audits on 4 domains...",
-    "> Parsing Google Search Console data...",
-    "> Analyzing keyword cannibalization...",
-    "> Found 3 long-tail keyword opportunities (Low Competition, High Volume).",
-    "> Generating content briefs...",
-    "> Dispatching 14 tasks to copywriters...",
-    "> Monitoring backlink velocity..."
-  ]
+  "DIGITAL PRODUCTS": [
+    "> Monitoring Gumroad & LemonSqueezy storefronts...",
+    "> 3 new downloads in the last hour.",
+    "> Generating upsell email sequence for buyers...",
+    "> Product page conversion rate: 4.8% (target: 5%)",
+  ],
+  "SAAS ENGINE": [
+    "> Active subscribers: 124 (MRR: €3,100)",
+    "> Churn prediction model updated — 2 at-risk accounts.",
+    "> Automated retention email triggered for user #89.",
+    "> Feature usage heatmap analysis complete.",
+  ],
+  "DROPSHIP": [
+    "> Checking supplier inventory levels...",
+    "> 8 orders fulfilled, 3 pending shipment.",
+    "> AliExpress API: 12 suppliers with <7 day EU shipping.",
+    "> Profit margin check: all products above 35% threshold.",
+  ],
+  "FREEMIUM FUNNELS": [
+    "> Lead magnet downloads today: 67",
+    "> Email sequence open rate: 42% (excellent)",
+    "> Conversion to paid: 2.1% — testing new CTA...",
+    "> A/B test on landing page header: Variant B winning +18%",
+  ],
 };
 
 const DEFAULT_LOGS = [
   "> System ready.",
-  "> Awaiting commands.",
+  "> Awaiting commands...",
   "> Monitoring sub-routines...",
-  "> Memory usage: 42%"
 ];
 
 interface AgentTerminalProps {
@@ -53,7 +57,7 @@ interface AgentTerminalProps {
 }
 
 export default function AgentTerminal({ agentTitle, onClose }: AgentTerminalProps) {
-  const [logs, setLogs] = useState<string[]>([`> Connected to ${agentTitle} daemon...`]);
+  const [logs, setLogs] = useState<string[]>([`> Connected to ${agentTitle}...`]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,10 +69,9 @@ export default function AgentTerminal({ agentTitle, onClose }: AgentTerminalProp
         setLogs(prev => [...prev, sourceLogs[currentIndex]]);
         currentIndex++;
       } else {
-        // Loop back to simulate continuous running, or just add ambient dots
-        setLogs(prev => [...prev, "> " + Array(Math.floor(Math.random() * 5) + 3).fill('.').join('')]);
+        setLogs(prev => [...prev, "> " + Array(Math.floor(Math.random() * 4) + 2).fill('.').join('')]);
       }
-    }, Math.random() * 1500 + 500); // Random delay between 0.5s and 2s
+    }, Math.random() * 1200 + 600);
 
     return () => clearInterval(interval);
   }, [agentTitle]);
@@ -80,39 +83,48 @@ export default function AgentTerminal({ agentTitle, onClose }: AgentTerminalProp
   }, [logs]);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: 50, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 50, scale: 0.95 }}
-      className="absolute right-4 top-24 bottom-24 w-80 lg:w-96 bg-black/80 backdrop-blur-md border border-cyan-500/30 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)] z-50 flex flex-col"
-    >
-      {/* Terminal Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-cyan-950/40 border-b border-cyan-500/20">
-        <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-mono text-cyan-400">{agentTitle}_LIVE_STREAM</span>
+    <div className="h-full flex flex-col bg-transparent">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+            <Terminal className="w-3.5 h-3.5 text-cyan-400/80" />
+          </div>
+          <div>
+            <span className="text-xs font-medium text-white/70">{agentTitle}</span>
+            <p className="text-[9px] font-mono text-white/25">LIVE STREAM</p>
+          </div>
         </div>
-        <button onClick={onClose} className="text-cyan-500 hover:text-cyan-300 transition-colors">
-          <X className="w-4 h-4" />
+        <button
+          onClick={onClose}
+          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+        >
+          <X className="w-3.5 h-3.5 text-white/40" />
         </button>
       </div>
 
-      {/* Terminal Body */}
-      <div 
+      {/* Log Body */}
+      <div
         ref={scrollRef}
-        className="flex-1 p-4 overflow-y-auto font-mono text-xs md:text-sm custom-scrollbar"
+        className="flex-1 p-6 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar space-y-2"
       >
         {logs.map((log, i) => (
-          <div 
-            key={i} 
-            className={`mb-2 ${log.includes('ALERT') || log.includes('Warning') ? 'text-amber-400' : 'text-cyan-300/80'} ${i === logs.length - 1 ? 'animate-pulse' : ''}`}
+          <div
+            key={i}
+            className={`${
+              log?.includes('ALERT') || log?.includes('Warning') || log?.includes('at-risk')
+                ? 'text-rose-300/70'
+                : log?.includes('Found') || log?.includes('excellent') || log?.includes('winning')
+                ? 'text-emerald-300/60'
+                : 'text-white/35'
+            } ${i === logs.length - 1 ? 'text-white/50' : ''}`}
           >
             {log}
           </div>
         ))}
         {/* Blinking cursor */}
-        <div className="w-2 h-4 bg-cyan-400 animate-pulse mt-2" />
+        <div className="w-2 h-4 bg-cyan-400/50 cursor-blink mt-1" />
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -79,8 +79,8 @@ export default function HealthPage() {
       const res = await api.get<HealthLog[]>('/health');
       const data = (res as any).data || res;
       setLogs(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.log("Health API niet bereikbaar (nog niet gekoppeld):", err?.message);
       setLogs([]);
     } finally {
       setLoading(false);

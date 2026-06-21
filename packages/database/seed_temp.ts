@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const db = new PrismaClient(); async function main() { await db.user.create({ data: { email: 'overseer@godbrain.com', firstName: 'Supreme', lastName: 'Overseer', passwordHash: 'hash' } }); console.log('User Seeded'); } main();  

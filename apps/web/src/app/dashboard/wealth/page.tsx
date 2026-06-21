@@ -1,187 +1,260 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Lock, Shield, DollarSign, Activity } from 'lucide-react';
-import { getCFOData } from '@/app/actions/cfo';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Layers, Zap, FolderSync, TrendingUp, PlaySquare, Settings2, Globe } from 'lucide-react';
 
-function formatEur(n: number) {
-  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n);
-}
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
 
-export default function WealthDashboard() {
-  const [cfoData, setCfoData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 100, damping: 20 } },
+};
 
-  useEffect(() => {
-    async function loadData() {
-      const res = await getCFOData();
-      if (res.success) {
-        setCfoData(res.data);
-      }
-      setLoading(false);
-    }
-    loadData();
-  }, []);
+export default function OmegaBuilderDashboard() {
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gold-500"></div>
-      </div>
-    );
-  }
-
-  const balance = cfoData?.vault?.balance || 0;
-  const maxRisk = balance * 0.02; // 2% Rule
-  const totalTaxShield = cfoData?.totalTaxShield || 0;
-  const totalNetWorth = balance + totalTaxShield;
+  const handleGenerate = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      setIsGenerating(false);
+    }, 3000);
+  };
 
   return (
-    <div className="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-8">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8 max-w-7xl mx-auto pb-20"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-[#1f2937] pb-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-white tracking-tight">The God Mode</h1>
-            <span className="px-3 py-1 text-[10px] font-bold tracking-widest text-gold-400 bg-gold-400/10 rounded-full border border-gold-400/20 uppercase">CFO & Tax Engine Online</span>
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase">Omega <span className="text-gold">Web Builder</span></h1>
+            <Badge variant="warning" className="animate-pulse tracking-widest text-[10px]">ALL-IN-ONE ENGINE</Badge>
           </div>
-          <p className="text-zinc-400">Jouw financiële vesting. Volledig geautomatiseerd kapitaalbehoud en fiscale optimalisatie.</p>
-        </div>
-        <div className="text-right">
-          <p className="text-sm text-zinc-500 uppercase tracking-wider font-semibold mb-1">Total Net Worth</p>
-          <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-            {formatEur(totalNetWorth)}
+          <p className="text-textSecondary uppercase tracking-widest text-sm font-mono">
+            AI-Gestuurde E-Commerce Generatie // 100% Gecentraliseerde Materialen
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Builder Interface */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* The Treasury Vault */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="p-6 rounded-2xl bg-[#0e0e11] border border-zinc-800/60 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Lock className="w-48 h-48" />
-            </div>
-            
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-emerald-500/10 rounded-xl">
-                <DollarSign className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Treasury Vault</h2>
-                <p className="text-sm text-zinc-400">Vrij opneembaar en liquide kapitaal.</p>
-              </div>
-            </div>
-
-            <div className="text-5xl font-bold text-white mb-2">
-              {formatEur(balance)}
-            </div>
-            <p className="text-sm text-emerald-400/80 font-mono mb-8">Ready for deployment.</p>
-
-            {/* Risk Protocol */}
-            <div className="p-5 rounded-xl border border-red-500/20 bg-red-500/5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-red-400" />
-                  <h3 className="font-semibold text-red-100">Orion 2% Risk Protocol</h3>
-                </div>
-                <span className="text-xs font-mono text-red-400/60">Strict Enforcement</span>
-              </div>
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-xs text-red-200/60 mb-1">Maximaal test-budget (Opportunity Engine)</p>
-                  <p className="text-2xl font-bold text-red-400">{formatEur(maxRisk)}</p>
-                </div>
-                <div className="w-1/2 h-2 bg-black/40 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 w-[2%]" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* The Tax Shield */}
-        <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-[#0e0e11] border border-cyan-500/20 shadow-[0_0_30px_-15px_rgba(6,182,212,0.3)] h-full">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 bg-cyan-500/10 rounded-xl">
-                <Shield className="w-6 h-6 text-cyan-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">The Tax Shield</h2>
-                <p className="text-sm text-zinc-400">Veiliggesteld voor de fiscus.</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-end pb-4 border-b border-zinc-800/60">
-                <span className="text-zinc-400">Totaal Afgeschermd</span>
-                <span className="text-xl font-bold text-cyan-400">{formatEur(totalTaxShield)}</span>
-              </div>
-
-              {cfoData?.taxStrategies?.length > 0 ? (
-                cfoData.taxStrategies.map((tax: any) => (
-                  <div key={tax.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/40">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-semibold text-zinc-200">{tax.potName}</span>
-                      <span className="text-sm font-mono text-white">{formatEur(tax.allocatedAmount)}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-zinc-500">Geschat belastingvoordeel</span>
-                      <span className="text-emerald-400">+{formatEur(tax.taxAdvantage)}</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <Shield className="w-12 h-12 text-zinc-800 mx-auto mb-3" />
-                  <p className="text-sm text-zinc-500">Nog geen fiscale vluchtroutes geactiveerd. Orion optimaliseert automatisch bij de eerste winst.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Luxury Receiver / Debt Negotiator Module */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-red-900/20 to-zinc-900/40 border border-red-500/20 mt-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-red-500/10 rounded-xl">
-              <Shield className="w-6 h-6 text-red-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Autonomous Debt Negotiator</h2>
-              <p className="text-sm text-zinc-400">Military-Grade Encrypted Justice Ledger (AES-256-GCM)</p>
-            </div>
-          </div>
-          <span className="px-3 py-1 text-xs font-bold text-red-400 bg-red-400/10 rounded-full border border-red-500/20">
-            SYSTEM ACTIVE
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
-            <p className="text-sm text-zinc-500 mb-1">Onaantastbaar Leefgeld (VTLB)</p>
-            <p className="text-2xl font-bold text-emerald-400">~ €5.000,-</p>
-            <p className="text-xs text-emerald-500/60 mt-1">Gegarandeerd 2x Modaal ZZP</p>
-          </div>
+        {/* Left Col: Generator & PR Machine */}
+        <div className="lg:col-span-2 space-y-8">
           
-          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
-            <p className="text-sm text-zinc-500 mb-1">Actieve Dossiers</p>
-            <p className="text-2xl font-bold text-white">0</p>
-            <p className="text-xs text-zinc-600 mt-1">Orion scant momenteel je mailbox...</p>
-          </div>
+          {/* Omega Generator Panel */}
+          <motion.div variants={itemVariants}>
+            <Card className="p-8 bg-[#0a0e1a] border border-gold/30 shadow-[0_0_50px_rgba(212,168,83,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                <Globe className="w-48 h-48 text-gold" />
+              </div>
+              
+              <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="p-3 bg-gold/10 rounded-xl border border-gold/20">
+                  <Zap className="w-6 h-6 text-gold" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white uppercase tracking-widest">Franchise Koppelen (Multi-Tenant)</h2>
+                  <p className="text-xs text-textSecondary">Koppel je 8 subdomeinen op ai-henksemler.nl direct aan de Godbrain.</p>
+                </div>
+              </div>
 
-          <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/50">
-            <p className="text-sm text-zinc-500 mb-1">Lokale Juridische Engine</p>
-            <p className="text-lg font-bold text-cyan-400">Verbonden</p>
-            <p className="text-xs text-cyan-500/60 mt-1">Klaar om gemeentelijk beleid te handhaven.</p>
-          </div>
+              <form action={async (formData) => {
+                setIsGenerating(true);
+                try {
+                  const { createFranchise } = await import('@/actions/franchise');
+                  await createFranchise(formData.get('domain') as string || '');
+                  alert('Domein succesvol gekoppeld! De Omega Storefront is nu live.');
+                } catch (e: any) {
+                  alert(e.message);
+                } finally {
+                  setIsGenerating(false);
+                }
+              }} className="space-y-4 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="bg-[#111827] p-4 rounded-xl border border-[#1f2937]">
+                    <label className="text-xs text-textSecondary uppercase font-bold mb-2 block">Subdomein (bijv. shop1.ai-henksemler.nl)</label>
+                    <input type="text" name="domain" placeholder="shop1.ai-henksemler.nl" className="w-full bg-black text-white font-mono p-2 rounded border border-zinc-800 focus:border-gold outline-none" required />
+                  </div>
+                  <div className="bg-[#111827] p-4 rounded-xl border border-[#1f2937]">
+                    <label className="text-xs text-textSecondary uppercase font-bold mb-2 block">Franchise Naam</label>
+                    <input type="text" name="name" placeholder="E-Commerce Niche A" className="w-full bg-black text-white font-mono p-2 rounded border border-zinc-800 focus:border-gold outline-none" required />
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit"
+                  disabled={isGenerating}
+                  className="w-full bg-gold hover:bg-[#b0893a] text-black font-black uppercase tracking-[0.2em] py-6 text-lg shadow-[0_0_20px_rgba(212,168,83,0.4)] transition-all"
+                >
+                  {isGenerating ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin border-2 border-black border-t-transparent rounded-full w-5 h-5"></span>
+                      Domein Koppelen...
+                    </span>
+                  ) : (
+                    "LANCEREN & KOPPELEN"
+                  )}
+                </Button>
+              </form>
+            </Card>
+          </motion.div>
+
+          {/* Shopify API Assimilation Panel */}
+          <motion.div variants={itemVariants}>
+            <Card className="p-8 bg-black border-2 border-red-900 shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              
+              <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="p-3 bg-red-950/50 rounded-none border border-red-900">
+                  <Globe className="w-6 h-6 text-red-500" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white uppercase tracking-widest flex items-center gap-2">
+                    Shopify API Assimilatie <Badge variant="destructive" className="bg-red-600 text-[10px] animate-pulse">FASE 1.5</Badge>
+                  </h2>
+                  <p className="text-xs text-red-500/80 font-mono">Verbind de kassa en kanalen van externe Shopify winkels aan de War Room.</p>
+                </div>
+              </div>
+
+              <form action={async (formData) => {
+                setIsGenerating(true);
+                try {
+                  const { registerShopifyApi } = await import('@/app/actions/shopify');
+                  await registerShopifyApi(formData);
+                  alert('Shopify API Succesvol Geassimileerd! Data stroomt nu de War Room in.');
+                } catch (e: any) {
+                  alert(e.message);
+                } finally {
+                  setIsGenerating(false);
+                }
+              }} className="space-y-4 relative z-10">
+                <div className="bg-[#050505] p-4 border border-red-900/50 mb-4 font-mono text-xs text-zinc-400">
+                  <span className="text-red-500 font-bold">&gt; INSTRUCTIE:</span> Ga naar Shopify Dashboard &gt; Settings &gt; Apps &gt; Develop Apps. Maak een app genaamd "Orion Godbrain", geef Read/Write access op Orders en Products. Kopieer de "Admin API access token". (begint met <span className="text-white">shpat_</span>).
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="bg-black p-4 border-b-2 border-red-900">
+                    <label className="text-[10px] text-red-500 uppercase font-black tracking-widest mb-2 block">Shopify URL (bijv. shop.myshopify.com)</label>
+                    <input type="text" name="shopUrl" placeholder="jouw-winkel.myshopify.com" className="w-full bg-transparent text-white font-mono p-2 border border-zinc-800 focus:border-red-500 outline-none" required />
+                  </div>
+                  <div className="bg-black p-4 border-b-2 border-red-900">
+                    <label className="text-[10px] text-red-500 uppercase font-black tracking-widest mb-2 block">Admin API Toegangstoken (shpat_...)</label>
+                    <input type="password" name="accessToken" placeholder="shpat_xxxxxxxxxxxxxxxxxxxx" className="w-full bg-transparent text-red-400 font-mono p-2 border border-zinc-800 focus:border-red-500 outline-none" required />
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit"
+                  disabled={isGenerating}
+                  className="w-full bg-red-950 hover:bg-red-900 text-red-500 border border-red-900 font-black uppercase tracking-[0.3em] py-6 text-lg transition-all"
+                >
+                  {isGenerating ? (
+                    "ASSIMILATIE BEZIG..."
+                  ) : (
+                    "INITEER API ASSIMILATIE"
+                  )}
+                </Button>
+              </form>
+            </Card>
+          </motion.div>
+
+          {/* PR Sector (Content Forge Integration) */}
+          <motion.div variants={itemVariants}>
+            <Card className="p-6 bg-[#050505] border border-[#ef4444]/30 relative overflow-hidden">
+               <div className="flex items-center justify-between mb-6">
+                 <div className="flex items-center gap-3">
+                   <PlaySquare className="w-6 h-6 text-[#ef4444]" />
+                   <h3 className="text-lg font-bold text-white uppercase tracking-widest">PR Sector (Content Forge)</h3>
+                 </div>
+                 <Badge variant="danger" className="bg-[#ef4444]/10 border-[#ef4444]/30">LIVE TRAFFIC ENGINE</Badge>
+               </div>
+
+               <div className="space-y-4">
+                 <div className="flex justify-between items-center p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                    <div>
+                      <p className="text-white font-bold text-sm">Campagne: "Dubai Lifestyle Hooks"</p>
+                      <p className="text-xs text-textSecondary">Gekoppeld aan: shop1.ai-henksemler.nl</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-success font-mono font-bold">14.2k Views</p>
+                      <p className="text-[10px] text-textSecondary uppercase">Laatste Uur</p>
+                    </div>
+                 </div>
+                 <div className="flex justify-between items-center p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                    <div>
+                      <p className="text-white font-bold text-sm">Campagne: "Trading Setup 4K"</p>
+                      <p className="text-xs text-textSecondary">Gekoppeld aan: shop3.ai-henksemler.nl</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-success font-mono font-bold">8.4k Views</p>
+                      <p className="text-[10px] text-textSecondary uppercase">Laatste Uur</p>
+                    </div>
+                 </div>
+               </div>
+            </Card>
+          </motion.div>
+
         </div>
+
+        {/* Right Col: Centrale Materialen */}
+        <motion.div variants={itemVariants} className="space-y-6">
+          <Card className="p-6 bg-[#0a0a0a] border border-[#1f2937] h-full flex flex-col">
+            <div className="flex items-center gap-3 mb-6">
+              <FolderSync className="w-6 h-6 text-[#3b82f6]" />
+              <h3 className="text-lg font-bold text-white uppercase tracking-widest">Centrale Materialen</h3>
+            </div>
+            <p className="text-sm text-textSecondary mb-6">
+              Alle AI-gegenereerde scripts, TikTok-renders, productfoto's en data staan hier gekoppeld. Geen externe mappen nodig.
+            </p>
+
+            <div className="space-y-3 flex-1">
+              <div className="p-3 bg-[#111827] border border-[#1f2937] rounded flex items-center justify-between cursor-pointer hover:border-[#3b82f6]/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <PlaySquare className="w-4 h-4 text-[#ef4444]" />
+                  <span className="text-sm text-white font-mono">Render_Dubai_001.mp4</span>
+                </div>
+                <span className="text-xs text-success">Gekoppeld</span>
+              </div>
+              <div className="p-3 bg-[#111827] border border-[#1f2937] rounded flex items-center justify-between cursor-pointer hover:border-[#3b82f6]/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-gold" />
+                  <span className="text-sm text-white font-mono">Product_Catalog_Luxury.csv</span>
+                </div>
+                <span className="text-xs text-success">Gekoppeld</span>
+              </div>
+              <div className="p-3 bg-[#111827] border border-[#1f2937] rounded flex items-center justify-between cursor-pointer hover:border-[#3b82f6]/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Settings2 className="w-4 h-4 text-zinc-400" />
+                  <span className="text-sm text-white font-mono">Sales_Copy_Variant_A.txt</span>
+                </div>
+                <span className="text-xs text-success">Gekoppeld</span>
+              </div>
+            </div>
+
+            <Button variant="outline" className="w-full mt-6 border-[#3b82f6]/30 text-[#3b82f6] hover:bg-[#3b82f6]/10">
+              Open Bibliotheek
+            </Button>
+          </Card>
+        </motion.div>
+
       </div>
-    </div>
+    </motion.div>
   );
 }

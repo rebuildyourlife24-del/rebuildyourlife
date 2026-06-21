@@ -1,5 +1,5 @@
 interface BadgeProps {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'gold' | 'info';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'gold' | 'info' | 'outline' | 'destructive';
   size?: 'sm' | 'md';
   dot?: boolean;
   children: React.ReactNode;
@@ -13,6 +13,8 @@ const variantStyles: Record<string, string> = {
   danger: 'bg-danger/10 text-danger border-danger/20',
   gold: 'bg-gold/10 text-gold border-gold/20',
   info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  outline: 'border border-white/10 text-textSecondary',
+  destructive: 'bg-red-500/10 text-red-500 border-red-500/20',
 };
 
 const dotColors: Record<string, string> = {
@@ -22,6 +24,8 @@ const dotColors: Record<string, string> = {
   danger: 'bg-danger',
   gold: 'bg-gold',
   info: 'bg-blue-400',
+  outline: 'bg-textSecondary',
+  destructive: 'bg-red-500',
 };
 
 const sizeStyles: Record<string, string> = {

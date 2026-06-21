@@ -3,6 +3,7 @@
 import { PrismaClient } from "@rebuildyourlife/database";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { Sentinel } from "../../lib/orion/sentinel-scanner";
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
@@ -68,6 +69,17 @@ export async function getConversationMessagesAction(conversationId: string) {
 export async function sendAIMessageAction(agentType: string, message: string, conversationId?: string) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return { success: false, error: "Niet ingelogd" };
+
+  // 1. THE SENTINEL: MILITARY GRADE SECURITY CHECK
+  const securityReport = await Sentinel.scanDocument(message);
+  if (!securityReport.isSafe) {
+    console.error(`[THE SENTINEL] Threat blocked from user ${userId}:`, securityReport.reason);
+    return {
+      success: false,
+      error: "SENTINEL_BLOCK",
+      message: `[SENTINEL INTERCEPTIE] Uw bericht is geblokkeerd wegens een veiligheidsrisico (Code: ${securityReport.threatLevel}). De verbinding is verbroken om The Godbrain te beschermen.`
+    };
+  }
 
   // Check subscription tier
   const user = await prisma.user.findUnique({

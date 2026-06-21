@@ -48,8 +48,8 @@ export default function TasksPage() {
       const res = await api.get<{ data: Task[] }>('/task');
       const dataArray = res.data || (res as any).data || [];
       setTasks(Array.isArray(dataArray) ? dataArray : []);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.log("Tasks API niet bereikbaar (nog niet gekoppeld):", err?.message);
     } finally {
       setLoading(false);
     }

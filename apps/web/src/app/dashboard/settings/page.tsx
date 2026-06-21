@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { api, formatApiError } from '@/lib/api';
+import Link from 'next/link';
 
 
 export default function SettingsPage() {
@@ -36,8 +37,8 @@ export default function SettingsPage() {
           setLastName(d.lastName || '');
           setOpenaiKey(d.openaiKey || '');
         }
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        console.log("Settings API niet bereikbaar:", err?.message);
       } finally {
         setLoading(false);
       }
@@ -85,11 +86,56 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold text-textPrimary">Instellingen</h1>
-        <p className="mt-1 text-sm text-textSecondary">
-          Beheer je profiel, beveiliging en AI-voorkeuren.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-textPrimary">Instellingen</h1>
+          <p className="mt-1 text-sm text-textSecondary">
+            Beheer je profiel, beveiliging en AI-voorkeuren.
+          </p>
+        </div>
+        <Link 
+          href="/dashboard/settings/integrations" 
+          className="rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors border border-white/10"
+        >
+          Integraties Beheren &rarr;
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* E-mail Vault */}
+        <Link href="/dashboard/settings/emails">
+          <div className="border border-red-900 bg-black p-6 hover:bg-red-950/20 transition-all cursor-pointer shadow-[inset_0_0_15px_rgba(153,27,27,0.1)] hover:shadow-[inset_0_0_20px_rgba(220,38,38,0.3)] h-full">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-red-950/50 border border-red-900 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 7l9 6 9-6" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold tracking-widest text-lg">E-MAIL VAULT</h3>
+            </div>
+            <p className="text-red-500/70 text-sm">
+              Koppel inboxen voor AI schuld-scan.
+            </p>
+          </div>
+        </Link>
+
+        {/* API Integrations */}
+        <Link href="/dashboard/settings/integrations">
+          <div className="border border-red-900 bg-black p-6 hover:bg-red-950/20 transition-all cursor-pointer shadow-[inset_0_0_15px_rgba(153,27,27,0.1)] hover:shadow-[inset_0_0_20px_rgba(220,38,38,0.3)] h-full">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-red-950/50 border border-red-900 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold tracking-widest text-lg">SYSTEM INTEGRATIONS</h3>
+            </div>
+            <p className="text-red-500/70 text-sm">
+              Beheer Shopify & Stripe API verbindingen.
+            </p>
+          </div>
+        </Link>
       </div>
 
       <Card variant="glass" className="p-6">

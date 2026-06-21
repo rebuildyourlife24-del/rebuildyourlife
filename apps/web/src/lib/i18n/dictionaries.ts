@@ -11,6 +11,7 @@ export type Dictionary = {
     social: string;
     growth: string;
     enterprise: string;
+    business: string;
     settings: string;
   };
   common: {
@@ -68,7 +69,8 @@ export const nl: Dictionary = {
     social: "Sociaal",
     growth: "Groei & Hobby's",
     enterprise: "Enterprise OS",
-    settings: "Instellingen",
+    business: "Zakelijk",
+            settings: "Instellingen",
   },
   common: {
     upgrade: "Upgrade",
@@ -125,7 +127,8 @@ export const en: Dictionary = {
     social: "Social",
     growth: "Growth & Hobbies",
     enterprise: "Enterprise OS",
-    settings: "Settings",
+        business: "Settings",
+        settings: "Settings",
   },
   common: {
     upgrade: "Upgrade",
@@ -182,7 +185,8 @@ export const tr: Dictionary = {
     social: "Sosyal",
     growth: "Gelişim ve Hobiler",
     business: "İşletme",
-    settings: "Ayarlar",
+        enterprise: "Ayarlar",
+        settings: "Ayarlar",
   },
   common: {
     upgrade: "Yükselt",
@@ -239,7 +243,8 @@ export const ar: Dictionary = {
     social: "اجتماعي",
     growth: "النمو والهوايات",
     business: "أعمال",
-    settings: "الإعدادات",
+        enterprise: "الإعدادات",
+        settings: "الإعدادات",
   },
   common: {
     upgrade: "ترقية",
@@ -296,7 +301,8 @@ export const pl: Dictionary = {
     social: "Społeczność",
     growth: "Rozwój i Hobby",
     business: "Biznes",
-    settings: "Ustawienia",
+        enterprise: "Ustawienia",
+        settings: "Ustawienia",
   },
   common: {
     upgrade: "Ulepsz",
@@ -353,7 +359,8 @@ export const de: Dictionary = {
     social: "Soziales",
     growth: "Wachstum & Hobbys",
     business: "Unternehmen",
-    settings: "Einstellungen",
+        enterprise: "Einstellungen",
+        settings: "Einstellungen",
   },
   common: {
     upgrade: "Upgrade",
@@ -410,7 +417,8 @@ export const es: Dictionary = {
     social: "Social",
     growth: "Crecimiento y aficiones",
     business: "Negocio",
-    settings: "Configuración",
+        enterprise: "Configuración",
+        settings: "Configuración",
   },
   common: {
     upgrade: "Mejorar",
@@ -467,7 +475,8 @@ export const fr: Dictionary = {
     social: "Social",
     growth: "Croissance et loisirs",
     business: "Entreprise",
-    settings: "Paramètres",
+        enterprise: "Paramètres",
+        settings: "Paramètres",
   },
   common: {
     upgrade: "Mettre à niveau",
@@ -524,7 +533,8 @@ export const bg: Dictionary = {
     social: "Социални",
     growth: "Растеж и хобита",
     business: "Бизнес",
-    settings: "Настройки",
+        enterprise: "Настройки",
+        settings: "Настройки",
   },
   common: {
     upgrade: "Надграждане",
@@ -581,7 +591,8 @@ export const af: Dictionary = {
     social: "Sosiaal",
     growth: "Groei en stokperdjies",
     business: "Besigheid",
-    settings: "Instellings",
+        enterprise: "Instellings",
+        settings: "Instellings",
   },
   common: {
     upgrade: "Opgradeer",
@@ -638,7 +649,8 @@ export const sr: Dictionary = {
     social: "Društvo",
     growth: "Razvoj i Hobiji",
     business: "Posao",
-    settings: "Podešavanja",
+        enterprise: "Podešavanja",
+        settings: "Podešavanja",
   },
   common: {
     upgrade: "Nadogradi",
@@ -695,7 +707,8 @@ export const el: Dictionary = {
     social: "Κοινωνικά",
     growth: "Ανάπτυξη & Χόμπι",
     business: "Επιχείρηση",
-    settings: "Ρυθμίσεις",
+        enterprise: "Ρυθμίσεις",
+        settings: "Ρυθμίσεις",
   },
   common: {
     upgrade: "Αναβάθμιση",
@@ -752,7 +765,8 @@ export const ku: Dictionary = {
     social: "Civakî",
     growth: "Pêşveçûn û Hobî",
     business: "Karsazî",
-    settings: "Mîheng",
+        enterprise: "Mîheng",
+        settings: "Mîheng",
   },
   common: {
     upgrade: "Nûvekirin",
@@ -809,7 +823,8 @@ export const fa: Dictionary = {
     social: "اجتماعی",
     growth: "رشد و سرگرمی‌ها",
     business: "کسب و کار",
-    settings: "تنظیمات",
+        enterprise: "تنظیمات",
+        settings: "تنظیمات",
   },
   common: {
     upgrade: "ارتقا",
