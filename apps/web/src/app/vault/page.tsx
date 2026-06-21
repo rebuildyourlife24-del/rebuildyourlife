@@ -93,8 +93,8 @@ export default function ExtremeVaultPage() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </div>
             <div className="text-xs opacity-50 mb-4 tracking-widest font-bold">DIR: /SUPREME_ONDERZOEKEN</div>
-            <h3 className="text-2xl text-white font-black group-hover:text-success mb-3 transition-colors">De Tate Blueprint Vernietigd</h3>
-            <p className="text-sm text-textSecondary leading-relaxed">Analyse van het The Real World (TRW) bedrijfsmodel en hoe de The Syndicate Arbitrage dit volledig automatiseert en overneemt.</p>
+            <h3 className="text-2xl text-white font-black group-hover:text-success mb-3 transition-colors">Legacy Matrix Architectuur</h3>
+            <p className="text-sm text-textSecondary leading-relaxed">Analyse van de conventionele (handmatige) e-commerce modellen en hoe de The Syndicate Arbitrage dit volledig automatiseert en overneemt.</p>
           </motion.div>
 
           {/* Dossier 2 */}
