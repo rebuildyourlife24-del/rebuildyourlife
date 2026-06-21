@@ -1,5 +1,4 @@
 {
   "regions": ["iad1"],
-  "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web",
-  "installCommand": "npm install --prefix=../.."
+  "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web"
 }
