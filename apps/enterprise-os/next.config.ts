@@ -1,10 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@rebuildyourlife/database", "@rebuildyourlife/shared"],
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
+  transpilePackages: ['@rebuildyourlife/database', '@rebuildyourlife/shared'],
+  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
 };
 
 export default nextConfig;

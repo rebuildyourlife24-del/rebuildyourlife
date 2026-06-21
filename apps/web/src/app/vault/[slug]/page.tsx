@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 
 export default function DossierReaderPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = (params?.slug as string) || 'unknown';
   const [decrypted, setDecrypted] = useState(false);
   
   // Fake Decryption Effect
