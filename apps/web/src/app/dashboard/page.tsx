@@ -48,10 +48,10 @@ export default function DashboardPage() {
                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Protocol 1.0 Active</span>
               </div>
               <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-                Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-500">The Network</span>
+                System <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-500">Initialized</span>
               </h1>
               <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
-                Je bevindt je in de Centrale Hub. Voltooi je acties, unlock nieuwe campussen en transformeer je realiteit.
+                De 9-tot-5 is een algoritme. Meedogenloze discipline is de hack. Voltooi je acties, consolideer je schulden en begin met bouwen.
               </p>
             </div>
 
@@ -80,7 +80,7 @@ export default function DashboardPage() {
              <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
                 <h3 className="text-xl font-bold text-white flex items-center gap-3">
                   <Activity className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                  Primary Directive
+                  Primary Directive: Financial X-Ray
                 </h3>
                 <span className="bg-white/5 text-white border border-white/10 px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.1)]">
                   Action Required
@@ -91,9 +91,9 @@ export default function DashboardPage() {
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"></div>
                 
                 <div className="flex-1">
-                  <h4 className="text-2xl font-bold text-white mb-2">Connect Financial Data</h4>
+                  <h4 className="text-2xl font-bold text-white mb-2">Initialize Financial Blueprint</h4>
                   <p className="text-zinc-400 mb-6 font-light">
-                    Om de financiële intelligentie van The Network te activeren, moet je je bank koppelen via onze beveiligde PSD2-verbinding.
+                    Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Verbind je bank via de beveiligde PSD2 tunnel.
                   </p>
                   
                   <div className="flex items-center gap-6">
@@ -120,7 +120,7 @@ export default function DashboardPage() {
             
             <div className="space-y-3 flex-1">
               <div className="bg-black border border-white/5 p-4 rounded-xl flex justify-between items-center group cursor-default">
-                 <span className="text-sm font-medium text-white group-hover:text-zinc-300 transition-colors">Debt Negotiator</span>
+                 <span className="text-sm font-medium text-white group-hover:text-zinc-300 transition-colors">Financial Analyzer</span>
                  <span className="text-[9px] font-mono text-zinc-500 bg-zinc-900 px-2 py-1 rounded">STANDBY</span>
               </div>
               <div className="bg-black border border-white/5 p-4 rounded-xl flex justify-between items-center group cursor-default">
@@ -137,7 +137,7 @@ export default function DashboardPage() {
       <motion.div variants={itemVariants}>
         <div className="flex items-center gap-3 mb-6 mt-4">
           <Shield className="w-5 h-5 text-white" />
-          <h2 className="text-2xl font-bold text-white">The Campuses</h2>
+          <h2 className="text-2xl font-bold text-white">The Pillars</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -153,11 +153,11 @@ export default function DashboardPage() {
                 <Briefcase className="w-6 h-6 text-white" />
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2">Wealth Generation</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Capital Reconstruction</h3>
               <p className="text-zinc-500 text-sm mb-6 font-light">Fix je schulden, begroot als een bedrijf en bouw meedogenloze cashflow op.</p>
               
               <div className="flex items-center text-xs font-bold text-white uppercase tracking-widest mt-auto">
-                Enter Campus <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                Enter Pillar <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
@@ -173,11 +173,11 @@ export default function DashboardPage() {
                 <Map className="w-6 h-6 text-white" />
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2">Mindset & Vision</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Cognitive Reprogramming</h3>
               <p className="text-zinc-500 text-sm mb-6 font-light">Identificeer blinde vlekken en bouw een onbreekbaar mentaal raamwerk.</p>
               
               <div className="flex items-center text-xs font-bold text-white uppercase tracking-widest mt-auto">
-                Enter Campus <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                Enter Pillar <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                 <Heart className="w-6 h-6 text-white" />
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2">Physical Vitality</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Biological Optimisation</h3>
               <p className="text-zinc-500 text-sm mb-6 font-light">Train je lichaam tot de ultieme machine. Gezondheid is de basis van succes.</p>
               
               <div className="flex items-center text-xs font-bold text-white uppercase tracking-widest mt-auto opacity-50">

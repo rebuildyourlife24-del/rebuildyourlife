@@ -39,23 +39,23 @@ const getNavItems = (user: any) => {
       isRed: false,
     },
     {
-      defaultLabel: 'Wealth Generation',
+      defaultLabel: 'Capital Reconstruction',
       href: '/dashboard/wealth',
       icon: <Briefcase size={20} />,
     },
     {
-      defaultLabel: 'Physical Vitality',
+      defaultLabel: 'Biological Optimisation',
       href: '/dashboard/health',
       icon: <Heart size={20} />,
     },
     {
-      defaultLabel: 'Mindset & Vision',
+      defaultLabel: 'Cognitive Reprogramming',
       href: '/dashboard/life-balance',
       icon: <Map size={20} />,
     },
     {
       labelKey: 'nav.aiTeam',
-      defaultLabel: 'Autonomous Agents',
+      defaultLabel: 'AI Taskforce',
       href: '/dashboard/ai-team',
       icon: <Network size={20} />,
     },
@@ -184,7 +184,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     orbTop: isAdmin ? 'rgba(255,0,51,0.12)' : 'rgba(255,255,255,0.03)',
     orbBottom: isAdmin ? 'rgba(139,0,0,0.08)' : 'rgba(255,255,255,0.01)',
     iconBg: isAdmin ? 'bg-red-950/50 border-red-500/30' : 'bg-[#050505] border-white/10',
-    title: isAdmin ? 'System Administrator' : 'Network Member',
+    title: isAdmin ? 'The Architect' : 'Builder',
   };
 
   if (isLoading) {
@@ -265,7 +265,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="flex-1">
               <div className={`text-[9px] font-black uppercase tracking-[0.2em] opacity-70 ${theme.color}`}>{theme.title}</div>
               <div className="text-white font-black tracking-widest uppercase text-xs truncate">
-                {user ? `${user.firstName} ${user.lastName}` : 'Guest Identity'}
+                {user ? `${user.firstName} ${user.lastName}` : 'Unknown Entity'}
               </div>
             </div>
           </div>
@@ -364,7 +364,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
             {/* Path Breadcrumbs */}
             <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
-              <span className={theme.color}>THE_NETWORK</span>
+              <span className={theme.color}>R_Y_L_CORE</span>
               <span className="text-zinc-600">/</span>
               <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'CORE'}</span>
             </div>
