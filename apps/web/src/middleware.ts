@@ -19,8 +19,9 @@ export default async function middleware(request: NextRequest) {
   const isMainDomain = hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl';
   const isAppDomain = hostname === 'app.ai-henksemler.nl' || hostname === 'ai.ai-henksemler.nl';
   const isLegacyDomain = hostname === 'rebuildyourlife.eu' || hostname === 'www.rebuildyourlife.eu';
+  const isVercelDomain = hostname.endsWith('.vercel.app');
 
-  if (isLocalhost || isMainDomain || isAppDomain || isLegacyDomain) {
+  if (isLocalhost || isMainDomain || isAppDomain || isLegacyDomain || isVercelDomain) {
     // OUDE CODE DWONG GEBRUIKERS NAAR HET DASHBOARD
     // We laten de root (/) nu de Extreme Landing Page zien.
     if (pathname === '/') {
