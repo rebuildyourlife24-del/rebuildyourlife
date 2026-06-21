@@ -1,4 +1,4 @@
 {
   "regions": ["iad1"],
-  "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web"
+  "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web --no-daemon"
 }
