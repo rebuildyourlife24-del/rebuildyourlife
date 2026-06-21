@@ -161,17 +161,39 @@ export default function CinematicLandingPage() {
         </div>
       </div>
       
-      {/* GLOBAL ENTER BUTTON */}
-      <div className={`fixed bottom-24 right-6 md:right-12 z-50 transition-opacity duration-700 ${videoPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <Link href="/onboarding" className="group flex flex-col items-end">
-          <div className="bg-[#ff003c] hover:bg-white text-black px-8 py-6 flex items-center justify-between gap-8 transition-colors shadow-[0_0_40px_rgba(255,0,60,0.4)]">
-            <span className="text-2xl font-black uppercase tracking-widest">Systeem Toegang</span>
-            <ChevronRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
-          </div>
-          <div className="mt-2 text-[10px] text-zinc-500 font-mono uppercase tracking-widest text-right">
-            Capaciteit: Zeer Gelimiteerd
+      {/* TIER SELECTION - BOTTOM OF SCREEN */}
+      <div className={`fixed bottom-24 left-0 w-full px-6 md:px-12 z-50 flex flex-col md:flex-row justify-center gap-4 transition-opacity duration-700 ${videoPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        
+        <Link href="/tiers/ecom" className="group flex-1 bg-black/80 backdrop-blur-md border border-white/10 hover:border-[#ff003c] p-6 transition-all hover:-translate-y-2">
+          <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 01</div>
+          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">E-COM OPERATIONS</div>
+          <div className="text-sm text-zinc-400 font-medium mb-4">Hulp en inzet bij e-commerce.</div>
+          <div className="flex items-center justify-between mt-auto">
+            <span className="text-lg font-bold">€50<span className="text-xs text-zinc-500">/mnd</span></span>
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </div>
         </Link>
+
+        <Link href="/tiers/tech" className="group flex-1 bg-black/80 backdrop-blur-md border border-white/10 hover:border-[#ff003c] p-6 transition-all hover:-translate-y-2">
+          <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 02</div>
+          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">APP CLONING</div>
+          <div className="text-sm text-zinc-400 font-medium mb-4">Voor grotere SaaS verdiensten.</div>
+          <div className="flex items-center justify-between mt-auto">
+            <span className="text-lg font-bold">€99<span className="text-xs text-zinc-500">/mnd</span></span>
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </Link>
+
+        <Link href="/tiers/elite" className="group flex-1 bg-[#ff003c]/10 backdrop-blur-md border border-[#ff003c] p-6 transition-all hover:-translate-y-2 hover:bg-[#ff003c]">
+          <div className="text-[10px] text-white font-mono uppercase tracking-widest mb-2">TIER 03</div>
+          <div className="text-xl font-black uppercase tracking-widest mb-1 text-white transition-colors">ELITE TEAM</div>
+          <div className="text-sm text-zinc-300 font-medium mb-4 group-hover:text-black">Alles inclusief mijn systeem.</div>
+          <div className="flex items-center justify-between mt-auto text-white group-hover:text-black">
+            <span className="text-lg font-bold">€1500<span className="text-xs opacity-70"> eenmalig</span></span>
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </Link>
+
       </div>
 
     </div>
