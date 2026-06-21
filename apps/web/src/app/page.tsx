@@ -15,7 +15,7 @@ const stagger = {
 
 export default function AuthoritativeLandingPage() {
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-300 selection:bg-gold/30 selection:text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-zinc-300 selection:bg-red-500/30 selection:text-white font-sans overflow-x-hidden">
       {/* Premium subtle background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.08)_0%,rgba(0,0,0,0)_60%)]"></div>
@@ -27,12 +27,12 @@ export default function AuthoritativeLandingPage() {
         {/* Navigation - Ultra minimal */}
         <nav className="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#d4af37] to-[#fceeb5] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff003c] to-[#ffffff] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.2)]">
               <Command className="w-4 h-4 text-black" />
             </div>
             <span className="text-white font-bold tracking-widest text-sm uppercase">The Sovereign Grid</span>
           </div>
-          <Link href="/dashboard" className="text-xs font-bold uppercase tracking-widest text-[#d4af37] hover:text-white transition-colors flex items-center gap-2">
+          <Link href="/dashboard" className="text-xs font-bold uppercase tracking-widest text-[#ff003c] hover:text-white transition-colors flex items-center gap-2">
             <Lock className="w-3 h-3" /> Client Portal
           </Link>
         </nav>
@@ -46,7 +46,7 @@ export default function AuthoritativeLandingPage() {
             className="text-center max-w-5xl mx-auto"
           >
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-8 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003c] animate-pulse"></span>
               Architectuur voor de 1%
             </motion.div>
 
@@ -55,7 +55,7 @@ export default function AuthoritativeLandingPage() {
               className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[1.05] mb-8"
             >
               Wij Verkopen Geen Theorie.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] via-[#fceeb5] to-[#d4af37]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff003c] via-[#ffffff] to-[#ff003c]">
                 Wij Verkopen Consistentie.
               </span>
             </motion.h1>
@@ -69,7 +69,7 @@ export default function AuthoritativeLandingPage() {
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold uppercase tracking-widest text-black bg-[#d4af37] rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(212,175,55,0.2)] hover:shadow-[0_0_40px_rgba(212,175,55,0.4)]">
+              <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold uppercase tracking-widest text-black bg-[#ff003c] rounded-full overflow-hidden transition-transform hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(212,175,55,0.2)] hover:shadow-[0_0_40px_rgba(212,175,55,0.4)]">
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/40 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
                 <span>Systeem Initiëren</span>
                 <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -90,9 +90,9 @@ export default function AuthoritativeLandingPage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-32"
           >
             {/* Box 1 */}
-            <motion.div variants={fadeUp} className="md:col-span-2 bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-12 hover:border-[#d4af37]/30 transition-colors group relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/5 rounded-full blur-3xl group-hover:bg-[#d4af37]/10 transition-colors pointer-events-none"></div>
-              <Zap className="w-10 h-10 text-[#d4af37] mb-8" />
+            <motion.div variants={fadeUp} className="md:col-span-2 bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-12 hover:border-[#ff003c]/30 transition-colors group relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff003c]/5 rounded-full blur-3xl group-hover:bg-[#ff003c]/10 transition-colors pointer-events-none"></div>
+              <Zap className="w-10 h-10 text-[#ff003c] mb-8" />
               <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">Geen Motivatie, Maar Systeem</h3>
               <p className="text-zinc-400 text-lg leading-relaxed max-w-xl">
                 Een kille machine werkt altijd door. Onze AI fungeert als je operationele ruggengraat: het pusht je, neemt het over als jij faalt, en weigert concessies te doen.
@@ -100,8 +100,8 @@ export default function AuthoritativeLandingPage() {
             </motion.div>
 
             {/* Box 2 */}
-            <motion.div variants={fadeUp} className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-10 hover:border-[#d4af37]/30 transition-colors relative overflow-hidden group shadow-2xl">
-               <Target className="w-8 h-8 text-zinc-500 group-hover:text-[#d4af37] transition-colors mb-6" />
+            <motion.div variants={fadeUp} className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-10 hover:border-[#ff003c]/30 transition-colors relative overflow-hidden group shadow-2xl">
+               <Target className="w-8 h-8 text-zinc-500 group-hover:text-[#ff003c] transition-colors mb-6" />
                <h3 className="text-xl font-bold text-white mb-4">Macht in Autonomie</h3>
                <p className="text-zinc-400 leading-relaxed">
                  Terwijl de concurrentie handmatig zwoegt, roteert jouw systeem op de achtergrond. Genererend. Analyserend. Sluitend.
@@ -109,8 +109,8 @@ export default function AuthoritativeLandingPage() {
             </motion.div>
 
             {/* Box 3 */}
-            <motion.div variants={fadeUp} className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-10 hover:border-[#d4af37]/30 transition-colors relative overflow-hidden group shadow-2xl">
-               <Shield className="w-8 h-8 text-zinc-500 group-hover:text-[#d4af37] transition-colors mb-6" />
+            <motion.div variants={fadeUp} className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 md:p-10 hover:border-[#ff003c]/30 transition-colors relative overflow-hidden group shadow-2xl">
+               <Shield className="w-8 h-8 text-zinc-500 group-hover:text-[#ff003c] transition-colors mb-6" />
                <h3 className="text-xl font-bold text-white mb-4">Militaire Precisie</h3>
                <p className="text-zinc-400 leading-relaxed">
                  Data-gedreven besluitvorming zonder emotie. Het systeem berekent kansen en executeert protocollen feilloos en genadeloos.
@@ -127,8 +127,8 @@ export default function AuthoritativeLandingPage() {
                 <div className="flex justify-between items-center border-b border-white/5 pb-4 relative z-10">
                   <div className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Live System Feed // Grid Status</div>
                   <div className="flex items-center gap-2">
-                    <div className="text-[10px] text-[#d4af37] uppercase font-bold tracking-widest">Active</div>
-                    <div className="w-2 h-2 rounded-full bg-[#d4af37] animate-pulse"></div>
+                    <div className="text-[10px] text-[#ff003c] uppercase font-bold tracking-widest">Active</div>
+                    <div className="w-2 h-2 rounded-full bg-[#ff003c] animate-pulse"></div>
                   </div>
                 </div>
                 
@@ -136,10 +136,10 @@ export default function AuthoritativeLandingPage() {
                   <div>
                     <div className="flex justify-between text-[10px] font-mono text-zinc-500 uppercase mb-2">
                       <span>Neural Engine Load</span>
-                      <span className="text-[#d4af37]">87%</span>
+                      <span className="text-[#ff003c]">87%</span>
                     </div>
                     <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                      <motion.div className="h-full bg-[#d4af37]" initial={{ width: "0%" }} whileInView={{ width: "87%" }} transition={{ duration: 1.5, delay: 0.5 }}></motion.div>
+                      <motion.div className="h-full bg-[#ff003c]" initial={{ width: "0%" }} whileInView={{ width: "87%" }} transition={{ duration: 1.5, delay: 0.5 }}></motion.div>
                     </div>
                   </div>
                   <div>
