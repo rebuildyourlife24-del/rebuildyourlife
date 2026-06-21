@@ -11,14 +11,14 @@ import { NextResponse } from 'next/server'
 
 // RYL Supabase (deze database)
 const rylSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder'
 )
 
 // Hermes Supabase (andere database)
 const hermesSupabase = createClient(
-  process.env.HERMES_SUPABASE_URL!,
-  process.env.HERMES_SUPABASE_SERVICE_KEY!
+  process.env.HERMES_SUPABASE_URL || 'https://placeholder.supabase.co',
+  process.env.HERMES_SUPABASE_SERVICE_KEY || 'placeholder'
 )
 
 export async function POST(req: Request) {
