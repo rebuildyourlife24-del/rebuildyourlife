@@ -20,61 +20,48 @@ import {
   Ghost,
   Rocket,
   Skull,
-  BookOpen,
   Terminal,
-  Cpu
+  Cpu,
+  GraduationCap,
+  Briefcase
 } from 'lucide-react';
 
 const getNavItems = (user: any) => {
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
   
+  // TRW Style "Campuses" for Normal Users
   const coreItems = [
     {
       labelKey: 'nav.dashboard',
-      defaultLabel: 'System Overview',
+      defaultLabel: 'The Core',
       href: '/dashboard',
       icon: <Terminal size={20} />,
-      isRed: true,
+      isRed: false,
     },
     {
-      labelKey: 'nav.budget',
-      defaultLabel: 'Resource Allocation',
-      href: '/dashboard/budget',
-      icon: <Cpu size={20} />,
+      defaultLabel: 'Wealth Generation',
+      href: '/dashboard/wealth',
+      icon: <Briefcase size={20} />,
     },
     {
-      labelKey: 'nav.debts',
-      defaultLabel: 'Liability Matrix',
-      href: '/dashboard/debts',
-      icon: <Layers size={20} />,
-    },
-    {
-      labelKey: 'nav.tasks',
-      defaultLabel: 'Execution Queue',
-      href: '/dashboard/tasks',
-      icon: <Activity size={20} />,
-    },
-    {
-      defaultLabel: 'Life Balance',
-      href: '/dashboard/life-balance',
-      icon: <Map size={20} />,
-    },
-    {
-      labelKey: 'nav.health',
-      defaultLabel: 'Vitality Metrics',
+      defaultLabel: 'Physical Vitality',
       href: '/dashboard/health',
       icon: <Heart size={20} />,
+    },
+    {
+      defaultLabel: 'Mindset & Vision',
+      href: '/dashboard/life-balance',
+      icon: <Map size={20} />,
     },
     {
       labelKey: 'nav.aiTeam',
       defaultLabel: 'Autonomous Agents',
       href: '/dashboard/ai-team',
       icon: <Network size={20} />,
-      isRed: true,
     },
     {
       labelKey: 'nav.settings',
-      defaultLabel: 'System Settings',
+      defaultLabel: 'Settings',
       href: '/dashboard/settings',
       icon: <Settings size={20} />,
     },
@@ -181,6 +168,24 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
+  // THEME CONFIGURATION
+  const theme = {
+    color: isAdmin ? 'text-red-500' : 'text-gold',
+    hoverColor: isAdmin ? 'group-hover:text-red-500' : 'group-hover:text-gold',
+    bgActive: isAdmin ? 'bg-red-500/10' : 'bg-gold/10',
+    border: isAdmin ? 'border-red-900/20' : 'border-white/5',
+    borderStrong: isAdmin ? 'border-red-900/50' : 'border-gold/20',
+    borderHover: isAdmin ? 'group-hover:border-red-500' : 'group-hover:border-gold',
+    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.2)]' : 'shadow-[0_0_15px_rgba(212,175,55,0.1)]',
+    pulseBg: isAdmin ? 'bg-red-900' : 'bg-gold/50',
+    pulseActive: isAdmin ? 'bg-red-500' : 'bg-gold',
+    gridLines: isAdmin ? 'rgba(255,0,51,0.03)' : 'rgba(255,255,255,0.02)',
+    orbTop: isAdmin ? 'rgba(255,0,51,0.12)' : 'rgba(212,175,55,0.05)',
+    orbBottom: isAdmin ? 'rgba(139,0,0,0.08)' : 'rgba(212,175,55,0.02)',
+    iconBg: isAdmin ? 'bg-red-950/50 border-red-500/30' : 'bg-black border-gold/30',
+    title: isAdmin ? 'System Administrator' : 'Network Member',
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black">
@@ -188,34 +193,26 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="h-8 w-8 rounded-full border-2 border-red-500/20 border-t-red-500"
+            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-red-500/20 border-t-red-500' : 'border-gold/20 border-t-gold'}`}
           />
-          <p className="text-sm font-mono text-red-500/70 tracking-widest uppercase">Initializing Core...</p>
+          <p className={`text-sm font-mono tracking-widest uppercase ${theme.color} opacity-70`}>Initializing Connection...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-black text-zinc-300 selection:bg-red-500/30 font-sans overflow-hidden">
+    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-red-500/30' : 'selection:bg-gold/30'} font-sans overflow-hidden`}>
       
-      {/* 110000X Cinematic Crimson Matrix Background */}
+      {/* 110000X Cinematic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Deep pitch black background */}
         <div className="absolute inset-0 bg-black"></div>
-        
-        {/* Red cinematic orb from the top */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,0,51,0.12)_0%,rgba(0,0,0,1)_60%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(139,0,0,0.08)_0%,rgba(0,0,0,0)_60%)]"></div>
-        
-        {/* Hacker Grid Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,51,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,51,0.03)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]"></div>
-        
-        {/* Subtle scanline noise */}
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(0,0,0,1) 60%)` }}></div>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(0,0,0,0) 60%)` }}></div>
+        <div className="absolute inset-0 bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]" style={{ backgroundImage: `linear-gradient(${theme.gridLines} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLines} 1px, transparent 1px)` }}></div>
         <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
       </div>
 
-      {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -228,24 +225,23 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Sidebar - Glassmorphic Crimson */}
+      {/* Sidebar - TRW Style */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-red-900/20 bg-black/40 backdrop-blur-xl
+          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-black/40 backdrop-blur-xl
           transition-transform duration-300 ease-out
-          lg:static lg:translate-x-0
+          lg:static lg:translate-x-0 ${theme.border}
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* Sidebar Header */}
-        <div className="flex h-16 items-center justify-between border-b border-red-900/20 px-5 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-r from-red-600/0 via-red-600/5 to-red-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+        <div className={`flex h-16 items-center justify-between border-b px-5 relative overflow-hidden group ${theme.border}`}>
           <Link href="/dashboard" className="flex items-center gap-3 relative z-10">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-950/50 border border-red-500/30 shadow-[0_0_15px_rgba(255,0,51,0.2)]">
-              <Terminal className="w-4 h-4 text-red-500" />
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${theme.iconBg} ${theme.shadow}`}>
+              <Activity className={`w-4 h-4 ${theme.color}`} />
             </div>
             <span className="text-sm font-bold text-white tracking-widest uppercase">
-              R<span className="text-red-500">Y</span>L
+              R<span className={theme.color}>Y</span>L
             </span>
           </Link>
           <button
@@ -256,30 +252,26 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Supreme Overseer Tactical Biometric Header */}
-        <div className="p-4 border-b border-red-900/20 bg-black/40 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(transparent,transparent_2px,rgba(255,0,51,0.03)_3px,rgba(255,0,51,0.03)_3px)] pointer-events-none group-hover:bg-[repeating-linear-gradient(transparent,transparent_2px,rgba(255,0,51,0.1)_3px,rgba(255,0,51,0.1)_3px)] transition-all"></div>
-          
+        {/* Identity Block */}
+        <div className={`p-4 border-b bg-black/40 relative overflow-hidden group ${theme.border}`}>
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative">
-              <div className="w-10 h-10 border border-red-900/50 flex items-center justify-center bg-black shadow-[0_0_15px_rgba(255,0,51,0.1)] group-hover:border-red-500 group-hover:shadow-[0_0_15px_rgba(255,0,51,0.4)] transition-all" style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
-                <Activity className="w-5 h-5 text-red-700 group-hover:text-red-500 transition-colors" />
+              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.1)] group-hover:shadow-[0_0_15px_rgba(255,0,51,0.4)]' : 'shadow-[0_0_15px_rgba(212,175,55,0.05)] group-hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
+                <Terminal className={`w-4 h-4 ${theme.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
               </div>
-              <div className="absolute -top-1 -left-1 w-1.5 h-1.5 border-t border-l border-red-900 group-hover:border-red-500 transition-colors"></div>
-              <div className="absolute -bottom-1 -right-1 w-1.5 h-1.5 border-b border-r border-red-900 group-hover:border-red-500 transition-colors"></div>
             </div>
             
             <div className="flex-1">
-              <div className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500/50 group-hover:text-red-500 transition-colors">System Administrator</div>
+              <div className={`text-[9px] font-black uppercase tracking-[0.2em] opacity-70 ${theme.color}`}>{theme.title}</div>
               <div className="text-white font-black tracking-widest uppercase text-xs truncate">
-                {user ? `${user.firstName} ${user.lastName}` : 'Godbrain Alpha'}
+                {user ? `${user.firstName} ${user.lastName}` : 'Guest Identity'}
               </div>
             </div>
           </div>
           
-          <div className="mt-3 text-[8px] font-mono tracking-widest text-red-500/70 bg-black/80 px-2 py-1 uppercase border border-red-900/30 flex justify-between items-center group-hover:text-red-500 group-hover:border-red-500/50 transition-colors">
-            <span>Security: SECURE</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-red-900 animate-pulse group-hover:bg-red-500 transition-colors"></span>
+          <div className={`mt-3 text-[8px] font-mono tracking-widest bg-black/80 px-2 py-1 uppercase border flex justify-between items-center transition-colors ${theme.color} ${theme.borderStrong} ${theme.borderHover}`}>
+            <span className="opacity-70">Status: SECURE</span>
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse transition-colors ${theme.pulseActive}`}></span>
           </div>
         </div>
 
@@ -290,7 +282,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               if (item.type === 'divider') {
                 return (
                   <li key={`divider-${index}`} className="pt-4 pb-2 px-3">
-                    <div className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-red-500/40">
+                    <div className={`text-[10px] font-mono font-bold uppercase tracking-[0.2em] opacity-50 ${theme.color}`}>
                       {item.label}
                     </div>
                   </li>
@@ -312,7 +304,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                       transition-all duration-200
                       ${
                         isActive
-                          ? 'bg-red-500/10 text-red-500 border border-red-500/20 shadow-[inset_0_0_10px_rgba(255,0,51,0.05)]'
+                          ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
                           : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
                       }
                     `}
@@ -320,11 +312,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                     {isActive && (
                       <motion.div
                         layoutId="activeNav"
-                        className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-red-500 shadow-[0_0_8px_rgba(255,0,51,0.8)]"
+                        className={`absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
                         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                       />
                     )}
-                    <span className={isActive ? 'text-red-500' : 'text-zinc-600 group-hover:text-zinc-400'}>
+                    <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
                       {item.icon}
                     </span>
                     <span className="tracking-wide uppercase text-[11px]">{item.defaultLabel}</span>
@@ -336,9 +328,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="border-t border-red-900/20 p-3 bg-black/60">
+        <div className={`border-t p-3 bg-black/60 ${theme.border}`}>
           <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-950 border border-red-900 text-xs font-mono font-bold text-red-500 group-hover:border-red-500 transition-colors">
+            <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-black border text-xs font-mono font-bold transition-colors ${theme.color} ${theme.borderStrong} ${theme.borderHover}`}>
               {user?.firstName?.[0] || 'U'}
             </div>
             <div className="flex-1 min-w-0">
@@ -349,7 +341,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
             <button
               onClick={logout}
-              className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-red-500/10 hover:text-red-500"
+              className={`rounded-lg p-1.5 text-zinc-500 transition-colors ${theme.hoverColor}`}
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -360,7 +352,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col relative z-10 w-full overflow-hidden">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-red-900/20 bg-black/40 px-4 backdrop-blur-xl sm:px-6">
+        <header className={`sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-black/40 px-4 backdrop-blur-xl sm:px-6 ${theme.border}`}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -371,30 +363,29 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
             {/* Path Breadcrumbs */}
             <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
-              <span className="text-red-500">ROOT</span>
+              <span className={theme.color}>THE_NETWORK</span>
               <span className="text-zinc-600">/</span>
-              <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'DASHBOARD'}</span>
+              <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'CORE'}</span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Cinematic Live Pulse */}
-            <div className="hidden md:flex items-center gap-2 bg-black/60 border border-red-900/30 px-3 py-1.5 rounded-full shadow-[inset_0_0_10px_rgba(255,0,51,0.05)]">
-              <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_5px_rgba(255,0,51,0.8)]"></div>
+            <div className={`hidden md:flex items-center gap-2 bg-black/60 border px-3 py-1.5 rounded-full ${theme.borderStrong}`}>
+              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.pulseActive}`}></div>
               <div className="flex flex-col">
-                <span className="text-[7px] text-red-500 uppercase font-black tracking-widest leading-none">Global Server</span>
-                <span className="text-[9px] text-zinc-400 font-mono leading-none mt-0.5">Connected</span>
+                <span className={`text-[7px] uppercase font-black tracking-widest leading-none ${theme.color}`}>System Status</span>
+                <span className="text-[9px] text-zinc-400 font-mono leading-none mt-0.5">Online</span>
               </div>
             </div>
 
-            <div className="w-px h-6 bg-red-900/30 mx-1"></div>
+            <div className={`w-px h-6 mx-1 ${isAdmin ? 'bg-red-900/30' : 'bg-white/10'}`}></div>
 
             <LanguageSwitcher />
             <NotificationBell />
           </div>
         </header>
 
-        {/* Page Content with Framer Motion entry animation */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar">
           <motion.div
             initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
