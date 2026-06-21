@@ -152,9 +152,9 @@ export default function NeoBankOnboarding() {
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl"
             >
-              <Banknote className="w-16 h-16 text-green-400 mb-6" />
+              <Banknote className="w-16 h-16 text-red-500 mb-6" />
               <h1 className="text-3xl font-bold mb-2">Initialiseer The War Chest</h1>
-              <p className="text-gray-400 mb-6">Om de intelligentie van The Swarm te demonstreren, storten we een gesimuleerd startkapitaal van <strong className="text-green-400">€10.000,00</strong>. Hoe wil je dat de AI inkomende gelden verdeelt (routing)?</p>
+              <p className="text-gray-400 mb-6">Om de intelligentie van The Swarm te demonstreren, storten we een gesimuleerd startkapitaal van <strong className="text-red-500">€10.000,00</strong>. Hoe wil je dat de AI inkomende gelden verdeelt (routing)?</p>
 
               <div className="space-y-6 mb-8">
                 <div>
@@ -182,7 +182,7 @@ export default function NeoBankOnboarding() {
 
               <div className="bg-black/50 p-4 rounded-lg border border-white/10 flex justify-between items-center mb-8">
                 <span className="text-sm text-gray-400">Totaal toegewezen:</span>
-                <span className={`font-mono font-bold ${(allocations.ops + allocations.tax + allocations.capital) === 100 ? 'text-green-400' : 'text-red-500'}`}>
+                <span className={`font-mono font-bold ${(allocations.ops + allocations.tax + allocations.capital) === 100 ? 'text-red-500' : 'text-red-500'}`}>
                   {allocations.ops + allocations.tax + allocations.capital}%
                 </span>
               </div>

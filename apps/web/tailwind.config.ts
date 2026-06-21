@@ -17,7 +17,7 @@ const config: Config = {
         surfaceLight: "rgba(20, 20, 20, 0.9)", // Lighter terminal glass
         textPrimary: "#ffffff", // Pure white
         textSecondary: "#666666", // Stealth grey
-        success: "#00ff33", // Terminal/Matrix Green
+        success: "#ff003c", // System Red (was green)
         warning: "#ffaa00", // System yellow
         danger: "#ff003c" // DARPA Red
       },
