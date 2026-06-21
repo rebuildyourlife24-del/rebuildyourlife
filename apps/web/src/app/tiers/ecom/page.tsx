@@ -29,7 +29,7 @@ export default function TierEcomPage() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 text-[#ff003c] font-black uppercase tracking-[0.3em] text-[10px] mb-8"
         >
-          TIER 01 // E-COM OPERATIONS
+          TIER 01 // COMMERCE SYNDICATE
         </motion.div>
 
         <motion.h1 

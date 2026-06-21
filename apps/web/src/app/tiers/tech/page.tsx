@@ -29,7 +29,7 @@ export default function TierTechPage() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 text-[#ff003c] font-black uppercase tracking-[0.3em] text-[10px] mb-8"
         >
-          TIER 02 // TECH & APP CLONING
+          TIER 02 // SAAS PROTOCOL
         </motion.div>
 
         <motion.h1 

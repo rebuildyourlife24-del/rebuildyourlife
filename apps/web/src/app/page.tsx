@@ -166,7 +166,7 @@ export default function CinematicLandingPage() {
         
         <Link href="/tiers/ecom" className="group flex-1 bg-black/80 backdrop-blur-md border border-white/10 hover:border-[#ff003c] p-6 transition-all hover:-translate-y-2">
           <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 01</div>
-          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">E-COM OPERATIONS</div>
+          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">COMMERCE SYNDICATE</div>
           <div className="text-sm text-zinc-400 font-medium mb-4">Hulp en inzet bij e-commerce.</div>
           <div className="flex items-center justify-between mt-auto">
             <span className="text-lg font-bold">€50<span className="text-xs text-zinc-500">/mnd</span></span>
@@ -176,7 +176,7 @@ export default function CinematicLandingPage() {
 
         <Link href="/tiers/tech" className="group flex-1 bg-black/80 backdrop-blur-md border border-white/10 hover:border-[#ff003c] p-6 transition-all hover:-translate-y-2">
           <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 02</div>
-          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">APP CLONING</div>
+          <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-[#ff003c] transition-colors">SAAS PROTOCOL</div>
           <div className="text-sm text-zinc-400 font-medium mb-4">Voor grotere SaaS verdiensten.</div>
           <div className="flex items-center justify-between mt-auto">
             <span className="text-lg font-bold">€99<span className="text-xs text-zinc-500">/mnd</span></span>
