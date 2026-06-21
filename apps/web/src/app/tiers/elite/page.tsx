@@ -90,7 +90,7 @@ export default function TierElitePage() {
             
             <div className="relative z-10">
               <div className="text-[#ff003c] font-black text-6xl md:text-7xl tracking-tighter mb-2">€1500</div>
-              <div className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-12">Eenmalige investering voor absolute vrijheid</div>
+              <div className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-12">Eenmalige setup <br/> <span className="text-zinc-300 mt-1 inline-block">+ Maandelijkse Grid-Verbinding fee</span></div>
 
               <Link href="/onboarding" className="block w-full bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] text-center py-6 text-xl hover:bg-white transition-colors">
                 Krijg Elite Toegang

@@ -187,9 +187,12 @@ export default function CinematicLandingPage() {
         <Link href="/tiers/elite" className="group flex-1 bg-[#ff003c]/10 backdrop-blur-md border border-[#ff003c] p-6 transition-all hover:-translate-y-2 hover:bg-[#ff003c]">
           <div className="text-[10px] text-white font-mono uppercase tracking-widest mb-2">TIER 03</div>
           <div className="text-xl font-black uppercase tracking-widest mb-1 text-white transition-colors">ELITE TEAM</div>
-          <div className="text-sm text-zinc-300 font-medium mb-4 group-hover:text-black">Alles inclusief mijn systeem.</div>
+          <div className="text-sm text-zinc-300 font-medium mb-4 group-hover:text-black">Systeem setup & server uplink.</div>
           <div className="flex items-center justify-between mt-auto text-white group-hover:text-black">
-            <span className="text-lg font-bold">€1500<span className="text-xs opacity-70"> eenmalig</span></span>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold leading-none">€1500<span className="text-xs opacity-70"> setup</span></span>
+              <span className="text-[10px] uppercase font-mono mt-1 opacity-80">+ uplink fee</span>
+            </div>
             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </div>
         </Link>
