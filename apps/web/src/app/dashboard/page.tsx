@@ -1,12 +1,14 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useRequireAuth } from '@/lib/auth';
 import { Shield, Sparkles, TrendingUp, CalendarDays, Activity, Lock, CheckCircle2, Terminal, Cpu, Network, Briefcase, Heart, Map, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { CinematicDataSync } from '@/components/ui/CinematicDataSync';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,6 +27,8 @@ export default function DashboardPage() {
   const { user } = useRequireAuth();
   
   const currentPhase = (user as any)?.phase || (user as any)?.clearanceLevel || 1;
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [hasSynced, setHasSynced] = useState(false);
 
   return (
     <motion.div
@@ -91,24 +95,43 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/0 to-red-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-red-500 shadow-[0_0_15px_rgba(255,0,51,0.5)] scale-y-0 group-hover/card:scale-y-100 transition-transform duration-500 origin-top"></div>
                 
-                <div className="flex-1 relative z-10">
-                  <h4 className="text-3xl font-black text-white tracking-tight mb-2 group-hover/card:text-red-50 transition-colors">Initialize Financial Blueprint</h4>
-                  <p className="text-zinc-400 mb-8 font-light text-lg">
-                    Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Activeer de data-connectie via de beveiligde tunnel.
-                  </p>
-                  
-                  <div className="flex items-center gap-6">
-                    <Button className="bg-white hover:bg-red-500 hover:text-white text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,0,51,0.4)] transition-all duration-500 transform group-hover/card:scale-105">
-                      Connect Now
-                    </Button>
-                    <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Time est: 2 mins</span>
-                  </div>
-                </div>
+                {hasSynced ? (
+                  <>
+                    <div className="flex-1 relative z-10">
+                      <h4 className="text-3xl font-black text-white tracking-tight mb-2">Data Stream Active</h4>
+                      <p className="text-zinc-400 font-light text-lg">
+                        Financial baseline extracted. The algorithm is now continuously monitoring your transactions to identify and terminate inefficiencies.
+                      </p>
+                    </div>
+                    <div className="w-32 h-32 rounded-full border border-red-500/30 flex items-center justify-center bg-red-500/10 shrink-0 relative z-10 shadow-[0_0_30px_rgba(255,0,51,0.2)]">
+                      <CheckCircle2 className="w-12 h-12 text-red-500" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-1 relative z-10">
+                      <h4 className="text-3xl font-black text-white tracking-tight mb-2 group-hover/card:text-red-50 transition-colors">Initialize Financial Blueprint</h4>
+                      <p className="text-zinc-400 mb-8 font-light text-lg">
+                        Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Activeer de data-connectie via de beveiligde tunnel.
+                      </p>
+                      
+                      <div className="flex items-center gap-6">
+                        <Button 
+                          onClick={() => setIsSyncing(true)}
+                          className="bg-white hover:bg-red-500 hover:text-white text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,0,51,0.4)] transition-all duration-500 transform group-hover/card:scale-105"
+                        >
+                          Connect Now
+                        </Button>
+                        <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Time est: 2 mins</span>
+                      </div>
+                    </div>
 
-                <div className="w-32 h-32 rounded-full border border-white/5 flex items-center justify-center bg-black/50 shrink-0 relative z-10 group-hover/card:border-red-500/20 transition-colors duration-700">
-                  <div className="absolute inset-0 rounded-full bg-red-500/5 blur-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
-                  <Lock className="w-12 h-12 text-zinc-500 group-hover/card:text-red-500 transition-colors duration-500" />
-                </div>
+                    <div className="w-32 h-32 rounded-full border border-white/5 flex items-center justify-center bg-black/50 shrink-0 relative z-10 group-hover/card:border-red-500/20 transition-colors duration-700">
+                      <div className="absolute inset-0 rounded-full bg-red-500/5 blur-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
+                      <Lock className="w-12 h-12 text-zinc-500 group-hover/card:text-red-500 transition-colors duration-500" />
+                    </div>
+                  </>
+                )}
              </div>
           </div>
         </motion.div>
@@ -206,6 +229,18 @@ export default function DashboardPage() {
 
         </div>
       </motion.div>
+
+      {/* Cinematic Overlays */}
+      <AnimatePresence>
+        {isSyncing && (
+          <CinematicDataSync 
+            onComplete={() => {
+              setIsSyncing(false);
+              setHasSynced(true);
+            }} 
+          />
+        )}
+      </AnimatePresence>
 
     </motion.div>
   );
