@@ -21,14 +21,11 @@ export default async function middleware(request: NextRequest) {
   const isLegacyDomain = hostname === 'rebuildyourlife.eu' || hostname === 'www.rebuildyourlife.eu';
 
   if (isLocalhost || isMainDomain || isAppDomain || isLegacyDomain) {
-    if (hostname === 'ai.ai-henksemler.nl' && pathname === '/') {
-      url.pathname = '/dashboard/war-room';
-      response = NextResponse.rewrite(url);
-      response.headers.set('x-tenant-domain', hostname);
-      return response;
-    } else if ((hostname === 'ai-henksemler.nl' || hostname === 'www.ai-henksemler.nl') && pathname === '/') {
-      url.pathname = '/dashboard/ai-team';
-      response = NextResponse.rewrite(url);
+    // OUDE CODE DWONG GEBRUIKERS NAAR HET DASHBOARD
+    // We laten de root (/) nu de Extreme Landing Page zien.
+    if (pathname === '/') {
+      // Laat de gebruiker op de homepagina (app/page.tsx)
+      response = NextResponse.next();
       response.headers.set('x-tenant-domain', hostname);
       return response;
     }
