@@ -168,21 +168,22 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
-  // THEME CONFIGURATION
+  // THEME CONFIGURATION - THE MILLIONAIRE AESTHETIC
+  // Admin gets Crimson Matrix. User gets Platinum/Monochrome Brutalism (Quiet Luxury)
   const theme = {
-    color: isAdmin ? 'text-red-500' : 'text-gold',
-    hoverColor: isAdmin ? 'group-hover:text-red-500' : 'group-hover:text-gold',
-    bgActive: isAdmin ? 'bg-red-500/10' : 'bg-gold/10',
-    border: isAdmin ? 'border-red-900/20' : 'border-white/5',
-    borderStrong: isAdmin ? 'border-red-900/50' : 'border-gold/20',
-    borderHover: isAdmin ? 'group-hover:border-red-500' : 'group-hover:border-gold',
-    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.2)]' : 'shadow-[0_0_15px_rgba(212,175,55,0.1)]',
-    pulseBg: isAdmin ? 'bg-red-900' : 'bg-gold/50',
-    pulseActive: isAdmin ? 'bg-red-500' : 'bg-gold',
-    gridLines: isAdmin ? 'rgba(255,0,51,0.03)' : 'rgba(255,255,255,0.02)',
-    orbTop: isAdmin ? 'rgba(255,0,51,0.12)' : 'rgba(212,175,55,0.05)',
-    orbBottom: isAdmin ? 'rgba(139,0,0,0.08)' : 'rgba(212,175,55,0.02)',
-    iconBg: isAdmin ? 'bg-red-950/50 border-red-500/30' : 'bg-black border-gold/30',
+    color: isAdmin ? 'text-red-500' : 'text-zinc-100',
+    hoverColor: isAdmin ? 'group-hover:text-red-500' : 'group-hover:text-white',
+    bgActive: isAdmin ? 'bg-red-500/10' : 'bg-white/5',
+    border: isAdmin ? 'border-red-900/20' : 'border-white/[0.04]',
+    borderStrong: isAdmin ? 'border-red-900/50' : 'border-white/10',
+    borderHover: isAdmin ? 'group-hover:border-red-500' : 'group-hover:border-white/20',
+    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.2)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.03)]',
+    pulseBg: isAdmin ? 'bg-red-900' : 'bg-zinc-800',
+    pulseActive: isAdmin ? 'bg-red-500' : 'bg-white',
+    gridLines: isAdmin ? 'rgba(255,0,51,0.03)' : 'rgba(255,255,255,0.015)',
+    orbTop: isAdmin ? 'rgba(255,0,51,0.12)' : 'rgba(255,255,255,0.03)',
+    orbBottom: isAdmin ? 'rgba(139,0,0,0.08)' : 'rgba(255,255,255,0.01)',
+    iconBg: isAdmin ? 'bg-red-950/50 border-red-500/30' : 'bg-[#050505] border-white/10',
     title: isAdmin ? 'System Administrator' : 'Network Member',
   };
 
@@ -193,7 +194,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-red-500/20 border-t-red-500' : 'border-gold/20 border-t-gold'}`}
+            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-red-500/20 border-t-red-500' : 'border-white/10 border-t-white'}`}
           />
           <p className={`text-sm font-mono tracking-widest uppercase ${theme.color} opacity-70`}>Initializing Connection...</p>
         </div>
@@ -202,7 +203,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-red-500/30' : 'selection:bg-gold/30'} font-sans overflow-hidden`}>
+    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-red-500/30' : 'selection:bg-white/20'} font-sans overflow-hidden`}>
       
       {/* 110000X Cinematic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -225,7 +226,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Sidebar - TRW Style */}
+      {/* Sidebar */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-black/40 backdrop-blur-xl
@@ -256,7 +257,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className={`p-4 border-b bg-black/40 relative overflow-hidden group ${theme.border}`}>
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative">
-              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.1)] group-hover:shadow-[0_0_15px_rgba(255,0,51,0.4)]' : 'shadow-[0_0_15px_rgba(212,175,55,0.05)] group-hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
+              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.1)] group-hover:shadow-[0_0_15px_rgba(255,0,51,0.4)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.02)] group-hover:shadow-[0_0_15px_rgba(255,255,255,0.08)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
                 <Terminal className={`w-4 h-4 ${theme.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
               </div>
             </div>
