@@ -94,7 +94,7 @@ export default function DashboardPage() {
                 <div className="flex-1 relative z-10">
                   <h4 className="text-3xl font-black text-white tracking-tight mb-2 group-hover/card:text-red-50 transition-colors">Initialize Financial Blueprint</h4>
                   <p className="text-zinc-400 mb-8 font-light text-lg">
-                    Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Verbind je bank via de beveiligde PSD2 tunnel.
+                    Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Activeer de data-connectie via de beveiligde tunnel.
                   </p>
                   
                   <div className="flex items-center gap-6">
