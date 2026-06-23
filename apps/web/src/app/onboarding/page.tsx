@@ -1,204 +1,315 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Fingerprint, CheckCircle2, Shield, Landmark, Banknote, Rocket, Check } from 'lucide-react';
+import { Command, ChevronRight, Check, AlertCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
-// Fictieve neo-bank endpoint
-const generateIban = () => `NL99 GDBR ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(100 + Math.random() * 900)}`;
+const TIERS = [
+  {
+    id: 'ecom',
+    name: 'Commerce Syndicate',
+    price: '€50/mnd',
+    priceId: 'tier_ecom_50',
+    description: 'E-commerce operaties & AI inzet',
+  },
+  {
+    id: 'tech',
+    name: 'SaaS Protocol',
+    price: '€99/mnd',
+    priceId: 'tier_tech_99',
+    description: 'App cloning & grotere verdiensten',
+  },
+  {
+    id: 'elite',
+    name: 'Elite Team',
+    price: '€1500 + uplink fee',
+    priceId: 'tier_elite_1500',
+    description: 'Volledig systeem toegang & begeleiding',
+  },
+];
 
-export default function NeoBankOnboarding() {
+function OnboardingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedTier = searchParams.get('tier');
+
   const [step, setStep] = useState(1);
-  const [iban, setIban] = useState<string>('');
-  const [companyName, setCompanyName] = useState('');
-  
-  const [allocations, setAllocations] = useState({ ops: 50, tax: 30, capital: 20 });
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedTier, setSelectedTier] = useState(
+    TIERS.find(t => t.id === preselectedTier) || null
+  );
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [bootText, setBootText] = useState('');
+
+  // Boot sequence animation
+  const bootLines = [
+    '> SOVEREIGN GRID // AUTHORIZATION PROTOCOL',
+    '> ESTABLISHING ENCRYPTED UPLINK...',
+    '> CONNECTION SECURED.',
+    '> AWAITING IDENTITY VERIFICATION...',
+  ];
 
   useEffect(() => {
-    if (step === 3 && !iban) {
-      // Simulate IBAN generation
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIban(generateIban());
-        setIsProcessing(false);
-      }, 3000);
+    if (step === 1) {
+      let lineIndex = 0;
+      let charIndex = 0;
+      let currentText = '';
+      const interval = setInterval(() => {
+        if (lineIndex >= bootLines.length) {
+          clearInterval(interval);
+          return;
+        }
+        const line = bootLines[lineIndex];
+        if (charIndex < line.length) {
+          currentText += line[charIndex];
+          setBootText(currentText);
+          charIndex++;
+        } else {
+          currentText += '\n';
+          setBootText(currentText);
+          lineIndex++;
+          charIndex = 0;
+        }
+      }, 18);
+      return () => clearInterval(interval);
     }
-  }, [step, iban]);
+  }, [step]);
 
-  const handleComplete = () => {
-    setIsProcessing(true);
-    // Simulate API call to the NeoBank engine
-    setTimeout(() => {
-      router.push('/dashboard/war-room');
-    }, 2000);
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
+  const handleNextStep = () => {
+    if (step === 2 && !selectedTier) {
+      setError('Selecteer een tier om door te gaan.');
+      return;
+    }
+    if (step === 3) {
+      if (!form.name.trim() || !form.email.trim()) {
+        setError('Vul alle velden in.');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        setError('Voer een geldig e-mailadres in.');
+        return;
+      }
+    }
+    setError('');
+    setStep(s => s + 1);
+  };
+
+  const handleInitiatePayment = async () => {
+    if (!selectedTier) return;
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/mollie/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: selectedTier.priceId,
+          successUrl: `${window.location.origin}/dashboard`,
+          cancelUrl: `${window.location.origin}/onboarding`,
+          name: form.name,
+          email: form.email,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // For now, navigate to dashboard in mock mode
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setError('Verbindingsfout. Probeer opnieuw.');
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#050B14] flex flex-col items-center justify-center p-6 text-white overflow-hidden relative">
-      {/* Background Effect */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-[#050505] text-white font-sans overflow-x-hidden relative flex flex-col">
+
+      {/* Scanline overlay */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,60,0.015)_1px,transparent_1px)] bg-[size:100%_4px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,0,60,0.07)_0%,transparent_60%)]"></div>
       </div>
 
-      <div className="w-full max-w-2xl relative z-10">
-        <div className="flex justify-between mb-8 px-4">
-          {[1, 2, 3, 4].map(num => (
-            <div key={num} className={`w-1/4 h-1 mx-1 rounded-full ${step >= num ? 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]' : 'bg-white/10'}`} />
-          ))}
+      {/* Navigation */}
+      <nav className="relative z-50 flex items-center justify-between px-6 py-6 md:px-12 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#ff003c] flex items-center justify-center">
+            <Command className="w-5 h-5 text-black" />
+          </div>
+          <span className="text-white font-black tracking-[0.2em] text-sm uppercase">Sovereign Grid</span>
         </div>
+        <Link href="/" className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">
+          [ Abort ]
+        </Link>
+      </nav>
 
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl"
-            >
-              <Shield className="w-16 h-16 text-cyan-400 mb-6" />
-              <h1 className="text-3xl font-bold mb-2">Know Your Customer (KYC)</h1>
-              <p className="text-gray-400 mb-8">Welkom bij The Godbrain. Om uw private Neo-Bank rekening (BaaS) te openen, moeten we uw entiteit verifiëren.</p>
-              
-              <div className="space-y-4 mb-8">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">Bedrijfsnaam / Entiteit</label>
-                  <input 
-                    type="text" 
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                    placeholder="Billionaire Enterprises B.V."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">KvK Nummer</label>
-                  <input type="text" className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white outline-none" placeholder="12345678" />
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setStep(2)}
-                disabled={!companyName}
-                className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
-              >
-                Start Verificatie <Fingerprint className="ml-2 w-5 h-5" />
-              </button>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="bg-white/5 backdrop-blur-xl border border-cyan-500/30 p-8 rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.15)]"
-            >
-              <h1 className="text-3xl font-bold mb-4 text-cyan-400">The Godbrain Charter</h1>
-              <div className="bg-black/50 p-6 rounded-lg border border-white/10 mb-8 h-64 overflow-y-auto text-sm text-gray-300 font-mono">
-                <p className="mb-4">DIT IS EEN BINDEND MANDAAT TUSSEN {companyName.toUpperCase()} EN THE GODBRAIN SWARM.</p>
-                <p className="mb-4">1. Autonomie: The Swarm krijgt volmacht om fondsen te routeren, marktkansen te executeren en te handelen via de aangesloten Broker API's, mits de ROI &gt;= 15% bedraagt.</p>
-                <p className="mb-4">2. Brokerage Commissie: Transacties uitgevoerd door The Swarm vereisen geen uurloon, maar een dynamische winstdeling vastgesteld in de Opportunity Schema's.</p>
-                <p>3. Liquidatie: Activa kunnen in crisistijd direct geliquideerd worden door de Risk Manager Agent ter bescherming van de War Chest.</p>
-              </div>
-
-              <button 
-                onClick={() => setStep(3)}
-                className="w-full bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center"
-              >
-                Ik Ga Akkoord & Teken Digitaal <CheckCircle2 className="ml-2 w-5 h-5" />
-              </button>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl text-center"
-            >
-              <Landmark className="w-16 h-16 text-gold mx-auto mb-6" />
-              <h1 className="text-3xl font-bold mb-2">IBAN Generatie</h1>
-              <p className="text-gray-400 mb-8">Wij openen nu een virtuele bankrekening via onze BaaS partner.</p>
-              
-              <div className="bg-black/80 p-6 rounded-xl border border-gold/20 mb-8 flex flex-col items-center justify-center min-h-[120px]">
-                {isProcessing ? (
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 border-4 border-gold border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <span className="text-gold font-mono text-sm animate-pulse">Onderhandelen met BaaS Provider...</span>
-                  </div>
-                ) : (
-                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-                    <div className="text-xs text-gray-500 mb-1">Jouw Officiele Godbrain IBAN</div>
-                    <div className="text-2xl font-mono text-gold tracking-widest">{iban}</div>
-                  </motion.div>
-                )}
-              </div>
-
-              <button 
-                onClick={() => setStep(4)}
-                disabled={isProcessing}
-                className="w-full bg-gold hover:bg-yellow-500 text-black font-bold py-3 rounded-lg transition-all disabled:opacity-50"
-              >
-                Ga Naar Kapitaal Verdeling
-              </button>
-            </motion.div>
-          )}
-
-          {step === 4 && (
-            <motion.div
-              key="step4"
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl"
-            >
-              <Banknote className="w-16 h-16 text-red-500 mb-6" />
-              <h1 className="text-3xl font-bold mb-2">Initialiseer The War Chest</h1>
-              <p className="text-gray-400 mb-6">Om de intelligentie van The Swarm te demonstreren, storten we een gesimuleerd startkapitaal van <strong className="text-red-500">€10.000,00</strong>. Hoe wil je dat de AI inkomende gelden verdeelt (routing)?</p>
-
-              <div className="space-y-6 mb-8">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Operations (AI Uitvoering)</span>
-                    <span className="font-mono">{allocations.ops}%</span>
-                  </div>
-                  <input type="range" min="0" max="100" value={allocations.ops} onChange={(e) => setAllocations({...allocations, ops: parseInt(e.target.value)})} className="w-full accent-cyan-500" />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-red-400">Tax Reserve (Belasting)</span>
-                    <span className="font-mono text-red-400">{allocations.tax}%</span>
-                  </div>
-                  <input type="range" min="0" max="100" value={allocations.tax} onChange={(e) => setAllocations({...allocations, tax: parseInt(e.target.value)})} className="w-full accent-red-500" />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gold">Syndicate Capital (Trading/Investeren)</span>
-                    <span className="font-mono text-gold">{allocations.capital}%</span>
-                  </div>
-                  <input type="range" min="0" max="100" value={allocations.capital} onChange={(e) => setAllocations({...allocations, capital: parseInt(e.target.value)})} className="w-full accent-gold" />
-                </div>
-              </div>
-
-              <div className="bg-black/50 p-4 rounded-lg border border-white/10 flex justify-between items-center mb-8">
-                <span className="text-sm text-gray-400">Totaal toegewezen:</span>
-                <span className={`font-mono font-bold ${(allocations.ops + allocations.tax + allocations.capital) === 100 ? 'text-red-500' : 'text-red-500'}`}>
-                  {allocations.ops + allocations.tax + allocations.capital}%
-                </span>
-              </div>
-
-              <button 
-                onClick={handleComplete}
-                disabled={isProcessing || (allocations.ops + allocations.tax + allocations.capital) !== 100}
-                className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold py-3 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
-              >
-                {isProcessing ? 'Geld Routeren...' : 'Stort €10.000 & Betreed The War Room'}
-                {!isProcessing && <Rocket className="ml-2 w-5 h-5" />}
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Progress bar */}
+      <div className="relative z-10 flex gap-1 px-6 md:px-12 pt-6">
+        {[1, 2, 3, 4].map(n => (
+          <div key={n} className={`h-[2px] flex-1 transition-colors duration-500 ${step >= n ? 'bg-[#ff003c]' : 'bg-white/10'}`}></div>
+        ))}
       </div>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 relative z-10 flex items-center justify-center px-6 md:px-12 py-16">
+        <div className="w-full max-w-3xl">
+          <AnimatePresence mode="wait">
+
+            {/* STEP 1: BOOT SEQUENCE */}
+            {step === 1 && (
+              <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-start">
+                <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-6">STAP 01 / 04 // VERBINDING INITIALISEREN</div>
+                <div className="w-full bg-black border border-white/10 p-8 font-mono text-sm text-[#ff003c] leading-7 whitespace-pre-line min-h-[160px]">
+                  {bootText}<span className="animate-pulse">_</span>
+                </div>
+                <button
+                  onClick={() => setStep(2)}
+                  className="mt-8 bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] px-12 py-5 text-lg hover:bg-white transition-colors flex items-center gap-4"
+                >
+                  Identiteit Verifiëren <ChevronRight className="w-6 h-6" />
+                </button>
+              </motion.div>
+            )}
+
+            {/* STEP 2: TIER SELECTION */}
+            {step === 2 && (
+              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-4">STAP 02 / 04 // SELECTEER PROTOCOL</div>
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-10 leading-none">
+                  KIES JE<br /><span className="text-[#ff003c]">DIMENSIE.</span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  {TIERS.map(tier => (
+                    <button
+                      key={tier.id}
+                      onClick={() => setSelectedTier(tier)}
+                      className={`text-left p-6 border transition-all ${selectedTier?.id === tier.id ? 'border-[#ff003c] bg-[#ff003c]/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <span className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest">TIER {TIERS.indexOf(tier) + 1}</span>
+                        {selectedTier?.id === tier.id && <Check className="w-4 h-4 text-[#ff003c]" />}
+                      </div>
+                      <div className="text-xl font-black uppercase tracking-wide mb-2">{tier.name}</div>
+                      <div className="text-sm text-zinc-400 mb-4">{tier.description}</div>
+                      <div className="text-lg font-bold text-white">{tier.price}</div>
+                    </button>
+                  ))}
+                </div>
+                {error && <div className="flex items-center gap-2 text-[#ff003c] text-sm mb-4"><AlertCircle className="w-4 h-4" />{error}</div>}
+                <button onClick={handleNextStep} className="bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] px-12 py-5 text-lg hover:bg-white transition-colors flex items-center gap-4">
+                  Doorgaan <ChevronRight className="w-6 h-6" />
+                </button>
+              </motion.div>
+            )}
+
+            {/* STEP 3: IDENTITY / FORM */}
+            {step === 3 && (
+              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-4">STAP 03 / 04 // IDENTITEIT REGISTREREN</div>
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-10 leading-none">
+                  WIE BEN<br /><span className="text-[#ff003c]">JIJ?</span>
+                </h2>
+                <div className="space-y-4 mb-8 max-w-xl">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-2">Volledige Naam</label>
+                    <input
+                      name="name"
+                      value={form.name}
+                      onChange={handleFormChange}
+                      placeholder="De Architect"
+                      className="w-full bg-black border border-white/10 focus:border-[#ff003c] outline-none px-5 py-4 text-white font-mono text-sm transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-2">E-mailadres</label>
+                    <input
+                      name="email"
+                      value={form.email}
+                      onChange={handleFormChange}
+                      placeholder="jij@domein.com"
+                      type="email"
+                      className="w-full bg-black border border-white/10 focus:border-[#ff003c] outline-none px-5 py-4 text-white font-mono text-sm transition-colors"
+                    />
+                  </div>
+                </div>
+                {error && <div className="flex items-center gap-2 text-[#ff003c] text-sm mb-4"><AlertCircle className="w-4 h-4" />{error}</div>}
+                <button onClick={handleNextStep} className="bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] px-12 py-5 text-lg hover:bg-white transition-colors flex items-center gap-4">
+                  Grid Verbinden <ChevronRight className="w-6 h-6" />
+                </button>
+              </motion.div>
+            )}
+
+            {/* STEP 4: PAYMENT */}
+            {step === 4 && (
+              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-4">STAP 04 / 04 // UPLINK AUTORISATIE</div>
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-10 leading-none">
+                  AUTORISEER<br /><span className="text-[#ff003c]">TOEGANG.</span>
+                </h2>
+
+                {/* Summary box */}
+                <div className="bg-black border border-white/10 p-8 max-w-xl mb-8">
+                  <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Overzicht</div>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <div className="font-black uppercase tracking-wide">{selectedTier?.name}</div>
+                      <div className="text-sm text-zinc-400">{form.name} // {form.email}</div>
+                    </div>
+                    <div className="text-[#ff003c] font-black text-xl">{selectedTier?.price}</div>
+                  </div>
+                  <div className="border-t border-white/5 pt-3 mt-3">
+                    <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#ff003c] animate-pulse inline-block"></span>
+                      Betaaloptie: iDEAL / Creditcard via Mollie
+                    </div>
+                  </div>
+                </div>
+
+                {error && <div className="flex items-center gap-2 text-[#ff003c] text-sm mb-4"><AlertCircle className="w-4 h-4" />{error}</div>}
+                
+                <button
+                  onClick={handleInitiatePayment}
+                  disabled={isLoading}
+                  className="bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] px-12 py-5 text-lg hover:bg-white transition-colors flex items-center gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ChevronRight className="w-6 h-6" />}
+                  {isLoading ? 'UPLINK INITIALISEREN...' : 'INITIATE UPLINK'}
+                </button>
+
+                <p className="mt-4 text-[10px] text-zinc-600 font-mono uppercase tracking-widest max-w-sm">
+                  Betaling verloopt beveiligd via Mollie. Geen gegevens worden opgeslagen op onze servers.
+                </p>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
+      </main>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#ff003c] animate-spin" />
+      </div>
+    }>
+      <OnboardingContent />
+    </Suspense>
   );
 }
