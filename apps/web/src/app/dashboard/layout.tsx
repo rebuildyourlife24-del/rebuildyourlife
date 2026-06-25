@@ -285,21 +285,21 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
   // THEME CONFIGURATION - THE MILLIONAIRE AESTHETIC
-  // Admin gets Crimson Matrix. User gets Platinum/Monochrome Brutalism (Quiet Luxury)
+  // Admin gets Navy Matrix. User gets Platinum/Monochrome Brutalism (Quiet Luxury)
   const theme = {
-    color: isAdmin ? 'text-red-500' : 'text-zinc-100',
-    hoverColor: isAdmin ? 'group-hover:text-red-500' : 'group-hover:text-white',
-    bgActive: isAdmin ? 'bg-red-500/10' : 'bg-white/5',
-    border: isAdmin ? 'border-red-900/20' : 'border-white/[0.04]',
-    borderStrong: isAdmin ? 'border-red-900/50' : 'border-white/10',
-    borderHover: isAdmin ? 'group-hover:border-red-500' : 'group-hover:border-white/20',
-    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.2)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.03)]',
-    pulseBg: isAdmin ? 'bg-red-900' : 'bg-zinc-800',
-    pulseActive: isAdmin ? 'bg-red-500' : 'bg-white',
-    gridLines: isAdmin ? 'rgba(255,0,51,0.03)' : 'rgba(255,255,255,0.015)',
-    orbTop: isAdmin ? 'rgba(255,0,51,0.12)' : 'rgba(255,255,255,0.03)',
-    orbBottom: isAdmin ? 'rgba(139,0,0,0.08)' : 'rgba(255,255,255,0.01)',
-    iconBg: isAdmin ? 'bg-red-950/50 border-red-500/30' : 'bg-[#050505] border-white/10',
+    color: isAdmin ? 'text-blue-500' : 'text-zinc-100',
+    hoverColor: isAdmin ? 'group-hover:text-blue-500' : 'group-hover:text-white',
+    bgActive: isAdmin ? 'bg-blue-500/10' : 'bg-white/5',
+    border: isAdmin ? 'border-blue-900/20' : 'border-white/[0.04]',
+    borderStrong: isAdmin ? 'border-blue-900/50' : 'border-white/10',
+    borderHover: isAdmin ? 'group-hover:border-blue-500' : 'group-hover:border-white/20',
+    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.03)]',
+    pulseBg: isAdmin ? 'bg-blue-900' : 'bg-zinc-800',
+    pulseActive: isAdmin ? 'bg-blue-500' : 'bg-white',
+    gridLines: isAdmin ? 'rgba(59,130,246,0.03)' : 'rgba(255,255,255,0.015)',
+    orbTop: isAdmin ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
+    orbBottom: isAdmin ? 'rgba(30,58,138,0.08)' : 'rgba(255,255,255,0.01)',
+    iconBg: isAdmin ? 'bg-blue-950/50 border-blue-500/30' : 'bg-[#050505] border-white/10',
     title: isAdmin ? 'The Architect' : 'Builder',
   };
 
