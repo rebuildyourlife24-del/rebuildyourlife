@@ -34,17 +34,17 @@ export function AppHeader() {
       
       {/* LEFT: Branding & Status */}
       <div className="relative z-10 flex items-center gap-6">
-        <Link href="/" className="font-black text-white tracking-widest uppercase hover:text-danger transition-colors">
+        <Link href="/" className="font-black text-white tracking-widest uppercase hover:text-gold transition-colors">
           Sovereign Grid
         </Link>
         <div className="hidden md:flex items-center gap-2 text-xs font-mono opacity-80">
-          <span className="w-2 h-2 rounded-full bg-danger animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
           <span className="text-white">LINK: SECURE</span>
         </div>
       </div>
 
       {/* CENTER: Live Clock */}
-      <div className="relative z-10 hidden lg:block text-danger font-mono text-sm tracking-[0.2em] opacity-80">
+      <div className="relative z-10 hidden lg:block text-gold font-mono text-sm tracking-[0.2em] opacity-80">
         SYS_TIME // {time}
       </div>
 
@@ -56,10 +56,11 @@ export function AppHeader() {
         <Link href="/" className="text-xs text-textSecondary uppercase tracking-widest hover:text-white transition-colors">
           The Syndicate
         </Link>
-        <button className="border border-danger/50 bg-danger/10 text-danger px-4 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-danger hover:text-white transition-colors">
+        <button className="border border-danger/50 bg-gold/10 text-gold px-4 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-gold hover:text-white transition-colors">
           Initiate
         </button>
       </nav>
     </motion.header>
   );
 }
+
