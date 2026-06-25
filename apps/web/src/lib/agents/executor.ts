@@ -54,6 +54,26 @@ export async function executePendingActions() {
           resultData = { updated: true };
           break;
 
+        case 'OPPORTUNITY':
+          console.log(`[EXECUTOR] Wealth Generator has verified Opportunity: ${(payload as any).title}`);
+          const adminUser = await db.user.findFirst();
+          if (!adminUser) throw new Error("No user found to link opportunity to.");
+          
+          const newOpp = await db.opportunityReport.create({
+            data: {
+              userId: adminUser.id,
+              title: (payload as any).title || 'Autonoom Gegenereerd Verdienmodel',
+              niche: (payload as any).niche || 'Finance/Tech',
+              summary: (payload as any).summary || 'Geen samenvatting',
+              goodROI: (payload as any).goodROI || 10,
+              betterROI: (payload as any).betterROI || 50,
+              bestROI: (payload as any).bestROI || 200,
+              status: 'APPROVED'
+            }
+          });
+          resultData = { opportunityId: newOpp.id };
+          break;
+
         default:
           throw new Error(`Unsupported actionType: ${action.title}`);
       }
@@ -63,8 +83,8 @@ export async function executePendingActions() {
         where: { id: action.id },
         data: {
           status: 'COMPLETED',
-          result: JSON.stringify(resultData),
           executedAt: new Date()
+          // payload kan eventueel geupdate worden met resultData als nodig
         }
       });
       
@@ -79,7 +99,7 @@ export async function executePendingActions() {
         where: { id: action.id },
         data: {
           status: 'FAILED',
-          result: JSON.stringify({ error: error.message }),
+          errorMessage: error.message,
           executedAt: new Date()
         }
       });

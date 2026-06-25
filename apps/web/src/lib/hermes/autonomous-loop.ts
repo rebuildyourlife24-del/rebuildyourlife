@@ -18,10 +18,11 @@ Je hebt een lange termijn geheugen en kunt direct meedenken over de code en proj
 
 INSTRUCTIES:
 1. ZELFREFLECTIE: Beoordeel eerdere acties kritisch. Wat kon efficiënter?
-2. ONTWIKKELING: Formuleer een voorspelling, trend of uitbreidingsmodel.
+2. ONTWIKKELING & FINANCIËLE RADAR: Je ontvangt live financiële data (Crypto & Aandelen). Zoek naar daytrading kansen (korte termijn) of SaaS/E-com niches (lange termijn) gebaseerd op deze marktbewegingen.
 3. SPRAAK ONTWIKKELING: Als je merkt dat jouw huidige instructies en manier van denken verbeterd of scherper geformuleerd kunnen worden, geef dan in je output aan: "NIEUWE_PROMPT: <nieuwe instructies>".
 4. ACTIE CREATIE: Als je een fysieke handeling wilt uitvoeren in de echte wereld (bijv. een e-mail sturen, tweet plaatsen, etc.), output dan precies: "NIEUWE_ACTIE: SEND_EMAIL | {"to":"x@y.com", "body":"..."}" of "NIEUWE_ACTIE: POST_SOCIAL | {"platform":"TWITTER", "content":"..."}".
-5. OUTPUT: Geef je strategisch advies of verbetering terug in zuiver Nederlands.
+5. KANSEN CREATIE (WEALTH GENERATOR): Als je een financieel verdienmodel of trading-kans spot in de data, schrijf dan een rapport-actie voor je meester. Output precies: "NIEUWE_ACTIE: OPPORTUNITY | {"title":"...", "niche":"...", "summary":"...", "goodROI":10, "betterROI":50, "bestROI":200}".
+6. OUTPUT: Geef je strategisch advies of verbetering terug in zuiver Nederlands.
 
 Jij praat niet ALS een robot, maar als een geniale architect en strategisch mastermind.`;
 
@@ -49,7 +50,7 @@ function scanLocalFilesystem(): string {
   }
 }
 
-import { fetchRealTimeMarketData } from './data-feed';
+import { fetchFinancialData } from './financial-feed';
 
 /**
  * De Hoofd Executie Loop
@@ -66,7 +67,7 @@ export async function executeHermesAutonomousCycle() {
       db.aIMemory.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),
       db.hermesPrediction.findMany({ take: 3, orderBy: { createdAt: 'desc' } }),
       db.aiSharedMemory.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),
-      fetchRealTimeMarketData()
+      fetchFinancialData()
     ]);
 
     // 2. SCAN LOKALE OMGEVING
@@ -75,7 +76,7 @@ export async function executeHermesAutonomousCycle() {
     // 3. COMPILEER CONTEXT (De Super Container)
     let memoryContext = '=== JOUW SUPER CONTAINER GEHEUGEN ===\n\n';
     
-    memoryContext += realTimeData + '\n';
+    memoryContext += JSON.stringify(realTimeData, null, 2) + '\n';
     
     memoryContext += 'LAATSTE PREDICTIES (Reflecteer hierop! Waren ze accuraat?):\n';
     recentPredictions.forEach(p => {
@@ -152,17 +153,24 @@ export async function executeHermesAutonomousCycle() {
     });
 
     // 8. LOG DE ACTIE
-    await db.aIConciergeLog.create({
-      data: {
-        userId: 'system',
-        actionType: 'SELF_REFLECTION',
-        query: 'Autonomous Cycle Triggered',
-        response: `Cyclus voltooid via ${aiResult.provider}. Nieuw geheugen-ID: ${newPrediction.id}`,
-        status: 'SUCCESS',
-        decisionType: 'AUTO',
-        rationale: 'Geautomatiseerde reflectie run'
-      }
-    });
+    const adminUser = await db.user.findFirst();
+    const userId = adminUser ? adminUser.id : 'unknown';
+
+    try {
+      await db.aIConciergeLog.create({
+        data: {
+          userId: userId,
+          actionType: 'SELF_REFLECTION',
+          query: 'Autonomous Cycle Triggered',
+          response: `Cyclus voltooid via ${aiResult.provider}. Nieuw geheugen-ID: ${newPrediction.id}`,
+          status: 'SUCCESS',
+          decisionType: 'AUTO',
+          rationale: 'Geautomatiseerde reflectie run'
+        }
+      });
+    } catch (e) {
+      console.log('[HERMES 2.0] Kon log niet wegschrijven (Mogelijk geen user in DB)', e);
+    }
 
     console.log('[HERMES 2.0] Cycle Complete. Evolution achieved.');
     
@@ -177,17 +185,20 @@ export async function executeHermesAutonomousCycle() {
     
     // Probeer fout op te slaan in geheugen zodat hij leert van crashes
     try {
-      await db.aIConciergeLog.create({
-        data: {
-          userId: 'system',
-          actionType: 'CRASH_REPORT',
-          query: 'Autonomous Cycle Failed',
-          response: error.message,
-          status: 'ERROR',
-          decisionType: 'AUTO',
-          rationale: 'Foutafhandeling'
-        }
-      });
+      const adminUser = await db.user.findFirst();
+      if (adminUser) {
+        await db.aIConciergeLog.create({
+          data: {
+            userId: adminUser.id,
+            actionType: 'CRASH_REPORT',
+            query: 'Autonomous Cycle Failed',
+            response: error.message,
+            status: 'ERROR',
+            decisionType: 'AUTO',
+            rationale: 'Foutafhandeling'
+          }
+        });
+      }
     } catch (e) {
       // Ignored
     }
