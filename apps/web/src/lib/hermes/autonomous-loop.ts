@@ -44,7 +44,7 @@ Jij praat niet ALS een robot, maar als een geniale architect en strategisch mast
 function scanLocalFilesystem(): string {
   try {
     // We scannen de root van het project (rebuildyourlife) om context te snappen
-    const rootDir = process.cwd();
+    const rootDir = process.cwd() + '';
     const webSrc = path.join(rootDir, 'apps/web/src');
     
     let summary = 'Lokale Map Structuur (Snapshot):\n';
@@ -259,4 +259,5 @@ export async function executeHermesAutonomousCycle() {
     throw error;
   }
 }
+
 

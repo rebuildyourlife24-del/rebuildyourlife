@@ -174,7 +174,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     const path = require('path');
     const { execSync } = require('child_process');
 
-    const workspaceRoot = path.resolve(process.cwd(), '../../'); // Resolved workspace root
+    const workspaceRoot = path.resolve(process.cwd() + '', '../../'); // Resolved workspace root
     let match;
     let executionLog = "";
 
@@ -265,3 +265,4 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     return { success: false, error: "Er is een fout opgetreden bij het verwerken van je bericht." };
   }
 }
+
