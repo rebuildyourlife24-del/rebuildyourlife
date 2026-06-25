@@ -170,33 +170,9 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     const writeRegex = /<<<WRITE_FILE:\s*([^\n>]+)>>>([\s\S]*?)<<<END_WRITE_FILE>>>/g;
     const execRegex = /<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
 
-    const fs = require('fs');
-    const path = require('path');
-    const { execSync } = require('child_process');
-
-    const workspaceRoot = path.resolve(process.cwd() + '', '../../'); // Resolved workspace root
-    let match;
     let executionLog = "";
 
-    // 1. WRITE_FILE execution
-    while ((match = writeRegex.exec(aiResponse)) !== null) {
-      const relPath = match[1].trim();
-      const content = match[2];
-      const absPath = path.resolve(workspaceRoot, relPath);
-
-      if (absPath.startsWith(workspaceRoot)) {
-        try {
-          fs.mkdirSync(path.dirname(absPath), { recursive: true });
-          fs.writeFileSync(absPath, content, 'utf-8');
-          executionLog += `\n[Systeem: Bestand succesvol geschreven naar ${relPath}]`;
-        } catch (e: any) {
-          executionLog += `\n[Systeem: Fout bij schrijven naar ${relPath}: ${e.message}]`;
-        }
-      } else {
-        executionLog += `\n[Systeem: Toegang geweigerd voor schrijven naar pad buiten de workspace: ${relPath}]`;
-      }
-    }
-
+    // 1. WRITE_FILE execution disabled in prod
     // 2. EXECUTE_COMMAND execution
     while ((match = execRegex.exec(aiResponse)) !== null) {
       const command = match[1].trim();
@@ -265,4 +241,6 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     return { success: false, error: "Er is een fout opgetreden bij het verwerken van je bericht." };
   }
 }
+
+
 

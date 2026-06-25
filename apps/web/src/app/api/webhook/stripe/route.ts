@@ -12,11 +12,14 @@ export async function POST(req: Request) {
   let event: any;
 
   try {
-    throw new Error('Stripe disabled'); // event = stripe.webhooks.constructEvent(
+    throw new Error('Stripe disabled'); 
+    /*
+    event = stripe.webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET || ''
     );
+    */
   } catch (error: any) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
@@ -24,9 +27,12 @@ export async function POST(req: Request) {
   const session = event.data.object as any;
 
   if (event.type === 'checkout.session.completed') {
-    throw new Error('Stripe disabled'); // const subscription = await stripe.subscriptions.retrieve(
+    throw new Error('Stripe disabled'); 
+    /*
+    const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
+    */
 
     if (!session?.metadata?.userId) {
       return new NextResponse('User ID is missing in metadata', { status: 400 });
@@ -66,9 +72,12 @@ export async function POST(req: Request) {
     const invoice = event.data.object as any;
     if (!invoice.subscription) return new NextResponse(null, { status: 200 });
 
-    throw new Error('Stripe disabled'); // const subscription = await stripe.subscriptions.retrieve(
+    throw new Error('Stripe disabled'); 
+    /*
+    const subscription = await stripe.subscriptions.retrieve(
       invoice.subscription as string
     );
+    */
 
     await db.user.update({
       where: {

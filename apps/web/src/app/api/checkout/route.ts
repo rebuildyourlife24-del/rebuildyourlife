@@ -32,12 +32,15 @@ export async function POST(req: Request) {
     // Controleer of er al een Stripe Customer ID is
     let stripeCustomerId = user.stripeCustomerId;
     if (!stripeCustomerId) {
-      throw new Error('Stripe disabled'); // const customer = await stripe.customers.create({
+      throw new Error('Stripe disabled'); 
+      /*
+      const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
           userId: user.id,
         },
       });
+      */
       stripeCustomerId = customer.id;
       
       await db.user.update({
@@ -46,7 +49,9 @@ export async function POST(req: Request) {
       });
     }
 
-    throw new Error('Stripe disabled'); // const session = await stripe.checkout.sessions.create({
+    throw new Error('Stripe disabled'); 
+    /*
+    const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card', 'ideal'], // iDEAL voor NL/BE
@@ -63,6 +68,7 @@ export async function POST(req: Request) {
         tierName: tierName
       }
     });
+    */
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
