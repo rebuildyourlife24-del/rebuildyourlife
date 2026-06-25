@@ -121,3 +121,226 @@ export async function launchSyndicateCampaign(campaignId: string) {
   revalidatePath('/dashboard/syndicate');
   return { success: true, sent: emailsSent };
 }
+
+// ==========================================
+// SYNDICATE COMMUNITY FEED ACTIONS
+// ==========================================
+
+// Haal posts op gefilterd op tier
+export async function getSyndicatePosts() {
+  try {
+    const user = await db.user.findFirst();
+    if (!user) return [];
+
+    const userTier = user.clearanceLevel || 1;
+
+    const posts = await db.syndicatePost.findMany({
+      where: {
+        tier: {
+          lte: userTier
+        }
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            role: true,
+            clearanceLevel: true
+          }
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                role: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'asc'
+          }
+        },
+        likes: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return posts.map(post => ({
+      ...post,
+      isLiked: post.likes.some(like => like.userId === user.id),
+      likesCount: post.likes.length
+    }));
+  } catch (error) {
+    console.error('Failed to get syndicate posts:', error);
+    return [];
+  }
+}
+
+// Maak een nieuwe post
+export async function createSyndicatePost(content: string, title?: string, tier: number = 1) {
+  try {
+    const user = await db.user.findFirst();
+    if (!user) throw new Error("Unauthorized");
+
+    const post = await db.syndicatePost.create({
+      data: {
+        title,
+        content,
+        tier,
+        authorId: user.id
+      }
+    });
+
+    revalidatePath('/dashboard/syndicate');
+    return post;
+  } catch (error) {
+    console.error('Failed to create syndicate post:', error);
+    throw new Error('Failed to create post');
+  }
+}
+
+// Like/Unlike post toggle
+export async function toggleSyndicateLike(postId: string) {
+  try {
+    const user = await db.user.findFirst();
+    if (!user) throw new Error("Unauthorized");
+
+    const existingLike = await db.syndicateLike.findUnique({
+      where: {
+        postId_userId: {
+          postId,
+          userId: user.id
+        }
+      }
+    });
+
+    if (existingLike) {
+      await db.syndicateLike.delete({
+        where: {
+          postId_userId: {
+            postId,
+            userId: user.id
+          }
+        }
+      });
+      revalidatePath('/dashboard/syndicate');
+      return { liked: false };
+    } else {
+      await db.syndicateLike.create({
+        data: {
+          postId,
+          userId: user.id
+        }
+      });
+      revalidatePath('/dashboard/syndicate');
+      return { liked: true };
+    }
+  } catch (error) {
+    console.error('Failed to toggle like:', error);
+    throw new Error('Failed to toggle like');
+  }
+}
+
+// Voeg comment toe
+export async function addSyndicateComment(postId: string, content: string) {
+  try {
+    const user = await db.user.findFirst();
+    if (!user) throw new Error("Unauthorized");
+
+    const comment = await db.syndicateComment.create({
+      data: {
+        content,
+        postId,
+        authorId: user.id
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    revalidatePath('/dashboard/syndicate');
+    return comment;
+  } catch (error) {
+    console.error('Failed to add comment:', error);
+    throw new Error('Failed to add comment');
+  }
+}
+
+// Seeder
+export async function seedSyndicatePostsIfEmpty() {
+  try {
+    const count = await db.syndicatePost.count();
+    if (count > 0) return;
+
+    const user = await db.user.findFirst();
+    if (!user) return;
+
+    const mockPosts = [
+      {
+        title: "SECURE COMMUNICATION ESTABLISHED",
+        content: "Welcome to The Syndicate network. This feed is encrypted. All messages here are private to syndicate members and will not leak outside. Use this channel to coordinate land claims, corporate espionage, and proxy mail operations.",
+        tier: 1,
+      },
+      {
+        title: "ALGO-TRADING BOT APEX TRIGGERED",
+        content: "Apex Aggressive mode has been triggered on the SOL/USDT pair. Expect high volatility. Make sure you have at least 50% liquidity parked in your Treasury Vault to cover potential margin requirements. Do not panic-sell.",
+        tier: 2,
+      },
+      {
+        title: "LAND ACQUISITION OPPORTUNITY: PERCEEL 89",
+        content: "We have scan locked an abandoned warehouse property in Rotterdam Port. The tax lien cost is €12,500. Expected valuation after AI-notary deed resolution is €240,000. Seeking co-investor at Tier 3 level.",
+        tier: 3,
+      },
+      {
+        title: "CONFIDENTIAL ESPIONAGE: PROJECT STARDUST",
+        content: "Leaked database schemas from our main e-commerce competitor have been compiled. Faction cut is 25% on all resale profits. Download hash: AES-256-f83a992. Access restricted to Tier 4 (Supreme Overseers) only.",
+        tier: 4,
+      }
+    ];
+
+    for (const p of mockPosts) {
+      await db.syndicatePost.create({
+        data: {
+          title: p.title,
+          content: p.content,
+          tier: p.tier,
+          authorId: user.id
+        }
+      });
+    }
+    console.log("Mock syndicate posts seeded successfully!");
+    return true;
+  } catch (error) {
+    console.error("Failed to seed mock syndicate posts:", error);
+    return false;
+  }
+}
+
+export async function getCurrentUser() {
+  try {
+    const user = await db.user.findFirst();
+    return user;
+  } catch (error) {
+    console.error('Failed to get current user:', error);
+    return null;
+  }
+}
+
+

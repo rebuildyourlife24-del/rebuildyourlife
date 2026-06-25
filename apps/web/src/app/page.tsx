@@ -161,8 +161,8 @@ export default function CinematicLandingPage() {
         </div>
       </div>
       
-      {/* TIER SELECTION - BOTTOM OF SCREEN */}
-      <div className={`fixed bottom-24 left-0 w-full px-6 md:px-12 z-50 flex flex-col md:flex-row justify-center gap-4 transition-opacity duration-700 ${videoPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      {/* TIER SELECTION - SCROLLABLE IN DOCUMENT FLOW */}
+      <div className={`relative z-30 max-w-[1400px] mx-auto w-full px-6 md:px-12 pb-32 flex flex-col md:flex-row justify-center gap-6 transition-opacity duration-700 ${videoPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         
         <Link href="/tiers/ecom" className="group flex-1 bg-black/80 backdrop-blur-md border border-white/10 hover:border-[#ff003c] p-6 transition-all hover:-translate-y-2">
           <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 01</div>

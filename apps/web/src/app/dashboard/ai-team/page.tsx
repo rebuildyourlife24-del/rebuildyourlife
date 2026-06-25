@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Brain, Users, HeartPulse, PieChart, Mic, ShieldAlert } from 'lucide-react';
+import { Brain, Users, HeartPulse, PieChart, Mic, ShieldAlert, Cpu } from 'lucide-react';
 import { SatelliteCore } from '@/components/ui/SatelliteCore';
 
 const containerVariants = {
@@ -96,23 +97,32 @@ export default function AITeamPage() {
                 <Users className="w-32 h-32 text-cyan-300" />
               </div>
               
-              <div className="relative z-10">
-                <h3 className="text-cyan-400 uppercase tracking-[0.2em] text-xs font-black mb-6 flex items-center gap-3">
-                  <Users className="w-5 h-5" /> AI EXECUTIVE BOARD
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
-                    <span className="text-white font-bold tracking-wide">Sophia (CFO)</span>
-                    <span className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Actief</span>
+              <div className="relative z-10 flex flex-col justify-between h-full">
+                <div>
+                  <h3 className="text-cyan-400 uppercase tracking-[0.2em] text-xs font-black mb-6 flex items-center gap-3">
+                    <Users className="w-5 h-5" /> AI EXECUTIVE BOARD
+                  </h3>
+                  <div className="space-y-4 mb-6">
+                    <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
+                      <span className="text-white font-bold tracking-wide">Sophia (CFO)</span>
+                      <span className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Actief</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
+                      <span className="text-white font-bold tracking-wide">Marcus (CRM)</span>
+                      <span className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Actief</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
+                      <span className="text-white font-bold tracking-wide">Elena (PR)</span>
+                      <span className="text-emerald-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Optimaliseren</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
-                    <span className="text-white font-bold tracking-wide">Marcus (COO)</span>
-                    <span className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Actief</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-cyan-950/20 rounded-xl border border-cyan-900/30 backdrop-blur-sm">
-                    <span className="text-white font-bold tracking-wide">Elena (CMO)</span>
-                    <span className="text-emerald-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Optimaliseren</span>
-                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-cyan-900/30">
+                  <Link href="/dashboard/ai-team/synthetic" className="w-full inline-flex items-center justify-center p-3 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900/50 hover:text-white border border-cyan-500/30 rounded-xl font-mono text-xs uppercase tracking-widest transition-all gap-2">
+                    <Cpu size={14} />
+                    SYNTHETIC COMMAND CONSOLE ➔
+                  </Link>
                 </div>
               </div>
             </Card>

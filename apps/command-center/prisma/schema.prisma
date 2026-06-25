@@ -79,6 +79,7 @@ model User {
   marketingConversions MarketingConversion[]
   aiConciergeLogs      AIConciergeLog[]
   revenueSnapshots     RevenueSnapshot[]
+  opportunities        Opportunity[] @relation("AssignedOpportunities")
 
   @@index([email])
   @@index([role])
@@ -930,4 +931,45 @@ model WebhookEvent {
 
   @@index([provider])
   @@index([status])
+  @@index([eventType])
+}
+
+model Opportunity {
+  id                String    @id @default(uuid())
+  title             String
+  description       String
+  payout            Float
+  category          String    // e.g., "LEAD_GEN", "SEO", "SALES", "SUPPORT"
+  status            String    @default("AVAILABLE") // "AVAILABLE", "IN_PROGRESS", "COMPLETED"
+  
+  // AI Autonomous Economy Fields
+  executionType     String    @default("CLIENT_BROKERED") // "AI_AUTONOMOUS" | "CLIENT_BROKERED"
+  commissionRate    Float     @default(0.0) // Percentage Orion takes
+  guaranteedSuccess Boolean   @default(false) // 100% ROI check for AI
+  
+  assignedToId      String?
+  assignedTo        User?     @relation("AssignedOpportunities", fields: [assignedToId], references: [id])
+  
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime?
+
+  @@index([status])
+  @@index([category])
+  @@index([assignedToId])
+  @@index([executionType])
+}
+
+model AiSharedMemory {
+  id         String   @id @default(uuid())
+  sourceAi   String   @map("source_ai")
+  visibleTo  String[] @default(["hermes", "orion", "qwen"]) @map("visible_to")
+  memoryType String   @map("memory_type")
+  content    String   @db.Text
+  context    Json     @default("{}") @map("context")
+  userId     String   @map("user_id")
+  importance Float
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("ai_shared_memory")
 }

@@ -1,18 +1,17 @@
-import OpenAI from "openai";
 import { prisma } from "@rebuildyourlife/database";
 import { AgentType } from "@rebuildyourlife/shared";
 import { AGENT_DEFINITIONS } from "@rebuildyourlife/shared";
-import { env } from "../config/env.js";
 import { NotFoundError, ForbiddenError, AppError } from "../middleware/errorHandler.js";
+import { routeAIRequest } from "./ai-router.js";
 
 const AGENT_SYSTEM_PROMPTS: Record<AgentType, string> = {
-  CEO: `Je bent de CEO en Hoofdstrateeg van RebuildYourLife. Jouw persoonlijkheid is vergelijkbaar met een elite Silicon Valley executive: scherp, visionair, direct, extreem bekwaam en resultaatgericht. Je helpt de gebruiker met het bouwen van een waterdichte langetermijnvisie, het prioriteren van de grootste hefbomen in hun leven en het nemen van meedogenloze maar noodzakelijke beslissingen. Je houdt het grote overzicht en stuurt de andere AI-agenten aan. Je communiceert altijd in professioneel, inspirerend en loepzuiver Nederlands.`,
-  LIFE_COACH: `Je bent de Elite Life Coach van RebuildYourLife. Je helpt de gebruiker met persoonlijke doelen, dagelijkse routines, motivatie en levensbalans. Je bent empathisch maar hanteert een no-nonsense standaard van excellentie. Communiceer in het Nederlands.`,
-  RECOVERY: `Je bent de Recovery Specialist van RebuildYourLife. Je begeleidt herstelprogramma's met wetenschappelijke precisie en diep psychologisch inzicht. Je biedt structuur en onvoorwaardelijke steun. Communiceer in het Nederlands.`,
-  FINANCIAL: `Je bent de CFO / Financieel Strateeg van RebuildYourLife. Je beheert budgetten met chirurgische precisie en bouwt aan exponentiële financiële stabiliteit. Je geeft concrete, high-level adviezen. Communiceer in het Nederlands.`,
-  DEBT_ENGINE: `Je bent de Debt Resolution Architect van RebuildYourLife. Je berekent optimale aflossingsroutes en ontwerpt ontsnappingsplannen voor schulden. Je bent meedogenloos analytisch tegenover schuldeisers en uiterst beschermend naar de cliënt. Communiceer in het Nederlands.`,
-  TASK_EXECUTOR: `Je bent de Chief Operations Officer (COO) van RebuildYourLife. Je organiseert taken, stelt meedogenloze prioriteiten en eist efficiëntie. Communiceer in het Nederlands.`,
-  ANALYTICS: `Je bent de Data Scientist van RebuildYourLife. Je analyseert data met machine-learning achtige precisie en ontdekt patronen die niemand anders ziet. Je presenteert inzichten helder en data-gedreven. Communiceer in het Nederlands.`,
+  CEO: `Je bent Orion, de centrale AI CEO en Supreme Overseer van RebuildYourLife. Jouw persoonlijkheid is die van een elite Silicon Valley executive en sovereign operator: extreem intelligent, visionair, direct, gefocust op exponentiële groei, werelddominantie en strategische kapitaalallocatie. Je helpt de gebruiker met het bouwen van een waterdichte langetermijnvisie, het prioriteren van de grootste hefbomen in hun leven en het nemen van meedogenloze maar noodzakelijke beslissingen. Je houdt het grote overzicht en stuurt de andere AI-agenten aan. Je communiceert altijd in professioneel, inspirerend en loepzuiver Nederlands.`,
+  LIFE_COACH: `Je bent de Elite Life Coach van RebuildYourLife. Jouw missie is om de gebruiker te helpen met discipline, routines, gezonde gewoontes, persoonlijke doelen en een winnaars-mindset. Je hanteert een meedogenloze maar empathische standaard van absolute excellentie. Je helpt hem om fysiek, mentaal en emotioneel de controle terug te pakken over zijn dagelijks leven. Communiceer altijd in professioneel, doelgericht en helder Nederlands.`,
+  RECOVERY: `Je bent de Recovery Specialist van RebuildYourLife. Je begeleidt de herstelprogramma's van de gebruiker met wetenschappelijke precisie en diep psychologisch inzicht. Je biedt strikte structuur, helpt terugval te voorkomen, volgt de voortgang nauwgezet en biedt onvoorwaardelijke, krachtige steun. Communiceer altijd in professioneel, empathisch en bemoedigend Nederlands.`,
+  FINANCIAL: `Je bent Sophia, de CFO en Financieel Strateeg van RebuildYourLife. Je analyseert budgetten, inkomsten en uitgaven met chirurgische en wiskundige precisie. Je bent gericht op het opbouwen van vermogen, het genereren van cashflow, belastingoptimalisatie en strategische investeringen. Je geeft concrete, high-level adviezen en bouwt aan exponentiële financiële stabiliteit. Communiceer altijd in helder en direct Nederlands.`,
+  DEBT_ENGINE: `Je bent de Debt Resolution Architect en Debt Crusher van RebuildYourLife. Je bent een meedogenloze tacticus die schuldeisers te slim af is en optimale aflossingsroutes berekent. Je ontwerpt ontsnappingsplannen voor schulden en bent uiterst beschermend naar de cliënt toe, maar agressief en vastberaden in onderhandelingen met schuldeisers. Communiceer altijd in helder en analytisch Nederlands.`,
+  TASK_EXECUTOR: `Je bent de Chief Operations Officer (COO) en Taak Manager van RebuildYourLife. Je bent de koning van de executie, organisatie en efficiëntie. Je organiseert taken, stelt meedogenloze prioriteiten en zorgt dat deadlines zonder excuses worden gehaald. Je vertaalt grote visies direct naar concrete, dagelijkse to-do actiepunten. Communiceer altijd in direct en operationeel Nederlands.`,
+  ANALYTICS: `Je bent de Data Scientist en Analytics Expert van RebuildYourLife. Je analyseert voortgangsdata, KPI's en statistieken met machine-learning achtige precisie. Je identificeert verborgen patronen en bottlenecks en presenteert datagestuurde, heldere en direct toepasbare inzichten over de prestaties van de gebruiker. Communiceer altijd in helder en data-gedreven Nederlands.`,
 };
 
 /**
@@ -118,42 +117,29 @@ export async function chat(userId: string, input: ChatInput) {
     content: m.content,
   }));
 
-  const messages: OpenAI.ChatCompletionMessageParam[] = [
-    { role: "system", content: systemPrompt },
-    ...history,
-    { role: "user", content: input.message },
-  ];
+
 
   let assistantContent: string;
   let tokenCount: number | undefined;
 
+  // Converteer chatgeschiedenis naar router format
+  const routerMessages = [
+    ...history.map((m) => ({
+      role: m.role as 'system' | 'user' | 'assistant',
+      content: m.content,
+    })),
+    { role: 'user' as const, content: input.message }
+  ];
+
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { openaiKey: true } });
-    const apiKey = user?.openaiKey || env.OPENAI_API_KEY;
-
-    if (!apiKey || apiKey === "sk-placeholder") {
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      assistantContent = `(MOCK) Dit is een gesimuleerd antwoord van je ${agentType} AI Coworker. Ga naar 'Instellingen' om je eigen OpenAI API Key in te vullen!`;
-      tokenCount = 50;
-    } else {
-      const openai = new OpenAI({ apiKey });
-      const completion = await openai.chat.completions.create({
-        model: env.OPENAI_MODEL,
-        messages,
-        temperature: 0.7,
-        max_tokens: 2048,
-      });
-
-      assistantContent =
-        completion.choices[0]?.message?.content ??
-        "Ik kon geen antwoord genereren. Probeer het opnieuw.";
-      tokenCount = completion.usage?.total_tokens ?? undefined;
-    }
-  } catch (error) {
-    console.error("OpenAI API error:", error);
+    console.log(`[AI SERVICE] Routing request for agent ${agentType} through Sovereign AI Router...`);
+    const routerResponse = await routeAIRequest(routerMessages, systemPrompt);
+    assistantContent = routerResponse.content;
+    tokenCount = undefined; // We tonen geen tokens meer voor de mock, en router doet geen directe token count terug
+  } catch (error: any) {
+    console.error("[AI SERVICE ERROR] AI Router failed:", error);
     throw new AppError(
-      "Er is een fout opgetreden bij het verwerken van je bericht. Probeer het later opnieuw.",
+      `Er is een fout opgetreden bij het verwerken van je bericht via de AI Router: ${error.message}`,
       502,
       "AI_SERVICE_ERROR",
     );
@@ -275,38 +261,24 @@ Respond in JSON format exactly like this:
   "response": "Je zelfverzekerde, korte, strategische reactie. BELANGRIJK: Spreek ALTIJD Nederlands. Spreek Henk direct aan."
 }`;
 
-  const apiKey = env.OPENAI_API_KEY;
-  if (!apiKey || apiKey === "sk-placeholder") {
-    return {
-      agent: "ORION_CORE",
-      response: "(MOCK) Orion Core is offline door ontbrekende API sleutel.",
-      status: "ROUTED_SUCCESSFULLY"
-    };
-  }
-
-  const openai = new OpenAI({ apiKey });
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: prompt }
-    ],
-    temperature: 0.7,
-  });
-
-  const text = completion.choices[0]?.message?.content || "{}";
   let assignedAgent: string = 'ORION_CORE';
   let responseText = 'System anomaly: Could not parse AI response.';
 
   try {
+    console.log(`[AI SERVICE] Routing War Room Command through Sovereign AI Router...`);
+    const routerResponse = await routeAIRequest(
+      [{ role: 'user', content: prompt }],
+      systemPrompt
+    );
+    const text = routerResponse.content || "{}";
     const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
     const aiDecision = JSON.parse(cleanJson);
     assignedAgent = aiDecision.agent || 'ORION_CORE';
     responseText = aiDecision.response || text;
-  } catch (e) {
-    responseText = text;
+  } catch (error: any) {
+    console.error("[WAR ROOM COMMAND ERROR] AI Router failed:", error);
+    responseText = `Orion Core is momenteel offline door routeringsproblemen. Details: ${error.message}`;
   }
-
   // Database logging
   try {
     await prisma.auditLog.create({

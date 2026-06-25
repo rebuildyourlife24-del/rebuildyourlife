@@ -1,0 +1,1229 @@
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                     String                      @id @default(uuid())
+  email                  String                      @unique
+  passwordHash           String
+  firstName              String
+  lastName               String
+  role                   String                      @default("USER")
+  avatarUrl              String?
+  isEmailVerified        Boolean                     @default(false)
+  mfaEnabled             Boolean                     @default(false)
+  mfaSecret              String?
+  subscriptionTier       String                      @default("FREE")
+  clearanceLevel         Int                         @default(1)
+  experiencePoints       Int                         @default(0)
+  profileType            String                      @default("PERSONAL")
+  mollieCustomerId       String?
+  mollieSubscriptionId   String?
+  subscriptionStatus     String                      @default("ACTIVE")
+  onboardingCompleted    Boolean                     @default(false)
+  openaiKey              String?
+  lastLoginAt            DateTime?
+  createdAt              DateTime                    @default(now())
+  updatedAt              DateTime                    @updatedAt
+  deletedAt              DateTime?
+  stripeCurrentPeriodEnd DateTime?
+  stripeCustomerId       String?                     @unique
+  stripePriceId          String?
+  stripeSubscriptionId   String?                     @unique
+  aiConciergeLogs        AIConciergeLog[]
+  aiConversations        AIConversation[]
+  aiMemories             AIMemory[]
+  agentActions           AgentAction[]               @relation("UserActionReviews")
+  agentDossiers          AgentDossier[]
+  apiKeys                ApiKey[]
+  auditLogs              AuditLog[]
+  bankConnections        BankConnection[]
+  budgets                Budget[]
+  businessClients        BusinessClient[]
+  creditorDossiers       CreditorDossier[]
+  debts                  Debt[]
+  emergencyRequests      EmergencyRequest[]
+  goals                  Goal[]
+  goalDossiers           GoalDossier[]
+  healthLogs             HealthLog[]
+  interceptionAlerts     InterceptionAlert[]         @relation("TargetedUser")
+  justiceLedgers         JusticeLedger[]
+  legalContacts          LegalContact[]
+  lifeAreas              LifeArea[]
+  marketingConversions   MarketingConversion[]
+  notifications          Notification[]
+  opportunityReports     OpportunityReport[]
+  
+  // Neo-Bank Relations
+  godbrainAccount        GodbrainAccount?
+  walletTransactions     WalletTransaction[]
+  rebuildPrograms        RebuildProgram[]
+  sessions               Session[]
+  shopifyStores          ShopifyStore[]
+  socialContacts         SocialContact[]
+  socialMediaPosts       SocialMediaPost[]
+  socialIntegrations     SocialPlatformIntegration[]
+  tasks                  Task[]
+  taxStrategies          TaxStrategy[]
+  treasuryVaults         TreasuryVault[]
+  syndicateCampaigns     SyndicateCampaign[]
+  opportunities          Opportunity[]               @relation("AssignedOpportunities")
+  courseProgress         UserCourseProgress[]
+
+  @@index([email])
+  @@index([role])
+  @@index([subscriptionTier])
+  @@index([createdAt])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model LifeArea {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  score       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  goals       Goal[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model Goal {
+  id           String    @id @default(uuid())
+  userId       String
+  lifeAreaId   String?
+  title        String
+  description  String?
+  timeframe    String
+  status       String    @default("NOT_STARTED")
+  targetDate   DateTime?
+  progress     Int       @default(0)
+  parentGoalId String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lifeArea     LifeArea? @relation(fields: [lifeAreaId], references: [id])
+  parentGoal   Goal?     @relation("GoalHierarchy", fields: [parentGoalId], references: [id])
+  subGoals     Goal[]    @relation("GoalHierarchy")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks        Task[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([lifeAreaId])
+  @@index([parentGoalId])
+  @@index([timeframe])
+  @@index([targetDate])
+}
+
+model Task {
+  id                String    @id @default(uuid())
+  userId            String
+  goalId            String?
+  title             String
+  description       String?
+  status            String    @default("PENDING")
+  priority          String    @default("MEDIUM")
+  dueDate           DateTime?
+  completedAt       DateTime?
+  assignedAgentType String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  goal              Goal?     @relation(fields: [goalId], references: [id])
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, priority])
+  @@index([goalId])
+  @@index([dueDate])
+  @@index([assignedAgentType])
+}
+
+model Budget {
+  id            String           @id @default(uuid())
+  userId        String
+  month         DateTime
+  totalIncome   Float
+  totalExpenses Float
+  savingsTarget Float
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories    BudgetCategory[]
+
+  @@unique([userId, month])
+  @@index([userId])
+}
+
+model BudgetCategory {
+  id        String   @id @default(uuid())
+  budgetId  String
+  name      String
+  planned   Float
+  actual    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  budget    Budget   @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@index([budgetId])
+}
+
+model Debt {
+  id             String        @id @default(uuid())
+  userId         String
+  creditorName   String
+  originalAmount Float
+  currentBalance Float
+  interestRate   Float
+  minimumPayment Float
+  monthlyPayment Float
+  dueDate        DateTime?
+  status         String        @default("ACTIVE")
+  notes          String?
+  priority       Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments       DebtPayment[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([status])
+  @@index([priority])
+}
+
+model DebtPayment {
+  id        String   @id @default(uuid())
+  debtId    String
+  amount    Float
+  paidAt    DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  debt      Debt     @relation(fields: [debtId], references: [id], onDelete: Cascade)
+
+  @@index([debtId])
+  @@index([paidAt])
+}
+
+model RebuildProgram {
+  id          String             @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean            @default(true)
+  progress    Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  milestones  ProgramMilestone[]
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isActive])
+}
+
+model ProgramMilestone {
+  id          String         @id @default(uuid())
+  programId   String
+  title       String
+  description String?
+  targetDate  DateTime?
+  isCompleted Boolean        @default(false)
+  completedAt DateTime?
+  orderIndex  Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  program     RebuildProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@index([programId, orderIndex])
+}
+
+model AIConversation {
+  id        String      @id @default(uuid())
+  userId    String
+  agentType String
+  title     String?
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AIMessage[]
+
+  @@index([userId])
+  @@index([userId, agentType])
+  @@index([userId, isActive])
+}
+
+model AIMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  role           String
+  content        String
+  tokenCount     Int?
+  createdAt      DateTime       @default(now())
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([conversationId, createdAt])
+}
+
+model AIMemory {
+  id              String                 @id @default(uuid())
+  content         String
+  importance      Float                  @default(0.5)
+  createdAt       DateTime               @default(now())
+  expiresAt       DateTime?
+  memoryType      String
+  updatedAt       DateTime               @updatedAt
+  userId          String
+  agentType       String
+  // vectorEmbedding Unsupported("vector")?
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, agentType])
+  @@index([userId, memoryType])
+  @@index([expiresAt])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  actionUrl String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String?
+  oldValue   String?
+  newValue   String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isEnabled   Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  userId     String
+  name       String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyHash])
+}
+
+model HealthLog {
+  id             String   @id @default(uuid())
+  userId         String
+  date           DateTime
+  steps          Int?
+  sleepScore     Int?
+  weightKg       Float?
+  waterMl        Int?
+  workoutMinutes Int?
+  workoutType    String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([userId, date])
+}
+
+model SocialContact {
+  id                    String    @id @default(uuid())
+  userId                String
+  name                  String
+  type                  String
+  relationship          String?
+  lastContactAt         DateTime?
+  reminderFrequencyDays Int?
+  notes                 String?
+  phone                 String?
+  email                 String?
+  isImportant           Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, type])
+  @@index([lastContactAt])
+}
+
+model BusinessClient {
+  id            String            @id @default(uuid())
+  userId        String
+  name          String
+  email         String?
+  phone         String?
+  company       String?
+  status        String            @default("PROSPECT")
+  notes         String?
+  lastContactAt DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices      BusinessInvoice[]
+
+  @@index([userId])
+  @@index([userId, status])
+}
+
+model BusinessInvoice {
+  id          String         @id @default(uuid())
+  userId      String
+  clientId    String
+  invoiceNr   String
+  description String?
+  amount      Float
+  status      String         @default("DRAFT")
+  dueDate     DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  client      BusinessClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model OrionMemory {
+  id              String                 @id @default(uuid())
+  userId          String
+  sessionId       String?
+  memoryType      String
+  trigger         String?
+  content         String
+  emotionalTone   String?
+  intensity       Int                    @default(5)
+  response        String?
+  wasEffective    Boolean?
+  learnWeight     Float                  @default(1.0)
+  tags            String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  // vectorEmbedding Unsupported("vector")?
+
+  @@index([userId])
+  @@index([memoryType])
+  @@index([emotionalTone])
+  @@index([createdAt])
+}
+
+model RevenueSnapshot {
+  id               String   @id @default(uuid())
+  userId           String
+  snapshotDate     DateTime
+  period           String
+  totalRevenue     Float    @default(0)
+  totalExpenses    Float    @default(0)
+  netProfit        Float    @default(0)
+  missedRevenue    Float    @default(0)
+  projectedRevenue Float    @default(0)
+  actualVsBudget   Float    @default(0)
+  vatReserve       Float    @default(0)
+  safetyBuffer     Float    @default(0)
+  source           String   @default("MANUAL")
+  notes            String?
+  cachedAt         DateTime @default(now())
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([period])
+  @@index([snapshotDate])
+  @@index([userId, period])
+}
+
+model AnalyticsCache {
+  id        String   @id @default(uuid())
+  cacheKey  String   @unique
+  data      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cacheKey])
+  @@index([expiresAt])
+}
+
+model EnterpriseFolder {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  documents   EnterpriseDocument[]
+}
+
+model EnterpriseDocument {
+  id              String                 @id @default(uuid())
+  folderId        String
+  title           String
+  owner           String
+  status          String                 @default("DRAFT")
+  category        String                 @default("GENERAL")
+  priority        String                 @default("MEDIUM")
+  source          String?
+  content         String
+  impact          String?
+  nextStep        String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  // vectorEmbedding Unsupported("vector")?
+  folder          EnterpriseFolder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@index([folderId])
+  @@index([status])
+  @@index([category])
+  @@index([owner])
+  @@index([createdAt])
+}
+
+model AgentAction {
+  id               String    @id @default(uuid())
+  agentType        String
+  title            String
+  description      String
+  status           String    @default("PENDING")
+  estimatedCost    Float     @default(0)
+  estimatedRevenue Float     @default(0)
+  transactionFees  Float     @default(0)
+  netProfitImpact  Float     @default(0)
+  riskLevel        String    @default("LOW")
+  suggestedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+  reviewedBy       String?
+  executedAt       DateTime?
+  errorMessage     String?
+  payload          String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  reviewer         User?     @relation("UserActionReviews", fields: [reviewedBy], references: [id])
+
+  @@index([agentType])
+  @@index([status])
+  @@index([reviewedBy])
+}
+
+model AgentBudget {
+  id              String        @id @default(uuid())
+  agentType       String        @unique
+  totalAllocated  Float         @default(0)
+  currentBalance  Float         @default(0)
+  spentAmount     Float         @default(0)
+  profitGenerated Float         @default(0)
+  status          String        @default("ACTIVE")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  cards           VirtualCard[]
+
+  @@index([agentType])
+  @@index([status])
+}
+
+model VirtualCard {
+  id            String      @id @default(uuid())
+  budgetId      String
+  cardProvider  String      @default("STRIPE_ISSUING")
+  last4         String?
+  spendingLimit Float       @default(50)
+  isFrozen      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  budget        AgentBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@index([budgetId])
+}
+
+model SocialPlatformIntegration {
+  id           String           @id @default(uuid())
+  userId       String
+  platform     String
+  accessToken  String?
+  refreshToken String?
+  accountId    String?
+  status       String           @default("DISCONNECTED")
+  scopes       String?
+  expiresAt    DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  campaigns    SocialCampaign[]
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@index([platform])
+  @@index([status])
+}
+
+model SocialCampaign {
+  id           String                    @id @default(uuid())
+  platformId   String
+  campaignName String
+  campaignType String
+  status       String                    @default("DRAFT")
+  contentUrl   String?
+  caption      String?
+  budgetDaily  Float                     @default(0)
+  totalSpend   Float                     @default(0)
+  roas         Float                     @default(0)
+  impressions  Int                       @default(0)
+  clicks       Int                       @default(0)
+  conversions  Int                       @default(0)
+  publishedAt  DateTime?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  platform     SocialPlatformIntegration @relation(fields: [platformId], references: [id], onDelete: Cascade)
+
+  @@index([platformId])
+  @@index([status])
+  @@index([campaignType])
+}
+
+model SystemHealthLog {
+  id          String    @id @default(uuid())
+  component   String
+  status      String
+  latencyMs   Int?
+  errorLog    String?
+  actionTaken String?
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([component])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BankConnection {
+  id           String                 @id @default(uuid())
+  userId       String
+  provider     String
+  accountId    String                 @unique
+  accountName  String
+  accessToken  String
+  status       String                 @default("ACTIVE")
+  lastSyncAt   DateTime               @default(now())
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions FinancialTransaction[]
+
+  @@index([userId])
+}
+
+model FinancialTransaction {
+  id               String         @id @default(uuid())
+  bankConnectionId String
+  amount           Float
+  currency         String         @default("EUR")
+  type             String
+  category         String
+  status           String         @default("COMPLETED")
+  description      String?
+  timestamp        DateTime       @default(now())
+  bankConnection   BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  @@index([bankConnectionId])
+  @@index([type])
+}
+
+model AgentDossier {
+  id        String   @id @default(uuid())
+  agentType String
+  action    String
+  target    String?
+  status    String   @default("SUCCESS")
+  details   String?
+  timestamp DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([agentType])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+model ShopifyStore {
+  id           String           @id @default(uuid())
+  userId       String
+  shopUrl      String
+  accessToken  String
+  status       String           @default("ACTIVE")
+  totalRevenue Float            @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  products     ShopifyProduct[]
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, shopUrl])
+  @@index([userId])
+}
+
+model ShopifyProduct {
+  id          String       @id @default(uuid())
+  storeId     String
+  shopifyId   String       @unique
+  title       String
+  description String?
+  price       Float
+  margin      Float?
+  status      String       @default("DRAFT")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([status])
+}
+
+model SocialMediaPost {
+  id         String   @id @default(uuid())
+  userId     String
+  platform   String
+  content    String
+  mediaUrl   String?
+  status     String   @default("SCHEDULED")
+  publishAt  DateTime
+  views      Int      @default(0)
+  engagement Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([platform])
+  @@index([status])
+}
+
+model InterceptionAlert {
+  id           String   @id @default(uuid())
+  targetUserId String
+  triggerType  String
+  metrics      String
+  status       String   @default("UNREAD")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  targetUser   User     @relation("TargetedUser", fields: [targetUserId], references: [id])
+
+  @@index([targetUserId])
+  @@index([status])
+  @@index([triggerType])
+}
+
+// ==========================================
+// NEO-BANK & TRADING INFRASTRUCTURE
+// ==========================================
+
+model GodbrainAccount {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  iban            String   @unique
+  swift           String
+  accountHolder   String   // Name of the business/user
+  status          String   @default("ACTIVE") // "ACTIVE", "FROZEN", "PENDING_KYC"
+  currency        String   @default("EUR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WalletTransaction {
+  id              String   @id @default(uuid())
+  userId          String
+  vaultId         String?  // The specific vault this transaction affected
+  amount          Float
+  type            String   // "DEPOSIT", "WITHDRAWAL", "TRADE_EXECUTION", "TAX_RESERVE"
+  executedBy      String   // "USER", "SWARM_EXECUTOR", "SYSTEM"
+  status          String   @default("COMPLETED")
+  description     String?
+  createdAt       DateTime @default(now())
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vault           TreasuryVault? @relation(fields: [vaultId], references: [id])
+
+  @@index([userId])
+  @@index([vaultId])
+  @@index([type])
+}
+
+model TreasuryVault {
+  id              String   @id @default(uuid())
+  userId          String
+  vaultType       String   @default("OPERATIONS") // "OPERATIONS", "TAX", "SYNDICATE_CAPITAL", "TRADING"
+  balance         Float    @default(0.0)
+  reservedRiskCap Float    @default(0.0)
+  status          String   @default("ACTIVE")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions    WalletTransaction[]
+
+  @@index([userId])
+  @@index([vaultType])
+}
+
+model TaxStrategy {
+  id              String   @id @default(uuid())
+  userId          String
+  potName         String
+  allocatedAmount Float    @default(0.0)
+  taxAdvantage    Float    @default(0.0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CreditorDossier {
+  id               String   @id @default(uuid())
+  userId           String
+  creditorName     String
+  dossierNumber    String
+  encryptedData    String
+  status           String   @default("SCANNING")
+  monthlyRepayment Float    @default(0.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model LegalContact {
+  id               String    @id @default(uuid())
+  userId           String
+  organizationName String
+  contactType      String
+  municipality     String?
+  email            String?
+  phone            String?
+  encryptedNotes   String?
+  trustScore       Int       @default(50)
+  lastContactedAt  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([contactType])
+}
+
+model JusticeLedger {
+  id                String   @id @default(uuid())
+  userId            String
+  actionType        String
+  description       String
+  amount            Float?
+  cryptographicHash String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([actionType])
+  @@index([createdAt])
+}
+
+model GoalDossier {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  targetAmount  Float
+  currentAmount Float    @default(0.0)
+  status        String   @default("ACTIVE")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model EmergencyRequest {
+  id              String   @id @default(uuid())
+  userId          String
+  encryptedReason String
+  requestedAmount Float
+  status          String   @default("PENDING_CEO_APPROVAL")
+  aiAnalysis      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OpportunityReport {
+  id        String             @id @default(uuid())
+  userId    String
+  title     String
+  niche     String
+  summary   String
+  goodROI   Float
+  betterROI Float
+  bestROI   Float
+  status    String             @default("REVIEW")
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  media     OpportunityMedia[]
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OpportunityMedia {
+  id               String            @id @default(uuid())
+  reportId         String
+  platform         String
+  mediaUrl         String
+  mediaType        String
+  adCopy           String
+  status           String            @default("GENERATED")
+  performanceScore Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  report           OpportunityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([platform])
+}
+
+model MarketingCampaign {
+  id          String                @id @default(uuid())
+  name        String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  clicks      MarketingClick[]
+  conversions MarketingConversion[]
+
+  @@index([utmSource])
+  @@index([utmCampaign])
+}
+
+model MarketingClick {
+  id         String            @id @default(uuid())
+  campaignId String
+  ipAddress  String?
+  userAgent  String?
+  referer    String?
+  clickedAt  DateTime          @default(now())
+  campaign   MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+}
+
+model MarketingConversion {
+  id          String            @id @default(uuid())
+  campaignId  String
+  userId      String?
+  value       Float             @default(0.0)
+  currency    String            @default("EUR")
+  convertedAt DateTime          @default(now())
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  user        User?             @relation(fields: [userId], references: [id])
+
+  @@index([campaignId])
+  @@index([userId])
+}
+
+model AIConciergeLog {
+  id              String   @id @default(uuid())
+  userId          String
+  decisionType    String
+  rationale       String
+  previousVtlb    Float?
+  newVtlb         Float?
+  confidenceScore Float    @default(0.0)
+  status          String   @default("APPLIED")
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([decisionType])
+}
+
+model WebhookEvent {
+  id           String    @id @default(uuid())
+  provider     String
+  eventId      String    @unique
+  eventType    String
+  payload      String
+  status       String    @default("PENDING")
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+  processedAt  DateTime?
+
+  @@index([provider])
+  @@index([status])
+  @@index([eventType])
+}
+
+model SyndicateCampaign {
+  id              String             @id @default(uuid())
+  userId          String
+  name            String
+  description     String?
+  status          String             @default("DRAFT")
+  emailTemplateId String?
+  budget          Float              @default(0.0)
+  totalSent       Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targets         SyndicateTarget[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model SyndicateTarget {
+  id              String            @id @default(uuid())
+  campaignId      String
+  name            String
+  email           String
+  company         String?
+  debtAmount      Float?
+  status          String            @default("PENDING")
+  lastEmailedAt   DateTime?
+  encryptedNotes  String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  campaign        SyndicateCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([status])
+  @@index([email])
+}
+
+model Opportunity {
+  id                String    @id @default(uuid())
+  title             String
+  description       String
+  payout            Float
+  category          String    // e.g., "LEAD_GEN", "SEO", "SALES", "SUPPORT"
+  status            String    @default("AVAILABLE") // "AVAILABLE", "IN_PROGRESS", "COMPLETED"
+  
+  // AI Autonomous Economy Fields
+  executionType     String    @default("CLIENT_BROKERED") // "AI_AUTONOMOUS" | "CLIENT_BROKERED"
+  commissionRate    Float     @default(0.0) // Percentage Orion takes
+  guaranteedSuccess Boolean   @default(false) // 100% ROI check for AI
+  
+  assignedToId      String?
+  assignedTo        User?     @relation("AssignedOpportunities", fields: [assignedToId], references: [id])
+  
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime?
+
+  @@index([status])
+  @@index([category])
+  @@index([assignedToId])
+  @@index([executionType])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  thumbnail   String?
+  tierAccess  String   @default("FREE") // "FREE" or "PREMIUM"
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lessons     Lesson[]
+  userProgress UserCourseProgress[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  content     String   // Can be video URL or markdown
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userProgress UserCourseProgress[]
+
+  @@index([courseId])
+}
+
+model UserCourseProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  courseId    String
+  lessonId    String
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+// ==========================================
+// ENTERPRISE SWARM ARCHITECTURE
+// ==========================================
+
+model SwarmMemo {
+  id              String   @id @default(uuid())
+  title           String
+  department      String   // e.g. "MARKETING", "FINANCE", "OPERATIONS", "LEGAL"
+  originRole      String   // e.g. "RESEARCHER", "SUPERVISOR", "EXECUTOR"
+  destinationRole String   // e.g. "SUPERVISOR", "EXECUTOR"
+  content         String   // The actual research dossier or execution brief
+  status          String   @default("DRAFT") // "DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "EXECUTED"
+  relatedEntityId String?  // ID of the Opportunity, Client, or Project this refers to
+  courierNotes    String?  // Notes from the Courier agent who archived this
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([department])
+  @@index([status])
+  @@index([relatedEntityId])
+}
+
+// ==========================================
+// AI RACE ECONOMY (SWARM FUND)
+// ==========================================
+
+model SystemTreasury {
+  id              String   @id @default(uuid())
+  totalRevenue    Float    @default(0.0)
+  totalAiFund     Float    @default(0.0) // 10% of totalRevenue is locked here
+  availableAiFund Float    @default(0.0) // Funds not yet distributed to agents
+  updatedAt       DateTime @updatedAt
+}
+
+model AiAgent {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  role            String
+  
+  // Shift (Ploegendienst) System
+  shiftType       String   @default("DAY") // DAY, NIGHT, FLEX
+  partnerAgentId  String?  // The agent they swap with
+  shiftWeek       Int      @default(1)     // Tracks rotation
+
+  // Economy System
+  totalEarned     Float    @default(0.0) // In USD/EUR
+  currentBalance  Float    @default(0.0) // In USD/EUR
+  tasksCompleted  Int      @default(0)
+  tasks           AiBountyTask[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AiBountyTask {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  bountyAmount    Float
+  status          String   @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, FAILED
+  winnerAgentId   String?
+  winnerAgent     AiAgent? @relation(fields: [winnerAgentId], references: [id])
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+}
+
+model AiSharedMemory {
+  id         String   @id @default(uuid())
+  sourceAi   String   @map("source_ai")
+  visibleTo  Json     @map("visible_to")
+  memoryType String   @map("memory_type")
+  content    String   @db.Text
+  context    Json     @map("context")
+  userId     String   @map("user_id")
+  importance Float
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("ai_shared_memory")
+}
+

@@ -1,10 +1,10 @@
 "use server";
 
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient();
+
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 
 async function getAuthenticatedUser() {

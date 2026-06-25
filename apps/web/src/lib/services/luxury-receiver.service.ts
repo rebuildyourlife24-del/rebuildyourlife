@@ -1,7 +1,7 @@
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 import crypto from "crypto";
 
-const prisma = new PrismaClient();
+
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "super-secret-32-byte-long-key123!"; // Moet 32 bytes zijn
 const ALGORITHM = "aes-256-gcm";
 

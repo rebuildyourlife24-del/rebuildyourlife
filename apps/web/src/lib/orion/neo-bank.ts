@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "@rebuildyourlife/database";
 
-const prisma = new PrismaClient();
+
 
 export async function generateGodbrainIBAN(userId: string, companyName: string) {
   // Simuleert het aanvragen van een BaaS (Banking-as-a-Service) IBAN bijv. via Stripe Treasury of Swan

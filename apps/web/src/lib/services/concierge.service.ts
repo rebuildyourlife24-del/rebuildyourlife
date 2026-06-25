@@ -1,7 +1,7 @@
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 import { encryptData, calculateVTLB } from "./luxury-receiver.service";
 
-const prisma = new PrismaClient();
+
 
 // --- AI CONCIERGE SMART RELEASE PROTOCOL ---
 export async function evaluateEmergencyRequest(userId: string, requestedAmount: number, reasonText: string) {

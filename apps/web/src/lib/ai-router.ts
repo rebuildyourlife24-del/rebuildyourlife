@@ -42,7 +42,7 @@ function getProviders(): AIProvider[] {
       name: `Cerebras-${i + 1}`,
       baseUrl: 'https://api.cerebras.ai/v1',
       apiKey: key,
-      model: 'llama3.1-70b',
+      model: 'llama-3.3-70b',
       priority: 1,
     });
   });
@@ -59,7 +59,7 @@ function getProviders(): AIProvider[] {
       name: `Groq-${i + 1}`,
       baseUrl: 'https://api.groq.com/openai/v1',
       apiKey: key,
-      model: 'llama-3.1-70b-versatile',
+      model: 'llama-3.3-70b-versatile',
       priority: 2,
     });
   });
@@ -68,6 +68,7 @@ function getProviders(): AIProvider[] {
   const geminiKeys = [
     process.env.GEMINI_API_KEY_1,
     process.env.GEMINI_API_KEY_2,
+    process.env.GEMINI_API_KEY_3,
   ].filter(Boolean) as string[];
 
   geminiKeys.forEach((key, i) => {
@@ -75,7 +76,7 @@ function getProviders(): AIProvider[] {
       name: `Gemini-${i + 1}`,
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
       apiKey: key,
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       priority: 3,
     });
   });

@@ -4,6 +4,7 @@ import { BookOpen, PlayCircle, CheckCircle2, Lock } from 'lucide-react';
 import { prisma } from '@rebuildyourlife/database';
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import Link from 'next/link';
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 
@@ -23,18 +24,28 @@ export default async function AcademyPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect('/auth/login');
 
-  // Fetch courses with user progress
+  // Fetch courses with modules and lessons and user progress
   const courses = await prisma.course.findMany({
     orderBy: { order: 'asc' },
     include: {
-      lessons: true,
-      userProgress: {
-        where: { userId: user.id }
+      modules: {
+        orderBy: { order: 'asc' },
+        include: {
+          lessons: {
+            orderBy: { order: 'asc' },
+            include: {
+              userProgress: {
+                where: { userId: user.id }
+              }
+            }
+          }
+        }
       }
     }
   });
 
   const userTier = user.subscriptionTier;
+  // Bepaal premium status: PRO, ELITE, ENTERPRISE zijn premium
   const isPremiumUser = userTier !== 'FREE' && userTier !== 'STARTER';
 
   return (
@@ -54,9 +65,23 @@ export default async function AcademyPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {courses.map((course) => {
+          // Als de cursus PREMIUM is en de gebruiker is geen premium user, dan is hij locked.
           const isLocked = course.tierAccess === 'PREMIUM' && !isPremiumUser;
-          const totalLessons = course.lessons.length;
-          const completedLessons = course.userProgress.filter(p => p.completed).length;
+          
+          // Bereken voortgang
+          let totalLessons = 0;
+          let completedLessons = 0;
+
+          course.modules.forEach((module) => {
+            totalLessons += module.lessons.length;
+            module.lessons.forEach((lesson) => {
+              const isCompleted = lesson.userProgress.some(p => p.completed);
+              if (isCompleted) {
+                completedLessons++;
+              }
+            });
+          });
+
           const progressPercentage = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
 
           return (
@@ -69,17 +94,21 @@ export default async function AcademyPage() {
                     <span className="text-red-500 text-xs font-black uppercase tracking-widest">Apex Operator Only</span>
                   </div>
                 ) : (
-                  <PlayCircle className="w-16 h-16 text-cyan-500/30" />
+                  <PlayCircle className="w-16 h-16 text-cyan-500/30 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300" />
                 )}
-                {course.thumbnail && !isLocked && (
-                  <img src={course.thumbnail} alt={course.title} className="absolute inset-0 w-full h-full object-cover opacity-50" />
+                {course.thumbnail && (
+                  <img 
+                    src={course.thumbnail} 
+                    alt={course.title} 
+                    className={`absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500 ${isLocked ? 'blur-sm grayscale' : ''}`} 
+                  />
                 )}
               </div>
 
               <div className="flex justify-between items-start mb-2">
-                <h2 className="text-white font-bold text-lg">{course.title}</h2>
+                <h2 className="text-white font-bold text-lg tracking-tight">{course.title}</h2>
                 {course.tierAccess === 'PREMIUM' && (
-                  <span className="bg-red-900/50 text-red-400 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
+                  <span className="bg-red-950 text-red-400 border border-red-900/50 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
                     Premium
                   </span>
                 )}
@@ -92,26 +121,31 @@ export default async function AcademyPage() {
               <div className="space-y-2 mb-6">
                 <div className="flex justify-between text-[10px] uppercase font-bold text-cyan-500">
                   <span>Progressie</span>
-                  <span>{progressPercentage}%</span>
+                  <span>{progressPercentage}% ({completedLessons}/{totalLessons})</span>
                 </div>
-                <div className="w-full h-1.5 bg-black rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-black rounded-full overflow-hidden border border-cyan-950">
                   <div 
-                    className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.8)]" 
+                    className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.8)] transition-all duration-500" 
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </div>
               </div>
 
-              <button 
-                disabled={isLocked}
-                className={`w-full py-3 rounded text-xs font-black tracking-widest uppercase transition-colors ${
-                  isLocked 
-                    ? 'bg-red-950/30 text-red-500/50 border border-red-900/30 cursor-not-allowed'
-                    : 'bg-cyan-600/20 text-cyan-300 border border-cyan-500/50 hover:bg-cyan-600/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]'
-                }`}
-              >
-                {isLocked ? 'Upgrade Required' : 'Start Module'}
-              </button>
+              {isLocked ? (
+                <button 
+                  disabled
+                  className="w-full py-3 rounded text-xs font-black tracking-widest uppercase bg-red-950/30 text-red-500/50 border border-red-900/30 cursor-not-allowed"
+                >
+                  Upgrade Required
+                </button>
+              ) : (
+                <Link 
+                  href={`/dashboard/academy/${course.id}`}
+                  className="block w-full text-center py-3 rounded text-xs font-black tracking-widest uppercase bg-cyan-600/20 text-cyan-300 border border-cyan-500/50 hover:bg-cyan-600/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] transition-all"
+                >
+                  {progressPercentage > 0 ? 'Hervat Training' : 'Start Module'}
+                </Link>
+              )}
             </Card>
           );
         })}

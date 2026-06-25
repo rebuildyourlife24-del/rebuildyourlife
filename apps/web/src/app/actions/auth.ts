@@ -1,9 +1,7 @@
 "use server";
 
 import { createServerClient } from "@/lib/supabase/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@rebuildyourlife/database";
 
 export async function loginAction(email: string, password: string, rememberMe?: boolean) {
   const supabase = await createServerClient();

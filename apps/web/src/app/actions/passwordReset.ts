@@ -1,10 +1,10 @@
 "use server";
 
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-const prisma = new PrismaClient();
+
 
 export async function requestPasswordResetAction(email: string) {
   try {

@@ -23,85 +23,186 @@ import {
   Terminal,
   Cpu,
   GraduationCap,
-  Briefcase
+  Briefcase,
+  Tv,
+  ChevronDown,
+  ChevronRight,
+  Brain
 } from 'lucide-react';
 
-const getNavItems = (user: any) => {
-  const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
-  
-  // TRW Style "Campuses" for Normal Users
-  const coreItems = [
+const getGroupedNavItems = (user: any) => {
+  return [
     {
-      labelKey: 'nav.dashboard',
-      defaultLabel: 'The Core',
-      href: '/dashboard',
-      icon: <Terminal size={20} />,
-      isRed: false,
+      id: 'sovereign',
+      label: 'Sovereign Core',
+      items: [
+        {
+          label: 'The Core (Centrale)',
+          href: '/dashboard',
+          icon: <Terminal size={16} />,
+        },
+        {
+          label: 'War Room (Cockpit)',
+          href: '/dashboard/war-room',
+          icon: <Skull size={16} />,
+          isAdminOnly: true,
+        },
+        {
+          label: 'AI Assistant (Hermes/Orion)',
+          href: '/dashboard/ai-assistant',
+          icon: <Brain size={16} />,
+        },
+        {
+          label: 'AI Taskforce',
+          href: '/dashboard/ai-team',
+          icon: <Network size={16} />,
+        },
+        {
+          label: 'AI Concierge Logs',
+          href: '/dashboard/concierge',
+          icon: <Cpu size={16} />,
+        },
+        {
+          label: 'Orion Neural Link',
+          href: '/dashboard/orion-demo',
+          icon: <Layers size={16} />,
+        }
+      ]
     },
     {
-      defaultLabel: 'Capital Reconstruction',
-      href: '/dashboard/wealth',
-      icon: <Briefcase size={20} />,
+      id: 'capital',
+      label: 'Capital & Wealth',
+      items: [
+        {
+          label: 'Capital Reconstruction',
+          href: '/dashboard/wealth',
+          icon: <Briefcase size={16} />,
+        },
+        {
+          label: 'Alpha Trading Floor',
+          href: '/dashboard/trading',
+          icon: <Activity size={16} />,
+          isAdminOnly: true,
+        },
+        {
+          label: 'Budget Tracker',
+          href: '/dashboard/budget',
+          icon: <Layers size={16} />,
+        },
+        {
+          label: 'Debts Control',
+          href: '/dashboard/debts',
+          icon: <Shield size={16} />,
+        },
+        {
+          label: 'Land Assets',
+          href: '/dashboard/land-assets',
+          icon: <Map size={16} />,
+        }
+      ]
     },
     {
-      defaultLabel: 'Biological Optimisation',
-      href: '/dashboard/health',
-      icon: <Heart size={20} />,
+      id: 'syndicate',
+      label: 'Syndicate & Traffic',
+      items: [
+        {
+          label: 'PR Traffic Factory',
+          href: '/dashboard/traffic',
+          icon: <Tv size={16} />,
+        },
+        {
+          label: 'Syndicate Feed',
+          href: '/dashboard/syndicate',
+          icon: <Ghost size={16} />,
+          isAdminOnly: true,
+        },
+        {
+          label: 'Enterprise Network',
+          href: '/dashboard/enterprise',
+          icon: <LayoutDashboard size={16} />,
+          isAdminOnly: true,
+        },
+        {
+          label: 'Franchise Factory',
+          href: '/dashboard/franchises',
+          icon: <Shield size={16} />,
+          isAdminOnly: true,
+        },
+        {
+          label: 'Social Integration',
+          href: '/dashboard/social',
+          icon: <Network size={16} />,
+        },
+        {
+          label: 'Content Factory',
+          href: '/dashboard/factory',
+          icon: <Rocket size={16} />,
+        },
+        {
+          label: 'App Factory (SaaS Flip)',
+          href: '/dashboard/factory/apps',
+          icon: <Cpu size={16} />,
+        }
+      ]
     },
     {
-      defaultLabel: 'Cognitive Reprogramming',
-      href: '/dashboard/life-balance',
-      icon: <Map size={20} />,
+      id: 'vitality',
+      label: 'Vitality & Mindset',
+      items: [
+        {
+          label: 'Biological Optimisation',
+          href: '/dashboard/health',
+          icon: <Heart size={16} />,
+        },
+        {
+          label: 'Cognitive Reprogramming',
+          href: '/dashboard/life-balance',
+          icon: <Map size={16} />,
+        },
+        {
+          label: 'Rebuild Programs',
+          href: '/dashboard/programs',
+          icon: <Layers size={16} />,
+        },
+        {
+          label: 'Personal Goals',
+          href: '/dashboard/goals',
+          icon: <Rocket size={16} />,
+        },
+        {
+          label: 'Daily Tasks',
+          href: '/dashboard/tasks',
+          icon: <Activity size={16} />,
+        }
+      ]
     },
     {
-      labelKey: 'nav.aiTeam',
-      defaultLabel: 'AI Taskforce',
-      href: '/dashboard/ai-team',
-      icon: <Network size={20} />,
-    },
-    {
-      labelKey: 'nav.settings',
-      defaultLabel: 'Settings',
-      href: '/dashboard/settings',
-      icon: <Settings size={20} />,
-    },
+      id: 'system',
+      label: 'System & Support',
+      items: [
+        {
+          label: 'RYL Academy',
+          href: '/dashboard/academy',
+          icon: <GraduationCap size={16} />,
+        },
+        {
+          label: 'System Settings',
+          href: '/dashboard/settings',
+          icon: <Settings size={16} />,
+        },
+        {
+          label: 'Quality Control',
+          href: '/dashboard/qc',
+          icon: <Shield size={16} />,
+        },
+        {
+          label: 'Help & Support',
+          href: '/dashboard/help',
+          icon: <Settings size={16} />,
+        }
+      ]
+    }
   ];
-
-  const adminItems = isAdmin ? [
-    { type: 'divider', label: 'God Modus (Bestuur)' },
-    {
-      defaultLabel: 'War Room',
-      href: '/dashboard/war-room',
-      icon: <Skull size={20} />,
-      isRed: true,
-    },
-    {
-      defaultLabel: 'Syndicate',
-      href: '/dashboard/syndicate',
-      icon: <Ghost size={20} />,
-      isRed: true,
-    },
-    {
-      defaultLabel: 'Stellar Ascension',
-      href: '/dashboard/stellar',
-      icon: <Rocket size={20} />,
-      isRed: true,
-    },
-    {
-      defaultLabel: 'Enterprise Network',
-      href: '/dashboard/enterprise',
-      icon: <LayoutDashboard size={20} />,
-      isRed: true,
-    },
-    {
-      defaultLabel: 'Franchise Factory',
-      href: '/dashboard/franchises',
-      icon: <Shield size={20} />,
-      isRed: true,
-    },
-  ] : [];
-
-  return [...coreItems, ...adminItems];
 };
 
 import { NotificationDropdown, AppNotification } from '@/components/ui/NotificationDropdown';
@@ -165,7 +266,22 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, logout, isLoading } = useRequireAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useLanguage();
-  
+
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    sovereign: true,
+    capital: true,
+    syndicate: false,
+    vitality: false,
+    system: false,
+  });
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
   // THEME CONFIGURATION - THE MILLIONAIRE AESTHETIC
@@ -278,50 +394,79 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
-          <ul className="space-y-1">
-            {getNavItems(user).map((item: any, index: number) => {
-              if (item.type === 'divider') {
-                return (
-                  <li key={`divider-${index}`} className="pt-4 pb-2 px-3">
-                    <div className={`text-[10px] font-mono font-bold uppercase tracking-[0.2em] opacity-50 ${theme.color}`}>
-                      {item.label}
-                    </div>
-                  </li>
-                );
-              }
+          <ul className="space-y-3">
+            {getGroupedNavItems(user).map((group: any) => {
+              const visibleItems = group.items.filter((item: any) => !item.isAdminOnly || isAdmin);
+              if (visibleItems.length === 0) return null;
 
-              const isActive =
-                item.href === '/dashboard'
-                  ? pathname === '/dashboard'
-                  : pathname?.startsWith(item.href);
+              const isExpanded = expandedSections[group.id];
 
               return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setSidebarOpen(false)}
+                <li key={group.id} className="space-y-1">
+                  {/* Group Header */}
+                  <button
+                    onClick={() => toggleSection(group.id)}
                     className={`
-                      group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium font-mono
-                      transition-all duration-200
-                      ${
-                        isActive
-                          ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
-                          : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
-                      }
+                      w-full flex items-center justify-between px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-[0.25em] 
+                      transition-colors duration-200 border-b border-transparent
+                      ${isAdmin ? 'text-red-500/70 hover:text-red-400' : 'text-zinc-500 hover:text-zinc-300'}
                     `}
                   >
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className={`absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
-                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                      />
-                    )}
-                    <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
-                      {item.icon}
+                    <span>{group.label}</span>
+                    <span>
+                      {isExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
                     </span>
-                    <span className="tracking-wide uppercase text-[11px]">{item.defaultLabel}</span>
-                  </Link>
+                  </button>
+
+                  {/* Group Items */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.ul
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden space-y-0.5 pl-1 pt-1"
+                      >
+                        {visibleItems.map((item: any) => {
+                          const isActive =
+                            item.href === '/dashboard'
+                              ? pathname === '/dashboard'
+                              : pathname?.startsWith(item.href);
+
+                          return (
+                            <li key={item.href}>
+                              <Link
+                                href={item.href}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`
+                                  group relative flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium font-mono
+                                  transition-all duration-200
+                                  ${
+                                    isActive
+                                      ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
+                                      : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
+                                  }
+                                `}
+                              >
+                                {isActive && (
+                                  <motion.div
+                                    layoutId="activeNav"
+                                    className={`absolute left-0 top-1/2 h-3.5 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                  />
+                                )}
+                                <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
+                                  {item.icon}
+                                </span>
+                                <span className="tracking-wide uppercase text-[10px]">{item.label}</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
                 </li>
               );
             })}

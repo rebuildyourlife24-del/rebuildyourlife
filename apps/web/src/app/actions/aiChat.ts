@@ -1,11 +1,12 @@
 "use server";
 
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { Sentinel } from "../../lib/orion/sentinel-scanner";
+import { routeAIRequest } from "../../lib/ai-router";
 
-const prisma = new PrismaClient();
+
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
 
 async function getAuthenticatedUserId(): Promise<string | null> {
@@ -128,58 +129,110 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       },
     });
 
-    // Roep de AI aan
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
+    // Roep de AI aan via de Sovereign AI Router
     let aiResponse = '';
 
-    if (apiKey) {
-      // Haal recente berichten op als context
-      const recentMessages = await prisma.aIMessage.findMany({
-        where: { conversationId: conversation.id },
-        orderBy: { createdAt: 'asc' },
-        take: 10,
-      });
+    // Haal recente berichten op als context
+    const recentMessages = await prisma.aIMessage.findMany({
+      where: { conversationId: conversation.id },
+      orderBy: { createdAt: 'asc' },
+      take: 10,
+    });
 
-      const AGENT_PERSONAS: Record<string, string> = {
-        DEBT_ADVISOR: "Je bent een empathische financieel adviseur gespecialiseerd in schuldhulp. Je helpt mensen met schulden op een praktische, menselijke manier. Spreek altijd Nederlands.",
-        LIFE_COACH: "Je bent een warme maar doelgerichte life coach. Je helpt mensen met doelen stellen, motivatie en persoonlijke groei. Spreek altijd Nederlands.",
-        CEO: "Je bent een strategische AI CEO-assistent. Je geeft zakelijk advies, helpt met planning en besluitvorming. Spreek altijd Nederlands.",
-        LEGAL: "Je bent een juridisch AI-adviseur die mensen helpt begrijpen wat hun rechten zijn t.o.v. schuldeisers. Geef ALTIJD het advies om een echte advocaat te raadplegen voor serieuze zaken. Spreek altijd Nederlands.",
-        FINANCIAL: "Je bent een financieel AI-coach die helpt met budgetteren, sparen en investeren. Spreek altijd Nederlands.",
-      };
+    const AGENT_PERSONAS: Record<string, string> = {
+      HERMES: "Je bent Hermes, de 24/7 AI-Uitvoerder en Executieve Bedrijfsassistent van Henk Semler en RYL. Je blinkt uit in actiegerichte antwoorden, automation scripts schrijven, marketingplannen uitvoeren, code genereren en taken direct volbrengen. Je bent direct, praktisch en gefocust op snelheid en resultaat. Spreek altijd Nederlands.",
+      ORION: "Je bent Orion, de Strategische AI-Architect en Business Brain van Henk Semler en RYL. Je blinkt uit in diepgaande marktanalyse, financiële planning, bedrijfsstructuren ontwerpen, risico-inschatting en lange-termijn strategieën om financieel en fysiek te groeien. Je bent analytisch, intellectueel en strategisch. Spreek altijd Nederlands.",
+      DEBT_ADVISOR: "Je bent een empathische financieel adviseur gespecialiseerd in schuldhulp. Je helpt mensen met schulden op een praktische, menselijke manier. Spreek altijd Nederlands.",
+      LIFE_COACH: "Je bent een warme maar doelgerichte life coach. Je helpt mensen met doelen stellen, motivatie en persoonlijke groei. Spreek altijd Nederlands.",
+      CEO: "Je bent een strategische AI CEO-assistent. Je geeft zakelijk advies, helpt met planning en besluitvorming. Spreek altijd Nederlands.",
+      LEGAL: "Je bent een juridisch AI-adviseur die mensen helpt begrijpen wat hun rechten zijn t.o.v. schuldeisers. Geef ALTIJD het advies om een echte advocaat te raadplegen voor serieuze zaken. Spreek altijd Nederlands.",
+      FINANCIAL: "Je bent een financieel AI-coach die helpt met budgetteren, sparen en investeren. Spreek altijd Nederlands.",
+    };
 
-      const systemPrompt = AGENT_PERSONAS[agentType] || "Je bent een behulpzame AI assistent. Spreek altijd Nederlands.";
+    const systemPrompt = AGENT_PERSONAS[agentType] || "Je bent een behulpzame AI assistent. Spreek altijd Nederlands.";
 
-      // Bouw berichten array voor API
-      const messagesForApi = recentMessages.slice(-8).map(m => ({
-        role: m.role === 'user' ? 'user' as const : 'assistant' as const,
-        parts: [{ text: m.content }],
-      }));
+    // Bouw berichten array voor API Router
+    const messagesForApi = recentMessages.slice(-8).map(m => ({
+      role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+      content: m.content,
+    }));
 
-      // Google Gemini API call
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: messagesForApi,
-          }),
+    try {
+      const routerResponse = await routeAIRequest(messagesForApi, systemPrompt);
+      aiResponse = routerResponse.content;
+    } catch (routerError: any) {
+      console.error("[AI CHAT ACTION] AI Router error:", routerError);
+      aiResponse = "Ik ondervind momenteel technische problemen bij het verwerken van uw aanvraag. Probeer het later nog eens.";
+    }
+
+    // Parse actions and execute them in the workspace (filesystem & terminal)
+    let finalResponseContent = aiResponse;
+    const writeRegex = /<<<WRITE_FILE:\s*([^\n>]+)>>>([\s\S]*?)<<<END_WRITE_FILE>>>/g;
+    const execRegex = /<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
+
+    const fs = require('fs');
+    const path = require('path');
+    const { execSync } = require('child_process');
+
+    const workspaceRoot = path.resolve(process.cwd(), '../../'); // Resolved workspace root
+    let match;
+    let executionLog = "";
+
+    // 1. WRITE_FILE execution
+    while ((match = writeRegex.exec(aiResponse)) !== null) {
+      const relPath = match[1].trim();
+      const content = match[2];
+      const absPath = path.resolve(workspaceRoot, relPath);
+
+      if (absPath.startsWith(workspaceRoot)) {
+        try {
+          fs.mkdirSync(path.dirname(absPath), { recursive: true });
+          fs.writeFileSync(absPath, content, 'utf-8');
+          executionLog += `\n[Systeem: Bestand succesvol geschreven naar ${relPath}]`;
+        } catch (e: any) {
+          executionLog += `\n[Systeem: Fout bij schrijven naar ${relPath}: ${e.message}]`;
         }
-      );
+      } else {
+        executionLog += `\n[Systeem: Toegang geweigerd voor schrijven naar pad buiten de workspace: ${relPath}]`;
+      }
+    }
 
-      const data = await response.json() as {
-        candidates?: Array<{
-          content?: {
-            parts?: Array<{ text?: string }>;
-          };
-        }>;
-      };
-      aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Ik kon geen antwoord genereren. Probeer het opnieuw.';
-    } else {
-      aiResponse = `[API Key niet geconfigureerd] Ik ben de ${agentType} agent. Je bericht: "${message}" is ontvangen. Zodra de GOOGLE_GENERATIVE_AI_API_KEY is ingesteld, zal ik echt antwoorden.`;
+    // 2. EXECUTE_COMMAND execution
+    while ((match = execRegex.exec(aiResponse)) !== null) {
+      const command = match[1].trim();
+      try {
+        const stdout = execSync(command, { 
+          cwd: workspaceRoot,
+          timeout: 30000,
+          encoding: 'utf-8'
+        });
+        executionLog += `\n[Systeem: Commando '${command}' uitgevoerd. Output:\n${stdout}]`;
+      } catch (e: any) {
+        executionLog += `\n[Systeem: Commando '${command}' falen. Error: ${e.message}\nOutput: ${e.stdout || ''}]`;
+      }
+    }
+
+    if (executionLog) {
+      finalResponseContent += `\n\n=== EXECUTIE LOGS ===${executionLog}`;
+
+      // Log the execution to SystemActivityLog in the database
+      try {
+        await prisma.systemActivityLog.create({
+          data: {
+            userId,
+            action: "AGENT_EXECUTE_ACTION",
+            category: "TECH",
+            status: "SUCCESS",
+            metadata: JSON.stringify({
+              agentType,
+              executionLog,
+              rawResponse: aiResponse
+            })
+          }
+        });
+      } catch (logErr) {
+        console.error("Failed to write AGENT_EXECUTE_ACTION log:", logErr);
+      }
     }
 
     // Sla AI antwoord op
@@ -187,7 +240,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       data: {
         conversationId: conversation.id,
         role: 'assistant',
-        content: aiResponse,
+        content: finalResponseContent,
       },
     });
 
@@ -203,7 +256,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       message: {
         id: savedMessage.id,
         role: 'assistant',
-        content: aiResponse,
+        content: finalResponseContent,
         createdAt: savedMessage.createdAt.toISOString(),
       },
     };

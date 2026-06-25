@@ -32,6 +32,23 @@ router.post(
   }
 );
 
+router.get(
+  "/invoices",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.userId;
+      const invoices = await PaymentService.getUserInvoices(userId);
+      res.status(200).json({
+        status: "success",
+        data: invoices,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post(
   "/webhook",
   async (req: Request, res: Response) => {

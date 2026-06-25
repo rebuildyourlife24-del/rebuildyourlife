@@ -1,6 +1,6 @@
-import { PrismaClient } from "@rebuildyourlife/database";
+import { prisma } from "@rebuildyourlife/database";
 
-const prisma = new PrismaClient();
+
 
 // --- THE DISCOVERY PROTOCOL ---
 export async function generateOpportunityReport(userId: string) {

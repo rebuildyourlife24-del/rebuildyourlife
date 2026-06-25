@@ -2,8 +2,24 @@
 
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getSessionAction } from '@/app/actions/auth';
 
 export async function registerShopifyApi(formData: FormData) {
+  const session = await getSessionAction();
+  if (!session.success || !session.user) {
+    throw new Error('Niet geauthenticeerd. Log opnieuw in.');
+  }
+
+  let userId = session.user.id;
+  if (userId === "dev-local-admin-id") {
+    const adminUser = await db.user.findUnique({
+      where: { email: "hsemler50@gmail.com" }
+    });
+    if (adminUser) {
+      userId = adminUser.id;
+    }
+  }
+
   const shopUrl = formData.get('shopUrl') as string;
   const accessToken = formData.get('accessToken') as string;
 
@@ -14,29 +30,11 @@ export async function registerShopifyApi(formData: FormData) {
   // Clean URL
   const cleanUrl = shopUrl.replace('https://', '').replace('http://', '').replace(/\/$/, '');
 
-  // Use a hardcoded test user ID for now
-  const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
-
-  // Check if user exists, if not create
-  let user = await db.user.findUnique({ where: { id: TEST_USER_ID }});
-  if (!user) {
-    user = await db.user.create({
-      data: {
-        id: TEST_USER_ID,
-        email: "ceo@godmode.com",
-        firstName: "Supreme",
-        lastName: "Overseer",
-        passwordHash: "unusable_placeholder",
-        role: "CEO"
-      }
-    });
-  }
-
   // Create or Update Shopify Store
   await db.shopifyStore.upsert({
     where: {
       userId_shopUrl: {
-        userId: user.id,
+        userId: userId,
         shopUrl: cleanUrl,
       }
     },
@@ -44,7 +42,7 @@ export async function registerShopifyApi(formData: FormData) {
       accessToken: accessToken,
     },
     create: {
-      userId: user.id,
+      userId: userId,
       shopUrl: cleanUrl,
       accessToken: accessToken,
     }
@@ -56,7 +54,7 @@ export async function registerShopifyApi(formData: FormData) {
       agentType: "SYSTEM",
       action: "SHOPIFY_API_ASSIMILATION",
       target: cleanUrl,
-      userId: user.id,
+      userId: userId,
       details: "Shopify API token succesvol verbonden met de Godbrain. Start data-extractie."
     }
   });
@@ -64,3 +62,4 @@ export async function registerShopifyApi(formData: FormData) {
   revalidatePath('/dashboard/wealth');
   revalidatePath('/dashboard/war-room');
 }
+

@@ -2,20 +2,33 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { getSessionAction } from "@/app/actions/auth";
 
 export async function saveShopifyCredentials(formData: FormData) {
   try {
+    const session = await getSessionAction();
+    if (!session.success || !session.user) {
+      return { error: "Niet geauthenticeerd. Log opnieuw in." };
+    }
+
+    let userId = session.user.id;
+    if (userId === "dev-local-admin-id") {
+      const adminUser = await db.user.findUnique({
+        where: { email: "hsemler50@gmail.com" }
+      });
+      if (adminUser) {
+        userId = adminUser.id;
+      }
+    }
+
     const shopUrl = formData.get("shopUrl")?.toString();
     const accessToken = formData.get("accessToken")?.toString();
-    
-    // We gebruiken de TEST_USER_ID totdat auth volledig is geconfigureerd
-    const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
     if (!shopUrl || !accessToken) {
       return { error: "Winkel URL en Access Token zijn verplicht." };
     }
 
-    // Maak de URL schoon zodat we alleen de mymyshopify.com domein overhouden
+    // Maak de URL schoon zodat we alleen de myshopify.com domein overhouden
     let cleanUrl = shopUrl.replace("https://", "").replace("http://", "").split('/')[0];
     if (!cleanUrl.includes("myshopify.com")) {
       return { error: "De URL moet een .myshopify.com domein zijn." };
@@ -35,26 +48,11 @@ export async function saveShopifyCredentials(formData: FormData) {
       return { error: "Ongeldige API sleutel of winkel URL. Shopify weigert toegang." };
     }
 
-    // 2. We hebben toegang, laten we ervoor zorgen dat de test user bestaat
-    let user = await db.user.findUnique({ where: { id: TEST_USER_ID }});
-    if (!user) {
-      user = await db.user.create({
-        data: {
-          id: TEST_USER_ID,
-          email: "ceo@godmode.com",
-          firstName: "Supreme",
-          lastName: "Overseer",
-          passwordHash: "hashedpassword",
-          role: "USER"
-        }
-      });
-    }
-
-    // 3. Sla de koppeling op in de database
+    // 2. Sla de koppeling op in de database
     await db.shopifyStore.upsert({
       where: {
         userId_shopUrl: {
-          userId: TEST_USER_ID,
+          userId: userId,
           shopUrl: cleanUrl,
         }
       },
@@ -63,7 +61,7 @@ export async function saveShopifyCredentials(formData: FormData) {
         status: "ACTIVE"
       },
       create: {
-        userId: TEST_USER_ID,
+        userId: userId,
         shopUrl: cleanUrl,
         accessToken: accessToken,
         status: "ACTIVE"
@@ -79,3 +77,4 @@ export async function saveShopifyCredentials(formData: FormData) {
     return { error: "Systeemfout bij het opslaan: " + error.message };
   }
 }
+

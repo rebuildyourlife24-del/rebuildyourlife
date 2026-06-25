@@ -15,6 +15,9 @@ import socialRoutes from "./social.routes.js";
 import businessRoutes from "./business.routes.js";
 import { paymentRoutes } from "./payment.routes.js";
 import orionOpenAIRouter from './orion-openai.js';
+import franchiseRoutes from "./franchise.routes.js";
+import adminRoutes from "./admin.routes.js";
+import { trafficRoutes } from "./traffic.routes.js";
 
 const router = Router();
 
@@ -34,5 +37,8 @@ router.use("/social", socialRoutes);
 router.use("/business", businessRoutes);
 router.use("/payments", paymentRoutes);
 router.use('/orion', orionOpenAIRouter);
+router.use("/franchise", franchiseRoutes);
+router.use("/admin", adminRoutes);
+router.use("/traffic", trafficRoutes);
 
 export default router;

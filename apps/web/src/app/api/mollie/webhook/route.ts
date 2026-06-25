@@ -1,31 +1,162 @@
 import { NextResponse } from 'next/server';
+import { prisma } from "@rebuildyourlife/database";
+
+
 
 export async function POST(req: Request) {
   try {
-    // In productie ontvangt deze route de Mollie Webhook Payload (id)
-    // De webhook payload bevat payment_id.
-    const body = await req.json();
-    const { paymentId, amount, franchiseId } = body;
+    // 1. Resolve the Payment ID from the Mollie Webhook Payload (which is urlencoded format: id=tr_xxx)
+    let paymentId: string | null = null;
+    const contentType = req.headers.get("content-type") || "";
 
-    console.log(`[MOLLIE WEBHOOK] Processing payment ${paymentId} for Franchise ${franchiseId}`);
+    if (contentType.includes("application/x-www-form-urlencoded") || contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      paymentId = formData.get("id") as string;
+    } else {
+      // Fallback for JSON mock requests
+      const json = await req.json().catch(() => ({}));
+      paymentId = json.id || json.paymentId;
+    }
 
-    // Simulatie van de 25% Tolpoort (Revenue Share Interceptor)
-    const totalAmount = parseFloat(amount);
-    const platformCut = totalAmount * 0.25;
-    const franchiseCut = totalAmount * 0.75;
+    if (!paymentId) {
+      return NextResponse.json({ error: 'No payment ID provided' }, { status: 400 });
+    }
 
-    console.log(`[SPLIT PAYMENT ROUTING]`);
-    console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
-    console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
+    const mollieKey = process.env.MOLLIE_API_KEY;
 
-    return NextResponse.json({ 
-      success: true,
-      status: 'paid',
-      split: {
-        franchise: franchiseCut,
-        treasury: platformCut
+    if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
+      // --- DEVELOPMENT / MOCK WEBHOOK MODE ---
+      console.log(`[DEV] Mollie API Key missing or default. Processing mock webhook for Payment: ${paymentId}`);
+
+      // Parse JSON body if present, or look for query params/fallback mock data
+      const url = new URL(req.url);
+      const jsonBody = await req.json().catch(() => ({}));
+      
+      const userId = jsonBody.userId || url.searchParams.get('userId');
+      const tier = jsonBody.tier || url.searchParams.get('tier') || "ECOM";
+      const amountVal = jsonBody.amount || url.searchParams.get('amount') || "50.00";
+      
+      console.log(`[MOLLIE WEBHOOK MOCK] Data: User=${userId}, Tier=${tier}, Amount=${amountVal}`);
+
+      if (userId) {
+        // Update user status
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            subscriptionTier: tier,
+            subscriptionStatus: "ACTIVE",
+            onboardingCompleted: true,
+            mollieCustomerId: "cst_mock_omega_customer_12345",
+          }
+        });
+
+        // Send notification
+        await prisma.notification.create({
+          data: {
+            userId,
+            title: `Welkom bij ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'}!`,
+            message: `Je onboarding betaling is succesvol verwerkt. Je hebt nu toegang tot alle ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'} functionaliteiten.`,
+          },
+        });
       }
+
+      // Preserve existing simulation logs
+      const totalAmount = parseFloat(amountVal);
+      const platformCut = totalAmount * 0.25;
+      const franchiseCut = totalAmount * 0.75;
+      
+      console.log(`[SPLIT PAYMENT ROUTING (MOCK)]`);
+      console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
+      console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
+
+      return NextResponse.json({ 
+        success: true,
+        status: 'paid',
+        split: {
+          franchise: franchiseCut,
+          treasury: platformCut
+        }
+      });
+    }
+
+    // --- REAL MOLLIE WEBHOOK INTEGRATION ---
+    console.log(`[MOLLIE WEBHOOK] Fetching details for payment ${paymentId}`);
+    
+    const response = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${mollieKey}`,
+      },
     });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Failed to fetch payment details for ${paymentId}: ${errText}`);
+      return NextResponse.json({ error: "Failed to fetch payment details from Mollie" }, { status: 400 });
+    }
+
+    const payment = await response.json();
+    const { userId, tier } = payment.metadata || {};
+
+    if (payment.status === "paid") {
+      if (!userId) {
+        console.error(`[MOLLIE WEBHOOK] Payment ${paymentId} is paid but missing userId in metadata.`);
+        return NextResponse.json({ error: "Missing userId in metadata" }, { status: 400 });
+      }
+
+      console.log(`[MOLLIE WEBHOOK] Processing successful payment ${paymentId} for User ${userId}`);
+
+      // Update user in database
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          mollieCustomerId: payment.customerId || null,
+          subscriptionStatus: "ACTIVE",
+          subscriptionTier: tier || "ECOM",
+          onboardingCompleted: true,
+        },
+      });
+
+      // Send welcome notification
+      await prisma.notification.create({
+        data: {
+          userId,
+          title: `Welkom bij ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'}!`,
+          message: `Je onboarding betaling is succesvol verwerkt. Je hebt nu toegang tot alle ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'} functionaliteiten.`,
+        },
+      });
+
+      // Split Payment Simulation
+      const amountVal = payment.amount?.value || "0.00";
+      const totalAmount = parseFloat(amountVal);
+      const platformCut = totalAmount * 0.25;
+      const franchiseCut = totalAmount * 0.75;
+
+      console.log(`[SPLIT PAYMENT ROUTING]`);
+      console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
+      console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
+
+      return NextResponse.json({ 
+        success: true,
+        status: 'paid',
+        split: {
+          franchise: franchiseCut,
+          treasury: platformCut
+        }
+      });
+    } else {
+      console.log(`[MOLLIE WEBHOOK] Payment ${paymentId} updated with status: ${payment.status}`);
+
+      if (userId && ["failed", "expired", "canceled"].includes(payment.status)) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            subscriptionStatus: payment.status.toUpperCase(),
+          },
+        });
+      }
+
+      return NextResponse.json({ success: true, status: payment.status });
+    }
 
   } catch (error: any) {
     console.error('Mollie webhook error:', error);

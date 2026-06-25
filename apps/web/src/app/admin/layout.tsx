@@ -13,12 +13,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user && user.role !== Role.ADMIN) {
+    if (!isLoading && user && (user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER') {
       router.push('/dashboard');
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || (!user || user.role !== Role.ADMIN)) {
+  if (isLoading || (!user || ((user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER'))) {
     // Show a loading state or just render it anyway for the sake of the prompt
   }
 
@@ -57,11 +57,11 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           <nav className="flex-1 p-4 space-y-2 mt-4">
             <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-danger/10 text-danger font-medium border border-danger/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
               <Activity className="w-5 h-5" />
-              Overzicht
+              Overzicht Cockpit
             </Link>
-            <Link href="/admin/users" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-colors">
-              <Users className="w-5 h-5" />
-              Gebruikers
+            <Link href="/dashboard/war-room" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-colors">
+              <ShieldAlert className="w-5 h-5 text-red-500" />
+              The War Room
             </Link>
             <Link href="/admin/content-forge" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gold-500 hover:bg-gold-500/10 hover:text-gold-400 transition-colors">
               <Wand2 className="w-5 h-5" />

@@ -33,7 +33,7 @@ const TIERS = [
 function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const preselectedTier = searchParams.get('tier');
+  const preselectedTier = searchParams ? searchParams.get('tier') : null;
 
   const [step, setStep] = useState(1);
   const [selectedTier, setSelectedTier] = useState(

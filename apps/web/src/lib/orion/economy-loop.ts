@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "@rebuildyourlife/database";
 
-const prisma = new PrismaClient();
+
 
 /**
  * THE IJZEREN WETTEN (Iron Laws of the Autonomous Economy) - ENTERPRISE SWARM ARCHITECTURE

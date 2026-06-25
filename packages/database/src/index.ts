@@ -9,10 +9,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+const url = "postgresql://postgres.gjexrxdyddystmvrgsoe:Imperialdreams2055@aws-1-eu-north-1.pooler.supabase.com:6543/postgres?pgbouncer=true";
+
 export const prisma: PrismaClient =
   globalForPrisma.prisma ??
   new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL,
+    datasourceUrl: url,
     log:
       process.env.NODE_ENV === "development"
         ? ["query", "warn", "error"]
@@ -100,6 +102,7 @@ export type {
   AIConciergeLog,
 
   // Opportunity Engine (Phase 9)
+  Opportunity,
   OpportunityReport,
   OpportunityMedia,
 
@@ -110,4 +113,23 @@ export type {
 
   // Webhooks
   WebhookEvent,
+
+  // AI Shared Memory
+  AiSharedMemory,
+
+  // Franchise Factory
+  Franchise,
+  OmegaSite,
+  PRCampaign,
+  FranchiseOrder,
+  PlatformRevenue,
+
+  // Syndicate Community Feed
+  SyndicatePost,
+  SyndicateComment,
+  SyndicateLike,
+
+  // Alpha Algo-Trading
+  TradingBot,
+  TradeRecord,
 } from "@prisma/client";
