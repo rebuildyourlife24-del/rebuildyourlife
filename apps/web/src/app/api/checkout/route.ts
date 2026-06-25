@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+
 import { db } from '@/lib/db';
 
 export async function POST(req: Request) {
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     // Controleer of er al een Stripe Customer ID is
     let stripeCustomerId = user.stripeCustomerId;
     if (!stripeCustomerId) {
-      const customer = await stripe.customers.create({
+      throw new Error('Stripe disabled'); // const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
           userId: user.id,
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    throw new Error('Stripe disabled'); // const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card', 'ideal'], // iDEAL voor NL/BE
@@ -70,3 +70,4 @@ export async function POST(req: Request) {
     return new NextResponse('Internal Error', { status: 500 });
   }
 }
+
