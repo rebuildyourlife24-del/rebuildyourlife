@@ -74,6 +74,18 @@ export async function executePendingActions() {
           resultData = { opportunityId: newOpp.id };
           break;
 
+        case 'DEPLOY_CODE':
+          console.log(`[EXECUTOR] Hermes deploying code via GitHub...`);
+          const { deployCodeToGithub } = await import('../services/github.service');
+          
+          if (!payload || !(payload as any).files || !(payload as any).commitMessage) {
+            throw new Error("Invalid payload for DEPLOY_CODE. Required: files and commitMessage");
+          }
+
+          const deployResult = await deployCodeToGithub((payload as any).files, (payload as any).commitMessage);
+          resultData = deployResult;
+          break;
+
         default:
           throw new Error(`Unsupported actionType: ${action.title}`);
       }
