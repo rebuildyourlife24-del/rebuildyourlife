@@ -216,7 +216,7 @@ Rebuild Your Life.
               </div>
             )}
             {profileError && (
-              <div className="mb-6 p-4 rounded-xl bg-red-500/5 text-red-400 border border-red-500/20 text-xs font-mono flex items-center gap-2">
+              <div className="mb-6 p-4 rounded-xl bg-gold/5 text-goldLight border border-gold/20 text-xs font-mono flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> {profileError}
               </div>
             )}
@@ -288,7 +288,7 @@ Rebuild Your Life.
               </div>
             )}
             {passwordError && (
-              <div className="mb-6 p-4 rounded-xl bg-red-500/5 text-red-400 border border-red-500/20 text-xs font-mono flex items-center gap-2">
+              <div className="mb-6 p-4 rounded-xl bg-gold/5 text-goldLight border border-gold/20 text-xs font-mono flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> {passwordError}
               </div>
             )}

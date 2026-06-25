@@ -204,7 +204,7 @@ export default function SalesAutomationsPage() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12 font-sans relative">
       
       {/* Glow overlay */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* HEADER */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
@@ -349,7 +349,7 @@ export default function SalesAutomationsPage() {
                       <div className="relative w-36 h-36 flex items-center justify-center mb-8">
                         <div className="absolute inset-0 rounded-full bg-[#d4af37]/20 animate-ping duration-1000"></div>
                         <div className="absolute inset-2 rounded-full bg-[#d4af37]/10 animate-pulse"></div>
-                        <div className="w-24 h-24 rounded-full bg-black border-2 border-[#d4af37] flex items-center justify-center shadow-[0_0_40px_rgba(255,0,61,0.3)]">
+                        <div className="w-24 h-24 rounded-full bg-black border-2 border-[#d4af37] flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.3)]">
                           <PhoneCall className="w-10 h-10 text-[#d4af37]" />
                         </div>
                       </div>
@@ -392,7 +392,7 @@ export default function SalesAutomationsPage() {
               <div className="flex gap-4">
                 <button
                   onClick={handleToggleCall}
-                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(255,0,61,0.2)]'}`}
+                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-gold hover:bg-red-700 text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]'}`}
                 >
                   <Phone className="w-5 h-5" />
                   {isCalling ? 'Hangs Up' : 'Start Call'}

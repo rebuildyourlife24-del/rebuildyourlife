@@ -90,7 +90,7 @@ export default function VslPage() {
               {/* Grid Background Effect */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,60,0.06)_0%,transparent_70%)] pointer-events-none"></div>
               
-              <div className="w-24 h-24 rounded-full border border-[#d4af37] bg-[#d4af37]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(255,0,61,0.2)]">
+              <div className="w-24 h-24 rounded-full border border-[#d4af37] bg-[#d4af37]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                 <Play className="w-10 h-10 text-[#d4af37] ml-1.5" />
               </div>
               
@@ -154,7 +154,7 @@ export default function VslPage() {
               <button
                 onClick={handleInitiatePayment}
                 disabled={isLoading}
-                className="w-full bg-[#d4af37] text-black font-black uppercase tracking-[0.2em] py-5 text-lg hover:bg-white hover:scale-[1.01] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,0,61,0.2)] disabled:opacity-60 disabled:cursor-not-allowed mb-4"
+                className="w-full bg-[#d4af37] text-black font-black uppercase tracking-[0.2em] py-5 text-lg hover:bg-white hover:scale-[1.01] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(212,175,55,0.2)] disabled:opacity-60 disabled:cursor-not-allowed mb-4"
               >
                 {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Shield className="w-5 h-5" />}
                 {isLoading ? 'VERBINDING MAKEN...' : 'SECURE GRID UPLINK'}

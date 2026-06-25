@@ -166,8 +166,8 @@ export default function SupplierIntelligenceDashboard() {
 
       {/* No Data State / Seed Banner */}
       {suppliers.length === 0 && !loading && (
-        <div className="border-4 border-red-500 bg-red-950/50 p-6 shadow-[6px_6px_0px_#ef4444] mb-8">
-          <h3 className="text-lg font-black uppercase flex items-center gap-2 text-red-400">
+        <div className="border-4 border-gold bg-red-950/50 p-6 shadow-[6px_6px_0px_#ef4444] mb-8">
+          <h3 className="text-lg font-black uppercase flex items-center gap-2 text-goldLight">
             <ShieldAlert className="w-5 h-5" /> Leveranciersdata Ontbreekt!
           </h3>
           <p className="text-xs font-bold mt-2 uppercase">
@@ -176,12 +176,12 @@ export default function SupplierIntelligenceDashboard() {
           <button
             onClick={handleSeed}
             disabled={seeding}
-            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-black uppercase px-6 py-3 text-sm border-2 border-white shadow-[4px_4px_0px_#ffffff] disabled:opacity-50 flex items-center gap-2"
+            className="mt-4 bg-gold hover:bg-gold text-white font-black uppercase px-6 py-3 text-sm border-2 border-white shadow-[4px_4px_0px_#ffffff] disabled:opacity-50 flex items-center gap-2"
           >
             <Database className="w-4 h-4" /> {seeding ? "INITIALISEREN..." : "SEED SUPPLIER INTELLIGENCE DATA"}
           </button>
           {seedResult && (
-            <div className="mt-3 text-xs font-black uppercase bg-black text-white p-2 border border-red-500">
+            <div className="mt-3 text-xs font-black uppercase bg-black text-white p-2 border border-gold">
               {seedResult}
             </div>
           )}
@@ -343,14 +343,14 @@ export default function SupplierIntelligenceDashboard() {
                             className={`p-2 border text-[10px] font-bold uppercase flex justify-between items-center ${
                               log.success 
                                 ? "bg-zinc-800 border-zinc-700 text-zinc-300" 
-                                : "bg-red-950/40 border-red-900 text-red-300"
+                                : "bg-red-950/40 border-navyLight text-red-300"
                             }`}
                           >
                             <div className="flex items-center gap-2">
                               {log.success ? (
                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
                               ) : (
-                                <XCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                                <XCircle className="w-3.5 h-3.5 text-gold shrink-0" />
                               )}
                               <span>Order: {log.orderId.substring(0, 8)}...</span>
                             </div>
@@ -358,7 +358,7 @@ export default function SupplierIntelligenceDashboard() {
                               {log.success ? (
                                 <span>Geleverd in {log.deliveryTime?.toFixed(1)} dagen</span>
                               ) : (
-                                <span className="font-black text-red-400">Fulfillment Mislukt</span>
+                                <span className="font-black text-goldLight">Fulfillment Mislukt</span>
                               )}
                             </div>
                           </div>

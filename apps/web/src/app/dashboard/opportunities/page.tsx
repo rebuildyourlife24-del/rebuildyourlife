@@ -17,19 +17,19 @@ export default async function OpportunitiesPage() {
   if (!isElite) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-6">
-        <div className="max-w-2xl w-full bg-zinc-950 border border-red-500/30 rounded-2xl p-10 text-center relative overflow-hidden">
+        <div className="max-w-2xl w-full bg-zinc-950 border border-gold/30 rounded-2xl p-10 text-center relative overflow-hidden">
           {/* Scanline Effect */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none opacity-50"></div>
           
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-red-950 border border-red-500/50 flex items-center justify-center mb-6 animate-pulse">
-              <ShieldAlert className="w-12 h-12 text-red-500" />
+            <div className="w-24 h-24 rounded-full bg-red-950 border border-gold/50 flex items-center justify-center mb-6 animate-pulse">
+              <ShieldAlert className="w-12 h-12 text-gold" />
             </div>
             
             <h1 className="text-3xl font-black text-white tracking-wider uppercase mb-2">
               Toegang Geweigerd
             </h1>
-            <p className="text-red-400 font-mono text-sm tracking-widest uppercase mb-8">
+            <p className="text-goldLight font-mono text-sm tracking-widest uppercase mb-8">
               Clearance Level: INSUFFICIENT
             </p>
             
@@ -39,7 +39,7 @@ export default async function OpportunitiesPage() {
 
             <Link 
               href="/vsl"
-              className="bg-red-600 hover:bg-red-500 text-white px-8 py-4 rounded-xl font-bold tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] flex items-center gap-3"
+              className="bg-gold hover:bg-gold text-white px-8 py-4 rounded-xl font-bold tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] flex items-center gap-3"
             >
               <Lock className="w-5 h-5" />
               Upgrade naar Elite Status

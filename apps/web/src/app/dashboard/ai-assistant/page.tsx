@@ -251,10 +251,10 @@ export default function AIAssistantPage() {
         {/* Sentinel Shield Status */}
         <div className="p-3 bg-zinc-300 border-t-2 border-black flex justify-between items-center text-[8px] font-black uppercase tracking-widest">
           <span className="flex items-center gap-1.5">
-            <ShieldAlert className={`w-3.5 h-3.5 ${sentinelSafe ? "text-black" : "text-red-600 animate-pulse"}`} />
+            <ShieldAlert className={`w-3.5 h-3.5 ${sentinelSafe ? "text-black" : "text-gold animate-pulse"}`} />
             Sentinel: {sentinelSafe ? "SECURE" : "INTERCEPTED"}
           </span>
-          <span className={`w-2 h-2 rounded-full ${sentinelSafe ? "bg-green-600" : "bg-red-600 animate-ping"}`} />
+          <span className={`w-2 h-2 rounded-full ${sentinelSafe ? "bg-green-600" : "bg-gold animate-ping"}`} />
         </div>
 
       </div>
@@ -330,7 +330,7 @@ export default function AIAssistantPage() {
 
           {error && (
             <div className="border-4 border-red-600 bg-red-50 p-4 shadow-[4px_4px_0px_#dc2626] text-xs flex items-start gap-2.5 text-red-800 font-bold uppercase">
-              <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-gold shrink-0 mt-0.5" />
               <div>
                 <span>FOUTMELDING:</span>
                 <p className="mt-1 normal-case text-zinc-800 font-mono font-medium">{error}</p>

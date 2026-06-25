@@ -62,7 +62,7 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
         {/* Render data streams when in phase 2 */}
         <div className="absolute inset-0 opacity-10 overflow-hidden flex flex-col justify-around pointer-events-none">
           {dataStreams.map((str, i) => (
-            <div key={i} className="text-red-500 text-[10px] tracking-widest whitespace-nowrap opacity-50 font-bold">
+            <div key={i} className="text-gold text-[10px] tracking-widest whitespace-nowrap opacity-50 font-bold">
               {str} {str} {str} {str} {str}
             </div>
           ))}
@@ -83,14 +83,14 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
               opacity: phase === 3 ? 0 : [0.5, 1, 0.5] 
             }}
             transition={{ duration: 2, repeat: phase === 3 ? 0 : Infinity }}
-            className="absolute inset-0 rounded-full border border-red-500/30" 
+            className="absolute inset-0 rounded-full border border-gold/30" 
           />
           
           {/* Spinning inner dashed ring */}
           <motion.div 
             animate={{ rotate: 360, scale: phase === 3 ? 0 : 1 }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-4 rounded-full border border-dashed border-red-500/50" 
+            className="absolute inset-4 rounded-full border border-dashed border-gold/50" 
           />
           
           {/* Center Icon */}
@@ -102,7 +102,7 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
             )}
             {phase === 2 && (
               <motion.div key="p2" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                <Cpu className="w-16 h-16 text-red-500" />
+                <Cpu className="w-16 h-16 text-gold" />
               </motion.div>
             )}
             {phase === 3 && (
@@ -118,13 +118,13 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
           <AnimatePresence mode="wait">
             {phase === 1 && (
               <motion.div key="text1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center">
-                <span className="text-red-500 font-bold tracking-[0.2em] mb-2 uppercase text-xs">Phase 1: Handshake</span>
+                <span className="text-gold font-bold tracking-[0.2em] mb-2 uppercase text-xs">Phase 1: Handshake</span>
                 <h2 className="text-2xl md:text-4xl font-black text-white tracking-tighter uppercase">Establishing Secure Tunnel</h2>
               </motion.div>
             )}
             {phase === 2 && (
               <motion.div key="text2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center">
-                <span className="text-red-500 font-bold tracking-[0.2em] mb-2 uppercase text-xs animate-pulse">Phase 2: Ingestion</span>
+                <span className="text-gold font-bold tracking-[0.2em] mb-2 uppercase text-xs animate-pulse">Phase 2: Ingestion</span>
                 <h2 className="text-2xl md:text-4xl font-black text-white tracking-tighter uppercase">Synchronizing Datastreams</h2>
                 <div className="mt-4 text-zinc-500 text-xs">Bypassing standard nodes... Extracting financial baseline...</div>
               </motion.div>
@@ -144,7 +144,7 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
             initial={{ width: "0%" }}
             animate={{ width: phase === 1 ? "30%" : phase === 2 ? "90%" : "100%" }}
             transition={{ duration: phase === 1 ? 2 : phase === 2 ? 3 : 0.5, ease: "linear" }}
-            className={`h-full ${phase === 3 ? 'bg-white' : 'bg-red-500'}`}
+            className={`h-full ${phase === 3 ? 'bg-white' : 'bg-gold'}`}
           />
         </div>
 

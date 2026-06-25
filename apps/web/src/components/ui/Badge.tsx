@@ -14,7 +14,7 @@ const variantStyles: Record<string, string> = {
   gold: 'bg-gold/10 text-gold border-gold/20',
   info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   outline: 'border border-white/10 text-textSecondary',
-  destructive: 'bg-red-500/10 text-red-500 border-red-500/20',
+  destructive: 'bg-gold/10 text-gold border-gold/20',
 };
 
 const dotColors: Record<string, string> = {
@@ -25,7 +25,7 @@ const dotColors: Record<string, string> = {
   gold: 'bg-gold',
   info: 'bg-blue-400',
   outline: 'bg-textSecondary',
-  destructive: 'bg-red-500',
+  destructive: 'bg-gold',
 };
 
 const sizeStyles: Record<string, string> = {

@@ -468,13 +468,13 @@ export default function FranchiseManager() {
                 </div>
 
                 <div className="border-2 border-zinc-800 p-4 bg-zinc-950 flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-red-600 text-white font-black text-[9px] px-2 py-0.5 border-b-2 border-l-2 border-zinc-800">
+                  <div className="absolute top-0 right-0 bg-gold text-white font-black text-[9px] px-2 py-0.5 border-b-2 border-l-2 border-zinc-800">
                     25% PLATFORM CUT
                   </div>
                   <span className="text-xs text-zinc-400 font-bold uppercase tracking-wider">Henk's Share (25%)</span>
                   <div className="flex items-center gap-1 mt-2">
-                    <DollarSign className="w-6 h-6 text-red-500" />
-                    <span className="text-3xl font-black text-red-400">{selectedFranchise.platformCutTotal.toFixed(2)}</span>
+                    <DollarSign className="w-6 h-6 text-gold" />
+                    <span className="text-3xl font-black text-goldLight">{selectedFranchise.platformCutTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -657,7 +657,7 @@ export default function FranchiseManager() {
                         </div>
                         <div className="flex justify-between items-center border-b border-zinc-900 pb-1.5">
                           <span className="text-zinc-500 font-bold uppercase">Toll Rate:</span>
-                          <span className="text-red-400 font-black">25.0% PLATFORM CUT</span>
+                          <span className="text-goldLight font-black">25.0% PLATFORM CUT</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-zinc-500 font-bold uppercase">Auto-Supplier Routing:</span>
@@ -679,7 +679,7 @@ export default function FranchiseManager() {
                                   <button
                                     type="button"
                                     onClick={() => handleDeleteProduct(p.id)}
-                                    className="text-red-500 hover:text-red-400 font-bold uppercase text-[9px]"
+                                    className="text-gold hover:text-goldLight font-bold uppercase text-[9px]"
                                   >
                                     [del]
                                   </button>
@@ -786,7 +786,7 @@ export default function FranchiseManager() {
                 <div className="border-4 border-black bg-black text-green-400 p-6 shadow-[6px_6px_0px_#000000] h-[300px] flex flex-col justify-between">
                   <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
                     <span className="text-xs font-black uppercase tracking-wider text-green-500">Live Webhook Log Terminal</span>
-                    <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></div>
+                    <div className="w-2.5 h-2.5 bg-gold rounded-full animate-pulse"></div>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-1.5 font-mono text-xs flex flex-col justify-end">
                     {simLogs.length === 0 && (
@@ -798,7 +798,7 @@ export default function FranchiseManager() {
                         className={
                           log.includes("[SUCCESS]") ? "text-green-300 font-black" : 
                           log.includes("[SYS]") ? "text-yellow-400 font-bold" : 
-                          log.includes("[ERROR]") ? "text-red-500 font-black" : "text-green-500"
+                          log.includes("[ERROR]") ? "text-gold font-black" : "text-green-500"
                         }
                       >
                         {log}
@@ -822,7 +822,7 @@ export default function FranchiseManager() {
                         <th className="py-2 px-3 uppercase font-black">Klant</th>
                         <th className="py-2 px-3 uppercase font-black">Items</th>
                         <th className="py-2 px-3 uppercase font-black text-right">Totaal</th>
-                        <th className="py-2 px-3 uppercase font-black text-right text-red-600">Henk (25% Cut)</th>
+                        <th className="py-2 px-3 uppercase font-black text-right text-gold">Henk (25% Cut)</th>
                         <th className="py-2 px-3 uppercase font-black text-center">Status</th>
                         <th className="py-2 px-3 uppercase font-black text-right">Datum</th>
                       </tr>
@@ -843,7 +843,7 @@ export default function FranchiseManager() {
                               {Array.isArray(o.items) ? o.items.map((item: any) => `${item.name} (x${item.quantity})`).join(", ") : "Geen items"}
                             </td>
                             <td className="py-2 px-3 font-black text-right">${o.totalAmount.toFixed(2)}</td>
-                            <td className="py-2 px-3 font-black text-right text-red-600">${o.platformCut.toFixed(2)}</td>
+                            <td className="py-2 px-3 font-black text-right text-gold">${o.platformCut.toFixed(2)}</td>
                             <td className="py-2 px-3 text-center">
                               <span className="bg-green-200 text-green-800 border border-green-600 font-black text-[9px] px-2 py-0.5 uppercase">
                                 {o.status}
@@ -860,7 +860,7 @@ export default function FranchiseManager() {
 
               {/* Danger Zone */}
               <div className="border-4 border-red-600 bg-red-50 p-6 shadow-[6px_6px_0px_#dc2626]">
-                <h2 className="text-xl font-black uppercase text-red-600 tracking-wider mb-2 flex items-center gap-2">
+                <h2 className="text-xl font-black uppercase text-gold tracking-wider mb-2 flex items-center gap-2">
                   DANGER PROTOCOL
                 </h2>
                 <p className="text-xs text-red-800 font-bold mb-4">
@@ -869,7 +869,7 @@ export default function FranchiseManager() {
                 <button
                   type="button"
                   onClick={handleDeleteFranchise}
-                  className="bg-red-600 hover:bg-red-700 text-white border-2 border-red-700 font-black uppercase tracking-wider px-4 py-2 text-xs shadow-[2px_2px_0px_#000000]"
+                  className="bg-gold hover:bg-red-700 text-white border-2 border-red-700 font-black uppercase tracking-wider px-4 py-2 text-xs shadow-[2px_2px_0px_#000000]"
                 >
                   DEACTIVATE UPLINK permanently
                 </button>

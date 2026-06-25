@@ -27,10 +27,10 @@ export default function EmailVaultPage() {
     <div className="max-w-4xl mx-auto space-y-8 font-mono">
       <div className="border-b-2 border-red-600 pb-4 relative overflow-hidden">
         <h1 className="text-3xl font-black text-white tracking-[0.2em] uppercase flex items-center gap-3 relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
-          <Mail className="w-8 h-8 text-red-500" />
+          <Mail className="w-8 h-8 text-gold" />
           E-MAIL VAULT
         </h1>
-        <p className="text-red-500/80 mt-2 text-sm tracking-widest relative z-10">
+        <p className="text-gold/80 mt-2 text-sm tracking-widest relative z-10">
           KOPPEL JOUW POSTVAK AAN DE GODBRAIN AI.
         </p>
       </div>
@@ -38,37 +38,37 @@ export default function EmailVaultPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left: Info */}
         <div className="space-y-6">
-          <div className="border border-red-900 bg-black p-6 shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
+          <div className="border border-navyLight bg-black p-6 shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
             <h2 className="text-white text-lg font-bold mb-4 tracking-widest flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-red-500" /> AUTONOME SCANNER
+              <ShieldAlert className="w-5 h-5 text-gold" /> AUTONOME SCANNER
             </h2>
-            <p className="text-red-500/80 text-sm leading-relaxed mb-4">
+            <p className="text-gold/80 text-sm leading-relaxed mb-4">
               Zodra je jouw e-mail koppelt, krijgt de Godbrain Neural Network de opdracht om in de achtergrond facturen en incassobrieven op te sporen.
             </p>
             <ul className="text-sm text-white space-y-2">
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold">&gt;</span> Herkent PDF facturen en incassodreigementen.
+                <span className="text-gold font-bold">&gt;</span> Herkent PDF facturen en incassodreigementen.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold">&gt;</span> Berekent automatisch illegale extra kosten.
+                <span className="text-gold font-bold">&gt;</span> Berekent automatisch illegale extra kosten.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-500 font-bold">&gt;</span> Stuurt deze naar het Debt Center ter goedkeuring.
+                <span className="text-gold font-bold">&gt;</span> Stuurt deze naar het Debt Center ter goedkeuring.
               </li>
             </ul>
           </div>
         </div>
 
         {/* Right: Form */}
-        <div className="border border-red-900 bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
+        <div className="border border-navyLight bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-transparent"></div>
           <h2 className="text-white text-lg font-bold mb-6 tracking-widest flex items-center gap-2">
-            <Key className="w-5 h-5 text-red-500" /> NIEUWE KOPPELING
+            <Key className="w-5 h-5 text-gold" /> NIEUWE KOPPELING
           </h2>
 
           <form onSubmit={handleConnect} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-red-500 uppercase tracking-widest">
+              <label className="text-xs font-bold text-gold uppercase tracking-widest">
                 E-mailadres
               </label>
               <input
@@ -76,22 +76,22 @@ export default function EmailVaultPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-red-950/20 border border-red-900 text-white px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full bg-red-950/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
                 placeholder="bijv. administratie@jouwbedrijf.nl"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-red-500 uppercase tracking-widest flex justify-between">
+              <label className="text-xs font-bold text-gold uppercase tracking-widest flex justify-between">
                 <span>App Wachtwoord (IMAP)</span>
-                <span className="text-red-900 cursor-pointer hover:text-red-500 transition-colors">Hoe kom ik hieraan?</span>
+                <span className="text-red-900 cursor-pointer hover:text-gold transition-colors">Hoe kom ik hieraan?</span>
               </label>
               <input
                 type="password"
                 value={appPassword}
                 onChange={(e) => setAppPassword(e.target.value)}
                 required
-                className="w-full bg-red-950/20 border border-red-900 text-white px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full bg-red-950/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
                 placeholder="••••••••••••••••"
               />
             </div>
@@ -99,7 +99,7 @@ export default function EmailVaultPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-red-600 hover:bg-red-500 text-black font-black uppercase tracking-[0.2em] py-4 transition-all disabled:opacity-50 mt-4 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+              className="w-full bg-gold hover:bg-gold text-black font-black uppercase tracking-[0.2em] py-4 transition-all disabled:opacity-50 mt-4 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
             >
               {loading ? "BEZIG MET ASSIMILEREN..." : "KOPPEL POSTVAK"}
             </button>

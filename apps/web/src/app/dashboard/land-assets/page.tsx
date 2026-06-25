@@ -115,7 +115,7 @@ export default function ApexLandPage() {
                   <tbody className="text-sm font-mono text-white/80">
                     <tr className="border-b border-zinc-800/50 hover:bg-zinc-900/50 transition-colors">
                       <td className="p-4 font-bold text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-red-500" /> Perceel 89 (Weesgrond)
+                        <MapPin className="w-4 h-4 text-gold" /> Perceel 89 (Weesgrond)
                       </td>
                       <td className="p-4"><span className="text-amber-400 bg-amber-400/10 px-2 py-1 rounded text-[10px]">ORPHAN_LAND</span></td>
                       <td className="p-4 text-right">{formatEur(145000)}</td>
@@ -126,7 +126,7 @@ export default function ApexLandPage() {
                       <td className="p-4 font-bold text-white flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-amber-500" /> Industriebouw Z-2
                       </td>
-                      <td className="p-4"><span className="text-red-400 bg-red-400/10 px-2 py-1 rounded text-[10px]">TAX_LIEN</span></td>
+                      <td className="p-4"><span className="text-goldLight bg-red-400/10 px-2 py-1 rounded text-[10px]">TAX_LIEN</span></td>
                       <td className="p-4 text-right">{formatEur(850000)}</td>
                       <td className="p-4 text-right text-emerald-400 font-bold">{formatEur(34000)}</td>
                       <td className="p-4"><Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[10px] animate-pulse">TARGET LOCKED</Badge></td>

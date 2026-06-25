@@ -81,15 +81,15 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [punishmentProtocol, setPunishmentProtocol] = useState(false);
 
-  const mainColorClass = punishmentProtocol ? 'text-red-500' : 'text-cyan-400';
-  const borderColorClass = punishmentProtocol ? 'border-red-500/40' : 'border-cyan-500/40';
+  const mainColorClass = punishmentProtocol ? 'text-gold' : 'text-cyan-400';
+  const borderColorClass = punishmentProtocol ? 'border-gold/40' : 'border-cyan-500/40';
   const shadowClass = punishmentProtocol ? 'shadow-[0_0_80px_rgba(239,68,68,0.15)]' : 'shadow-[0_0_80px_rgba(34,211,238,0.15)]';
-  const bgClass = punishmentProtocol ? 'bg-red-500/10' : 'bg-cyan-500/10';
+  const bgClass = punishmentProtocol ? 'bg-gold/10' : 'bg-cyan-500/10';
 
   return (
     <div className={`relative w-full h-[550px] bg-[#020617] rounded-3xl border ${borderColorClass} ${shadowClass} overflow-hidden flex flex-col group transition-all duration-500`}>
       {/* Background glow overlay */}
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] ${punishmentProtocol ? 'bg-red-500/10' : 'bg-cyan-500/10'} blur-[100px] pointer-events-none rounded-full transition-colors duration-1000`}></div>
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] ${punishmentProtocol ? 'bg-gold/10' : 'bg-cyan-500/10'} blur-[100px] pointer-events-none rounded-full transition-colors duration-1000`}></div>
 
       {/* 3D Canvas rendering the Satellite Core */}
       <div className="flex-1 relative z-10">
@@ -103,7 +103,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
 
         {/* Floating Badges */}
         <div className="absolute top-6 left-6 flex flex-col gap-3 pointer-events-none">
-          <div className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border ${punishmentProtocol ? 'border-red-500 text-red-500 bg-red-950/50' : 'border-cyan-500 text-cyan-400 bg-cyan-950/50'} backdrop-blur-md rounded-full shadow-lg`}>
+          <div className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border ${punishmentProtocol ? 'border-gold text-gold bg-red-950/50' : 'border-cyan-500 text-cyan-400 bg-cyan-950/50'} backdrop-blur-md rounded-full shadow-lg`}>
              {punishmentProtocol ? '[ IRON FIST: ENGAGED ]' : '[ STRATEGY: SERENE ]'}
           </div>
         </div>
@@ -111,7 +111,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
         <div className="absolute top-6 right-6 pointer-events-auto">
           <button 
             onClick={() => setPunishmentProtocol(!punishmentProtocol)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all ${punishmentProtocol ? 'bg-red-600 text-white border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse' : 'bg-black/50 border-cyan-500/50 text-cyan-500 hover:bg-cyan-900/50'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all ${punishmentProtocol ? 'bg-gold text-white border-gold shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse' : 'bg-black/50 border-cyan-500/50 text-cyan-500 hover:bg-cyan-900/50'}`}
           >
             <ShieldAlert className="w-3 h-3" />
             Punishment Protocol
@@ -124,7 +124,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
         <div className="flex justify-between items-center relative z-10">
           <div className={`flex flex-col gap-1 ${mainColorClass} uppercase tracking-widest`}>
             <div className="flex items-center gap-2 text-xs font-black">
-              <div className={`w-2 h-2 rounded-full ${isSyncing ? 'animate-ping' : ''} ${punishmentProtocol ? 'bg-red-500' : 'bg-cyan-400'}`}></div>
+              <div className={`w-2 h-2 rounded-full ${isSyncing ? 'animate-ping' : ''} ${punishmentProtocol ? 'bg-gold' : 'bg-cyan-400'}`}></div>
               {isSyncing ? (punishmentProtocol ? "ESCALATING VERBAL REPRIMAND..." : "TRANSMITTING NEURAL LINK...") : "AI COUNCEL STANDBY"}
             </div>
             <div className={`text-[9px] font-bold opacity-50`}>

@@ -60,7 +60,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               Overzicht Cockpit
             </Link>
             <Link href="/dashboard/war-room" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-textSecondary hover:bg-white/5 hover:text-textPrimary transition-colors">
-              <ShieldAlert className="w-5 h-5 text-red-500" />
+              <ShieldAlert className="w-5 h-5 text-gold" />
               The War Room
             </Link>
             <Link href="/admin/content-forge" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gold-500 hover:bg-gold-500/10 hover:text-gold-400 transition-colors">

@@ -22,7 +22,7 @@ export default async function SitePage({ params }: SitePageProps) {
   if (!site) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-        <Zap className="w-16 h-16 text-red-500 mb-6 animate-pulse" />
+        <Zap className="w-16 h-16 text-gold mb-6 animate-pulse" />
         <h1 className="text-3xl font-bold uppercase tracking-widest mb-2">Domein Niet Gekoppeld</h1>
         <p className="text-zinc-400 font-mono text-center max-w-md">
           Het domein <span className="text-white font-bold">{domain}</span> is nog niet toegewezen aan een actieve Omega Webshop in het God Mode netwerk.
@@ -86,7 +86,7 @@ export default async function SitePage({ params }: SitePageProps) {
           <div className="flex items-center gap-6">
             <button className="relative group">
               <ShoppingBag className="w-6 h-6 text-white group-hover:text-gold transition-colors" />
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+              <span className="absolute -top-2 -right-2 bg-gold text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
             </button>
           </div>
         </div>

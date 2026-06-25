@@ -83,7 +83,7 @@ export default function IntegrationsPage() {
             </div>
 
             {error && (
-              <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400 border border-red-500/20">
+              <div className="rounded-md bg-gold/10 p-3 text-sm text-goldLight border border-gold/20">
                 {error}
               </div>
             )}

@@ -82,7 +82,7 @@ export function OrionEye({ status = 'IDLE', apexMode = false }: OrionEyeProps) {
       <div 
         className={`absolute inset-0 m-auto w-[200px] h-[200px] rounded-full blur-3xl opacity-30 transition-colors duration-700
           ${finalStatus === 'THINKING' ? 'bg-cyan-500' : ''}
-          ${finalStatus === 'ALERT' ? 'bg-red-500' : ''}
+          ${finalStatus === 'ALERT' ? 'bg-gold' : ''}
           ${finalStatus === 'IDLE' ? 'bg-zinc-700' : ''}
         `}
       />

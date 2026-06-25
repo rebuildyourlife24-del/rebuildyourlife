@@ -1058,7 +1058,7 @@ export default function AutonomousFactoryPage() {
                             {lead.email ? (
                               <p className="text-[10px] text-zinc-400 truncate mt-1">{lead.email}</p>
                             ) : (
-                              <p className="text-[9px] text-red-400 italic mt-1 flex items-center gap-0.5">
+                              <p className="text-[9px] text-goldLight italic mt-1 flex items-center gap-0.5">
                                 <AlertTriangle className="w-2.5 h-2.5" /> Geen e-mailadres
                               </p>
                             )}

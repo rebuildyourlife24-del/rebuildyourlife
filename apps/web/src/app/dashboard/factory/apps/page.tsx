@@ -291,7 +291,7 @@ export default function AppFactoryPage() {
                     </div>
                     <div className="space-y-1.5 border-t border-zinc-300 pt-3">
                       <span className="text-zinc-500 font-bold uppercase block">Geïdentificeerde beperkingen (Knelpunten):</span>
-                      <ul className="space-y-1 text-red-600 font-bold">
+                      <ul className="space-y-1 text-gold font-bold">
                         {selectedAsset.issues.map((issue, idx) => (
                           <li key={idx} className="flex items-start gap-1.5">
                             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -316,7 +316,7 @@ export default function AppFactoryPage() {
                 <div className="border-4 border-black bg-black text-green-400 p-6 shadow-[6px_6px_0px_#000000] h-[350px] flex flex-col justify-between">
                   <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
                     <span className="text-xs font-black uppercase tracking-wider text-green-500">Swarm Refactor Console</span>
-                    <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></div>
+                    <div className="w-2.5 h-2.5 bg-gold rounded-full animate-pulse"></div>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-1.5 font-mono text-xs flex flex-col justify-end">
                     {analysisLogs.length === 0 && (
@@ -436,7 +436,7 @@ export default function AppFactoryPage() {
                           <span className="text-zinc-600 uppercase text-[9px] block">Expected Platform Metrics:</span>
                           <div className="flex justify-between">
                             <span>SaaS Platform Cut:</span>
-                            <span className="text-red-600">25.00% Commission</span>
+                            <span className="text-gold">25.00% Commission</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Target Margin Velocity:</span>
@@ -487,7 +487,7 @@ export default function AppFactoryPage() {
                   <div className="border-4 border-black bg-black text-green-400 p-6 shadow-[6px_6px_0px_#000000] h-[250px] flex flex-col justify-between">
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2">
                       <span className="text-xs font-black uppercase tracking-wider text-green-500">Live Deploy Terminal</span>
-                      <div className="w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></div>
+                      <div className="w-2.5 h-2.5 bg-gold rounded-full animate-pulse"></div>
                     </div>
                     <div className="flex-1 overflow-y-auto space-y-1.5 font-mono text-xs flex flex-col justify-end">
                       {deploymentLogs.length === 0 && (
@@ -556,7 +556,7 @@ export default function AppFactoryPage() {
                       </div>
                       
                       <div className="border-t border-zinc-200 pt-3 space-y-1.5">
-                        <div className="flex justify-between items-center text-red-600">
+                        <div className="flex justify-between items-center text-gold">
                           <span>Henk's Commission (25% Cut):</span>
                           <span>${platformCommission.toFixed(2)}</span>
                         </div>

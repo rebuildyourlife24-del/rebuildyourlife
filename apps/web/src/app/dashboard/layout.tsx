@@ -310,7 +310,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-red-500/20 border-t-red-500' : 'border-white/10 border-t-white'}`}
+            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-gold/20 border-t-red-500' : 'border-white/10 border-t-white'}`}
           />
           <p className={`text-sm font-mono tracking-widest uppercase ${theme.color} opacity-70`}>Initializing Connection...</p>
         </div>
@@ -319,7 +319,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-red-500/30' : 'selection:bg-white/20'} font-sans overflow-hidden`}>
+    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-gold/30' : 'selection:bg-white/20'} font-sans overflow-hidden`}>
       
       {/* 110000X Cinematic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -409,7 +409,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                     className={`
                       w-full flex items-center justify-between px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-[0.25em] 
                       transition-colors duration-200 border-b border-transparent
-                      ${isAdmin ? 'text-red-500/70 hover:text-red-400' : 'text-zinc-500 hover:text-zinc-300'}
+                      ${isAdmin ? 'text-gold/70 hover:text-goldLight' : 'text-zinc-500 hover:text-zinc-300'}
                     `}
                   >
                     <span>{group.label}</span>
@@ -525,7 +525,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            <div className={`w-px h-6 mx-1 ${isAdmin ? 'bg-red-900/30' : 'bg-white/10'}`}></div>
+            <div className={`w-px h-6 mx-1 ${isAdmin ? 'bg-navyLight/30' : 'bg-white/10'}`}></div>
 
             <LanguageSwitcher />
             <NotificationBell />

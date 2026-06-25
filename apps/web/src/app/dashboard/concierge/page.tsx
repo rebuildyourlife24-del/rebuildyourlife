@@ -35,10 +35,10 @@ export default function ConciergePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Nood Verzoek Paneel */}
-        <div className="bg-black/40 border border-red-500/20 rounded-2xl p-6">
+        <div className="bg-black/40 border border-gold/20 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-red-500/10 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-red-500" />
+            <div className="p-2 bg-gold/10 rounded-lg">
+              <AlertTriangle className="w-5 h-5 text-gold" />
             </div>
             <h2 className="text-xl font-bold text-white">Emergency Request</h2>
           </div>
@@ -66,7 +66,7 @@ export default function ConciergePage() {
                 className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 text-white mt-1 h-24 resize-none"
               />
             </div>
-            <Button fullWidth className="bg-red-600 hover:bg-red-700 text-white border-none gap-2">
+            <Button fullWidth className="bg-gold hover:bg-red-700 text-white border-none gap-2">
               <Send className="w-4 h-4" /> Vraag Kapitaal Aan (5-Min Release)
             </Button>
           </div>

@@ -86,13 +86,13 @@ export default async function AcademyPage() {
           const progressPercentage = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
 
           return (
-            <Card key={course.id} className={`bg-cyan-950/20 backdrop-blur-md border ${isLocked ? 'border-red-900/50' : 'border-cyan-500/30'} p-6 relative overflow-hidden group`}>
+            <Card key={course.id} className={`bg-cyan-950/20 backdrop-blur-md border ${isLocked ? 'border-navyLight/50' : 'border-cyan-500/30'} p-6 relative overflow-hidden group`}>
               {/* Thumbnail Placeholder */}
               <div className="w-full h-40 bg-black/50 rounded-lg mb-6 flex items-center justify-center border border-cyan-900/50 relative overflow-hidden">
                 {isLocked ? (
                   <div className="absolute inset-0 bg-red-950/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-                    <Lock className="w-12 h-12 text-red-500 mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
-                    <span className="text-red-500 text-xs font-black uppercase tracking-widest">Apex Operator Only</span>
+                    <Lock className="w-12 h-12 text-gold mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
+                    <span className="text-gold text-xs font-black uppercase tracking-widest">Apex Operator Only</span>
                   </div>
                 ) : (
                   <PlayCircle className="w-16 h-16 text-cyan-500/30 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300" />
@@ -109,7 +109,7 @@ export default async function AcademyPage() {
               <div className="flex justify-between items-start mb-2">
                 <h2 className="text-white font-bold text-lg tracking-tight">{course.title}</h2>
                 {course.tierAccess === 'PREMIUM' && (
-                  <span className="bg-red-950 text-red-400 border border-red-900/50 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
+                  <span className="bg-red-950 text-goldLight border border-navyLight/50 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
                     Premium
                   </span>
                 )}
@@ -135,7 +135,7 @@ export default async function AcademyPage() {
               {isLocked ? (
                 <button 
                   disabled
-                  className="w-full py-3 rounded text-xs font-black tracking-widest uppercase bg-red-950/30 text-red-500/50 border border-red-900/30 cursor-not-allowed"
+                  className="w-full py-3 rounded text-xs font-black tracking-widest uppercase bg-red-950/30 text-gold/50 border border-navyLight/30 cursor-not-allowed"
                 >
                   Upgrade Required
                 </button>

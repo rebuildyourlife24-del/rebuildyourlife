@@ -190,58 +190,58 @@ export default function DebtsPage() {
       </div>
 
       {/* GODBRAIN INBOX SCANNER */}
-      <div className="border-2 border-red-900 bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] mt-8">
+      <div className="border-2 border-navyLight bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] mt-8">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-transparent"></div>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-white text-xl font-bold tracking-[0.2em] uppercase flex items-center gap-3">
-            <Radar className={`w-6 h-6 text-red-500 ${isScanning ? 'animate-spin' : ''}`} />
+            <Radar className={`w-6 h-6 text-gold ${isScanning ? 'animate-spin' : ''}`} />
             GODBRAIN E-MAIL SCANNER
           </h2>
           <Button 
             onClick={handleScanInbox} 
             disabled={isScanning}
-            className="bg-red-600 hover:bg-red-500 text-black font-black uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.5)]"
+            className="bg-gold hover:bg-gold text-black font-black uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.5)]"
           >
             {isScanning ? 'SCANNING INBOX...' : 'INITIATE SCAN'}
           </Button>
         </div>
 
         {isScanning && (
-          <div className="text-red-500 font-mono text-sm animate-pulse flex items-center gap-2">
-            <span className="w-2 h-2 bg-red-500 rounded-full"></span> 
+          <div className="text-gold font-mono text-sm animate-pulse flex items-center gap-2">
+            <span className="w-2 h-2 bg-gold rounded-full"></span> 
             Zoeken naar facturen, incassobrieven en dreigementen...
           </div>
         )}
 
         {scanComplete && scannedDebts.length === 0 && (
-          <div className="text-red-500/70 font-mono text-sm">Geen nieuwe vorderingen gedetecteerd.</div>
+          <div className="text-gold/70 font-mono text-sm">Geen nieuwe vorderingen gedetecteerd.</div>
         )}
 
         {scannedDebts.length > 0 && (
           <div className="space-y-4">
             {scannedDebts.map(debt => (
-              <div key={debt.id} className="border border-red-900/50 bg-red-950/10 p-4 font-mono">
+              <div key={debt.id} className="border border-navyLight/50 bg-red-950/10 p-4 font-mono">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-white font-bold text-lg">{debt.creditorName}</h3>
-                    <p className="text-red-500/70 text-xs">Bron: {debt.extractedFromEmail} | {new Date(debt.dateFound).toLocaleDateString()}</p>
+                    <p className="text-gold/70 text-xs">Bron: {debt.extractedFromEmail} | {new Date(debt.dateFound).toLocaleDateString()}</p>
                   </div>
-                  <div className="bg-red-900/40 text-red-400 border border-red-800 px-2 py-1 text-xs font-bold tracking-widest">
+                  <div className="bg-navyLight/40 text-goldLight border border-red-800 px-2 py-1 text-xs font-bold tracking-widest">
                     {debt.status}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4 border-y border-red-900/30 py-3">
+                <div className="grid grid-cols-3 gap-4 mb-4 border-y border-navyLight/30 py-3">
                   <div>
-                    <div className="text-red-500/50 text-xs">Oorspronkelijk Bedrag</div>
+                    <div className="text-gold/50 text-xs">Oorspronkelijk Bedrag</div>
                     <div className="text-white font-bold">€{debt.originalAmount.toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-red-500/50 text-xs">Illegale Kosten (B*llshit)</div>
-                    <div className="text-red-500 font-bold line-through">€{debt.illegalCollectionFees.toFixed(2)}</div>
+                    <div className="text-gold/50 text-xs">Illegale Kosten (B*llshit)</div>
+                    <div className="text-gold font-bold line-through">€{debt.illegalCollectionFees.toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-red-500/50 text-xs">Totaal Geëist</div>
+                    <div className="text-gold/50 text-xs">Totaal Geëist</div>
                     <div className="text-white font-bold">€{debt.totalClaimed.toFixed(2)}</div>
                   </div>
                 </div>
@@ -253,8 +253,8 @@ export default function DebtsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="bg-red-900/20 p-3 border-l-2 border-red-500 text-sm">
-                      <span className="text-red-500 font-bold">AI STRATEGIE: </span>
+                    <div className="bg-navyLight/20 p-3 border-l-2 border-gold text-sm">
+                      <span className="text-gold font-bold">AI STRATEGIE: </span>
                       <span className="text-white/80">{debt.aiRecommendation}</span>
                     </div>
                     <div className="flex gap-3">
@@ -262,7 +262,7 @@ export default function DebtsPage() {
                         size="sm"
                         disabled={negotiatingId === debt.id}
                         onClick={() => handleNegotiate(debt.id, 'DISPUTE_FEES')}
-                        className="bg-black border border-red-500 text-red-500 hover:bg-red-950"
+                        className="bg-black border border-gold text-gold hover:bg-red-950"
                       >
                         <Shield className="w-4 h-4 mr-2" />
                         BETWIST INCASSOKOSTEN
@@ -271,7 +271,7 @@ export default function DebtsPage() {
                         size="sm"
                         disabled={negotiatingId === debt.id}
                         onClick={() => handleNegotiate(debt.id, 'FINAL_SETTLEMENT')}
-                        className="bg-red-600 text-black hover:bg-red-500 font-bold"
+                        className="bg-gold text-black hover:bg-gold font-bold"
                       >
                         <Zap className="w-4 h-4 mr-2" />
                         STUUR SCHIKKINGSVOORSTEL

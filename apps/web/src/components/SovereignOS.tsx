@@ -184,7 +184,7 @@ export function SovereignOS() {
                     <button onClick={() => maximizeWindow(win.id)} className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors" onMouseDown={e => e.stopPropagation()}>
                       <Square size={12} />
                     </button>
-                    <button onClick={() => closeWindow(win.id)} className="w-8 h-8 flex items-center justify-center hover:bg-red-500/20 rounded-lg text-zinc-400 hover:text-red-500 transition-colors" onMouseDown={e => e.stopPropagation()}>
+                    <button onClick={() => closeWindow(win.id)} className="w-8 h-8 flex items-center justify-center hover:bg-gold/20 rounded-lg text-zinc-400 hover:text-gold transition-colors" onMouseDown={e => e.stopPropagation()}>
                       <X size={14} />
                     </button>
                   </div>

@@ -106,7 +106,7 @@ export default function SwarmDashboard() {
             <h3 className="font-semibold text-white flex items-center gap-2">
               <span>💼</span> LinkedIn Marketing
             </h3>
-            <Badge className="bg-red-500/10 text-red-500 border-red-500/20">DISCONNECTED</Badge>
+            <Badge className="bg-gold/10 text-gold border-gold/20">DISCONNECTED</Badge>
           </div>
           <Button variant="secondary" className="w-full mt-2 border-zinc-700 text-zinc-400">Connect</Button>
         </Card>

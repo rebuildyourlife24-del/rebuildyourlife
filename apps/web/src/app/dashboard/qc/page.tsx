@@ -57,7 +57,7 @@ export default function QualityControlTerminal() {
     <div className="min-h-screen bg-black text-white p-6 relative overflow-hidden">
       {/* Background FX */}
       <div className="absolute top-[-20%] left-[-10%] w-96 h-96 bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-red-900/10 blur-[200px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-navyLight/10 blur-[200px] rounded-full pointer-events-none" />
 
       {/* Header */}
       <header className="flex justify-between items-center mb-12 relative z-10">
@@ -133,7 +133,7 @@ export default function QualityControlTerminal() {
                 </div>
               )}
               {direction === "left" && (
-                <div className="absolute top-10 right-10 border-4 border-red-500 text-red-500 font-black text-4xl uppercase px-4 py-2 rounded-lg rotate-[15deg] bg-black/50">
+                <div className="absolute top-10 right-10 border-4 border-gold text-gold font-black text-4xl uppercase px-4 py-2 rounded-lg rotate-[15deg] bg-black/50">
                   KILL
                 </div>
               )}
@@ -160,7 +160,7 @@ export default function QualityControlTerminal() {
           <div className="flex gap-6 mt-8">
             <button 
               onClick={() => handleAction(currentItem.id, "reject")}
-              className="w-16 h-16 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-red-500 hover:bg-red-500/20 hover:border-red-500 transition-all hover:scale-110 shadow-lg"
+              className="w-16 h-16 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-gold hover:bg-gold/20 hover:border-gold transition-all hover:scale-110 shadow-lg"
             >
               <X className="w-8 h-8" />
             </button>

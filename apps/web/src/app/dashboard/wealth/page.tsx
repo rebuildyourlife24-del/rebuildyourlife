@@ -116,20 +116,20 @@ export default function OmegaBuilderDashboard() {
 
           {/* Shopify API Assimilation Panel */}
           <motion.div variants={itemVariants}>
-            <Card className="p-8 bg-black border-2 border-red-900 shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] relative overflow-hidden">
+            <Card className="p-8 bg-black border-2 border-navyLight shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-5">
                 <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </div>
               
               <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="p-3 bg-red-950/50 rounded-none border border-red-900">
-                  <Globe className="w-6 h-6 text-red-500" />
+                <div className="p-3 bg-red-950/50 rounded-none border border-navyLight">
+                  <Globe className="w-6 h-6 text-gold" />
                 </div>
                 <div>
                   <h2 className="text-xl font-black text-white uppercase tracking-widest flex items-center gap-2">
-                    Shopify API Assimilatie <Badge variant="destructive" className="bg-red-600 text-[10px] animate-pulse">FASE 1.5</Badge>
+                    Shopify API Assimilatie <Badge variant="destructive" className="bg-gold text-[10px] animate-pulse">FASE 1.5</Badge>
                   </h2>
-                  <p className="text-xs text-red-500/80 font-mono">Verbind de kassa en kanalen van externe Shopify winkels aan de War Room.</p>
+                  <p className="text-xs text-gold/80 font-mono">Verbind de kassa en kanalen van externe Shopify winkels aan de War Room.</p>
                 </div>
               </div>
 
@@ -145,25 +145,25 @@ export default function OmegaBuilderDashboard() {
                   setIsGenerating(false);
                 }
               }} className="space-y-4 relative z-10">
-                <div className="bg-[#050505] p-4 border border-red-900/50 mb-4 font-mono text-xs text-zinc-400">
-                  <span className="text-red-500 font-bold">&gt; INSTRUCTIE:</span> Ga naar Shopify Dashboard &gt; Settings &gt; Apps &gt; Develop Apps. Maak een app genaamd "Orion Godbrain", geef Read/Write access op Orders en Products. Kopieer de "Admin API access token". (begint met <span className="text-white">shpat_</span>).
+                <div className="bg-[#050505] p-4 border border-navyLight/50 mb-4 font-mono text-xs text-zinc-400">
+                  <span className="text-gold font-bold">&gt; INSTRUCTIE:</span> Ga naar Shopify Dashboard &gt; Settings &gt; Apps &gt; Develop Apps. Maak een app genaamd "Orion Godbrain", geef Read/Write access op Orders en Products. Kopieer de "Admin API access token". (begint met <span className="text-white">shpat_</span>).
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="bg-black p-4 border-b-2 border-red-900">
-                    <label className="text-[10px] text-red-500 uppercase font-black tracking-widest mb-2 block">Shopify URL (bijv. shop.myshopify.com)</label>
-                    <input type="text" name="shopUrl" placeholder="jouw-winkel.myshopify.com" className="w-full bg-transparent text-white font-mono p-2 border border-zinc-800 focus:border-red-500 outline-none" required />
+                  <div className="bg-black p-4 border-b-2 border-navyLight">
+                    <label className="text-[10px] text-gold uppercase font-black tracking-widest mb-2 block">Shopify URL (bijv. shop.myshopify.com)</label>
+                    <input type="text" name="shopUrl" placeholder="jouw-winkel.myshopify.com" className="w-full bg-transparent text-white font-mono p-2 border border-zinc-800 focus:border-gold outline-none" required />
                   </div>
-                  <div className="bg-black p-4 border-b-2 border-red-900">
-                    <label className="text-[10px] text-red-500 uppercase font-black tracking-widest mb-2 block">Admin API Toegangstoken (shpat_...)</label>
-                    <input type="password" name="accessToken" placeholder="shpat_xxxxxxxxxxxxxxxxxxxx" className="w-full bg-transparent text-red-400 font-mono p-2 border border-zinc-800 focus:border-red-500 outline-none" required />
+                  <div className="bg-black p-4 border-b-2 border-navyLight">
+                    <label className="text-[10px] text-gold uppercase font-black tracking-widest mb-2 block">Admin API Toegangstoken (shpat_...)</label>
+                    <input type="password" name="accessToken" placeholder="shpat_xxxxxxxxxxxxxxxxxxxx" className="w-full bg-transparent text-goldLight font-mono p-2 border border-zinc-800 focus:border-gold outline-none" required />
                   </div>
                 </div>
 
                 <Button 
                   type="submit"
                   disabled={isGenerating}
-                  className="w-full bg-red-950 hover:bg-red-900 text-red-500 border border-red-900 font-black uppercase tracking-[0.3em] py-6 text-lg transition-all"
+                  className="w-full bg-red-950 hover:bg-navyLight text-gold border border-navyLight font-black uppercase tracking-[0.3em] py-6 text-lg transition-all"
                 >
                   {isGenerating ? (
                     "ASSIMILATIE BEZIG..."

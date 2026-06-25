@@ -241,9 +241,9 @@ export default function SyndicatePage() {
   const getTierColor = (tier: number) => {
     switch (tier) {
       case 1: return "border-zinc-500 text-zinc-400 bg-zinc-950";
-      case 2: return "border-red-500/50 text-red-400 bg-red-950/20";
-      case 3: return "border-red-600 text-red-500 bg-red-950/30 shadow-[0_0_10px_rgba(220,38,38,0.2)]";
-      case 4: return "border-red-500 bg-red-600 text-black font-black animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]";
+      case 2: return "border-gold/50 text-goldLight bg-red-950/20";
+      case 3: return "border-red-600 text-gold bg-red-950/30 shadow-[0_0_10px_rgba(220,38,38,0.2)]";
+      case 4: return "border-gold bg-gold text-black font-black animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]";
       default: return "border-zinc-800 text-zinc-500";
     }
   };
@@ -267,15 +267,15 @@ export default function SyndicatePage() {
         <div>
           <div className="flex items-center gap-3 mb-3">
              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase flex items-center gap-3">
-               <Ghost className="w-10 h-10 text-red-500 animate-pulse" />
+               <Ghost className="w-10 h-10 text-gold animate-pulse" />
                THE SYNDICATE
              </h1>
-             <Badge variant="outline" className="tracking-widest text-[10px] text-red-500 border-red-500 bg-red-950/20 px-3 py-1 font-bold">
+             <Badge variant="outline" className="tracking-widest text-[10px] text-gold border-gold bg-red-950/20 px-3 py-1 font-bold">
                SECURED INTERFACE
              </Badge>
           </div>
           <p className="text-zinc-500 uppercase tracking-widest text-xs flex items-center gap-2">
-             <Skull className="w-4 h-4 text-red-600" /> ENCRYPTED NODE // PROTOCOLS: COMMUNICATION FEED & ATTACK PROXY
+             <Skull className="w-4 h-4 text-gold" /> ENCRYPTED NODE // PROTOCOLS: COMMUNICATION FEED & ATTACK PROXY
           </p>
         </div>
 
@@ -286,7 +286,7 @@ export default function SyndicatePage() {
             <div className="font-bold text-white text-sm uppercase">{currentUser.firstName} {currentUser.lastName}</div>
             <div className="text-[10px] text-zinc-400 mt-1 flex justify-between">
               <span>CLEARANCE TIER:</span>
-              <span className="text-red-500 font-bold">LEVEL {userClearance} ({getTierLabel(userClearance)})</span>
+              <span className="text-gold font-bold">LEVEL {userClearance} ({getTierLabel(userClearance)})</span>
             </div>
             <div className="text-[10px] text-zinc-400 flex justify-between">
               <span>FACTION ROLE:</span>
@@ -302,7 +302,7 @@ export default function SyndicatePage() {
           onClick={() => setActiveTab('feed')}
           className={`flex-1 py-4 text-center font-black uppercase tracking-[0.2em] text-sm transition-all border-r-2 border-black last:border-r-0 ${
             activeTab === 'feed'
-              ? 'bg-red-600 text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
+              ? 'bg-gold text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
               : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
           }`}
         >
@@ -312,7 +312,7 @@ export default function SyndicatePage() {
           onClick={() => setActiveTab('proxy')}
           className={`flex-1 py-4 text-center font-black uppercase tracking-[0.2em] text-sm transition-all ${
             activeTab === 'proxy'
-              ? 'bg-red-600 text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
+              ? 'bg-gold text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
               : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
           }`}
         >
@@ -333,9 +333,9 @@ export default function SyndicatePage() {
             {/* Create Post (Left Column) */}
             <div className="lg:col-span-1 space-y-6">
               <div className="border-4 border-black bg-black p-6 shadow-[6px_6px_0px_0px_#ffffff] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-red-600/5 rotate-45 transform translate-x-12 -translate-y-12 border-l border-red-500" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 rotate-45 transform translate-x-12 -translate-y-12 border-l border-gold" />
                 <h2 className="text-xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b-2 border-zinc-900 pb-3">
-                  <Shield className="w-5 h-5 text-red-500" /> BROADCAST DATA
+                  <Shield className="w-5 h-5 text-gold" /> BROADCAST DATA
                 </h2>
                 
                 <form onSubmit={handleCreatePost} className="space-y-5">
@@ -347,7 +347,7 @@ export default function SyndicatePage() {
                       value={newPostTitle}
                       onChange={e => setNewPostTitle(e.target.value)}
                       placeholder="e.g., RECON REPORT #291"
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-red-500 h-10 font-mono"
+                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold h-10 font-mono"
                     />
                   </div>
                   
@@ -361,7 +361,7 @@ export default function SyndicatePage() {
                       placeholder="Write encrypted intelligence..."
                       required
                       rows={5}
-                      className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-red-500 p-3 font-mono text-sm focus:outline-none focus:ring-0"
+                      className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold p-3 font-mono text-sm focus:outline-none focus:ring-0"
                     />
                   </div>
 
@@ -382,7 +382,7 @@ export default function SyndicatePage() {
                               !isAllowed 
                                 ? 'border-zinc-900 text-zinc-700 bg-zinc-950/40 cursor-not-allowed'
                                 : newPostTier === tier
-                                  ? 'border-red-500 bg-red-950/30 text-white font-black'
+                                  ? 'border-gold bg-red-950/30 text-white font-black'
                                   : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 bg-zinc-950'
                             }`}
                           >
@@ -392,7 +392,7 @@ export default function SyndicatePage() {
                       })}
                     </div>
                     {newPostTier > 1 && (
-                      <p className="text-[9px] text-red-400/80 mt-2 uppercase tracking-wider">
+                      <p className="text-[9px] text-goldLight/80 mt-2 uppercase tracking-wider">
                         ⚠️ Restricting view to Level {newPostTier}+ agents.
                       </p>
                     )}
@@ -412,7 +412,7 @@ export default function SyndicatePage() {
                   <span className="text-[9px] text-zinc-500 uppercase">System DB Diagnostics</span>
                   <button 
                     onClick={handleManualSeed}
-                    className="text-[9px] text-red-500 hover:text-red-400 font-bold uppercase tracking-widest flex items-center gap-1 bg-red-950/20 border border-red-950 px-2 py-1"
+                    className="text-[9px] text-gold hover:text-goldLight font-bold uppercase tracking-widest flex items-center gap-1 bg-red-950/20 border border-red-950 px-2 py-1"
                   >
                     <RefreshCw className="w-3 h-3" /> Force Seed Mock Data
                   </button>
@@ -430,7 +430,7 @@ export default function SyndicatePage() {
                     onClick={() => setFeedFilterTier('all')}
                     className={`px-3 py-1 text-xs font-bold transition-all border ${
                       feedFilterTier === 'all' 
-                        ? 'border-red-500 bg-red-950/20 text-white' 
+                        ? 'border-gold bg-red-950/20 text-white' 
                         : 'border-zinc-800 text-zinc-500 hover:text-white'
                     }`}
                   >
@@ -446,7 +446,7 @@ export default function SyndicatePage() {
                           !isAllowed 
                             ? 'border-zinc-950 text-zinc-800 cursor-not-allowed'
                             : feedFilterTier === tier
-                              ? 'border-red-500 bg-red-950/20 text-white'
+                              ? 'border-gold bg-red-950/20 text-white'
                               : 'border-zinc-800 text-zinc-500 hover:text-white'
                         }`}
                       >
@@ -458,7 +458,7 @@ export default function SyndicatePage() {
               </div>
 
               {loadingPosts ? (
-                <div className="text-red-500 animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
+                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
                   DECRYPTING DATABASE FEED DATA STREAM...
                 </div>
               ) : filteredPosts.length === 0 ? (
@@ -498,7 +498,7 @@ export default function SyndicatePage() {
                       </div>
 
                       {/* Content */}
-                      <div className="text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed font-mono py-2 select-text selection:bg-red-600 selection:text-white">
+                      <div className="text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed font-mono py-2 select-text selection:bg-gold selection:text-white">
                         {post.content}
                       </div>
 
@@ -508,7 +508,7 @@ export default function SyndicatePage() {
                           onClick={() => handleToggleLike(post.id)}
                           className={`flex items-center gap-2 text-xs font-black uppercase px-3 py-1.5 border transition-all ${
                             post.isLiked
-                              ? 'bg-red-600 border-red-500 text-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
+                              ? 'bg-gold border-gold text-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
                               : 'border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 bg-black'
                           }`}
                         >
@@ -564,7 +564,7 @@ export default function SyndicatePage() {
                               value={commentInputs[post.id] || ''}
                               onChange={e => setCommentInputs(prev => ({ ...prev, [post.id]: e.target.value }))}
                               placeholder="Type secured reply..."
-                              className="bg-black border-2 border-zinc-800 rounded-none text-xs focus:border-red-500 text-white font-mono h-9"
+                              className="bg-black border-2 border-zinc-800 rounded-none text-xs focus:border-gold text-white font-mono h-9"
                               disabled={submittingComment[post.id]}
                             />
                             <Button 
@@ -598,7 +598,7 @@ export default function SyndicatePage() {
             <div className="lg:col-span-1 space-y-6">
               <div className="border-4 border-black bg-black p-6 shadow-[6px_6px_0px_0px_#ffffff]">
                 <h2 className="text-xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b-2 border-zinc-900 pb-3">
-                  <Target className="w-5 h-5 text-red-500" /> INITIATE CAMPAIGN
+                  <Target className="w-5 h-5 text-gold" /> INITIATE CAMPAIGN
                 </h2>
                 <form onSubmit={handleCreateCampaign} className="space-y-4">
                   <div>
@@ -610,7 +610,7 @@ export default function SyndicatePage() {
                       onChange={e => setNewCampaignName(e.target.value)}
                       placeholder="Campaign name..."
                       required
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"
+                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold font-mono"
                     />
                   </div>
                   <div>
@@ -621,7 +621,7 @@ export default function SyndicatePage() {
                       value={newCampaignDesc}
                       onChange={e => setNewCampaignDesc(e.target.value)}
                       placeholder="Notes and briefing..."
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"
+                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold font-mono"
                     />
                   </div>
                   <Button 
@@ -638,7 +638,7 @@ export default function SyndicatePage() {
             {/* Right Col: Active Campaigns */}
             <div className="lg:col-span-2 space-y-6">
               {loadingCampaigns ? (
-                <div className="text-red-500 animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
+                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
                   DECRYPTING ACTIVE CAMPAIGN RECORDS...
                 </div>
               ) : campaigns.length === 0 ? (
@@ -659,7 +659,7 @@ export default function SyndicatePage() {
                       <div className="text-right">
                         <Badge className={`px-2 py-0.5 text-xs font-black uppercase border rounded-none ${
                           camp.status === 'ACTIVE' 
-                            ? 'border-red-500 bg-red-950/20 text-red-400' 
+                            ? 'border-gold bg-red-950/20 text-goldLight' 
                             : 'border-zinc-800 text-zinc-400 bg-black'
                         }`}>
                           {camp.status}
@@ -670,7 +670,7 @@ export default function SyndicatePage() {
 
                     <div className="space-y-4 mb-6">
                       <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                        <Target className="w-4 h-4 text-red-500" /> SYSTEM TARGETS ({camp.targets.length})
+                        <Target className="w-4 h-4 text-gold" /> SYSTEM TARGETS ({camp.targets.length})
                       </h4>
                       {camp.targets.length === 0 && (
                         <p className="text-xs text-zinc-600 uppercase italic">No proxy email targets added yet.</p>
@@ -693,11 +693,11 @@ export default function SyndicatePage() {
                                   <td className="p-3 text-white font-bold">
                                     {t.name} <span className="text-zinc-650 font-normal">({t.company || 'n/v/t'})</span>
                                   </td>
-                                  <td className="p-3 text-red-400">{t.email}</td>
+                                  <td className="p-3 text-goldLight">{t.email}</td>
                                   <td className="p-3 font-mono">€{t.debtAmount?.toFixed(2) || '0.00'}</td>
                                   <td className="p-3 text-right">
                                     {t.status === 'SENT' ? (
-                                      <span className="inline-flex items-center gap-1 text-red-500 font-black tracking-widest text-[9px] bg-red-950/20 px-2 py-0.5 border border-red-950">
+                                      <span className="inline-flex items-center gap-1 text-gold font-black tracking-widest text-[9px] bg-red-950/20 px-2 py-0.5 border border-red-950">
                                         <CheckCircle2 className="w-3 h-3"/> DISPATCHED
                                       </span>
                                     ) : (
@@ -716,10 +716,10 @@ export default function SyndicatePage() {
                     <div className="bg-black p-4 border border-zinc-900 mb-6">
                       <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-3 font-bold">ADD NEW TARGET TO THIS PROTOCOL</div>
                       <form onSubmit={(e) => handleAddTarget(e, camp.id)} className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                        <Input value={targetName} onChange={e=>setTargetName(e.target.value)} placeholder="Full Name" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"/>
-                        <Input value={targetEmail} onChange={e=>setTargetEmail(e.target.value)} type="email" placeholder="Email" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"/>
-                        <Input value={targetCompany} onChange={e=>setTargetCompany(e.target.value)} placeholder="Company (opt)" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"/>
-                        <Input value={targetDebt} onChange={e=>setTargetDebt(e.target.value)} type="number" placeholder="Debt Value €" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-red-500 font-mono"/>
+                        <Input value={targetName} onChange={e=>setTargetName(e.target.value)} placeholder="Full Name" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
+                        <Input value={targetEmail} onChange={e=>setTargetEmail(e.target.value)} type="email" placeholder="Email" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
+                        <Input value={targetCompany} onChange={e=>setTargetCompany(e.target.value)} placeholder="Company (opt)" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
+                        <Input value={targetDebt} onChange={e=>setTargetDebt(e.target.value)} type="number" placeholder="Debt Value €" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
                         <Button type="submit" disabled={addingToCampaign === camp.id} className="h-9 bg-white hover:bg-zinc-200 text-black font-black uppercase text-xs rounded-none border border-black">+</Button>
                       </form>
                     </div>
@@ -728,7 +728,7 @@ export default function SyndicatePage() {
                     <Button 
                       onClick={() => handleLaunch(camp.id)}
                       disabled={launchingId === camp.id || camp.targets.filter((t:any) => t.status !== 'SENT').length === 0}
-                      className="w-full bg-red-650 hover:bg-red-500 text-black font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all rounded-none border-2 border-black py-6 text-sm"
+                      className="w-full bg-red-650 hover:bg-gold text-black font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all rounded-none border-2 border-black py-6 text-sm"
                     >
                       {launchingId === camp.id ? (
                         <span className="flex items-center justify-center gap-2 animate-pulse">

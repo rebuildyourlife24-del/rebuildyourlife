@@ -284,10 +284,10 @@ export default function TradingDashboard() {
 
       {/* -------------------- LIVE API CONNECTIVITY ERROR -------------------- */}
       {liveError && (
-        <div className="border-4 border-red-500 bg-red-950/20 text-white p-4 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-[8px_8px_0px_0px_#ef4444]">
-          <ShieldAlert className="w-6 h-6 text-red-500 flex-shrink-0 animate-bounce" />
+        <div className="border-4 border-gold bg-red-950/20 text-white p-4 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-[8px_8px_0px_0px_#ef4444]">
+          <ShieldAlert className="w-6 h-6 text-gold flex-shrink-0 animate-bounce" />
           <div>
-            <span className="font-bold block text-red-500 mb-1">EXCHANGE CONNECTIVITY ERROR:</span>
+            <span className="font-bold block text-gold mb-1">EXCHANGE CONNECTIVITY ERROR:</span>
             <span>{liveError}. Please verify your API key, secret, and IP restrictions on the exchange.</span>
           </div>
         </div>

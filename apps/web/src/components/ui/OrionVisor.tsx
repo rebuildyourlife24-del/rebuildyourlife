@@ -81,7 +81,7 @@ export function OrionVisor() {
               <div className="flex items-center gap-3">
                 <Terminal className="w-5 h-5 text-gold" />
                 <h2 className="text-white font-bold tracking-widest uppercase text-sm">Orion Comms Link</h2>
-                <div className="flex items-center gap-2 ml-4 px-2 py-1 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-500 font-mono">
+                <div className="flex items-center gap-2 ml-4 px-2 py-1 bg-gold/10 border border-gold/20 rounded text-xs text-gold font-mono">
                   <Zap className="w-3 h-3 animate-pulse" />
                   GROQ ENGINE ONLINE
                 </div>

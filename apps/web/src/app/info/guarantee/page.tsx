@@ -42,8 +42,8 @@ export default function GuaranteePage() {
               </div>
 
               <div className="flex gap-4">
-                <div className="mt-1 bg-red-900/20 border border-red-500/20 rounded-lg p-2 h-fit">
-                  <BrainCircuit className="w-5 h-5 text-red-400" />
+                <div className="mt-1 bg-navyLight/20 border border-gold/20 rounded-lg p-2 h-fit">
+                  <BrainCircuit className="w-5 h-5 text-goldLight" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Route B: Luxury Administration (Opt-In)</h3>

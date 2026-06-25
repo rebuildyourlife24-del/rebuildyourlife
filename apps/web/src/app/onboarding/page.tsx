@@ -26,7 +26,7 @@ function OnboardingContent() {
 
   return (
     <div className="w-full max-w-lg bg-[#0a0a0a] border border-white/10 p-8 shadow-2xl relative z-10 flex flex-col items-center text-center">
-      <div className="w-16 h-16 bg-[#d4af37]/10 border border-[#d4af37] rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,0,61,0.2)]">
+      <div className="w-16 h-16 bg-[#d4af37]/10 border border-[#d4af37] rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
         {status === 'loading' ? (
           <Loader2 className="w-8 h-8 text-[#d4af37] animate-spin" />
         ) : status === 'success' ? (

@@ -218,7 +218,7 @@ export function OrionNeuralLink() {
         
         {/* Unread indicator / Status */}
         {!isOpen && (
-          <div className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-black"></div>
+          <div className="absolute top-0 right-0 w-4 h-4 bg-gold rounded-full border-2 border-black"></div>
         )}
       </motion.button>
     </div>
