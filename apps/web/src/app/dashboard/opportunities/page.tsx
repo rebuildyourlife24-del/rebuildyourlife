@@ -1,124 +1,120 @@
-'use client';
+import { db } from '@/lib/db';
+import { Lock, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
+import Link from 'next/link';
 
-import { useState } from 'react';
-import { Target, Zap, Play, CheckCircle2, BarChart3, Video } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+export default async function OpportunitiesPage() {
+  // Simuleer auth - we pakken de eerste gebruiker in de DB (of pas dit aan naar next-auth logic)
+  const currentUser = await db.user.findFirst();
 
-// Recharts for data visualization
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+  if (!currentUser) {
+    return <div className="p-10 text-white">Geen gebruiker gevonden. Log in.</div>;
+  }
 
-const mockData = [
-  { name: 'Good (Base)', roi: 1200, color: '#3f3f46' },
-  { name: 'Better (Exp)', roi: 4500, color: '#f59e0b' },
-  { name: 'Best (Viral)', roi: 18500, color: '#10b981' },
-];
+  // ELITE CHECK
+  // Alleen toegankelijk voor "ELITE" tier of hoger (bijv. clearanceLevel >= 5)
+  const isElite = currentUser.subscriptionTier === 'ELITE' || currentUser.clearanceLevel >= 5;
 
-export default function OpportunitiesPage() {
-  const [status, setStatus] = useState('REVIEW'); // REVIEW, TESTING
-
-  const handleInitiate = () => {
-    setStatus('TESTING');
-    // In a real app, this calls initiateTesting(reportId)
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          The Opportunity Engine <Target className="w-6 h-6 text-emerald-500" />
-        </h1>
-        <p className="mt-2 text-zinc-400">Orion scant wereldwijde trends, genereert businesscases en bouwt autonome ad-campagnes.</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: The Report */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-black/40 border border-emerald-500/20 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase rounded-full border border-emerald-500/20">
-                New Target Detected
-              </span>
-              <span className="text-zinc-500 text-sm">Vandaag, 14:03</span>
+  if (!isElite) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+        <div className="max-w-2xl w-full bg-zinc-950 border border-red-500/30 rounded-2xl p-10 text-center relative overflow-hidden">
+          {/* Scanline Effect */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none opacity-50"></div>
+          
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="w-24 h-24 rounded-full bg-red-950 border border-red-500/50 flex items-center justify-center mb-6 animate-pulse">
+              <ShieldAlert className="w-12 h-12 text-red-500" />
             </div>
             
-            <h2 className="text-2xl font-bold text-white mb-2">Viral Trend: Smart Posture Correctors</h2>
-            <p className="text-zinc-400 mb-6">
-              Zittend werk eist zijn tol. Korte, authentieke UGC video's op TikTok van mensen die hun houding fixen, gaan op dit moment viraal met extreem lage CPM's.
+            <h1 className="text-3xl font-black text-white tracking-wider uppercase mb-2">
+              Toegang Geweigerd
+            </h1>
+            <p className="text-red-400 font-mono text-sm tracking-widest uppercase mb-8">
+              Clearance Level: INSUFFICIENT
+            </p>
+            
+            <p className="text-zinc-400 text-lg leading-relaxed mb-8 max-w-lg">
+              De Sovereign Wealth Generator en autonome verdienmodellen zijn exclusief geclassificeerd voor het <strong className="text-white">Elite Team</strong>. Je huidige abonnement ({currentUser.subscriptionTier}) geeft geen toegang tot deze Hermes-modules.
             </p>
 
-            <div className="h-64 mt-8">
-              <h3 className="text-sm font-bold text-zinc-500 uppercase mb-4 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" /> 30-Day Profit Projection Matrix
-              </h3>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockData}>
-                  <XAxis dataKey="name" stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `€${val}`} />
-                  <Tooltip 
-                    cursor={{fill: '#27272a'}}
-                    contentStyle={{ backgroundColor: '#000', border: '1px solid #3f3f46', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff', fontWeight: 'bold' }}
-                    formatter={(value: any) => [`€${value}`, 'Verwachte Winst']}
-                  />
-                  <Bar dataKey="roi" radius={[4, 4, 0, 0]}>
-                    {mockData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <Link 
+              href="/vsl"
+              className="bg-red-600 hover:bg-red-500 text-white px-8 py-4 rounded-xl font-bold tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] flex items-center gap-3"
+            >
+              <Lock className="w-5 h-5" />
+              Upgrade naar Elite Status
+            </Link>
           </div>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Action Area */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-white">The Live Testing Ground</h3>
-              <p className="text-sm text-zinc-400">Lanceer micro-budget ads om de tractie live te valideren.</p>
-            </div>
-            {status === 'REVIEW' ? (
-              <Button onClick={handleInitiate} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 px-8">
-                <Play className="w-4 h-4" /> Initiate Testing
-              </Button>
-            ) : (
-              <Button disabled className="bg-zinc-800 text-emerald-400 border border-emerald-500/20 gap-2 px-8">
-                <Zap className="w-4 h-4 animate-pulse" /> Testing Initiated...
-              </Button>
-            )}
+  // ALS ELITE: Haal de opportunities op
+  const opportunities = await db.opportunityReport.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 10
+  });
+
+  return (
+    <div className="min-h-screen bg-black text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-12 border-b border-cyan-500/20 pb-6">
+          <div>
+            <h1 className="text-4xl font-black tracking-wider uppercase flex items-center gap-4">
+              <Zap className="w-8 h-8 text-cyan-400" />
+              Sovereign Wealth Radar
+            </h1>
+            <p className="text-cyan-400/60 font-mono mt-2 uppercase tracking-widest text-sm">
+              Elite Clearance Accepted. Live Hermes Feed.
+            </p>
+          </div>
+          <div className="px-4 py-2 bg-cyan-950/50 border border-cyan-500/30 rounded-lg text-cyan-400 font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            Hermes Analytics Active
           </div>
         </div>
 
-        {/* Right Column: Content Forge */}
-        <div className="space-y-6">
-          <div className="bg-black/40 border border-zinc-800/50 rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
-              <Video className="w-5 h-5 text-gold-500" /> The Content Forge
-            </h3>
-            <p className="text-sm text-zinc-400 mb-6">
-              AI-Gegenereerde media staat klaar voor A/B testing. Geen menselijke input benodigd.
-            </p>
-
-            <div className="space-y-4">
-              <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-zinc-500 uppercase">TikTok UGC Video</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                </div>
-                <p className="text-sm text-white italic">"POV: Je rug doet eindelijk geen pijn meer na 8 uur achter je bureau 😭✨"</p>
-              </div>
-
-              <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-zinc-500 uppercase">Insta Carousel</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                </div>
-                <p className="text-sm text-white italic">"De makkelijkste hack voor een betere houding. Swipe voor resultaat 👉"</p>
-              </div>
-            </div>
+        {opportunities.length === 0 ? (
+          <div className="text-center py-20 border border-zinc-800 border-dashed rounded-2xl">
+            <p className="text-zinc-500 font-mono">Geen signalen gedetecteerd. Wachten op de volgende cyclus...</p>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {opportunities.map((opp) => (
+              <div key={opp.id} className="bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 rounded-2xl p-6 transition-all group">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest px-2 py-1 bg-cyan-950 rounded mb-2 inline-block">
+                      {opp.niche}
+                    </span>
+                    <h3 className="text-xl font-bold">{opp.title}</h3>
+                  </div>
+                  <TrendingUp className="w-6 h-6 text-zinc-600 group-hover:text-cyan-400 transition-colors" />
+                </div>
+                
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                  {opp.summary}
+                </p>
 
+                <div className="grid grid-cols-3 gap-4 border-t border-zinc-800 pt-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Base ROI</p>
+                    <p className="text-white font-mono">{opp.goodROI}%</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Target</p>
+                    <p className="text-cyan-400 font-mono">{opp.betterROI}%</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Max Potential</p>
+                    <p className="text-green-400 font-mono">{opp.bestROI}%</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
