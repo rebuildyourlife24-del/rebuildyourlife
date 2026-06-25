@@ -5,7 +5,8 @@ import { prisma } from "@rebuildyourlife/database";
 import jwt from 'jsonwebtoken';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
+const JWT_SECRET = process.env.JWT_SECRET || "fallback";
+if (!JWT_SECRET) throw new Error('JWT_SECRET is missing');
 
 export const dynamic = 'force-dynamic';
 
@@ -63,5 +64,4 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL('/dashboard/war-room', request.url));
-}
+  return NextResponse.redirect(new URL('/dashboard/war-room', req

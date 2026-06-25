@@ -63,8 +63,11 @@ export async function POST(req: Request) {
   }
 
   if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object as Stripe.Invoice;
+    if (!invoice.subscription) return new NextResponse(null, { status: 200 });
+
     const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string
+      invoice.subscription as string
     );
 
     await db.user.update({
@@ -74,7 +77,7 @@ export async function POST(req: Request) {
       data: {
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000
+          (subscription as any).current_period_end * 1000
         ),
       },
     });

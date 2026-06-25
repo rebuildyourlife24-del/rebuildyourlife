@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import CoursePlayer from './CoursePlayer';
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET is missing');
 
 async function getAuthenticatedUser() {
   const cookieStore = await cookies();

@@ -3,13 +3,14 @@ import { db } from '@/lib/db';
 import { ShoppingBag, Star, ShieldCheck, Zap, ArrowRight, Menu } from 'lucide-react';
 
 interface SitePageProps {
-  params: {
+  params: Promise<{
     domain: string;
-  };
+  }>;
 }
 
 export default async function SitePage({ params }: SitePageProps) {
-  const decodedDomain = decodeURIComponent(params.domain);
+  const resolvedParams = await params;
+  const decodedDomain = decodeURIComponent(resolvedParams.domain);
   const domain = decodedDomain.split(':')[0];
 
   const site = await db.shopifyStore.findFirst({

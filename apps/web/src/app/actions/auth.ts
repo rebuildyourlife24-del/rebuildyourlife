@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import { createServerClient } from "@/lib/supabase/server";
 import { prisma } from "@rebuildyourlife/database";
 
