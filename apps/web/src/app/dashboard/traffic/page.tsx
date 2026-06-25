@@ -362,7 +362,7 @@ export default function TrafficPage() {
             </div>
 
             {errorMessage && (
-              <div className="border border-red-500 bg-red-950/20 p-3 text-red-500 text-xs flex items-center gap-2">
+              <div className="border border-gold bg-navy/20 p-3 text-gold text-xs flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 <span>{errorMessage}</span>
               </div>
@@ -435,7 +435,7 @@ export default function TrafficPage() {
                         <span className="text-sm font-extrabold uppercase text-white truncate max-w-[150px]">{c.campaignName}</span>
                         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 border ${
                           c.status === 'VIRAL' 
-                            ? 'border-red-500 bg-red-950/40 text-red-500 font-extrabold animate-pulse' 
+                            ? 'border-gold bg-navy/40 text-gold font-extrabold animate-pulse' 
                             : c.status === 'ACTIVE' 
                               ? 'border-emerald-500 bg-emerald-950/40 text-emerald-500' 
                               : 'border-yellow-500 bg-yellow-950/40 text-yellow-500'
@@ -496,13 +496,13 @@ export default function TrafficPage() {
                   <button
                     onClick={() => handleTriggerViral(selectedCampaign.id)}
                     disabled={isBoosting}
-                    className="bg-black border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-black font-extrabold uppercase px-4 py-2 text-xs transition-all duration-100 flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]"
+                    className="bg-black border-2 border-gold text-gold hover:bg-gold hover:text-black font-extrabold uppercase px-4 py-2 text-xs transition-all duration-100 flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]"
                   >
                     <Flame className="w-4 h-4 animate-bounce" /> INJECT VIRAL ALGORITHM (BOOST)
                   </button>
                 ) : (
-                  <span className="border-2 border-red-500/30 bg-red-950/20 text-red-500 px-4 py-2 text-xs font-extrabold uppercase flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-red-500" /> VIRAL MULTIPLIER ACTIVE (12.0X)
+                  <span className="border-2 border-gold/30 bg-navy/20 text-gold px-4 py-2 text-xs font-extrabold uppercase flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-gold" /> VIRAL MULTIPLIER ACTIVE (12.0X)
                   </span>
                 )}
               </div>
@@ -614,10 +614,10 @@ export default function TrafficPage() {
       {/* MODAL: MOLLIE SANDBOX SIMULATOR */}
       {showSandboxModal && (
         <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
-          <div className="border-4 border-red-500 bg-black p-8 max-w-md w-full shadow-[8px_8px_0px_0px_rgba(239,68,68,0.2)] space-y-6">
-            <div className="border-b-2 border-red-500 pb-3 flex items-center gap-3">
-              <div className="w-3 h-3 bg-red-500 animate-ping rounded-full" />
-              <h3 className="text-xl font-bold uppercase tracking-tight text-red-500 font-mono">
+          <div className="border-4 border-gold bg-black p-8 max-w-md w-full shadow-[8px_8px_0px_0px_rgba(239,68,68,0.2)] space-y-6">
+            <div className="border-b-2 border-gold pb-3 flex items-center gap-3">
+              <div className="w-3 h-3 bg-gold animate-ping rounded-full" />
+              <h3 className="text-xl font-bold uppercase tracking-tight text-gold font-mono">
                 MOLLIE_PAYMENT_GATEWAY_V3 (SANDBOX)
               </h3>
             </div>
@@ -636,7 +636,7 @@ export default function TrafficPage() {
             <button 
               onClick={handleCompleteSandboxPayment}
               disabled={isBuying}
-              className="w-full bg-red-500 text-black font-extrabold uppercase py-3 border-2 border-red-500 hover:bg-black hover:text-red-500 transition-all duration-150 shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]"
+              className="w-full bg-gold text-black font-extrabold uppercase py-3 border-2 border-gold hover:bg-black hover:text-gold transition-all duration-150 shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]"
             >
               {isBuying ? 'PROCESSING TRANSACTION...' : '✅ CONFIRM betaling & UPDATE SALDO'}
             </button>
