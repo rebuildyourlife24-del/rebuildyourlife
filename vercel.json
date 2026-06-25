@@ -1,5 +1,11 @@
 {
   "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web",
   "outputDirectory": "apps/web/.next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/hermes/learn",
+      "schedule": "0 */2 * * *"
+    }
+  ]
 }
