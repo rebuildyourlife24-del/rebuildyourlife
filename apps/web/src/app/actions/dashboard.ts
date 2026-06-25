@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 async function getAuthenticatedUserId(): Promise<string | null> {
   const token = (await cookies()).get("ryl_session")?.value;

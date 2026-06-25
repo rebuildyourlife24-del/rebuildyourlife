@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { BybitService } from '@/lib/services/bybit.service';
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 async function getAuthenticatedUser() {
   const cookieStore = await cookies();

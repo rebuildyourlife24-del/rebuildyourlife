@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { routeAIRequest } from "../../lib/ai-router";
 
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 // Helper: Resolve active user or fallback to/create a guest user session
 async function resolveUser(): Promise<string> {

@@ -25,58 +25,8 @@ export async function POST(req: Request) {
     const mollieKey = process.env.MOLLIE_API_KEY;
 
     if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
-      // --- DEVELOPMENT / MOCK WEBHOOK MODE ---
-      console.log(`[DEV] Mollie API Key missing or default. Processing mock webhook for Payment: ${paymentId}`);
-
-      // Parse JSON body if present, or look for query params/fallback mock data
-      const url = new URL(req.url);
-      const jsonBody = await req.json().catch(() => ({}));
-      
-      const userId = jsonBody.userId || url.searchParams.get('userId');
-      const tier = jsonBody.tier || url.searchParams.get('tier') || "ECOM";
-      const amountVal = jsonBody.amount || url.searchParams.get('amount') || "50.00";
-      
-      console.log(`[MOLLIE WEBHOOK MOCK] Data: User=${userId}, Tier=${tier}, Amount=${amountVal}`);
-
-      if (userId) {
-        // Update user status
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            subscriptionTier: tier,
-            subscriptionStatus: "ACTIVE",
-            onboardingCompleted: true,
-            mollieCustomerId: "cst_mock_omega_customer_12345",
-          }
-        });
-
-        // Send notification
-        await prisma.notification.create({
-          data: {
-            userId,
-            title: `Welkom bij ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'}!`,
-            message: `Je onboarding betaling is succesvol verwerkt. Je hebt nu toegang tot alle ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'} functionaliteiten.`,
-          },
-        });
-      }
-
-      // Preserve existing simulation logs
-      const totalAmount = parseFloat(amountVal);
-      const platformCut = totalAmount * 0.25;
-      const franchiseCut = totalAmount * 0.75;
-      
-      console.log(`[SPLIT PAYMENT ROUTING (MOCK)]`);
-      console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
-      console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
-
-      return NextResponse.json({ 
-        success: true,
-        status: 'paid',
-        split: {
-          franchise: franchiseCut,
-          treasury: platformCut
-        }
-      });
+      console.error("[MOLLIE WEBHOOK] CRITICAL ERROR: Mollie API key not configured on server. Rejecting webhook.");
+      return NextResponse.json({ error: "Mollie API key not configured on server" }, { status: 500 });
     }
 
     // --- REAL MOLLIE WEBHOOK INTEGRATION ---

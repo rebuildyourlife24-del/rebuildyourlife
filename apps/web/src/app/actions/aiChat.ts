@@ -7,7 +7,7 @@ import { Sentinel } from "../../lib/orion/sentinel-scanner";
 import { routeAIRequest } from "../../lib/ai-router";
 
 
-const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 async function getAuthenticatedUserId(): Promise<string | null> {
   const cookieStore = await cookies();
