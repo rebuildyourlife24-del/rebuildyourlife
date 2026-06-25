@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+
 import { db } from '@/lib/db';
 import { headers } from 'next/headers';
-import Stripe from 'stripe';
+
 
 export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
   const signature = headersList.get('Stripe-Signature') as string;
 
-  let event: Stripe.Event;
+  let event: any;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    throw new Error('Stripe disabled'); // event = stripe.webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET || ''
@@ -21,10 +21,10 @@ export async function POST(req: Request) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
+  const session = event.data.object as any;
 
   if (event.type === 'checkout.session.completed') {
-    const subscription = await stripe.subscriptions.retrieve(
+    throw new Error('Stripe disabled'); // const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     );
 
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const invoice = event.data.object as any;
     if (!invoice.subscription) return new NextResponse(null, { status: 200 });
 
-    const subscription = await stripe.subscriptions.retrieve(
+    throw new Error('Stripe disabled'); // const subscription = await stripe.subscriptions.retrieve(
       invoice.subscription as string
     );
 
@@ -85,4 +85,5 @@ export async function POST(req: Request) {
 
   return new NextResponse(null, { status: 200 });
 }
+
 
