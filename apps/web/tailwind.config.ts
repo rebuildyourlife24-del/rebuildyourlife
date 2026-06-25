@@ -9,21 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#000000", // Vantablack
-        navyLight: "#050505", // Deep Obsidian
-        gold: "#ffffff", // Pure white for text
-        goldLight: "#cccccc", // Muted white
-        surface: "rgba(10, 10, 10, 0.8)", // Dark terminal glass
-        surfaceLight: "rgba(20, 20, 20, 0.9)", // Lighter terminal glass
-        textPrimary: "#ffffff", // Pure white
-        textSecondary: "#666666", // Stealth grey
-        success: "#ff003c", // System Red (was green)
-        warning: "#ffaa00", // System yellow
-        danger: "#ff003c" // DARPA Red
+        navy: "#0a192f", // Marineblauw (diep blauw)
+        navyLight: "#112240", // Lichter marineblauw
+        gold: "#d4af37", // Goud voor accenten
+        goldLight: "#f3e5ab", // Lichter goud
+        surface: "rgba(10, 25, 47, 0.8)", // Marineblauw glass
+        surfaceLight: "rgba(17, 34, 64, 0.9)", // Lichter marineblauw glass
+        textPrimary: "#ffffff", // Wit voor contrast
+        textSecondary: "#8892b0", // Lichtblauw/grijs
+        success: "#10b981", // Emerald green
+        warning: "#f59e0b", // Amber
+        danger: "#ef4444" // Rood
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #ff003c22 0deg, #000000 180deg, #ff003c22 360deg)',
+        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #0a192f22 0deg, #112240 180deg, #0a192f22 360deg)',
       },
       animation: {
         'aurora': 'aurora 15s ease infinite',

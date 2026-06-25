@@ -2,6 +2,7 @@
   "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
+  "regions": ["iad1"],
   "crons": [
     {
       "path": "/api/hermes/learn",

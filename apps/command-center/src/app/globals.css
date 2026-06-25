@@ -151,12 +151,12 @@ body {
   right: 0;
   background: linear-gradient(180deg,
     transparent 0%,
-    rgba(244, 63, 94, 0.2) 30%,
-    rgba(244, 63, 94, 0.08) 50%,
-    rgba(244, 63, 94, 0.2) 70%,
+    rgba(59, 130, 246, 0.2) 30%,
+    rgba(59, 130, 246, 0.08) 50%,
+    rgba(59, 130, 246, 0.2) 70%,
     transparent 100%
   );
-  box-shadow: 0 0 8px rgba(244, 63, 94, 0.15);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.15);
 }
 
 /* Animated LED pulse */
@@ -178,7 +178,7 @@ body {
 }
 
 .led-strip-right::after {
-  background: radial-gradient(ellipse, rgba(244, 63, 94, 0.4), transparent 70%);
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.4), transparent 70%);
   filter: blur(4px);
   animation-delay: -3s;
 }

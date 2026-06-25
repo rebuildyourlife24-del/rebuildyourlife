@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && npm run db:generate && npx turbo run build --filter=@rebuildyourlife/web",
+  "buildCommand": "cd ../.. && npm run db:generate && npx turbo run build --filter=@rebuildyourlife/web --force",
   "outputDirectory": ".next",
   "regions": ["iad1"]
 }
