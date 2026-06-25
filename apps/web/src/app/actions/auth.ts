@@ -6,8 +6,8 @@ import { prisma } from "@rebuildyourlife/database";
 export async function loginAction(email: string, password: string, rememberMe?: boolean) {
   const supabase = await createServerClient();
 
-  // DEV BYPASS: Zodat de maker altijd kan inloggen!
-  if (password === 'admin' || password === 'orion') {
+  // DEV BYPASS: Zodat jij altijd via jouw master-email in kunt loggen
+  if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion')) {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     cookieStore.set('dev_bypass', 'true', { path: '/' });
