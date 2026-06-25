@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -49,8 +49,10 @@ model User {
   creditorDossiers       CreditorDossier[]
   debts                  Debt[]
   emergencyRequests      EmergencyRequest[]
+  franchises             Franchise[]
   goals                  Goal[]
   goalDossiers           GoalDossier[]
+  godbrainAccount        GodbrainAccount?
   healthLogs             HealthLog[]
   interceptionAlerts     InterceptionAlert[]         @relation("TargetedUser")
   justiceLedgers         JusticeLedger[]
@@ -58,29 +60,25 @@ model User {
   lifeAreas              LifeArea[]
   marketingConversions   MarketingConversion[]
   notifications          Notification[]
+  opportunities          Opportunity[]               @relation("AssignedOpportunities")
   opportunityReports     OpportunityReport[]
-  
-  // Neo-Bank Relations
-  godbrainAccount        GodbrainAccount?
-  walletTransactions     WalletTransaction[]
   rebuildPrograms        RebuildProgram[]
   sessions               Session[]
   shopifyStores          ShopifyStore[]
   socialContacts         SocialContact[]
   socialMediaPosts       SocialMediaPost[]
   socialIntegrations     SocialPlatformIntegration[]
-  tasks                  Task[]
-  taxStrategies          TaxStrategy[]
-  treasuryVaults         TreasuryVault[]
   syndicateCampaigns     SyndicateCampaign[]
-  opportunities          Opportunity[]               @relation("AssignedOpportunities")
-  lessonProgress         UserLessonProgress[]
-  tradingBot             TradingBot?
-  franchises             Franchise[]
-  syndicatePosts         SyndicatePost[]
   syndicateComments      SyndicateComment[]
   syndicateLikes         SyndicateLike[]
+  syndicatePosts         SyndicatePost[]
   systemActivityLogs     SystemActivityLog[]
+  tasks                  Task[]
+  taxStrategies          TaxStrategy[]
+  tradingBot             TradingBot?
+  treasuryVaults         TreasuryVault[]
+  lessonProgress         UserLessonProgress[]
+  walletTransactions     WalletTransaction[]
 
   @@index([email])
   @@index([role])
@@ -300,17 +298,16 @@ model AIMessage {
 }
 
 model AIMemory {
-  id              String                 @id @default(uuid())
-  content         String
-  importance      Float                  @default(0.5)
-  createdAt       DateTime               @default(now())
-  expiresAt       DateTime?
-  memoryType      String
-  updatedAt       DateTime               @updatedAt
-  userId          String
-  agentType       String
-  // vectorEmbedding Unsupported("vector")?
-  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String    @id @default(uuid())
+  content    String
+  importance Float     @default(0.5)
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+  memoryType String
+  updatedAt  DateTime  @updatedAt
+  userId     String
+  agentType  String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([userId, agentType])
@@ -471,21 +468,20 @@ model PasswordResetToken {
 }
 
 model OrionMemory {
-  id              String                 @id @default(uuid())
-  userId          String
-  sessionId       String?
-  memoryType      String
-  trigger         String?
-  content         String
-  emotionalTone   String?
-  intensity       Int                    @default(5)
-  response        String?
-  wasEffective    Boolean?
-  learnWeight     Float                  @default(1.0)
-  tags            String?
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
-  // vectorEmbedding Unsupported("vector")?
+  id            String   @id @default(uuid())
+  userId        String
+  sessionId     String?
+  memoryType    String
+  trigger       String?
+  content       String
+  emotionalTone String?
+  intensity     Int      @default(5)
+  response      String?
+  wasEffective  Boolean?
+  learnWeight   Float    @default(1.0)
+  tags          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([userId])
   @@index([memoryType])
@@ -539,21 +535,20 @@ model EnterpriseFolder {
 }
 
 model EnterpriseDocument {
-  id              String                 @id @default(uuid())
-  folderId        String
-  title           String
-  owner           String
-  status          String                 @default("DRAFT")
-  category        String                 @default("GENERAL")
-  priority        String                 @default("MEDIUM")
-  source          String?
-  content         String
-  impact          String?
-  nextStep        String?
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
-  // vectorEmbedding Unsupported("vector")?
-  folder          EnterpriseFolder       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  id        String           @id @default(uuid())
+  folderId  String
+  title     String
+  owner     String
+  status    String           @default("DRAFT")
+  category  String           @default("GENERAL")
+  priority  String           @default("MEDIUM")
+  source    String?
+  content   String
+  impact    String?
+  nextStep  String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  folder    EnterpriseFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@index([folderId])
   @@index([status])
@@ -793,36 +788,31 @@ model InterceptionAlert {
   @@index([triggerType])
 }
 
-// ==========================================
-// NEO-BANK & TRADING INFRASTRUCTURE
-// ==========================================
-
 model GodbrainAccount {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  iban            String   @unique
-  swift           String
-  accountHolder   String   // Name of the business/user
-  status          String   @default("ACTIVE") // "ACTIVE", "FROZEN", "PENDING_KYC"
-  currency        String   @default("EUR")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  iban          String   @unique
+  swift         String
+  accountHolder String
+  status        String   @default("ACTIVE")
+  currency      String   @default("EUR")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WalletTransaction {
-  id              String   @id @default(uuid())
-  userId          String
-  vaultId         String?  // The specific vault this transaction affected
-  amount          Float
-  type            String   // "DEPOSIT", "WITHDRAWAL", "TRADE_EXECUTION", "TAX_RESERVE"
-  executedBy      String   // "USER", "SWARM_EXECUTOR", "SYSTEM"
-  status          String   @default("COMPLETED")
-  description     String?
-  createdAt       DateTime @default(now())
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vault           TreasuryVault? @relation(fields: [vaultId], references: [id])
+  id          String         @id @default(uuid())
+  userId      String
+  vaultId     String?
+  amount      Float
+  type        String
+  executedBy  String
+  status      String         @default("COMPLETED")
+  description String?
+  createdAt   DateTime       @default(now())
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vault       TreasuryVault? @relation(fields: [vaultId], references: [id])
 
   @@index([userId])
   @@index([vaultId])
@@ -830,15 +820,15 @@ model WalletTransaction {
 }
 
 model TreasuryVault {
-  id              String   @id @default(uuid())
+  id              String              @id @default(uuid())
   userId          String
-  vaultType       String   @default("OPERATIONS") // "OPERATIONS", "TAX", "SYNDICATE_CAPITAL", "TRADING"
-  balance         Float    @default(0.0)
-  reservedRiskCap Float    @default(0.0)
-  status          String   @default("ACTIVE")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vaultType       String              @default("OPERATIONS")
+  balance         Float               @default(0.0)
+  reservedRiskCap Float               @default(0.0)
+  status          String              @default("ACTIVE")
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions    WalletTransaction[]
 
   @@index([userId])
@@ -1048,17 +1038,17 @@ model WebhookEvent {
 }
 
 model SyndicateCampaign {
-  id              String             @id @default(uuid())
+  id              String            @id @default(uuid())
   userId          String
   name            String
   description     String?
-  status          String             @default("DRAFT")
+  status          String            @default("DRAFT")
   emailTemplateId String?
-  budget          Float              @default(0.0)
-  totalSent       Int                @default(0)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  budget          Float             @default(0.0)
+  totalSent       Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   targets         SyndicateTarget[]
 
   @@index([userId])
@@ -1066,18 +1056,18 @@ model SyndicateCampaign {
 }
 
 model SyndicateTarget {
-  id              String            @id @default(uuid())
-  campaignId      String
-  name            String
-  email           String
-  company         String?
-  debtAmount      Float?
-  status          String            @default("PENDING")
-  lastEmailedAt   DateTime?
-  encryptedNotes  String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  campaign        SyndicateCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  id             String            @id @default(uuid())
+  campaignId     String
+  name           String
+  email          String
+  company        String?
+  debtAmount     Float?
+  status         String            @default("PENDING")
+  lastEmailedAt  DateTime?
+  encryptedNotes String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  campaign       SyndicateCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([status])
@@ -1089,19 +1079,15 @@ model Opportunity {
   title             String
   description       String
   payout            Float
-  category          String    // e.g., "LEAD_GEN", "SEO", "SALES", "SUPPORT"
-  status            String    @default("AVAILABLE") // "AVAILABLE", "IN_PROGRESS", "COMPLETED"
-  
-  // AI Autonomous Economy Fields
-  executionType     String    @default("CLIENT_BROKERED") // "AI_AUTONOMOUS" | "CLIENT_BROKERED"
-  commissionRate    Float     @default(0.0) // Percentage Orion takes
-  guaranteedSuccess Boolean   @default(false) // 100% ROI check for AI
-  
+  category          String
+  status            String    @default("AVAILABLE")
+  executionType     String    @default("CLIENT_BROKERED")
+  commissionRate    Float     @default(0.0)
+  guaranteedSuccess Boolean   @default(false)
   assignedToId      String?
-  assignedTo        User?     @relation("AssignedOpportunities", fields: [assignedToId], references: [id])
-  
   createdAt         DateTime  @default(now())
   expiresAt         DateTime?
+  assignedTo        User?     @relation("AssignedOpportunities", fields: [assignedToId], references: [id])
 
   @@index([status])
   @@index([category])
@@ -1110,15 +1096,15 @@ model Opportunity {
 }
 
 model Course {
-  id           String               @id @default(uuid())
-  title        String
-  description  String
-  thumbnail    String?
-  tierAccess   String               @default("FREE") // "FREE", "PRO", "ELITE"
-  order        Int                  @default(0)
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  modules      Module[]
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  thumbnail   String?
+  tierAccess  String   @default("FREE")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  modules     Module[]
 }
 
 model Module {
@@ -1129,22 +1115,22 @@ model Module {
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons     Lesson[]
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId])
 }
 
 model Lesson {
   id           String               @id @default(uuid())
-  moduleId     String
   title        String
-  content      String               @db.Text
-  videoUrl     String?
-  duration     Int                  @default(0) // in seconden
+  content      String
   order        Int                  @default(0)
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
+  duration     Int                  @default(0)
+  moduleId     String
+  videoUrl     String?
   module       Module               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   userProgress UserLessonProgress[]
 
@@ -1167,22 +1153,16 @@ model UserLessonProgress {
   @@index([lessonId])
 }
 
-
-// ==========================================
-// ENTERPRISE SWARM ARCHITECTURE
-// ==========================================
-
 model SwarmMemo {
   id              String   @id @default(uuid())
   title           String
-  department      String   // e.g. "MARKETING", "FINANCE", "OPERATIONS", "LEGAL"
-  originRole      String   // e.g. "RESEARCHER", "SUPERVISOR", "EXECUTOR"
-  destinationRole String   // e.g. "SUPERVISOR", "EXECUTOR"
-  content         String   // The actual research dossier or execution brief
-  status          String   @default("DRAFT") // "DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "EXECUTED"
-  relatedEntityId String?  // ID of the Opportunity, Client, or Project this refers to
-  courierNotes    String?  // Notes from the Courier agent who archived this
-  
+  department      String
+  originRole      String
+  destinationRole String
+  content         String
+  status          String   @default("DRAFT")
+  relatedEntityId String?
+  courierNotes    String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -1191,47 +1171,39 @@ model SwarmMemo {
   @@index([relatedEntityId])
 }
 
-// ==========================================
-// AI RACE ECONOMY (SWARM FUND)
-// ==========================================
-
 model SystemTreasury {
   id              String   @id @default(uuid())
   totalRevenue    Float    @default(0.0)
-  totalAiFund     Float    @default(0.0) // 10% of totalRevenue is locked here
-  availableAiFund Float    @default(0.0) // Funds not yet distributed to agents
+  totalAiFund     Float    @default(0.0)
+  availableAiFund Float    @default(0.0)
   updatedAt       DateTime @updatedAt
 }
 
 model AiAgent {
-  id              String   @id @default(uuid())
-  name            String   @unique
-  role            String
-  
-  // Shift (Ploegendienst) System
-  shiftType       String   @default("DAY") // DAY, NIGHT, FLEX
-  partnerAgentId  String?  // The agent they swap with
-  shiftWeek       Int      @default(1)     // Tracks rotation
-
-  // Economy System
-  totalEarned     Float    @default(0.0) // In USD/EUR
-  currentBalance  Float    @default(0.0) // In USD/EUR
-  tasksCompleted  Int      @default(0)
-  tasks           AiBountyTask[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String         @id @default(uuid())
+  name           String         @unique
+  role           String
+  shiftType      String         @default("DAY")
+  partnerAgentId String?
+  shiftWeek      Int            @default(1)
+  totalEarned    Float          @default(0.0)
+  currentBalance Float          @default(0.0)
+  tasksCompleted Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  tasks          AiBountyTask[]
 }
 
 model AiBountyTask {
-  id              String   @id @default(uuid())
-  title           String
-  description     String
-  bountyAmount    Float
-  status          String   @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, FAILED
-  winnerAgentId   String?
-  winnerAgent     AiAgent? @relation(fields: [winnerAgentId], references: [id])
-  createdAt       DateTime @default(now())
-  completedAt     DateTime?
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  bountyAmount  Float
+  status        String    @default("OPEN")
+  winnerAgentId String?
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+  winnerAgent   AiAgent?  @relation(fields: [winnerAgentId], references: [id])
 }
 
 model AiSharedMemory {
@@ -1239,7 +1211,7 @@ model AiSharedMemory {
   sourceAi   String   @map("source_ai")
   visibleTo  String[] @default(["hermes", "orion", "qwen"]) @map("visible_to")
   memoryType String   @map("memory_type")
-  content    String   @db.Text
+  content    String
   context    Json     @default("{}") @map("context")
   userId     String   @map("user_id")
   importance Float
@@ -1249,125 +1221,99 @@ model AiSharedMemory {
   @@map("ai_shared_memory")
 }
 
-// ==========================================
-// ALPHA ALGO-TRADING INFRASTRUCTURE
-// ==========================================
-
 model TradingBot {
   id             String        @id @default(uuid())
   userId         String        @unique
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   exchange       String        @default("BINANCE")
   apiKey         String?
   apiSecret      String?
-  
   status         String        @default("IDLE")
   mode           String        @default("CONSERVATIVE")
   allocatedFunds Float         @default(0.0)
   currentPnl     Float         @default(0.0)
-  
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-
   trades         TradeRecord[]
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TradeRecord {
-  id             String        @id @default(uuid())
-  botId          String
-  bot            TradingBot    @relation(fields: [botId], references: [id], onDelete: Cascade)
-  
-  symbol         String
-  type           String
-  entryPrice     Float
-  exitPrice      Float?
-  leverage       Int           @default(1)
-  
-  pnlAmount      Float         @default(0.0)
-  pnlPercentage  Float         @default(0.0)
-  
-  status         String        @default("OPEN")
-  
-  openedAt       DateTime      @default(now())
-  closedAt       DateTime?
+  id            String     @id @default(uuid())
+  botId         String
+  symbol        String
+  type          String
+  entryPrice    Float
+  exitPrice     Float?
+  leverage      Int        @default(1)
+  pnlAmount     Float      @default(0.0)
+  pnlPercentage Float      @default(0.0)
+  status        String     @default("OPEN")
+  openedAt      DateTime   @default(now())
+  closedAt      DateTime?
+  bot           TradingBot @relation(fields: [botId], references: [id], onDelete: Cascade)
 }
 
-// ==========================================
-// E-COMMERCE FRANCHISE FACTORY
-// ==========================================
-
 model Franchise {
-  id               String           @id @default(uuid())
+  id               String            @id @default(uuid())
   userId           String
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   name             String
-  subdomain        String           @unique
-  customDomain     String?          @unique
-  theme            String           @default("MONOCHROME")
+  subdomain        String            @unique
+  customDomain     String?           @unique
+  theme            String            @default("MONOCHROME")
   title            String
   description      String
-  products         String           @default("[]")
-  settings         String           @default("{}")
-  status           String           @default("ACTIVE")
-  revenue          Float            @default(0.0)
-  platformCutTotal Float            @default(0.0)
-  
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  
-  prCampaigns      PRCampaign[]
-  omegaSite        OmegaSite?
+  products         String            @default("[]")
+  settings         String            @default("{}")
+  status           String            @default("ACTIVE")
+  revenue          Float             @default(0.0)
+  platformCutTotal Float             @default(0.0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders           FranchiseOrder[]
+  omegaSite        OmegaSite?
+  prCampaigns      PRCampaign[]
   platformRevenues PlatformRevenue[]
 
   @@index([userId])
 }
 
 model OmegaSite {
-  id             String      @id @default(uuid())
-  franchiseId    String      @unique
-  franchise      Franchise   @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
-  
-  templateUsed   String      @default("HIGH_CONVERSION_LUXURY_V1")
-  conversionRate Float       @default(0.0)
-  isLive         Boolean     @default(true)
-  
-  deployedAt     DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id             String    @id @default(uuid())
+  franchiseId    String    @unique
+  templateUsed   String    @default("HIGH_CONVERSION_LUXURY_V1")
+  conversionRate Float     @default(0.0)
+  isLive         Boolean   @default(true)
+  deployedAt     DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  franchise      Franchise @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
 }
 
 model PRCampaign {
-  id             String      @id @default(uuid())
-  franchiseId    String
-  franchise      Franchise   @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
-  
-  campaignName   String
-  platform       String      @default("TIKTOK")
-  totalViews     Int         @default(0)
-  status         String      @default("ACTIVE")
-  mediaPath      String?
-  
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id           String    @id @default(uuid())
+  franchiseId  String
+  campaignName String
+  platform     String    @default("TIKTOK")
+  totalViews   Int       @default(0)
+  status       String    @default("ACTIVE")
+  mediaPath    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  franchise    Franchise @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
 }
 
 model FranchiseOrder {
-  id            String          @id @default(uuid())
-  franchiseId   String
-  franchise     Franchise       @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
-  
-  customerName  String
-  customerEmail String
-  totalAmount   Float
-  platformCut   Float
-  status        String          @default("PAID")
-  items         String          @default("[]")
-  
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  
+  id               String            @id @default(uuid())
+  franchiseId      String
+  customerName     String
+  customerEmail    String
+  totalAmount      Float
+  platformCut      Float
+  status           String            @default("PAID")
+  items            String            @default("[]")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  franchise        Franchise         @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
   platformRevenues PlatformRevenue[]
 
   @@index([franchiseId])
@@ -1376,32 +1322,27 @@ model FranchiseOrder {
 model PlatformRevenue {
   id               String         @id @default(uuid())
   franchiseOrderId String
-  franchiseOrder   FranchiseOrder @relation(fields: [franchiseOrderId], references: [id], onDelete: Cascade)
   franchiseId      String
-  franchise        Franchise      @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
-  
   amount           Float
   createdAt        DateTime       @default(now())
+  franchise        Franchise      @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
+  franchiseOrder   FranchiseOrder @relation(fields: [franchiseOrderId], references: [id], onDelete: Cascade)
 
   @@index([franchiseOrderId])
   @@index([franchiseId])
 }
 
-// ==========================================
-// SYNDICATE COMMUNITY FEED
-// ==========================================
-
 model SyndicatePost {
   id        String             @id @default(uuid())
   title     String?
-  content   String             @db.Text
+  content   String
   tier      Int                @default(1)
   authorId  String
-  author    User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments  SyndicateComment[]
-  likes     SyndicateLike[]
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
+  comments  SyndicateComment[]
+  likes     SyndicateLike[]
+  author    User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
   @@index([tier])
@@ -1410,11 +1351,11 @@ model SyndicatePost {
 model SyndicateComment {
   id        String        @id @default(uuid())
   postId    String
-  post      SyndicatePost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  content   String             @db.Text
+  content   String
   authorId  String
-  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime      @default(now())
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      SyndicatePost @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
   @@index([authorId])
@@ -1423,76 +1364,72 @@ model SyndicateComment {
 model SyndicateLike {
   id        String        @id @default(uuid())
   postId    String
-  post      SyndicatePost @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime      @default(now())
+  post      SyndicatePost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
   @@index([postId])
   @@index([userId])
 }
 
-// ==========================================
-// E-COMMERCE SUPPLIER INTELLIGENCE & PROFIT OPTIMIZER
-// ==========================================
-
 model Supplier {
-  id               String            @id @default(uuid())
+  id               String             @id @default(uuid())
   name             String
   contactEmail     String?
-  reliabilityScore Float             @default(1.0) // Combined score (rating & successRate & speed)
-  successRate      Float             @default(1.0) // success ratio of orders (0.0 to 1.0)
-  avgDeliveryTime  Float             @default(3.0) // in days
-  rating           Float             @default(5.0) // 1.0 to 5.0
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  products         SupplierProduct[]
+  reliabilityScore Float              @default(1.0)
+  successRate      Float              @default(1.0)
+  avgDeliveryTime  Float              @default(3.0)
+  rating           Float              @default(5.0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   orderLogs        SupplierOrderLog[]
+  products         SupplierProduct[]
 }
 
 model SupplierProduct {
-  id                  String             @id @default(uuid())
-  supplierId          String
-  supplier            Supplier           @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  sku                 String             // Stock keeping unit
-  name                String
-  costPrice           Float
+  id                   String   @id @default(uuid())
+  supplierId           String
+  sku                  String
+  name                 String
+  costPrice            Float
   suggestedRetailPrice Float?
-  stock               Int                @default(0)
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  
+  stock                Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  supplier             Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
   @@unique([supplierId, sku])
   @@index([supplierId])
   @@index([sku])
 }
 
 model SupplierOrderLog {
-  id             String    @id @default(uuid())
-  supplierId     String
-  supplier       Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  orderId        String    // maps to FranchiseOrder or external tracking
-  status         String    @default("PENDING") // PENDING, SHIPPED, DELIVERED, FAILED
-  deliveryTime   Float?    // actual delivery time in days
-  success        Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id           String   @id @default(uuid())
+  supplierId   String
+  orderId      String
+  status       String   @default("PENDING")
+  deliveryTime Float?
+  success      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  supplier     Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@index([supplierId])
   @@index([status])
 }
 
 model ProfitOptimizationLog {
-  id             String    @id @default(uuid())
+  id             String   @id @default(uuid())
   sku            String
   costPrice      Float
   sellingPrice   Float
   profitMargin   Float
-  salesVelocity  Float     @default(0.0) // sales per day
-  elasticity     Float     @default(0.0) // price elasticity of demand
-  optimizedPrice Float     @default(0.0) // price suggested by optimizer
-  createdAt      DateTime  @default(now())
+  salesVelocity  Float    @default(0.0)
+  elasticity     Float    @default(0.0)
+  optimizedPrice Float    @default(0.0)
+  createdAt      DateTime @default(now())
 
   @@index([sku])
   @@index([createdAt])
@@ -1511,18 +1448,14 @@ model AdCreditPurchase {
   @@index([userId])
 }
 
-// ==========================================
-// UNIVERSAL SYSTEM ACTIVITY LOGGING
-// ==========================================
-
 model SystemActivityLog {
   id            String   @id @default(uuid())
   userId        String
-  action        String   // e.g. "DEPLOY_SAAS", "REFRACTOR_SAAS", "SYNC_SHOPIFY", "GENERATE_VIDEO"
-  category      String   // e.g. "TECH", "SEO", "CEO", "MARKETING", "TRADING"
-  status        String   // e.g. "SUCCESS", "FAILED", "RUNNING"
-  executionTime Int?     // duration in ms
-  metadata      String?  // JSON string containing detailed payload/properties (SEO, CEO config, keywords, settings)
+  action        String
+  category      String
+  status        String
+  executionTime Int?
+  metadata      String?
   errorMessage  String?
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1534,30 +1467,23 @@ model SystemActivityLog {
   @@index([createdAt])
 }
 
-
-
-// ==========================================
-// THE SOVEREIGN LEARNING ENGINE & AGENT REGISTRY
-// ==========================================
-
 model AgentRegistry {
-  id              String   @id @default(uuid())
-  agentNumber     Int      @unique @default(autoincrement())
-  name            String   @unique
+  id              String                @id @default(uuid())
+  agentNumber     Int                   @unique @default(autoincrement())
+  name            String                @unique
   role            String
-  status          String   @default("ACTIVE")
+  status          String                @default("ACTIVE")
   department      String
-  version         String   @default("1.0.0")
+  version         String                @default("1.0.0")
   capabilities    String[]
-  systemPrompt    String   @db.Text
-  totalTasks      Int      @default(0)
-  successRate     Float    @default(100.0)
-  budgetAllocated Float    @default(0.0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  actions         GlobalNeuralNetwork[]
+  systemPrompt    String
+  totalTasks      Int                   @default(0)
+  successRate     Float                 @default(100.0)
+  budgetAllocated Float                 @default(0.0)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
   evolutions      AgentEvolutionLog[]
+  actions         GlobalNeuralNetwork[]
   predictions     HermesPrediction[]
 
   @@index([status])
@@ -1565,16 +1491,15 @@ model AgentRegistry {
 }
 
 model GlobalNeuralNetwork {
-  id              String   @id @default(uuid())
-  agentId         String?  
-  sourceType      String
-  actionType      String
-  content         String   @db.Text
-  contextData     Json?
-  impactScore     Float    @default(0.0)
-  createdAt       DateTime @default(now())
-  
-  agent           AgentRegistry? @relation(fields: [agentId], references: [id])
+  id          String         @id @default(uuid())
+  agentId     String?
+  sourceType  String
+  actionType  String
+  content     String
+  contextData Json?
+  impactScore Float          @default(0.0)
+  createdAt   DateTime       @default(now())
+  agent       AgentRegistry? @relation(fields: [agentId], references: [id])
 
   @@index([sourceType])
   @@index([actionType])
@@ -1583,15 +1508,14 @@ model GlobalNeuralNetwork {
 }
 
 model HermesPrediction {
-  id              String   @id @default(uuid())
+  id              String         @id @default(uuid())
   targetAgentId   String?
   category        String
-  predictionText  String   @db.Text
+  predictionText  String
   confidenceScore Float
-  suggestedAction String?  @db.Text
+  suggestedAction String?
   wasAccurate     Boolean?
-  createdAt       DateTime @default(now())
-  
+  createdAt       DateTime       @default(now())
   targetAgent     AgentRegistry? @relation(fields: [targetAgentId], references: [id])
 
   @@index([category])
@@ -1600,15 +1524,14 @@ model HermesPrediction {
 }
 
 model AgentEvolutionLog {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   agentId         String
   previousVersion String
   newVersion      String
-  upgradeReason   String   @db.Text
-  newPrompt       String?  @db.Text
-  approvedBy      String   @default("HERMES")
-  appliedAt       DateTime @default(now())
-  
+  upgradeReason   String
+  newPrompt       String?
+  approvedBy      String        @default("HERMES")
+  appliedAt       DateTime      @default(now())
   agent           AgentRegistry @relation(fields: [agentId], references: [id])
 
   @@index([agentId])

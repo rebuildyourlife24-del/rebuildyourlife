@@ -23,6 +23,25 @@ export async function login(formData: FormData) {
   
   console.log(`[AUTH ATTEMPT] Email: "${email}", Password Length: ${password.length}`);
 
+  // DEV BYPASS: Zodat jij altijd via jouw master-email in kunt loggen (overslaat DB checks)
+  if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion' || password === 'Imperialdreams2055')) {
+    const token = await new SignJWT({ userId: "dev-local-admin-id", role: "SUPREME_OVERSEER", email })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("24h")
+      .sign(JWT_SECRET);
+
+    const cookieStore = await cookies();
+    cookieStore.set("orion_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60, // 1 day
+      path: "/",
+    });
+    return { success: true };
+  }
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
