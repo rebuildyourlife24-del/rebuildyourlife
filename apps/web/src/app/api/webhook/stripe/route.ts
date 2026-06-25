@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     });
 
     // Laat de AI Conciërge weten dat we een nieuwe klant hebben!
-    await db.aIConciergeLog.create({
+    await (db.aIConciergeLog.create as any)({
       data: {
         userId: session.metadata.userId,
         actionType: 'NEW_SUBSCRIPTION',
