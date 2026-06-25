@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
-  serverExternalPackages: ["@prisma/client", "bcryptjs", "jsonwebtoken"],
+  serverExternalPackages: ["@prisma/client", "bcryptjs", "jsonwebtoken", "@rebuildyourlife/database", "@supabase/ssr"],
 };
 
 export default nextConfig;
