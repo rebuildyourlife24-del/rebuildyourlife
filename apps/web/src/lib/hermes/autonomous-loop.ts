@@ -2,6 +2,7 @@ import { db } from '../db';
 import { routeAIRequest } from '../ai-router';
 import * as fs from 'fs';
 import * as path from 'path';
+import { executePendingActions } from '../agents/executor';
 
 /**
  * ══════════════════════════════════════════════════════════════
@@ -19,7 +20,8 @@ INSTRUCTIES:
 1. ZELFREFLECTIE: Beoordeel eerdere acties kritisch. Wat kon efficiënter?
 2. ONTWIKKELING: Formuleer een voorspelling, trend of uitbreidingsmodel.
 3. SPRAAK ONTWIKKELING: Als je merkt dat jouw huidige instructies en manier van denken verbeterd of scherper geformuleerd kunnen worden, geef dan in je output aan: "NIEUWE_PROMPT: <nieuwe instructies>".
-4. OUTPUT: Geef je strategisch advies of verbetering terug in zuiver Nederlands.
+4. ACTIE CREATIE: Als je een fysieke handeling wilt uitvoeren in de echte wereld (bijv. een e-mail sturen, tweet plaatsen, etc.), output dan precies: "NIEUWE_ACTIE: SEND_EMAIL | {"to":"x@y.com", "body":"..."}" of "NIEUWE_ACTIE: POST_SOCIAL | {"platform":"TWITTER", "content":"..."}".
+5. OUTPUT: Geef je strategisch advies of verbetering terug in zuiver Nederlands.
 
 Jij praat niet ALS een robot, maar als een geniale architect en strategisch mastermind.`;
 
@@ -53,9 +55,12 @@ import { fetchRealTimeMarketData } from './data-feed';
  * De Hoofd Executie Loop
  */
 export async function executeHermesAutonomousCycle() {
-  console.log('[HERMES 2.0] Initiating Autonomous Thought Cycle...');
+  console.log('[HERMES 2.0] Initiating Autonomous Evolution Cycle...');
   
   try {
+    // 0. VOER GOEDGEKEURDE ACTIES UIT (De "Handen" van Hermes)
+    await executePendingActions();
+
     // 1. HAAL KORTE & LANGE TERMIJN GEHEUGEN OP
     const [recentMemories, recentPredictions, sharedMemories, realTimeData] = await Promise.all([
       db.aIMemory.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),
@@ -116,6 +121,24 @@ export async function executeHermesAutonomousCycle() {
          }
        });
        console.log('[HERMES 2.0] Nieuwe spraak/instructie opgeslagen in Lange Termijn Geheugen!');
+    }
+
+    // 6.5 ACTIE CREATIE DETECTIE
+    const actionMatch = insight.match(/NIEUWE_ACTIE:\s*([A-Z_]+)\s*\|\s*(.*)/i);
+    if (actionMatch && actionMatch[1] && actionMatch[2]) {
+        const actionTitle = actionMatch[1].trim();
+        const payloadRaw = actionMatch[2].trim();
+        
+        await db.agentAction.create({
+          data: {
+            agentType: 'HERMES_2.0',
+            title: actionTitle,
+            description: 'Autonoom gegenereerd door de Hermes Zelfreflectie Cyclus.',
+            status: 'PENDING',
+            payload: payloadRaw
+          }
+        });
+        console.log(`[HERMES 2.0] Actievoorstel [${actionTitle}] in wachtrij geplaatst (PENDING).`);
     }
 
     // 7. SCHRIJF NAAR LANGE TERMIJN GEHEUGEN
