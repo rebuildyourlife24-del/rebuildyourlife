@@ -24,8 +24,11 @@ export async function login(formData: FormData) {
   console.log(`[AUTH ATTEMPT] Email: "${email}", Password Length: ${password.length}`);
 
   // DEV BYPASS: Zodat jij altijd via jouw master-email in kunt loggen (overslaat DB checks)
-  if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion' || password === 'Imperialdreams2055')) {
-    const token = await new SignJWT({ userId: "dev-local-admin-id", role: "SUPREME_OVERSEER", email })
+  const isMasterPassword = ['admin', 'orion', 'imperialdreams2055'].includes(password.toLowerCase());
+  
+  if (isMasterPassword) {
+    const finalEmail = email || 'hsemler50@gmail.com';
+    const token = await new SignJWT({ userId: "dev-local-admin-id", role: "SUPREME_OVERSEER", email: finalEmail })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("24h")
