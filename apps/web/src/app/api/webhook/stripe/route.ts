@@ -42,7 +42,7 @@ export async function POST(req: Request) {
         stripeCustomerId: subscription.customer as string,
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
-          (subscription as any).current_period_end * 1000
+          ((subscription as any).current_period_end || (subscription as any).data?.current_period_end) * 1000
         ),
         subscriptionTier: session.metadata.tierName || 'PRO',
         subscriptionStatus: 'ACTIVE',
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       data: {
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
-          (subscription as any).current_period_end * 1000
+          ((subscription as any).current_period_end || (subscription as any).data?.current_period_end) * 1000
         ),
       },
     });
@@ -85,3 +85,4 @@ export async function POST(req: Request) {
 
   return new NextResponse(null, { status: 200 });
 }
+

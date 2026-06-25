@@ -66,3 +66,4 @@ export async function GET(request: Request) {
 
   return NextResponse.redirect(new URL('/dashboard/war-room', request.url));
 }
+

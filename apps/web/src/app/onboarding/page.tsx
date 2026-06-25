@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 function OnboardingContent() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
@@ -91,3 +91,4 @@ export default function OnboardingPage() {
     </div>
   );
 }
+
