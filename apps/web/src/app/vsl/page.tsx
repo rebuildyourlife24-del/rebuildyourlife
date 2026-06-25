@@ -15,15 +15,13 @@ export default function VslPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/mollie/checkout', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: 'tier_elite_2000',
-          successUrl: `${window.location.origin}/dashboard?welcome=true`,
-          cancelUrl: `${window.location.origin}/vsl`,
-          name: 'Elite Member',
-          email: 'elite-lead@sovereign.grid', // Will be prompt-updated or automatically resolved
+          priceId: process.env.NEXT_PUBLIC_STRIPE_ELITE_PRICE_ID || 'price_test_123',
+          tierName: 'ELITE',
+          email: 'elite-lead@sovereign.grid', // TODO: In een echte funnel vraag je hier eerst de email aan
         }),
       });
 

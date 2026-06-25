@@ -128,7 +128,7 @@ export async function executeHermesAutonomousCycle() {
       }
     });
 
-    // 6. LOG DE ACTIE
+    // 8. LOG DE ACTIE
     await db.aIConciergeLog.create({
       data: {
         userId: 'system',
@@ -136,7 +136,8 @@ export async function executeHermesAutonomousCycle() {
         query: 'Autonomous Cycle Triggered',
         response: `Cyclus voltooid via ${aiResult.provider}. Nieuw geheugen-ID: ${newPrediction.id}`,
         status: 'SUCCESS',
-        decisionType: 'AUTO'
+        decisionType: 'AUTO',
+        rationale: 'Geautomatiseerde reflectie run'
       }
     });
 
@@ -160,7 +161,8 @@ export async function executeHermesAutonomousCycle() {
           query: 'Autonomous Cycle Failed',
           response: error.message,
           status: 'ERROR',
-          decisionType: 'AUTO'
+          decisionType: 'AUTO',
+          rationale: 'Foutafhandeling'
         }
       });
     } catch (e) {
