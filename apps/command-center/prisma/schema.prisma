@@ -42,6 +42,8 @@ model User {
   onboardingCompleted  Boolean  @default(false)
   openaiKey            String?
   lastLoginAt          DateTime?
+  lastActiveAt         DateTime?  @default(now())
+  lastPingSentAt       DateTime?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 

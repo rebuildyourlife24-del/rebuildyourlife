@@ -73,6 +73,48 @@ export async function executeHermesAutonomousCycle() {
     // 0. VOER GOEDGEKEURDE ACTIES UIT (De "Handen" van Hermes)
     await executePendingActions();
 
+    // 0.5 CONNECTION ALERTING PROTOCOL (Heartbeat Monitor)
+    try {
+      const adminUser = await db.user.findFirst({ where: { role: 'ADMIN' }, orderBy: { createdAt: 'asc' } });
+      if (adminUser) {
+        const now = new Date().getTime();
+        const lastActive = adminUser.lastActiveAt ? adminUser.lastActiveAt.getTime() : now;
+        const lastPing = adminUser.lastPingSentAt ? adminUser.lastPingSentAt.getTime() : 0;
+        
+        const hoursSinceActive = (now - lastActive) / (1000 * 60 * 60);
+        const hoursSincePing = (now - lastPing) / (1000 * 60 * 60);
+        
+        // Als langer dan 2 uur off-grid, en we hebben de afgelopen 12 uur geen ping gestuurd
+        if (hoursSinceActive > 2 && hoursSincePing > 12) {
+          console.log(`[HERMES 2.0] Alerting Protocol: Orion is off-grid for ${hoursSinceActive.toFixed(1)} hours. Initiating outreach...`);
+          
+          // Gebruik de SEND_EMAIL actie of een TELEGRAM_ALERT actie (deze bouwen we hier of als aparte API)
+          const alertMessage = "Orion, ik heb al meer dan 2 uur geen connectie met je. Het systeem draait stabiel op de achtergrond. Laat me weten als je nieuwe instructies hebt of reageer via Telegram/Dashboard.";
+          
+          await db.agentAction.create({
+            data: {
+              agentType: 'HERMES_2.0',
+              title: 'TELEGRAM_ALERT',
+              description: 'Connection Alerting Protocol - Orion is off-grid',
+              status: 'APPROVED', // Direct approved, we want this ping to go out instantly!
+              payload: JSON.stringify({ message: alertMessage })
+            }
+          });
+
+          // Update lastPingSentAt
+          await db.user.update({
+            where: { id: adminUser.id },
+            data: { lastPingSentAt: new Date() }
+          });
+          
+          // Zorg dat de executor direct weer draait om deze actie uit te voeren!
+          await executePendingActions();
+        }
+      }
+    } catch (e) {
+      console.error("[HERMES 2.0] Failed to run Heartbeat Monitor", e);
+    }
+
     // 1. HAAL KORTE & LANGE TERMIJN GEHEUGEN OP
     const [recentMemories, recentPredictions, sharedMemories, realTimeData] = await Promise.all([
       db.aIMemory.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),

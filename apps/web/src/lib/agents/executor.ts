@@ -74,6 +74,31 @@ export async function executePendingActions() {
           resultData = { opportunityId: newOpp.id };
           break;
 
+        case 'TELEGRAM_ALERT':
+          console.log(`[EXECUTOR] Sending TELEGRAM ALERT...`);
+          const botToken = process.env.TELEGRAM_BOT_TOKEN;
+          const chatId = process.env.TELEGRAM_CHAT_ID;
+          
+          if (!botToken || !chatId) {
+            console.warn("[EXECUTOR] TELEGRAM_BOT_TOKEN of TELEGRAM_CHAT_ID mist. Fallback naar server log.");
+            console.log("TELEGRAM MESSAGE: ", (payload as any).message);
+            resultData = { sent: false, reason: "Missing keys", fallbackLog: true };
+          } else {
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            const tgRes = await fetch(telegramUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: `🚨 *HERMES ALERT*\n\n${(payload as any).message}`,
+                parse_mode: "Markdown"
+              })
+            });
+            if (!tgRes.ok) throw new Error("Failed to send Telegram message");
+            resultData = { sent: true, platform: "Telegram" };
+          }
+          break;
+
         case 'DEPLOY_CODE':
           console.log(`[EXECUTOR] Hermes deploying code via GitHub...`);
           const { deployCodeToGithub } = await import('../services/github.service');

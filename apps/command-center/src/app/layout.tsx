@@ -27,7 +27,23 @@ export default function RootLayout({
       lang="nl"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-[#05050f] text-white overflow-hidden">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#05050f] text-white overflow-hidden">
+        {children}
+        
+        {/* Hermes Connection Alerting Protocol Heartbeat */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            setInterval(() => {
+              fetch('/api/heartbeat', { method: 'POST' }).catch(console.error);
+            }, 5 * 60 * 1000); // Elke 5 minuten
+            
+            // Ook een heartbeat bij het opstarten
+            setTimeout(() => {
+              fetch('/api/heartbeat', { method: 'POST' }).catch(console.error);
+            }, 5000);
+          `
+        }} />
+      </body>
     </html>
   );
 }
