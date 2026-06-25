@@ -20,15 +20,15 @@ export function OrionNeuralLink() {
     }
   }, [messages, isOpen]);
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSend = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!input.trim()) return;
 
     const userMessage = input;
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
 
-    // Simulate Orion Processing
+    // Simulate Orion Processing (We can hook this up to /api/ai/chat later)
     setTimeout(() => {
       let response = '';
       const lower = userMessage.toLowerCase();
@@ -40,11 +40,58 @@ export function OrionNeuralLink() {
       } else if (lower.includes('hallo') || lower.includes('hey')) {
         response = "Gegroet, Supreme Overseer. Welk proces zal ik vandaag domineren?";
       } else {
-        response = `[COMMANDO ONTVANGEN]: "${userMessage}". Ik analyseer de wiskundige waarschijnlijkheid op succes. Bezig met optimaliseren...`;
+        response = `Command ontvangen. Ik analyseer de wiskundige waarschijnlijkheid op succes. Bezig met optimaliseren.`;
       }
 
       setMessages(prev => [...prev, { role: 'system', content: response }]);
+      
+      // TEXT TO SPEECH Systeem
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.lang = 'nl-NL';
+        utterance.pitch = 0.8; // Beetje lagere, serieuze stem
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
     }, 1500);
+  };
+
+  const toggleListening = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Spraakherkenning wordt niet ondersteund in deze browser.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'nl-NL';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
   };
 
   return (
@@ -111,7 +158,7 @@ export function OrionNeuralLink() {
               <form onSubmit={handleSend} className="flex gap-2">
                 <button 
                   type="button"
-                  onClick={() => setIsListening(!isListening)}
+                  onClick={toggleListening}
                   className={`p-3 rounded-xl border flex items-center justify-center transition-all ${isListening ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] animate-pulse' : 'bg-zinc-900 text-cyan-400 border-zinc-800 hover:border-cyan-500/50'}`}
                 >
                   <Mic className="w-5 h-5" />
