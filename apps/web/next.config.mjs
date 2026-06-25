@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@rebuildyourlife/shared", "@rebuildyourlife/database"],
+  transpilePackages: ["@rebuildyourlife/shared"],
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
