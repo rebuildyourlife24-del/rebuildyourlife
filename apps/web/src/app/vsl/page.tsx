@@ -40,7 +40,7 @@ export default function VslPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#ff003c]/30 selection:text-white font-sans overflow-x-hidden relative flex flex-col">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#d4af37]/30 selection:text-white font-sans overflow-x-hidden relative flex flex-col">
       
       {/* Scanline overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -51,7 +51,7 @@ export default function VslPage() {
       {/* NAVIGATION */}
       <nav className="relative z-50 flex items-center justify-between px-6 py-6 md:px-12 w-full border-b border-white/5 bg-black/40 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#ff003c] flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#d4af37] flex items-center justify-center">
             <Command className="w-5 h-5 text-black" />
           </div>
           <span className="text-white font-black tracking-[0.2em] text-sm uppercase">Sovereign Grid</span>
@@ -65,12 +65,12 @@ export default function VslPage() {
       <main className="flex-1 relative z-10 w-full max-w-[1200px] mx-auto px-6 py-12 md:py-24 flex flex-col items-center">
         
         {/* UPPER TITLE */}
-        <div className="text-[10px] text-[#ff003c] font-mono uppercase tracking-[0.3em] mb-4 bg-white/5 px-3 py-1.5 border border-white/10">
+        <div className="text-[10px] text-[#d4af37] font-mono uppercase tracking-[0.3em] mb-4 bg-white/5 px-3 py-1.5 border border-white/10">
           UPLINK TRANSMISSIE // VERTROUWELIJK
         </div>
         
         <h1 className="text-3xl md:text-6xl font-black text-center uppercase tracking-tighter mb-8 max-w-4xl leading-tight">
-          ONTDEK HET ALGORITME DAT <span className="text-[#ff003c]">€15.000+ PER MAAND</span> GENEREERT IN DE SCHADUW-ECONOMIE.
+          ONTDEK HET ALGORITME DAT <span className="text-[#d4af37]">€15.000+ PER MAAND</span> GENEREERT IN DE SCHADUW-ECONOMIE.
         </h1>
 
         {/* BRUTALIST CINEMATIC PLAYER */}
@@ -90,8 +90,8 @@ export default function VslPage() {
               {/* Grid Background Effect */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,60,0.06)_0%,transparent_70%)] pointer-events-none"></div>
               
-              <div className="w-24 h-24 rounded-full border border-[#ff003c] bg-[#ff003c]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(255,0,61,0.2)]">
-                <Play className="w-10 h-10 text-[#ff003c] ml-1.5" />
+              <div className="w-24 h-24 rounded-full border border-[#d4af37] bg-[#d4af37]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(255,0,61,0.2)]">
+                <Play className="w-10 h-10 text-[#d4af37] ml-1.5" />
               </div>
               
               <span className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 mb-2">Klik om de audio-uplink te starten</span>
@@ -109,7 +109,7 @@ export default function VslPage() {
           
           {/* Pitch Info Columns */}
           <div className="lg:col-span-7 space-y-6">
-            <h3 className="text-2xl font-black uppercase tracking-tight text-white border-l-4 border-[#ff003c] pl-4">
+            <h3 className="text-2xl font-black uppercase tracking-tight text-white border-l-4 border-[#d4af37] pl-4">
               Wat is de Sovereign Grid Elite?
             </h3>
             <p className="text-zinc-400 leading-relaxed font-light text-lg">
@@ -125,7 +125,7 @@ export default function VslPage() {
                 'Levenslange licentie zonder maandelijkse abonnementskosten'
               ].map((benefit, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-zinc-300 font-mono uppercase tracking-wide">
-                  <Check className="w-5 h-5 text-[#ff003c] shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-[#d4af37] shrink-0 mt-0.5" />
                   <span>{benefit}</span>
                 </li>
               ))}
@@ -133,20 +133,20 @@ export default function VslPage() {
           </div>
 
           {/* Checkout Bento Card */}
-          <div className="lg:col-span-5 bg-[#0a0a0a] border border-[#ff003c]/20 p-8 relative overflow-hidden group shadow-xl rounded-lg">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#ff003c]/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="lg:col-span-5 bg-[#0a0a0a] border border-[#d4af37]/20 p-8 relative overflow-hidden group shadow-xl rounded-lg">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#d4af37]/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div className="relative z-10 flex flex-col">
-              <span className="text-[10px] text-[#ff003c] font-mono uppercase tracking-widest mb-2">TIER 03 // ELITE UPLINK</span>
+              <span className="text-[10px] text-[#d4af37] font-mono uppercase tracking-widest mb-2">TIER 03 // ELITE UPLINK</span>
               <h4 className="text-xl font-bold uppercase tracking-wider text-white mb-6">Sovereign Grid Elite</h4>
               
               <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-black text-[#ff003c]">€2.000</span>
+                <span className="text-5xl font-black text-[#d4af37]">€2.000</span>
                 <span className="text-xs text-zinc-500 font-mono uppercase">Eenmalig / Lifelong</span>
               </div>
 
               {error && (
-                <div className="bg-red-950/20 border-l-2 border-[#ff003c] p-3 text-xs text-[#ff003c] font-mono mb-4">
+                <div className="bg-red-950/20 border-l-2 border-[#d4af37] p-3 text-xs text-[#d4af37] font-mono mb-4">
                   {error}
                 </div>
               )}
@@ -154,7 +154,7 @@ export default function VslPage() {
               <button
                 onClick={handleInitiatePayment}
                 disabled={isLoading}
-                className="w-full bg-[#ff003c] text-black font-black uppercase tracking-[0.2em] py-5 text-lg hover:bg-white hover:scale-[1.01] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,0,61,0.2)] disabled:opacity-60 disabled:cursor-not-allowed mb-4"
+                className="w-full bg-[#d4af37] text-black font-black uppercase tracking-[0.2em] py-5 text-lg hover:bg-white hover:scale-[1.01] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,0,61,0.2)] disabled:opacity-60 disabled:cursor-not-allowed mb-4"
               >
                 {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Shield className="w-5 h-5" />}
                 {isLoading ? 'VERBINDING MAKEN...' : 'SECURE GRID UPLINK'}

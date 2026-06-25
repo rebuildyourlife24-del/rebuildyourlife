@@ -45,7 +45,7 @@ function ParticleSwarm() {
     <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
       <PointMaterial
         transparent
-        color="#ff003c" // DARPA Red
+        color="#d4af37" // DARPA Red
         size={0.03}
         sizeAttenuation={true}
         depthWrite={false}

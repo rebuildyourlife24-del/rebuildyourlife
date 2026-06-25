@@ -209,11 +209,11 @@ export default function SalesAutomationsPage() {
       {/* HEADER */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
         <div>
-          <div className="flex items-center gap-2 text-[#ff003c] font-mono text-xs uppercase tracking-widest mb-2">
+          <div className="flex items-center gap-2 text-[#d4af37] font-mono text-xs uppercase tracking-widest mb-2">
             <Sparkles className="w-4 h-4 animate-pulse" /> Operations Room // Automated Closers
           </div>
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
-            Sales <span className="text-[#ff003c]">Automations</span>
+            Sales <span className="text-[#d4af37]">Automations</span>
           </h1>
           <p className="text-zinc-500 text-sm mt-1 font-light">
             Monitor, beheer en test de high-ticket verkoop-AI direct in actie.
@@ -234,7 +234,7 @@ export default function SalesAutomationsPage() {
                 setActiveTab(tab.id as any);
                 if (tab.id === 'leads') fetchLeads();
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded transition-all uppercase tracking-wider font-bold ${activeTab === tab.id ? 'bg-[#ff003c] text-black' : 'text-zinc-400 hover:text-white'}`}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded transition-all uppercase tracking-wider font-bold ${activeTab === tab.id ? 'bg-[#d4af37] text-black' : 'text-zinc-400 hover:text-white'}`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
@@ -252,7 +252,7 @@ export default function SalesAutomationsPage() {
             <div className="lg:col-span-2 bg-[#0a0a0a] border border-white/10 p-6 flex flex-col h-[600px]">
               <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4">
                 <span className="font-bold font-mono text-sm text-zinc-300 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#ff003c] animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-[#d4af37] animate-pulse"></span>
                   LIVE DM SIMULATOR
                 </span>
                 <span className="text-[10px] text-zinc-600 font-mono">AGENT ID: ORION-CLOSER-V1</span>
@@ -262,7 +262,7 @@ export default function SalesAutomationsPage() {
               <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 scrollbar-thin">
                 {dmMessages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[75%] p-4 rounded text-sm ${msg.role === 'user' ? 'bg-[#ff003c] text-black font-semibold' : 'bg-zinc-900 text-zinc-100 font-light border border-white/5'}`}>
+                    <div className={`max-w-[75%] p-4 rounded text-sm ${msg.role === 'user' ? 'bg-[#d4af37] text-black font-semibold' : 'bg-zinc-900 text-zinc-100 font-light border border-white/5'}`}>
                       <div className="text-[9px] font-mono opacity-50 mb-1 uppercase tracking-widest">{msg.role === 'user' ? 'Lead' : 'Orion Sales'}</div>
                       <div className="whitespace-pre-wrap">{msg.content}</div>
                     </div>
@@ -271,7 +271,7 @@ export default function SalesAutomationsPage() {
                 {dmLoading && (
                   <div className="flex justify-start">
                     <div className="bg-zinc-900 border border-white/5 p-4 rounded flex items-center gap-2 text-zinc-500 text-xs">
-                      <Loader2 className="w-4 h-4 animate-spin text-[#ff003c]" /> Orion is aan het typen...
+                      <Loader2 className="w-4 h-4 animate-spin text-[#d4af37]" /> Orion is aan het typen...
                     </div>
                   </div>
                 )}
@@ -283,9 +283,9 @@ export default function SalesAutomationsPage() {
                   value={dmInput}
                   onChange={(e) => setDmInput(e.target.value)}
                   placeholder="Typ een bericht of bezwaar (bijv: 'Waarom kost dit €2.000?')..."
-                  className="flex-1 bg-black border border-white/10 outline-none focus:border-[#ff003c] px-4 py-3 text-sm text-white font-mono transition-colors"
+                  className="flex-1 bg-black border border-white/10 outline-none focus:border-[#d4af37] px-4 py-3 text-sm text-white font-mono transition-colors"
                 />
-                <button type="submit" className="bg-[#ff003c] text-black font-black uppercase px-6 hover:bg-white transition-colors flex items-center gap-2">
+                <button type="submit" className="bg-[#d4af37] text-black font-black uppercase px-6 hover:bg-white transition-colors flex items-center gap-2">
                   <Send className="w-4 h-4" /> Verstuur
                 </button>
               </form>
@@ -294,7 +294,7 @@ export default function SalesAutomationsPage() {
             {/* Instruction Column */}
             <div className="bg-[#0a0a0a] border border-white/10 p-6 flex flex-col justify-between">
               <div>
-                <h3 className="text-xl font-bold uppercase tracking-tight text-white mb-4 border-l-4 border-[#ff003c] pl-3">
+                <h3 className="text-xl font-bold uppercase tracking-tight text-white mb-4 border-l-4 border-[#d4af37] pl-3">
                   Hoe test je de DM Closer?
                 </h3>
                 <p className="text-zinc-500 text-sm font-light leading-relaxed mb-6">
@@ -328,7 +328,7 @@ export default function SalesAutomationsPage() {
               
               <div className="w-full flex justify-between items-center border-b border-white/5 pb-4 mb-4">
                 <span className="font-bold font-mono text-sm text-zinc-300 flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-[#ff003c]" />
+                  <Volume2 className="w-4 h-4 text-[#d4af37]" />
                   LIVE SPRAAK UPLINK
                 </span>
                 <span className="text-[10px] text-zinc-600 font-mono">SPEECH TO SPEECH ACTIVE</span>
@@ -347,10 +347,10 @@ export default function SalesAutomationsPage() {
                     >
                       {/* Pulse Circle */}
                       <div className="relative w-36 h-36 flex items-center justify-center mb-8">
-                        <div className="absolute inset-0 rounded-full bg-[#ff003c]/20 animate-ping duration-1000"></div>
-                        <div className="absolute inset-2 rounded-full bg-[#ff003c]/10 animate-pulse"></div>
-                        <div className="w-24 h-24 rounded-full bg-black border-2 border-[#ff003c] flex items-center justify-center shadow-[0_0_40px_rgba(255,0,61,0.3)]">
-                          <PhoneCall className="w-10 h-10 text-[#ff003c]" />
+                        <div className="absolute inset-0 rounded-full bg-[#d4af37]/20 animate-ping duration-1000"></div>
+                        <div className="absolute inset-2 rounded-full bg-[#d4af37]/10 animate-pulse"></div>
+                        <div className="w-24 h-24 rounded-full bg-black border-2 border-[#d4af37] flex items-center justify-center shadow-[0_0_40px_rgba(255,0,61,0.3)]">
+                          <PhoneCall className="w-10 h-10 text-[#d4af37]" />
                         </div>
                       </div>
 
@@ -392,7 +392,7 @@ export default function SalesAutomationsPage() {
               <div className="flex gap-4">
                 <button
                   onClick={handleToggleCall}
-                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-[#ff003c] hover:bg-white text-black shadow-[0_0_20px_rgba(255,0,61,0.2)]'}`}
+                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(255,0,61,0.2)]'}`}
                 >
                   <Phone className="w-5 h-5" />
                   {isCalling ? 'Hangs Up' : 'Start Call'}
@@ -402,7 +402,7 @@ export default function SalesAutomationsPage() {
                   <button
                     onClick={isListening ? stopSpeechRecognition : startSpeechRecognition}
                     disabled={voiceLoading}
-                    className={`px-6 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-2 border ${isListening ? 'bg-[#ff003c]/20 border-[#ff003c] text-[#ff003c]' : 'bg-black border-white/10 text-white'} disabled:opacity-40`}
+                    className={`px-6 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-2 border ${isListening ? 'bg-[#d4af37]/20 border-[#d4af37] text-[#d4af37]' : 'bg-black border-white/10 text-white'} disabled:opacity-40`}
                   >
                     {isListening ? <Mic className="w-5 h-5 animate-pulse" /> : <MicOff className="w-5 h-5" />}
                     {isListening ? 'Spreken...' : 'Praat Nu'}
@@ -411,7 +411,7 @@ export default function SalesAutomationsPage() {
               </div>
 
               {speechError && (
-                <div className="mt-4 text-xs text-[#ff003c] font-mono flex items-center gap-2">
+                <div className="mt-4 text-xs text-[#d4af37] font-mono flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" /> {speechError}
                 </div>
               )}
@@ -421,7 +421,7 @@ export default function SalesAutomationsPage() {
             {/* Conversation Log / Instructions */}
             <div className="bg-[#0a0a0a] border border-white/10 p-6 flex flex-col justify-between">
               <div>
-                <h3 className="text-xl font-bold uppercase tracking-tight text-white mb-4 border-l-4 border-[#ff003c] pl-3">
+                <h3 className="text-xl font-bold uppercase tracking-tight text-white mb-4 border-l-4 border-[#d4af37] pl-3">
                   AI Voice Closer Live
                 </h3>
                 <p className="text-zinc-500 text-sm font-light leading-relaxed mb-6">
@@ -430,15 +430,15 @@ export default function SalesAutomationsPage() {
 
                 <div className="space-y-4">
                   <div className="text-xs font-mono text-zinc-400">
-                    <span className="text-[#ff003c] font-bold block mb-1">STAP 1</span>
+                    <span className="text-[#d4af37] font-bold block mb-1">STAP 1</span>
                     Klik op **Start Call** om de verbinding te openen. De AI zal je begroeten.
                   </div>
                   <div className="text-xs font-mono text-zinc-400">
-                    <span className="text-[#ff003c] font-bold block mb-1">STAP 2</span>
+                    <span className="text-[#d4af37] font-bold block mb-1">STAP 2</span>
                     Klik op **Praat Nu** en spreek je reactie in (bijv: *"Ik ben een e-commerce ondernemer, maar loop vast"*).
                   </div>
                   <div className="text-xs font-mono text-zinc-400">
-                    <span className="text-[#ff003c] font-bold block mb-1">STAP 3</span>
+                    <span className="text-[#d4af37] font-bold block mb-1">STAP 3</span>
                     Wacht een paar seconden. Orion zal antwoorden en de browser zal zijn stem direct **luidspreken**!
                   </div>
                 </div>
@@ -457,7 +457,7 @@ export default function SalesAutomationsPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-[#0a0a0a] border border-white/10 p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold uppercase tracking-tight text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#ff003c]" />
+                <Users className="w-5 h-5 text-[#d4af37]" />
                 Geregistreerde Leads & Gasten
               </h3>
               <button onClick={fetchLeads} disabled={loadingLeads} className="text-xs text-zinc-400 hover:text-white uppercase font-mono">
@@ -467,7 +467,7 @@ export default function SalesAutomationsPage() {
 
             {loadingLeads ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#ff003c]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#d4af37]" />
               </div>
             ) : leads.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-white/5 rounded">
@@ -487,7 +487,7 @@ export default function SalesAutomationsPage() {
                   <tbody>
                     {leads.map((lead, i) => (
                       <tr key={i} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
-                        <td className="py-4 text-[#ff003c] font-bold">{lead.id}</td>
+                        <td className="py-4 text-[#d4af37] font-bold">{lead.id}</td>
                         <td className="py-4 text-white">{lead.email}</td>
                         <td className="py-4">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${lead.subscriptionStatus === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-zinc-800 text-zinc-400'}`}>
@@ -533,7 +533,7 @@ export default function SalesAutomationsPage() {
               <div className="space-y-4">
                 {[
                   { name: 'VSL Direct-Buy Funnel', rate: '1.5%', color: 'bg-zinc-500', count: '1.200 views -> 18 sales' },
-                  { name: 'AI DM Closer (Chat)', rate: '14.2%', color: 'bg-[#ff003c]', count: '120 chats -> 17 sales' },
+                  { name: 'AI DM Closer (Chat)', rate: '14.2%', color: 'bg-[#d4af37]', count: '120 chats -> 17 sales' },
                   { name: 'AI Voice Closer (Bellen)', rate: '28.5%', color: 'bg-white', count: '42 calls -> 12 sales' },
                 ].map((item, i) => (
                   <div key={i}>

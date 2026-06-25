@@ -19,7 +19,7 @@ function EyeMesh({ status }: { status: 'IDLE' | 'THINKING' | 'ALERT' }) {
       case 'THINKING':
         return '#00e5ff'; // Cyan
       case 'ALERT':
-        return '#ff003c'; // Red
+        return '#d4af37'; // Red
       case 'IDLE':
       default:
         return '#1a1a1a'; // Dark core

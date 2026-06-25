@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import CoursePlayer from './CoursePlayer';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "fallback";
 if (!JWT_SECRET) throw new Error('JWT_SECRET is missing');
 
 async function getAuthenticatedUser() {

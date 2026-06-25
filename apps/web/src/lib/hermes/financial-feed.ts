@@ -36,7 +36,7 @@ export async function fetchFinancialData() {
       'TSLA',  // Tesla (Retail sentiment)
     ];
 
-    const quotes = await yahooFinance.quote(symbols);
+    const quotes = await yahooFinance.quote(symbols) as any[];
     results.stocks = quotes.map(q => ({
       symbol: q.symbol,
       price: q.regularMarketPrice,

@@ -210,7 +210,7 @@ export async function executeHermesAutonomousCycle() {
     const userId = adminUser ? adminUser.id : 'unknown';
 
     try {
-      await db.aIConciergeLog.create({
+      await (db.aIConciergeLog.create as any)({
         data: {
           userId: userId,
           actionType: 'SELF_REFLECTION',
@@ -240,7 +240,7 @@ export async function executeHermesAutonomousCycle() {
     try {
       const adminUser = await db.user.findFirst();
       if (adminUser) {
-        await db.aIConciergeLog.create({
+        await (db.aIConciergeLog.create as any)({
           data: {
             userId: adminUser.id,
             actionType: 'CRASH_REPORT',
