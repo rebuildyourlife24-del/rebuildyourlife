@@ -402,7 +402,7 @@ export default function FranchiseManager() {
               )}
 
               {createError && (
-                <div className="border-2 border-black bg-red-200 p-2 text-xs font-bold">
+                <div className="border-2 border-black bg-[#0a192f] p-2 text-xs font-bold">
                   [!] {createError}
                 </div>
               )}
@@ -859,17 +859,17 @@ export default function FranchiseManager() {
               </div>
 
               {/* Danger Zone */}
-              <div className="border-4 border-red-600 bg-red-50 p-6 shadow-[6px_6px_0px_#dc2626]">
+              <div className="border-4 border-[#d4af37] bg-[#0a192f] p-6 shadow-[6px_6px_0px_#dc2626]">
                 <h2 className="text-xl font-black uppercase text-gold tracking-wider mb-2 flex items-center gap-2">
                   DANGER PROTOCOL
                 </h2>
-                <p className="text-xs text-red-800 font-bold mb-4">
+                <p className="text-xs text-[#d4af37] font-bold mb-4">
                   Permanent verbreken van deze winkel-uplink. Dit stopt alle data-synchronisatie kanalen.
                 </p>
                 <button
                   type="button"
                   onClick={handleDeleteFranchise}
-                  className="bg-gold hover:bg-red-700 text-white border-2 border-red-700 font-black uppercase tracking-wider px-4 py-2 text-xs shadow-[2px_2px_0px_#000000]"
+                  className="bg-gold hover:bg-[#0a192f] text-white border-2 border-[#d4af37] font-black uppercase tracking-wider px-4 py-2 text-xs shadow-[2px_2px_0px_#000000]"
                 >
                   DEACTIVATE UPLINK permanently
                 </button>
@@ -892,3 +892,4 @@ export default function FranchiseManager() {
     </div>
   );
 }
+

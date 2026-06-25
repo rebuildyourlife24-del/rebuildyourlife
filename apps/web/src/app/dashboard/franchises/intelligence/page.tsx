@@ -166,7 +166,7 @@ export default function SupplierIntelligenceDashboard() {
 
       {/* No Data State / Seed Banner */}
       {suppliers.length === 0 && !loading && (
-        <div className="border-4 border-gold bg-red-950/50 p-6 shadow-[6px_6px_0px_#ef4444] mb-8">
+        <div className="border-4 border-gold bg-[#0a192f]/50 p-6 shadow-[6px_6px_0px_#ef4444] mb-8">
           <h3 className="text-lg font-black uppercase flex items-center gap-2 text-goldLight">
             <ShieldAlert className="w-5 h-5" /> Leveranciersdata Ontbreekt!
           </h3>
@@ -343,7 +343,7 @@ export default function SupplierIntelligenceDashboard() {
                             className={`p-2 border text-[10px] font-bold uppercase flex justify-between items-center ${
                               log.success 
                                 ? "bg-zinc-800 border-zinc-700 text-zinc-300" 
-                                : "bg-red-950/40 border-navyLight text-red-300"
+                                : "bg-[#0a192f]/40 border-navyLight text-[#d4af37]"
                             }`}
                           >
                             <div className="flex items-center gap-2">
@@ -646,3 +646,4 @@ export default function SupplierIntelligenceDashboard() {
     </div>
   );
 }
+

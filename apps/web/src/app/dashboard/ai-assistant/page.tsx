@@ -329,7 +329,7 @@ export default function AIAssistantPage() {
           )}
 
           {error && (
-            <div className="border-4 border-red-600 bg-red-50 p-4 shadow-[4px_4px_0px_#dc2626] text-xs flex items-start gap-2.5 text-red-800 font-bold uppercase">
+            <div className="border-4 border-[#d4af37] bg-[#0a192f] p-4 shadow-[4px_4px_0px_#dc2626] text-xs flex items-start gap-2.5 text-[#d4af37] font-bold uppercase">
               <AlertCircle className="w-5 h-5 text-gold shrink-0 mt-0.5" />
               <div>
                 <span>FOUTMELDING:</span>
@@ -384,3 +384,4 @@ export default function AIAssistantPage() {
     </div>
   );
 }
+

@@ -92,7 +92,7 @@ export default function DashboardPage() {
              </div>
 
              <div className="bg-black/80 backdrop-blur-3xl rounded-[2rem] border border-white/5 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group/card hover:border-gold/30 transition-all duration-700 shadow-[0_0_0_rgba(255,0,51,0)] hover:shadow-[0_0_40px_rgba(255,0,51,0.15)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-red-500/0 to-red-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-[#112240]/0 to-[#0a192f]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gold shadow-[0_0_15px_rgba(255,0,51,0.5)] scale-y-0 group-hover/card:scale-y-100 transition-transform duration-500 origin-top"></div>
                 
                 {hasSynced ? (
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                 ) : (
                   <>
                     <div className="flex-1 relative z-10">
-                      <h4 className="text-3xl font-black text-white tracking-tight mb-2 group-hover/card:text-red-50 transition-colors">Initialize Financial Blueprint</h4>
+                      <h4 className="text-3xl font-black text-white tracking-tight mb-2 group-hover/card:text-[#d4af37] transition-colors">Initialize Financial Blueprint</h4>
                       <p className="text-zinc-400 mb-8 font-light text-lg">
                         Om de AI je financiën te laten herstructureren, moet het systeem je cashflow kunnen analyseren. Activeer de data-connectie via de beveiligde tunnel.
                       </p>
@@ -245,3 +245,4 @@ export default function DashboardPage() {
     </motion.div>
   );
 }
+

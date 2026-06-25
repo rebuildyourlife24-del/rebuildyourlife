@@ -191,7 +191,7 @@ export default function DebtsPage() {
 
       {/* GODBRAIN INBOX SCANNER */}
       <div className="border-2 border-navyLight bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)] mt-8">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0a192f] to-transparent"></div>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-white text-xl font-bold tracking-[0.2em] uppercase flex items-center gap-3">
             <Radar className={`w-6 h-6 text-gold ${isScanning ? 'animate-spin' : ''}`} />
@@ -220,13 +220,13 @@ export default function DebtsPage() {
         {scannedDebts.length > 0 && (
           <div className="space-y-4">
             {scannedDebts.map(debt => (
-              <div key={debt.id} className="border border-navyLight/50 bg-red-950/10 p-4 font-mono">
+              <div key={debt.id} className="border border-navyLight/50 bg-[#0a192f]/10 p-4 font-mono">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-white font-bold text-lg">{debt.creditorName}</h3>
                     <p className="text-gold/70 text-xs">Bron: {debt.extractedFromEmail} | {new Date(debt.dateFound).toLocaleDateString()}</p>
                   </div>
-                  <div className="bg-navyLight/40 text-goldLight border border-red-800 px-2 py-1 text-xs font-bold tracking-widest">
+                  <div className="bg-navyLight/40 text-goldLight border border-[#d4af37] px-2 py-1 text-xs font-bold tracking-widest">
                     {debt.status}
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export default function DebtsPage() {
                         size="sm"
                         disabled={negotiatingId === debt.id}
                         onClick={() => handleNegotiate(debt.id, 'DISPUTE_FEES')}
-                        className="bg-black border border-gold text-gold hover:bg-red-950"
+                        className="bg-black border border-gold text-gold hover:bg-[#0a192f]"
                       >
                         <Shield className="w-4 h-4 mr-2" />
                         BETWIST INCASSOKOSTEN
@@ -348,7 +348,7 @@ export default function DebtsPage() {
         title="Nieuwe Schuld Toevoegen"
         description="Vul de gegevens in van je schuldeiser."
       >
-        {serverError && <p className="text-danger text-sm mb-4">{serverError}</p>}
+        {serverError && <p className="text-gold text-sm mb-4">{serverError}</p>}
         <form onSubmit={handleAddDebt} className="space-y-4">
           <Input
             label="Schuldeiser"
@@ -412,3 +412,4 @@ export default function DebtsPage() {
     </div>
   );
 }
+

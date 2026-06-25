@@ -66,7 +66,7 @@ export default function ConciergePage() {
                 className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 text-white mt-1 h-24 resize-none"
               />
             </div>
-            <Button fullWidth className="bg-gold hover:bg-red-700 text-white border-none gap-2">
+            <Button fullWidth className="bg-gold hover:bg-[#0a192f] text-white border-none gap-2">
               <Send className="w-4 h-4" /> Vraag Kapitaal Aan (5-Min Release)
             </Button>
           </div>
@@ -111,3 +111,4 @@ export default function ConciergePage() {
     </div>
   );
 }
+

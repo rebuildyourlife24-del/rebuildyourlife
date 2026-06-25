@@ -24,7 +24,7 @@ const TIER_LABELS: Record<string, string> = {
 const TIER_COLORS: Record<string, string> = {
   PREMIUM: 'text-gold border-gold/30 bg-gold/5',
   ENTERPRISE: 'text-purple-400 border-purple-400/30 bg-purple-400/5',
-  ADMIN: 'text-goldLight border-red-400/30 bg-red-400/5',
+  ADMIN: 'text-goldLight border-[#d4af37]/30 bg-[#0a192f]/5',
   SUPREME_OVERSEER: 'text-gold border-gold/30 bg-gold/5',
 };
 
@@ -114,3 +114,4 @@ export default function PaywallGate({ feature, children, fallback, overlay = fal
     </motion.div>
   );
 }
+

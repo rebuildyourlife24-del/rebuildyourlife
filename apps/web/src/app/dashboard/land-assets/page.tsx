@@ -126,7 +126,7 @@ export default function ApexLandPage() {
                       <td className="p-4 font-bold text-white flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-amber-500" /> Industriebouw Z-2
                       </td>
-                      <td className="p-4"><span className="text-goldLight bg-red-400/10 px-2 py-1 rounded text-[10px]">TAX_LIEN</span></td>
+                      <td className="p-4"><span className="text-goldLight bg-[#0a192f]/10 px-2 py-1 rounded text-[10px]">TAX_LIEN</span></td>
                       <td className="p-4 text-right">{formatEur(850000)}</td>
                       <td className="p-4 text-right text-emerald-400 font-bold">{formatEur(34000)}</td>
                       <td className="p-4"><Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[10px] animate-pulse">TARGET LOCKED</Badge></td>
@@ -198,3 +198,4 @@ export default function ApexLandPage() {
     </motion.div>
   );
 }
+

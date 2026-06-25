@@ -146,7 +146,7 @@ export default function VslPage() {
               </div>
 
               {error && (
-                <div className="bg-red-950/20 border-l-2 border-[#d4af37] p-3 text-xs text-[#d4af37] font-mono mb-4">
+                <div className="bg-[#0a192f]/20 border-l-2 border-[#d4af37] p-3 text-xs text-[#d4af37] font-mono mb-4">
                   {error}
                 </div>
               )}
@@ -173,3 +173,4 @@ export default function VslPage() {
     </div>
   );
 }
+

@@ -156,7 +156,7 @@ export default function CommandCenterPage() {
       
       {/* Header - System Red Aesthetics */}
       <div className="bg-black border border-gold/30 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_30px_rgba(239,68,68,0.15)] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#112240] to-transparent"></div>
         <div>
           <h1 className="text-4xl font-black text-white tracking-widest uppercase drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
             THE ARCHITECT <span className="text-gold">GOD-MODE</span>
@@ -167,7 +167,7 @@ export default function CommandCenterPage() {
               Sovereign Grid Overseer Panel
             </p>
             {listening && (
-              <span className="flex items-center gap-1 text-[10px] text-gold border border-gold/40 px-2 py-0.5 rounded animate-pulse bg-red-950/20">
+              <span className="flex items-center gap-1 text-[10px] text-gold border border-gold/40 px-2 py-0.5 rounded animate-pulse bg-[#0a192f]/20">
                 <Mic className="w-3 h-3" /> VOICE CORE ACTIVE
               </span>
             )}
@@ -177,7 +177,7 @@ export default function CommandCenterPage() {
         <div className="flex flex-wrap gap-4">
           <Button 
             onClick={fetchData} 
-            className="bg-black border border-gold/40 hover:bg-red-950/20 text-gold px-4 py-2 flex items-center gap-2 transition-all duration-300"
+            className="bg-black border border-gold/40 hover:bg-[#0a192f]/20 text-gold px-4 py-2 flex items-center gap-2 transition-all duration-300"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Sync Database
           </Button>
@@ -206,7 +206,7 @@ export default function CommandCenterPage() {
             </p>
             <span className="text-gold text-xs font-bold">Nodes</span>
           </div>
-          <div className="w-full bg-red-950/40 h-[2px] mt-4 overflow-hidden relative">
+          <div className="w-full bg-[#0a192f]/40 h-[2px] mt-4 overflow-hidden relative">
             <div className="absolute h-full bg-gold w-2/3 animate-pulse"></div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function CommandCenterPage() {
             </p>
             <span className="text-gold text-xs font-bold">Active Cores</span>
           </div>
-          <div className="w-full bg-red-950/40 h-[2px] mt-4 overflow-hidden relative">
+          <div className="w-full bg-[#0a192f]/40 h-[2px] mt-4 overflow-hidden relative">
             <div className="absolute h-full bg-gold w-1/2 animate-pulse"></div>
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function CommandCenterPage() {
             </p>
             <span className="text-gold text-xs font-bold">EUR</span>
           </div>
-          <div className="w-full bg-red-950/40 h-[2px] mt-4 overflow-hidden relative">
+          <div className="w-full bg-[#0a192f]/40 h-[2px] mt-4 overflow-hidden relative">
             <div className="absolute h-full bg-gold w-3/4 animate-pulse"></div>
           </div>
         </div>
@@ -281,7 +281,7 @@ export default function CommandCenterPage() {
               }}
               className={`w-full py-4 text-xs font-bold uppercase tracking-widest border-none transition-all duration-500 ${
                 singularityActive 
-                  ? 'bg-gold hover:bg-red-700 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
+                  ? 'bg-gold hover:bg-[#0a192f] text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
                   : 'bg-zinc-950 hover:bg-zinc-900 text-gold border border-gold/30'
               }`}
             >
@@ -297,14 +297,14 @@ export default function CommandCenterPage() {
                 Live Node Courier Logs
               </span>
               <div className="flex gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-red-950"></span>
+                <span className="w-2 h-2 rounded-full bg-[#0a192f]"></span>
                 <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto text-[10px] space-y-1.5 pr-2 font-mono scrollbar-thin scrollbar-thumb-red-950">
               {terminalOutput.map((log, idx) => (
                 <div key={idx} className="flex gap-2">
-                  <span className="text-red-900 font-bold">[{idx}]</span>
+                  <span className="text-[#d4af37] font-bold">[{idx}]</span>
                   <span className={log.includes('[ERROR]') || log.includes('[FAIL]') ? 'text-goldLight font-bold' : log.includes('[OK]') ? 'text-emerald-500' : 'text-zinc-400'}>{log}</span>
                 </div>
               ))}
@@ -322,13 +322,13 @@ export default function CommandCenterPage() {
               <h2 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <Users className="w-5 h-5 text-gold" /> User Matrix Core
               </h2>
-              <span className="text-xs bg-red-950/50 text-gold border border-red-950 px-2 py-0.5 rounded uppercase font-bold">
+              <span className="text-xs bg-[#0a192f]/50 text-gold border border-[#d4af37] px-2 py-0.5 rounded uppercase font-bold">
                 {users.length} Nodes Registered
               </span>
             </div>
 
             {error && (
-              <div className="bg-red-950/20 border border-gold/40 p-4 rounded-xl text-xs text-goldLight mb-4 flex items-center gap-2">
+              <div className="bg-[#0a192f]/20 border border-gold/40 p-4 rounded-xl text-xs text-goldLight mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-gold flex-shrink-0" />
                 <span>{error}</span>
               </div>
@@ -355,7 +355,7 @@ export default function CommandCenterPage() {
                     </tr>
                   ) : (
                     users.map(u => (
-                      <tr key={u.id} className="hover:bg-red-950/10 transition-colors group">
+                      <tr key={u.id} className="hover:bg-[#0a192f]/10 transition-colors group">
                         <td className="py-3 px-2">
                           <div className="font-bold text-white group-hover:text-goldLight transition-colors">{u.firstName} {u.lastName}</div>
                           <div className="text-[10px] text-zinc-500">{u.email}</div>
@@ -412,7 +412,7 @@ export default function CommandCenterPage() {
               <h2 className="text-lg font-bold text-white flex items-center gap-2 uppercase tracking-widest">
                 <Layers className="w-5 h-5 text-gold" /> Franchise Nodes Matrix
               </h2>
-              <span className="text-xs bg-red-950/50 text-gold border border-red-950 px-2 py-0.5 rounded uppercase font-bold">
+              <span className="text-xs bg-[#0a192f]/50 text-gold border border-[#d4af37] px-2 py-0.5 rounded uppercase font-bold">
                 {franchises.length} Cores Managed
               </span>
             </div>
@@ -439,7 +439,7 @@ export default function CommandCenterPage() {
                     </tr>
                   ) : (
                     franchises.map(f => (
-                      <tr key={f.id} className="hover:bg-red-950/10 transition-colors group">
+                      <tr key={f.id} className="hover:bg-[#0a192f]/10 transition-colors group">
                         <td className="py-3 px-2">
                           <div className="font-bold text-white group-hover:text-goldLight transition-colors">{f.name}</div>
                           <div className="text-[10px] text-zinc-500">Owner: {f.user?.firstName} {f.user?.lastName}</div>
@@ -458,7 +458,7 @@ export default function CommandCenterPage() {
                             onClick={() => handleToggleFranchise(f.id, f.status)}
                             className={`px-3 py-1.5 rounded-lg border text-[10px] uppercase font-bold tracking-widest transition-all duration-300 ${
                               f.status === 'ACTIVE' 
-                                ? 'bg-red-950/30 text-gold border-gold/40 hover:bg-gold/20' 
+                                ? 'bg-[#0a192f]/30 text-gold border-gold/40 hover:bg-gold/20' 
                                 : 'bg-zinc-950 text-zinc-500 border-zinc-800 hover:text-white hover:bg-zinc-900'
                             }`}
                           >
@@ -483,3 +483,4 @@ export default function CommandCenterPage() {
     </div>
   );
 }
+

@@ -22,7 +22,7 @@ export default async function OpportunitiesPage() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none opacity-50"></div>
           
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-red-950 border border-gold/50 flex items-center justify-center mb-6 animate-pulse">
+            <div className="w-24 h-24 rounded-full bg-[#0a192f] border border-gold/50 flex items-center justify-center mb-6 animate-pulse">
               <ShieldAlert className="w-12 h-12 text-gold" />
             </div>
             
@@ -119,3 +119,4 @@ export default async function OpportunitiesPage() {
     </div>
   );
 }
+

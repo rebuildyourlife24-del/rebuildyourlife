@@ -103,7 +103,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
 
         {/* Floating Badges */}
         <div className="absolute top-6 left-6 flex flex-col gap-3 pointer-events-none">
-          <div className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border ${punishmentProtocol ? 'border-gold text-gold bg-red-950/50' : 'border-cyan-500 text-cyan-400 bg-cyan-950/50'} backdrop-blur-md rounded-full shadow-lg`}>
+          <div className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border ${punishmentProtocol ? 'border-gold text-gold bg-[#0a192f]/50' : 'border-cyan-500 text-cyan-400 bg-cyan-950/50'} backdrop-blur-md rounded-full shadow-lg`}>
              {punishmentProtocol ? '[ IRON FIST: ENGAGED ]' : '[ STRATEGY: SERENE ]'}
           </div>
         </div>
@@ -144,3 +144,4 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
     </div>
   );
 }
+

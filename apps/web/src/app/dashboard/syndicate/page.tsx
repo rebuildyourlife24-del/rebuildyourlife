@@ -241,8 +241,8 @@ export default function SyndicatePage() {
   const getTierColor = (tier: number) => {
     switch (tier) {
       case 1: return "border-zinc-500 text-zinc-400 bg-zinc-950";
-      case 2: return "border-gold/50 text-goldLight bg-red-950/20";
-      case 3: return "border-red-600 text-gold bg-red-950/30 shadow-[0_0_10px_rgba(220,38,38,0.2)]";
+      case 2: return "border-gold/50 text-goldLight bg-[#0a192f]/20";
+      case 3: return "border-[#d4af37] text-gold bg-[#0a192f]/30 shadow-[0_0_10px_rgba(220,38,38,0.2)]";
       case 4: return "border-gold bg-gold text-black font-black animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]";
       default: return "border-zinc-800 text-zinc-500";
     }
@@ -263,14 +263,14 @@ export default function SyndicatePage() {
       className="space-y-8 max-w-6xl mx-auto pb-20 font-mono text-zinc-300"
     >
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b-4 border-red-600 pb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b-4 border-[#d4af37] pb-8">
         <div>
           <div className="flex items-center gap-3 mb-3">
              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase flex items-center gap-3">
                <Ghost className="w-10 h-10 text-gold animate-pulse" />
                THE SYNDICATE
              </h1>
-             <Badge variant="outline" className="tracking-widest text-[10px] text-gold border-gold bg-red-950/20 px-3 py-1 font-bold">
+             <Badge variant="outline" className="tracking-widest text-[10px] text-gold border-gold bg-[#0a192f]/20 px-3 py-1 font-bold">
                SECURED INTERFACE
              </Badge>
           </div>
@@ -281,7 +281,7 @@ export default function SyndicatePage() {
 
         {/* User Card */}
         {currentUser && (
-          <div className="border-2 border-red-600 bg-black p-4 shadow-[4px_4px_0px_0px_#ef4444] min-w-[280px]">
+          <div className="border-2 border-[#d4af37] bg-black p-4 shadow-[4px_4px_0px_0px_#ef4444] min-w-[280px]">
             <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1 border-b border-zinc-900 pb-1">OPERATIVE PROFILE</div>
             <div className="font-bold text-white text-sm uppercase">{currentUser.firstName} {currentUser.lastName}</div>
             <div className="text-[10px] text-zinc-400 mt-1 flex justify-between">
@@ -382,7 +382,7 @@ export default function SyndicatePage() {
                               !isAllowed 
                                 ? 'border-zinc-900 text-zinc-700 bg-zinc-950/40 cursor-not-allowed'
                                 : newPostTier === tier
-                                  ? 'border-gold bg-red-950/30 text-white font-black'
+                                  ? 'border-gold bg-[#0a192f]/30 text-white font-black'
                                   : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 bg-zinc-950'
                             }`}
                           >
@@ -412,7 +412,7 @@ export default function SyndicatePage() {
                   <span className="text-[9px] text-zinc-500 uppercase">System DB Diagnostics</span>
                   <button 
                     onClick={handleManualSeed}
-                    className="text-[9px] text-gold hover:text-goldLight font-bold uppercase tracking-widest flex items-center gap-1 bg-red-950/20 border border-red-950 px-2 py-1"
+                    className="text-[9px] text-gold hover:text-goldLight font-bold uppercase tracking-widest flex items-center gap-1 bg-[#0a192f]/20 border border-[#d4af37] px-2 py-1"
                   >
                     <RefreshCw className="w-3 h-3" /> Force Seed Mock Data
                   </button>
@@ -430,7 +430,7 @@ export default function SyndicatePage() {
                     onClick={() => setFeedFilterTier('all')}
                     className={`px-3 py-1 text-xs font-bold transition-all border ${
                       feedFilterTier === 'all' 
-                        ? 'border-gold bg-red-950/20 text-white' 
+                        ? 'border-gold bg-[#0a192f]/20 text-white' 
                         : 'border-zinc-800 text-zinc-500 hover:text-white'
                     }`}
                   >
@@ -446,7 +446,7 @@ export default function SyndicatePage() {
                           !isAllowed 
                             ? 'border-zinc-950 text-zinc-800 cursor-not-allowed'
                             : feedFilterTier === tier
-                              ? 'border-gold bg-red-950/20 text-white'
+                              ? 'border-gold bg-[#0a192f]/20 text-white'
                               : 'border-zinc-800 text-zinc-500 hover:text-white'
                         }`}
                       >
@@ -458,7 +458,7 @@ export default function SyndicatePage() {
               </div>
 
               {loadingPosts ? (
-                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
+                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-[#d4af37]">
                   DECRYPTING DATABASE FEED DATA STREAM...
                 </div>
               ) : filteredPosts.length === 0 ? (
@@ -638,7 +638,7 @@ export default function SyndicatePage() {
             {/* Right Col: Active Campaigns */}
             <div className="lg:col-span-2 space-y-6">
               {loadingCampaigns ? (
-                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-red-950">
+                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-[#d4af37]">
                   DECRYPTING ACTIVE CAMPAIGN RECORDS...
                 </div>
               ) : campaigns.length === 0 ? (
@@ -659,7 +659,7 @@ export default function SyndicatePage() {
                       <div className="text-right">
                         <Badge className={`px-2 py-0.5 text-xs font-black uppercase border rounded-none ${
                           camp.status === 'ACTIVE' 
-                            ? 'border-gold bg-red-950/20 text-goldLight' 
+                            ? 'border-gold bg-[#0a192f]/20 text-goldLight' 
                             : 'border-zinc-800 text-zinc-400 bg-black'
                         }`}>
                           {camp.status}
@@ -697,7 +697,7 @@ export default function SyndicatePage() {
                                   <td className="p-3 font-mono">€{t.debtAmount?.toFixed(2) || '0.00'}</td>
                                   <td className="p-3 text-right">
                                     {t.status === 'SENT' ? (
-                                      <span className="inline-flex items-center gap-1 text-gold font-black tracking-widest text-[9px] bg-red-950/20 px-2 py-0.5 border border-red-950">
+                                      <span className="inline-flex items-center gap-1 text-gold font-black tracking-widest text-[9px] bg-[#0a192f]/20 px-2 py-0.5 border border-[#d4af37]">
                                         <CheckCircle2 className="w-3 h-3"/> DISPATCHED
                                       </span>
                                     ) : (
@@ -728,7 +728,7 @@ export default function SyndicatePage() {
                     <Button 
                       onClick={() => handleLaunch(camp.id)}
                       disabled={launchingId === camp.id || camp.targets.filter((t:any) => t.status !== 'SENT').length === 0}
-                      className="w-full bg-red-650 hover:bg-gold text-black font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all rounded-none border-2 border-black py-6 text-sm"
+                      className="w-full bg-[#0a192f] hover:bg-gold text-black font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all rounded-none border-2 border-black py-6 text-sm"
                     >
                       {launchingId === camp.id ? (
                         <span className="flex items-center justify-center gap-2 animate-pulse">
@@ -750,3 +750,4 @@ export default function SyndicatePage() {
     </motion.div>
   );
 }
+

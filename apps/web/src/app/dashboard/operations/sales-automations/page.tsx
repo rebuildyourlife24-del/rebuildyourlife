@@ -392,7 +392,7 @@ export default function SalesAutomationsPage() {
               <div className="flex gap-4">
                 <button
                   onClick={handleToggleCall}
-                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-gold hover:bg-red-700 text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]'}`}
+                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-gold hover:bg-[#0a192f] text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]'}`}
                 >
                   <Phone className="w-5 h-5" />
                   {isCalling ? 'Hangs Up' : 'Start Call'}
@@ -555,3 +555,4 @@ export default function SalesAutomationsPage() {
     </div>
   );
 }
+

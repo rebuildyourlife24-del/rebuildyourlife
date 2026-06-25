@@ -122,7 +122,7 @@ export default function OmegaBuilderDashboard() {
               </div>
               
               <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="p-3 bg-red-950/50 rounded-none border border-navyLight">
+                <div className="p-3 bg-[#0a192f]/50 rounded-none border border-navyLight">
                   <Globe className="w-6 h-6 text-gold" />
                 </div>
                 <div>
@@ -163,7 +163,7 @@ export default function OmegaBuilderDashboard() {
                 <Button 
                   type="submit"
                   disabled={isGenerating}
-                  className="w-full bg-red-950 hover:bg-navyLight text-gold border border-navyLight font-black uppercase tracking-[0.3em] py-6 text-lg transition-all"
+                  className="w-full bg-[#0a192f] hover:bg-navyLight text-gold border border-navyLight font-black uppercase tracking-[0.3em] py-6 text-lg transition-all"
                 >
                   {isGenerating ? (
                     "ASSIMILATIE BEZIG..."
@@ -258,3 +258,4 @@ export default function OmegaBuilderDashboard() {
     </motion.div>
   );
 }
+

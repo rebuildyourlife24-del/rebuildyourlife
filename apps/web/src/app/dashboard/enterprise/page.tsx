@@ -25,7 +25,7 @@ export default function EnterpriseOSPage() {
             </p>
           </div>
           <div className="flex gap-4">
-            <div className="flex items-center gap-2 bg-red-950/30 border border-gold/50 px-4 py-2 rounded-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+            <div className="flex items-center gap-2 bg-[#0a192f]/30 border border-gold/50 px-4 py-2 rounded-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]">
               <Activity className="w-4 h-4 animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-widest">Systeem Online</span>
             </div>
@@ -45,7 +45,7 @@ export default function EnterpriseOSPage() {
             className="lg:col-span-2 space-y-6"
           >
             <div className="bg-[#0a0a0a] border border-gold/20 p-6 rounded-lg relative overflow-hidden group hover:border-gold/50 transition-colors shadow-[0_0_20px_rgba(239,68,68,0.05)] hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-navyLight via-red-500 to-navyLight opacity-50" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-navyLight via-[#112240] to-navyLight opacity-50" />
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold uppercase flex items-center gap-2">
                   <Database className="w-5 h-5" /> Wereldwijde Kasstroom Radar
@@ -61,7 +61,7 @@ export default function EnterpriseOSPage() {
                  {/* Mock Data Lines */}
                  <div className="w-full flex items-end gap-2 h-full z-10 opacity-70">
                     {[30, 45, 20, 60, 80, 50, 90, 70, 100, 60, 85, 40].map((h, i) => (
-                      <div key={i} className="flex-1 bg-gold/20 hover:bg-gold/50 border-t-2 border-gold transition-all cursor-pointer group-hover:border-red-400" style={{ height: `${h}%` }} />
+                      <div key={i} className="flex-1 bg-gold/20 hover:bg-gold/50 border-t-2 border-gold transition-all cursor-pointer group-hover:border-[#d4af37]" style={{ height: `${h}%` }} />
                     ))}
                  </div>
               </div>
@@ -144,3 +144,4 @@ export default function EnterpriseOSPage() {
     </Paywall>
   );
 }
+

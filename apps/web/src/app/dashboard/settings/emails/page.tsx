@@ -25,7 +25,7 @@ export default function EmailVaultPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 font-mono">
-      <div className="border-b-2 border-red-600 pb-4 relative overflow-hidden">
+      <div className="border-b-2 border-[#d4af37] pb-4 relative overflow-hidden">
         <h1 className="text-3xl font-black text-white tracking-[0.2em] uppercase flex items-center gap-3 relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
           <Mail className="w-8 h-8 text-gold" />
           E-MAIL VAULT
@@ -61,7 +61,7 @@ export default function EmailVaultPage() {
 
         {/* Right: Form */}
         <div className="border border-navyLight bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-transparent"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0a192f] to-transparent"></div>
           <h2 className="text-white text-lg font-bold mb-6 tracking-widest flex items-center gap-2">
             <Key className="w-5 h-5 text-gold" /> NIEUWE KOPPELING
           </h2>
@@ -76,7 +76,7 @@ export default function EmailVaultPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-red-950/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
+                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
                 placeholder="bijv. administratie@jouwbedrijf.nl"
               />
             </div>
@@ -84,14 +84,14 @@ export default function EmailVaultPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-gold uppercase tracking-widest flex justify-between">
                 <span>App Wachtwoord (IMAP)</span>
-                <span className="text-red-900 cursor-pointer hover:text-gold transition-colors">Hoe kom ik hieraan?</span>
+                <span className="text-[#d4af37] cursor-pointer hover:text-gold transition-colors">Hoe kom ik hieraan?</span>
               </label>
               <input
                 type="password"
                 value={appPassword}
                 onChange={(e) => setAppPassword(e.target.value)}
                 required
-                className="w-full bg-red-950/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
+                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
                 placeholder="••••••••••••••••"
               />
             </div>
@@ -119,3 +119,4 @@ export default function EmailVaultPage() {
     </div>
   );
 }
+

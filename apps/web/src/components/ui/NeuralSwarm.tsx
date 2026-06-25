@@ -114,8 +114,8 @@ export function NeuralSwarm({ theme = 'red' }: NeuralSwarmProps) {
     <div className={`relative w-full h-[500px] bg-[#050505] rounded-none border-2 border-[#ef4444]/40 shadow-[0_0_80px_rgba(239,68,68,0.15)] overflow-hidden flex flex-col group`}>
       {/* Background grid overlay */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none mix-blend-color-dodge z-0"></div>
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-transparent z-20"></div>
-      <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-red-600 z-20"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0a192f] to-transparent z-20"></div>
+      <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-[#d4af37] z-20"></div>
 
       {/* 3D Canvas rendering the Swarm */}
       <div className="flex-1 relative cursor-crosshair z-10">
@@ -167,3 +167,4 @@ export function NeuralSwarm({ theme = 'red' }: NeuralSwarmProps) {
     </div>
   );
 }
+
