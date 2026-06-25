@@ -149,6 +149,16 @@ export default function CEODashboard() {
                     <button className="px-3 py-2 bg-white/5 text-slate-400 text-xs rounded-lg hover:bg-white/10">DENY</button>
                   </div>
                 </div>
+
+                <div className="p-4 bg-black/40 border border-amber-500/30 rounded-xl hover:border-amber-400 transition-colors">
+                  <h4 className="text-white font-medium text-sm mb-2 text-amber-400">Mollie Connect (Onboarding)</h4>
+                  <p className="text-xs text-slate-400 mb-4">Koppel je Mollie account via OAuth zodat we betalingen kunnen verwerken en automatisch de 25% treasury tax kunnen afdragen.</p>
+                  <div className="flex gap-2">
+                    <a href="/api/mollie/connect" className="flex-1 py-2 bg-amber-500 text-slate-950 text-center font-bold text-xs rounded-lg hover:bg-amber-400 transition-colors">
+                      CONNECT MOLLIE
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

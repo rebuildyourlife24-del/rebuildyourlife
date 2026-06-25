@@ -33,8 +33,8 @@ const TIER_MAPPING: Record<string, { amount: string; description: string; tier: 
 
 export async function POST(req: Request) {
   try {
-    const { priceId, successUrl, cancelUrl, name, email } = await req.json();
-    console.log("Onboarding Checkout Request:", { priceId, successUrl, cancelUrl, name, email });
+    const { priceId, successUrl, cancelUrl, name, email, franchiseOwnerId } = await req.json();
+    console.log("Onboarding Checkout Request:", { priceId, successUrl, cancelUrl, name, email, franchiseOwnerId });
 
     // 1. Resolve User
     let userId: string | null = null;
@@ -238,6 +238,31 @@ export async function POST(req: Request) {
 
     if (webhookUrl) {
       paymentRequestBody.webhookUrl = webhookUrl;
+    }
+
+    // --- SPLIT PAYMENTS / ROUTING ---
+    // If this payment belongs to a specific Franchisee (passed via body as franchiseOwnerId)
+    // We look up their organizationId to route 75% to them.
+    if (franchiseOwnerId) {
+      const franchiseOwner = await prisma.user.findUnique({ where: { id: franchiseOwnerId } });
+      if (franchiseOwner && franchiseOwner.mollieOrganizationId) {
+        const totalAmount = parseFloat(planConfig.amount);
+        const franchiseCut = (totalAmount * 0.75).toFixed(2); // 75% for Franchisee
+        
+        paymentRequestBody.routing = [
+          {
+            amount: {
+              currency: "EUR",
+              value: franchiseCut
+            },
+            destination: {
+              type: "organization",
+              organizationId: franchiseOwner.mollieOrganizationId
+            }
+          }
+        ];
+        console.log(`[OMEGA PROTOCOL] Routing €${franchiseCut} of €${planConfig.amount} to Franchisee ${franchiseOwner.mollieOrganizationId}`);
+      }
     }
 
     const paymentResponse = await fetch("https://api.mollie.com/v2/payments", {

@@ -25,6 +25,9 @@ model User {
   profileType            String                      @default("PERSONAL")
   mollieCustomerId       String?
   mollieSubscriptionId   String?
+  mollieAccessToken      String?
+  mollieRefreshToken     String?
+  mollieOrganizationId   String?
   subscriptionStatus     String                      @default("ACTIVE")
   onboardingCompleted    Boolean                     @default(false)
   openaiKey              String?
