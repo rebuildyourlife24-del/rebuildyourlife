@@ -7,7 +7,7 @@ export async function loginAction(email: string, password: string, rememberMe?: 
   const supabase = await createServerClient();
 
   // DEV BYPASS: Zodat jij altijd via jouw master-email in kunt loggen
-  if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion')) {
+  if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion' || password === 'Imperialdreams2055')) {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     cookieStore.set('dev_bypass', 'true', { path: '/' });
