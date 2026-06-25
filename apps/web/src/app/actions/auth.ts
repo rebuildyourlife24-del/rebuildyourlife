@@ -1,5 +1,7 @@
 "use server";
 
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { createServerClient } from "@/lib/supabase/server";
 import { prisma } from "@rebuildyourlife/database";
 
@@ -8,7 +10,6 @@ export async function loginAction(email: string, password: string, rememberMe?: 
 
   // DEV BYPASS: Zodat jij altijd via jouw master-email in kunt loggen
   if (email === 'hsemler50@gmail.com' && (password === 'admin' || password === 'orion' || password === 'Imperialdreams2055')) {
-    const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     cookieStore.set('dev_bypass', 'true', { path: '/' });
     
@@ -147,7 +148,6 @@ export async function logoutAction() {
 
 export async function getSessionAction() {
   try {
-    const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     
     // MASTER BYPASS: Werkt altijd, overal — lokaal EN productie.
@@ -171,9 +171,8 @@ export async function getSessionAction() {
     const jwtToken = cookieStore.get('ryl_session')?.value;
     if (jwtToken) {
       try {
-        const jwt = await import('jsonwebtoken');
         const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-key-2026-rebuild";
-        const decoded = jwt.default.verify(jwtToken, JWT_SECRET) as any;
+        const decoded = jwt.verify(jwtToken, JWT_SECRET) as any;
         if (decoded.userId) {
           try {
             const dbUser = await prisma.user.findUnique({ where: { id: decoded.userId } });
