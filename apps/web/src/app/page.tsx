@@ -23,11 +23,24 @@ export default function MatrixLandingPage() {
           <div className="w-8 h-8 bg-cyan-500 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)]">
             <Command className="w-5 h-5 text-black" />
           </div>
-          <span className="text-white font-black tracking-[0.2em] text-sm uppercase">Rebuild Your Life</span>
+          <span className="text-white font-black tracking-[0.2em] text-sm uppercase hidden sm:block">Rebuild Your Life</span>
         </div>
-        <Link href="/auth/login" className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 hover:text-white transition-colors border border-cyan-500/50 hover:border-cyan-400 px-6 py-3 bg-cyan-950/30 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.15)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-          Dashboard Login
-        </Link>
+        
+        {/* Main Menu */}
+        <div className="hidden lg:flex items-center gap-8">
+          <Link href="#features" className="text-[10px] font-bold text-zinc-400 hover:text-cyan-400 uppercase tracking-widest transition-colors">Systeem</Link>
+          <Link href="#pricing" className="text-[10px] font-bold text-zinc-400 hover:text-cyan-400 uppercase tracking-widest transition-colors">Toegang</Link>
+          <Link href="/admin" className="text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-widest transition-colors flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3" />
+            God Mode
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link href="/auth/login" className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 hover:text-white transition-colors border border-cyan-500/50 hover:border-cyan-400 px-6 py-3 bg-cyan-950/30 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.15)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            Dashboard Login
+          </Link>
+        </div>
       </nav>
 
       {/* INTRO VIDEO (PANORAMA) */}
