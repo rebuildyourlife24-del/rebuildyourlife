@@ -423,7 +423,7 @@ export default function CommandCenterPage() {
                   <tr className="border-b border-gold/10 text-zinc-500 uppercase tracking-widest text-[9px]">
                     <th className="py-3 px-2">Franchise</th>
                     <th className="py-3 px-2">Subdomain</th>
-                    <th className="py-3 px-2">Revenue</th>
+                    <th className="py-3 px-2">Omzet</th>
                     <th className="py-3 px-2">Platform Cut (25%)</th>
                     <th className="py-3 px-2 text-right">Access State</th>
                   </tr>

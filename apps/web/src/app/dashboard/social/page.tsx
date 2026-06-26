@@ -241,7 +241,7 @@ export default function SwarmDashboard() {
                       <div className="text-sm text-white font-black tracking-wider">€{spent.toLocaleString()}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Revenue</div>
+                      <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Omzet</div>
                       <div className="text-sm text-cyan-400 font-black tracking-wider">€{revenue.toLocaleString()}</div>
                     </div>
                     <div className="text-center">

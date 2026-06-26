@@ -520,7 +520,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className={`hidden md:flex items-center gap-2 bg-black/60 border px-3 py-1.5 rounded-full ${theme.borderStrong}`}>
               <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.pulseActive}`}></div>
               <div className="flex flex-col">
-                <span className={`text-[7px] uppercase font-black tracking-widest leading-none ${theme.color}`}>System Status</span>
+                <span className={`text-[7px] uppercase font-black tracking-widest leading-none ${theme.color}`}>Systeemstatus</span>
                 <span className="text-[9px] text-zinc-400 font-mono leading-none mt-0.5">Online</span>
               </div>
             </div>

@@ -171,7 +171,7 @@ Rebuild Your Life.
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-900 pb-6">
         <div>
           <h1 className="text-4xl font-black tracking-tight uppercase">
-            System <span className="text-zinc-500">Settings</span>
+            System <span className="text-zinc-500">Instellingen</span>
           </h1>
           <p className="mt-1 text-sm text-zinc-500 font-mono">
             MANAGE PROFILE, API INTEGRATIONS, AND BILLING PARAMETERS.
@@ -370,7 +370,7 @@ Rebuild Your Life.
                     <p className="text-xs text-zinc-500 font-mono">€14.95 / MAAND</p>
                   </div>
                   {activeTier === 'PREMIUM' ? (
-                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full uppercase tracking-wider">Active</span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full uppercase tracking-wider">Actief</span>
                   ) : activeTier === 'ENTERPRISE' ? (
                     <span className="text-[10px] font-mono text-zinc-650 uppercase tracking-wider">Included</span>
                   ) : (
@@ -390,7 +390,7 @@ Rebuild Your Life.
                     <p className="text-xs text-zinc-500 font-mono">€49.95 / MAAND</p>
                   </div>
                   {activeTier === 'ENTERPRISE' ? (
-                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full uppercase tracking-wider">Active</span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full uppercase tracking-wider">Actief</span>
                   ) : (
                     <Button
                       onClick={() => handleUpgrade('ENTERPRISE')}

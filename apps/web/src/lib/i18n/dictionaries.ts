@@ -58,7 +58,7 @@ export type Dictionary = {
 
 export const nl: Dictionary = {
   nav: {
-    dashboard: "Dashboard",
+    dashboard: "Overzicht",
     goals: "Doelen",
     budget: "Budget",
     debts: "Schulden",
@@ -116,28 +116,28 @@ export const nl: Dictionary = {
 
 export const en: Dictionary = {
   nav: {
-    dashboard: "Dashboard",
+    dashboard: "Overzicht",
     goals: "Goals",
     budget: "Budget",
     debts: "Debts",
-    tasks: "Tasks",
+    tasks: "Taken",
     aiTeam: "AI Team",
     programs: "Programs",
     health: "Wellbeing",
     social: "Social",
     growth: "Growth & Hobbies",
     enterprise: "Enterprise OS",
-        business: "Settings",
-        settings: "Settings",
+        business: "Instellingen",
+        settings: "Instellingen",
   },
   common: {
     upgrade: "Upgrade",
     save: "Save",
-    cancel: "Cancel",
+    cancel: "Annuleren",
     delete: "Delete",
     edit: "Edit",
     add: "Add",
-    loading: "Loading...",
+    loading: "Bezig met laden...",
     success: "Saved successfully",
     error: "An error occurred",
   },
@@ -348,7 +348,7 @@ export const pl: Dictionary = {
 
 export const de: Dictionary = {
   nav: {
-    dashboard: "Dashboard",
+    dashboard: "Overzicht",
     goals: "Ziele",
     budget: "Budget",
     debts: "Schulden",
@@ -580,7 +580,7 @@ export const bg: Dictionary = {
 
 export const af: Dictionary = {
   nav: {
-    dashboard: "Dashboard",
+    dashboard: "Overzicht",
     goals: "Doelwitte",
     budget: "Begroting",
     debts: "Skulde",

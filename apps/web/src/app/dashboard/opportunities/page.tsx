@@ -25,9 +25,7 @@ export default async function OpportunitiesPage() {
         <div className="flex items-center justify-between mb-12 border-b border-cyan-500/20 pb-6">
           <div>
             <h1 className="text-4xl font-black tracking-wider uppercase flex items-center gap-4">
-              <Zap className="w-8 h-8 text-cyan-400" />
-              Sovereign Wealth Radar
-            </h1>
+              <Zap className="w-8 h-8 text-cyan-400" />Sovereign Wealth Radar</h1>
             <p className="text-cyan-400/60 font-mono mt-2 uppercase tracking-widest text-sm">
               Elite Clearance Accepted. Live Hermes Feed.
             </p>
@@ -38,9 +36,7 @@ export default async function OpportunitiesPage() {
               Hermes Analytics Active
             </div>
             <button className="flex items-center gap-2 px-6 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/50 hover:border-cyan-400 rounded-lg text-cyan-400 font-bold uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] group">
-              <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              Deploy Hermes Scout
-            </button>
+              <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />Hermes Scout Inzetten</button>
           </div>
         </div>
 

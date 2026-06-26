@@ -5,9 +5,6 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   serverExternalPackages: ["@prisma/client", "bcryptjs", "jsonwebtoken", "@rebuildyourlife/database", "@supabase/ssr"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

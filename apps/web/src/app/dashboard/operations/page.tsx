@@ -44,7 +44,7 @@ export default function OperationsPage() {
         method: 'POST',
       });
       if (res.ok) {
-        // Remove from list or show as 'In Progress'
+        // Remove from list or show as 'Bezig'
         setOpportunities(prev => prev.filter(op => op.id !== id));
         alert('Opdracht succesvol geaccepteerd! Check je notificaties/takenlijst.');
       } else {
