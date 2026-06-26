@@ -22,8 +22,18 @@ export default function QualityControlTerminal() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleAction = (id: number, action: "approve" | "reject") => {
+  const handleAction = async (id: string | number, action: "approve" | "reject") => {
     setDirection(action === "approve" ? "right" : "left");
+    
+    try {
+      await fetch('/api/content-forge/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action })
+      });
+    } catch(e) {
+      console.error(e);
+    }
     
     setTimeout(() => {
       setQueue((prev) => prev.filter((item) => item.id !== id));

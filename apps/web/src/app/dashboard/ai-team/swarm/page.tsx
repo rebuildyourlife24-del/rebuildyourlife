@@ -161,9 +161,33 @@ export default function SwarmChatPage() {
             <h1 className="text-xl font-black uppercase tracking-widest text-fuchsia-400">Swarm Intelligence</h1>
             <p className="text-xs text-zinc-500 mt-1 uppercase font-bold">50+ Nodes Syncing</p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 shadow-[0_0_10px_rgba(217,70,239,0.2)]">
-            <div className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
-            <span className="text-[10px] text-fuchsia-400 font-black uppercase tracking-widest">HIVE LINK STABLE</span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={async () => {
+                setLoading(true);
+                setInputValue("INITIATING SWARM PROTOCOL...");
+                try {
+                  const res = await fetch('/api/swarm/execute', { method: 'POST' });
+                  const data = await res.json();
+                  if(data.success) {
+                    setMessages(prev => [...prev, { role: 'assistant', content: 'Swarm asset gegenereerd. Check QC Terminal.' }]);
+                  } else {
+                    setError('Swarm fout: ' + data.error);
+                  }
+                } catch(e) {
+                  setError('Netwerk fout');
+                }
+                setLoading(false);
+                setInputValue("");
+              }}
+              className="px-4 py-2 bg-fuchsia-500/20 text-fuchsia-300 font-bold text-xs uppercase tracking-widest rounded border border-fuchsia-500/50 hover:bg-fuchsia-500/40 transition-all shadow-[0_0_15px_rgba(217,70,239,0.3)]"
+            >
+              Start Swarm Protocol
+            </button>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 shadow-[0_0_10px_rgba(217,70,239,0.2)]">
+              <div className="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse" />
+              <span className="text-[10px] text-fuchsia-400 font-black uppercase tracking-widest">HIVE LINK STABLE</span>
+            </div>
           </div>
         </div>
 
