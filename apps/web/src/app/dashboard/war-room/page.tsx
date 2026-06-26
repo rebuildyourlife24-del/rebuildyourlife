@@ -32,32 +32,32 @@ import { getWarRoomStatsAction } from '@/actions/warRoomData';
 // Reusable components
 function Monitor1Content({ data }: { data: any }) {
   if (!data) {
-    return <div className="text-zinc-500 font-mono text-xs p-4 border border-dashed border-zinc-800 flex justify-center uppercase">Waiting for API Sync...</div>;
+    return <div className="text-zinc-500 font-mono text-xs p-4 border border-dashed border-zinc-800 flex justify-center uppercase">Wachten op API Sync...</div>;
   }
   return (
     <div className="space-y-6 font-mono text-sm">
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-black/80 p-4 border border-navy/40 rounded-xl">
-          <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Total Vault Balance</div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Totale Kluis Balans</div>
           <div className="text-2xl font-black text-emerald-500">'{(data?.totalVaultBalance || 0).toLocaleString('nl-NL')}</div>
         </div>
         <div className="bg-black/80 p-4 border border-navy/40 rounded-xl">
-          <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Active Debt Burden</div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Actieve Schuldenlast</div>
           <div className="text-2xl font-black text-cyan-400">'{(data?.totalDebt || 0).toLocaleString('nl-NL')}</div>
         </div>
       </div>
 
       <div className="bg-black/60 p-4 border border-navy/20 rounded-xl space-y-3">
         <div className="text-xs font-bold text-white uppercase tracking-widest border-b border-white/5 pb-1 flex justify-between">
-          <span>Monthly Income Matrix</span>
-          <span className="text-emerald-500">Active</span>
+          <span>Maandelijkse Inkomsten Matrix</span>
+          <span className="text-emerald-500">Actief</span>
         </div>
         {data?.incomeStreams?.map((stream: any, i: number) => (
           <div key={i} className="flex justify-between items-center bg-zinc-950 p-2 rounded">
              <span className="text-zinc-400 text-[11px] uppercase tracking-wider">{stream.name}</span>
              <span className="text-emerald-400 font-bold">'{stream.amount.toLocaleString('nl-NL')}</span>
           </div>
-        )) || <div className="text-zinc-600 text-[10px] uppercase">No active streams found in live database</div>}
+        )) || <div className="text-zinc-600 text-[10px] uppercase">Geen actieve stromen gevonden in live database</div>}
       </div>
     </div>
   );
@@ -69,7 +69,7 @@ function Monitor2Content({ data }: { data: any }) {
     <div className="space-y-4 font-mono text-xs h-full flex flex-col justify-between">
       <div>
         <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-           <span className="text-cyan-400 uppercase tracking-widest font-bold">Active Opportunities</span>
+           <span className="text-cyan-400 uppercase tracking-widest font-bold">Actieve Kansen</span>
            <Badge className="bg-cyan-950/50 text-cyan-500">{data?.opportunities?.length || 0} Open</Badge>
         </div>
         
@@ -82,7 +82,7 @@ function Monitor2Content({ data }: { data: any }) {
                  </div>
                  <div className="text-cyan-400 font-black">+'{opp.estValue.toLocaleString()}</div>
               </div>
-           )) || <div className="text-zinc-600 uppercase text-[10px] py-4 text-center">No opportunities matched by Orion engine</div>}
+           )) || <div className="text-zinc-600 uppercase text-[10px] py-4 text-center">Geen kansen gematched door Orion engine</div>}
         </div>
       </div>
     </div>
@@ -95,24 +95,24 @@ function Monitor3Content({ data }: { data: any }) {
     <div className="space-y-4 font-mono text-xs">
         <div className="flex items-center justify-between mb-4 border-b border-navy/40 pb-2">
            <div className="flex items-center gap-2">
-              <span className="text-cyan-400 uppercase tracking-widest font-bold">Threat & Risk Analysis</span>
+              <span className="text-cyan-400 uppercase tracking-widest font-bold">Dreigings- & Risicoanalyse</span>
               <Activity className="w-4 h-4 text-cyan-500 animate-pulse" />
            </div>
         </div>
         <div className="grid grid-cols-2 gap-3 mb-4">
            <div className="bg-cyan-950/10 border border-cyan-900/30 p-3 rounded">
-              <div className="text-[10px] text-cyan-500 mb-1">Global System Threat Level</div>
-              <div className="text-xl font-black text-cyan-400">{data?.threatLevel || 'SECURE'}</div>
+              <div className="text-[10px] text-cyan-500 mb-1">Wereldwijd Systeem Dreigingsniveau</div>
+              <div className="text-xl font-black text-cyan-400">{data?.threatLevel || 'VEILIG'}</div>
            </div>
         </div>
            <div className="mt-4 space-y-2">
-              <div className="text-[10px] text-zinc-500 uppercase">Recent Flags</div>
+              <div className="text-[10px] text-zinc-500 uppercase">Recente Meldingen</div>
               {data?.alerts?.map((alert: any, i: number) => (
                  <div key={i} className="flex gap-2 text-[10px] bg-black p-2 border-l-2 border-cyan-500">
                     <span className="text-cyan-500">[{alert.time}]</span>
                     <span className="text-zinc-300">{alert.message}</span>
                  </div>
-              )) || <div className="text-emerald-500 text-[10px] bg-emerald-950/20 p-2">ALL SYSTEMS NOMINAL</div>}
+              )) || <div className="text-emerald-500 text-[10px] bg-emerald-950/20 p-2">ALLE SYSTEMEN NORMAAL</div>}
            </div>
     </div>
   );
@@ -167,11 +167,11 @@ function WarRoomCore() {
             <div>
                <div className="flex items-center gap-2 text-cyan-500 font-bold tracking-widest uppercase">
                  <Shield className="w-5 h-5" />
-                 COMMAND CENTER <span className="bg-cyan-500 text-black text-[9px] px-2 py-0.5 rounded-sm ml-2">LIVE</span>
+                 COMMANDO CENTRUM <span className="bg-cyan-500 text-black text-[9px] px-2 py-0.5 rounded-sm ml-2">LIVE</span>
                </div>
                <div className="text-[10px] text-zinc-500 flex gap-4 mt-1">
-                  <span>LATENCY: 12ms</span>
-                  <span>ENCRYPTION: AES-256</span>
+                  <span>VERTRAGING: 12ms</span>
+                  <span>ENCRYPTIE: AES-256</span>
                   <span className="text-cyan-500">NODE: ALPHA-1</span>
                </div>
             </div>
@@ -179,7 +179,7 @@ function WarRoomCore() {
          
          <div className="flex gap-4">
             <div className="text-right">
-               <div className="text-[10px] text-zinc-500 uppercase">System Load</div>
+               <div className="text-[10px] text-zinc-500 uppercase">Systeem Belasting</div>
                <div className="text-cyan-400 font-bold">{systemLoad}%</div>
             </div>
             <div className="w-24 h-8 bg-zinc-900 rounded overflow-hidden relative flex items-end opacity-80">
@@ -199,7 +199,7 @@ function WarRoomCore() {
          >
             <div className="p-4 border-b border-white/5 bg-black/40 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-widest text-xs">
-                 <DollarSign className="w-4 h-4" /> FISCAL DATA
+                 <DollarSign className="w-4 h-4" /> FISCALE DATA
                </div>
                <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
             </div>
@@ -215,9 +215,9 @@ function WarRoomCore() {
           >
              <div className="p-4 border-b border-white/5 bg-black/40 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-widest text-xs">
-                   <Network className="w-4 h-4" /> THE SWARM
+                   <Network className="w-4 h-4" /> DE ZWERM
                 </div>
-                <div className="text-[9px] bg-cyan-400/20 text-cyan-400 px-2 py-1 rounded">SYNCED</div>
+                <div className="text-[9px] bg-cyan-400/20 text-cyan-400 px-2 py-1 rounded">GESYNCHRONISEERD</div>
              </div>
             <div className="flex-1 relative p-4 flex flex-col items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none opacity-50 scale-125">
@@ -236,7 +236,7 @@ function WarRoomCore() {
           >
              <div className="p-4 border-b border-white/5 bg-black/40 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2 text-cyan-500 font-bold uppercase tracking-widest text-xs">
-                   <Skull className="w-4 h-4" /> THREAT DETECTION
+                   <Skull className="w-4 h-4" /> DREIGINGS DETECTIE
                 </div>
                 <div className="w-2 h-2 rounded-full bg-cyan-500" />
              </div>
@@ -249,15 +249,15 @@ function WarRoomCore() {
       {/* QUICK ACTIONS BAR */}
       <div className="relative z-10 bg-black/80 border border-white/10 rounded-xl p-4 flex justify-between items-center overflow-x-auto gap-4 hide-scrollbar">
          <button className="flex-shrink-0 bg-white hover:bg-zinc-200 text-black px-6 py-2 text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2 rounded">
-            <Zap className="w-4 h-4 fill-black" /> EXECUTE PROTOCOL OMEGA
+            <Zap className="w-4 h-4 fill-black" /> UITVOEREN PROTOCOL OMEGA
          </button>
          
          <div className="flex items-center gap-3">
              <button className="text-[10px] text-cyan-400 hover:bg-cyan-950 hover:text-cyan-300 uppercase tracking-widest px-3 py-1.5 rounded transition-colors border border-transparent hover:border-cyan-900">
-                [ ENGAGE PROTOCOLS ]
+                [ PROTOCOLLEN INSCHAKELEN ]
              </button>
             <button className="text-[10px] text-zinc-400 hover:text-white uppercase tracking-widest border border-white/10 px-4 py-2 rounded transition-colors flex items-center gap-2">
-               <FileText className="w-3 h-3" /> EXPORT LOGS
+               <FileText className="w-3 h-3" /> LOGBOEKEN EXPORTEREN
             </button>
          </div>
       </div>
