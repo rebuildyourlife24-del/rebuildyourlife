@@ -24,84 +24,60 @@ export async function getWarRoomStatsAction() {
 
   try {
     const [
-      // Monitor 1: Wealth & Capital
       vaults,
       debts,
-      budgets,
-      
-      // Monitor 2: Syndicate & Traffic
-      prCampaignsCount,
-      shopifyStoresCount,
-      syndicatePostsCount,
-      platformRevenues,
-
-      // Monitor 4: Vitality & Mindset
-      programs,
-      pendingTasksCount,
-      healthLogs,
-
-      // Monitor 5: Sovereign Core
-      apiKeysCount,
+      opportunities,
       systemLogs
     ] = await Promise.all([
-      // Monitor 1
       prisma.treasuryVault.findMany({ where: { userId } }),
       prisma.debt.findMany({ where: { userId } }),
-      prisma.budget.findFirst({ where: { userId }, orderBy: { month: "desc" } }),
-
-      // Monitor 2
-      prisma.pRCampaign ? prisma.pRCampaign.count({ where: { franchise: { userId } } }) : Promise.resolve(0),
-      prisma.shopifyStore.count({ where: { userId } }),
-      prisma.syndicatePost.count({ where: { authorId: userId } }),
-      prisma.platformRevenue ? prisma.platformRevenue.findMany({ where: { franchise: { userId } } }) : Promise.resolve([]),
-
-      // Monitor 4
-      prisma.rebuildProgram.findMany({ where: { userId, isActive: true }, include: { milestones: true } }),
-      prisma.task.count({ where: { userId, status: "PENDING" } }),
-      prisma.healthLog.findMany({ where: { userId }, orderBy: { date: "desc" }, take: 5 }),
-
-      // Monitor 5
-      prisma.apiKey.count({ where: { userId } }),
-      prisma.systemActivityLog.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 8 })
+      prisma.opportunity.findMany({ 
+        where: { status: 'AVAILABLE' },
+        take: 5,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.systemActivityLog.findMany({ 
+        where: { userId }, 
+        orderBy: { createdAt: "desc" }, 
+        take: 5 
+      })
     ]);
 
-    // Calculations
+    // Calculate totals
     const totalVaultBalance = vaults.reduce((sum, v) => sum + (v.balance || 0), 0);
-    const totalDebt = debts.reduce((sum, d) => sum + d.currentBalance, 0);
-    const totalPlatformRevenue = (platformRevenues as any[]).reduce((sum, r) => sum + (r.amount || 0), 0);
+    const totalDebt = debts.reduce((sum, d) => sum + (d.currentBalance || 0), 0);
+    
+    // Map opportunities to expected format
+    const formattedOpportunities = opportunities.map(opp => ({
+      title: opp.title,
+      type: opp.category,
+      estValue: opp.payout || 0
+    }));
+
+    // Map system logs to alerts
+    const alerts = systemLogs.map(log => ({
+      time: log.createdAt.toLocaleTimeString('nl-NL', { hour: '2-digit', minute:'2-digit' }),
+      message: log.action
+    }));
+
+    // Determine threat level (just a basic logic based on debt ratio)
+    let threatLevel = 'SECURE';
+    if (totalDebt > totalVaultBalance * 2) {
+      threatLevel = 'ELEVATED';
+    }
+    if (totalDebt > totalVaultBalance * 5 && totalDebt > 10000) {
+      threatLevel = 'CRITICAL';
+    }
 
     return {
       success: true,
-      stats: {
-        monitor1: {
-          vaultsCount: vaults.length,
-          totalVaultBalance,
-          totalDebt,
-          monthlyIncome: budgets?.totalIncome || 0,
-          monthlyExpenses: budgets?.totalExpenses || 0
-        },
-        monitor2: {
-          prCampaignsCount,
-          shopifyStoresCount,
-          syndicatePostsCount,
-          totalPlatformRevenue
-        },
-        monitor4: {
-          activeProgramsCount: programs.length,
-          pendingTasksCount,
-          latestHealthLog: healthLogs[0] || null,
-          programProgress: programs[0]?.progress || 0
-        },
-        monitor5: {
-          apiKeysCount,
-          recentLogs: systemLogs.map(log => ({
-            id: log.id,
-            action: log.action,
-            entityType: log.category,
-            createdAt: log.createdAt.toISOString()
-          }))
-        }
-      }
+      totalVaultBalance,
+      totalDebt,
+      incomeStreams: [], // Or fetch from ShopifyStore / TradingBot if needed
+      opportunities: formattedOpportunities,
+      threatLevel,
+      alerts,
+      systemLoad: 12 // Base load
     };
   } catch (error) {
     console.error("getWarRoomStatsAction error:", error);

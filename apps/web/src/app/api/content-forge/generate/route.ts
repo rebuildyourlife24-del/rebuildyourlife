@@ -1,7 +1,45 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { prisma } from '@rebuildyourlife/database';
+import { auth } from '@clerk/nextjs';
 
-// OpenAI client will be instantiated inside the function to prevent build-time errors
+export async function GET(req: Request) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Fetch posts that need review
+    const pendingPosts = await prisma.socialMediaPost.findMany({
+      where: {
+        userId: userId,
+        status: 'REVIEW' // Assuming 'REVIEW' is the status for QC
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
+
+    const formattedQueue = pendingPosts.map((post: any) => ({
+      id: post.id,
+      niche: "AI Assigned",
+      title: post.content.substring(0, 30) + '...',
+      type: post.platform,
+      potentialRevenue: "Live Data Pending",
+      ghostAccount: "Linked Account",
+      thumbnail: post.mediaUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
+      status: post.status
+    }));
+
+    return NextResponse.json({
+      success: true,
+      data: formattedQueue
+    });
+  } catch (error: any) {
+    console.error('[QC_QUEUE_GET] Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch queue' }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {

@@ -83,3 +83,70 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error: ' + error.message }, { status: 500 });
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const user = await getAuthenticatedUser();
+    
+    // Allow fetching courses without auth if needed, but normally protected
+    const courses = await prisma.course.findMany({
+      include: {
+        modules: {
+          include: {
+            lessons: true
+          }
+        }
+      }
+    });
+
+    if (courses.length === 0) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    const categories = courses.map(course => {
+      const videos: any[] = [];
+      course.modules.forEach(m => {
+        m.lessons.forEach(l => {
+          videos.push({
+            id: l.id,
+            title: l.title,
+            thumbnail: course.thumbnail || " \,
+ duration: l.duration + \:00\,
+ });
+ });
+ });
+ return {
+ title: course.title,
+ videos
+ };
+ }).filter(c => c.videos.length > 0);
+
+ let featuredVideo = null;
+ if (categories.length > 0 && categories[0].videos.length > 0) {
+ const firstCourse = courses[0];
+ const firstLesson = firstCourse.modules[0]?.lessons[0];
+ if (firstLesson) {
+ featuredVideo = {
+ id: firstLesson.id,
+ title: firstLesson.title,
+ description: firstLesson.content.substring(0, 100),
+ thumbnail: firstCourse.thumbnail || \\,
+ category: firstCourse.title,
+ duration: firstLesson.duration + \:00\
+ };
+ }
+ }
+
+ return NextResponse.json({ 
+ success: true, 
+ data: {
+ categories,
+ featuredVideo
+ }
+ });
+ } catch (error: any) {
+ console.error(Error fetching academy: , error);
+ return NextResponse.json({ error: Internal Server Error }, { status: 500 });
+ }
+}
+
