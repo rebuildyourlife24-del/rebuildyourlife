@@ -3,7 +3,7 @@ import { prisma } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 async function getAuthenticatedUser() {
   const cookieStore = await cookies();
@@ -31,7 +31,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Lesson ID is required' }, { status: 400 });
     }
 
-    // Controleer of de les bestaat
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       include: {
@@ -47,7 +46,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
     }
 
-    // Controleer of de gebruiker toegang heeft tot de cursus
     const course = lesson.module.course;
     const userTier = user.subscriptionTier;
     const isPremiumUser = userTier !== 'FREE' && userTier !== 'STARTER';
@@ -57,7 +55,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Access denied. Premium tier required.' }, { status: 403 });
     }
 
-    // Upsert de voortgang
     const progress = await prisma.userLessonProgress.upsert({
       where: {
         userId_lessonId: {
@@ -88,7 +85,6 @@ export async function GET(request: Request) {
   try {
     const user = await getAuthenticatedUser();
     
-    // Allow fetching courses without auth if needed, but normally protected
     const courses = await prisma.course.findMany({
       include: {
         modules: {
@@ -110,43 +106,42 @@ export async function GET(request: Request) {
           videos.push({
             id: l.id,
             title: l.title,
-            thumbnail: course.thumbnail || " \,
- duration: l.duration + \:00\,
- });
- });
- });
- return {
- title: course.title,
- videos
- };
- }).filter(c => c.videos.length > 0);
+            thumbnail: course.thumbnail || "",
+            duration: l.duration + ":00",
+          });
+        });
+      });
+      return {
+        title: course.title,
+        videos
+      };
+    }).filter(c => c.videos.length > 0);
 
- let featuredVideo = null;
- if (categories.length > 0 && categories[0].videos.length > 0) {
- const firstCourse = courses[0];
- const firstLesson = firstCourse.modules[0]?.lessons[0];
- if (firstLesson) {
- featuredVideo = {
- id: firstLesson.id,
- title: firstLesson.title,
- description: firstLesson.content.substring(0, 100),
- thumbnail: firstCourse.thumbnail || \\,
- category: firstCourse.title,
- duration: firstLesson.duration + \:00\
- };
- }
- }
+    let featuredVideo = null;
+    if (categories.length > 0 && categories[0].videos.length > 0) {
+      const firstCourse = courses[0];
+      const firstLesson = firstCourse.modules[0]?.lessons[0];
+      if (firstLesson) {
+        featuredVideo = {
+          id: firstLesson.id,
+          title: firstLesson.title,
+          description: firstLesson.content.substring(0, 100),
+          thumbnail: firstCourse.thumbnail || "",
+          category: firstCourse.title,
+          duration: firstLesson.duration + ":00"
+        };
+      }
+    }
 
- return NextResponse.json({ 
- success: true, 
- data: {
- categories,
- featuredVideo
- }
- });
- } catch (error: any) {
- console.error(Error fetching academy: , error);
- return NextResponse.json({ error: Internal Server Error }, { status: 500 });
- }
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        categories,
+        featuredVideo
+      }
+    });
+  } catch (error: any) {
+    console.error("Error fetching academy:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
-
