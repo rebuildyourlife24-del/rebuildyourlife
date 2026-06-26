@@ -104,7 +104,6 @@ export default function AIAssistantPage() {
     setLoading(true);
     setSentinelSafe(true);
 
-    // If it's a new conversation, create local optimistic message first
     const tempUserMsg: Message = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -134,7 +133,6 @@ export default function AIAssistantPage() {
           }
         ]);
       } else {
-        // Handle sentinel or paywall errors
         if (result.error === "SENTINEL_BLOCK") {
           setSentinelSafe(false);
         }
@@ -150,7 +148,6 @@ export default function AIAssistantPage() {
     }
   };
 
-  // Quick Strategy prompts
   const strategyPrompts = {
     HERMES: [
       { label: "Start Nieuw Bedrijf", text: "Hermes, start het protocol om een nieuw SaaS-bedrijf te ontwerpen. Geef me direct een stappenplan, tech-stack en automation scripts." },
@@ -165,45 +162,46 @@ export default function AIAssistantPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-[82vh] border-8 border-black bg-zinc-100 shadow-[8px_8px_0px_#000000] flex flex-col md:flex-row overflow-hidden font-mono text-black">
+    <div className="max-w-7xl mx-auto h-[85vh] bg-zinc-950/50 border border-white/5 rounded-2xl shadow-[0_0_50px_rgba(6,182,212,0.1)] flex flex-col md:flex-row overflow-hidden font-sans text-white backdrop-blur-xl relative">
       
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none"></div>
+
       {/* LEFT SIDEBAR: AGENT CHOOSE & CONVERSATIONS */}
-      <div className="w-full md:w-80 border-b-8 md:border-b-0 md:border-r-8 border-black bg-zinc-200 flex flex-col justify-between shrink-0 h-1/3 md:h-full">
+      <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-white/10 bg-black/40 flex flex-col justify-between shrink-0 h-1/3 md:h-full z-10">
         
-        <div className="p-4 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
           {/* Agent selection */}
-          <div className="space-y-1">
-            <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-wider block">Kies AI Assistent</span>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">Neural Core Selection</span>
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
                   setSelectedAgent("HERMES");
                   handleStartNewConversation();
                 }}
-                className={`border-2 border-black p-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all ${
                   selectedAgent === "HERMES" 
-                    ? "bg-black text-white shadow-[2px_2px_0px_#22d3ee]" 
-                    : "bg-white hover:bg-zinc-50 shadow-[2px_2px_0px_#000000]"
+                    ? "bg-cyan-950/40 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.2)] text-white" 
+                    : "bg-zinc-950 border-white/5 hover:border-white/20 text-zinc-400"
                 }`}
               >
-                <Zap className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase">Hermes</span>
-                <span className="text-[8px] opacity-60">Uitvoerder</span>
+                <Zap className={`w-5 h-5 ${selectedAgent === "HERMES" ? "text-cyan-400" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold uppercase tracking-wider">Hermes</span>
               </button>
               <button
                 onClick={() => {
                   setSelectedAgent("ORION");
                   handleStartNewConversation();
                 }}
-                className={`border-2 border-black p-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all ${
                   selectedAgent === "ORION" 
-                    ? "bg-black text-white shadow-[2px_2px_0px_#eab308]" 
-                    : "bg-white hover:bg-zinc-50 shadow-[2px_2px_0px_#000000]"
+                    ? "bg-indigo-950/40 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.2)] text-white" 
+                    : "bg-zinc-950 border-white/5 hover:border-white/20 text-zinc-400"
                 }`}
               >
-                <Cpu className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase">Orion</span>
-                <span className="text-[8px] opacity-60">Strategist</span>
+                <Cpu className={`w-5 h-5 ${selectedAgent === "ORION" ? "text-indigo-400" : "text-zinc-500"}`} />
+                <span className="text-xs font-bold uppercase tracking-wider">Orion</span>
               </button>
             </div>
           </div>
@@ -211,21 +209,21 @@ export default function AIAssistantPage() {
           {/* New Chat Button */}
           <button
             onClick={handleStartNewConversation}
-            className="w-full bg-white hover:bg-zinc-50 border-2 border-black font-black uppercase tracking-wider py-2 flex items-center justify-center gap-2 shadow-[2px_2px_0px_#000000] text-xs transition-transform active:translate-y-0.5"
+            className="w-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 rounded-xl font-bold uppercase tracking-widest py-3 flex items-center justify-center gap-2 text-xs transition-colors"
           >
-            <Plus className="w-4 h-4" />
-            Nieuw Gesprek
+            <Plus className="w-4 h-4 text-cyan-500" />
+            Nieuwe Sessie
           </button>
 
           {/* Conversation history */}
-          <div className="space-y-1.5 pt-2 border-t border-zinc-400">
-            <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-wider block">Recente Gesprekken</span>
+          <div className="space-y-3 pt-4 border-t border-white/10">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">Geheugenlogboeken</span>
             {loadingMessages && conversations.length === 0 ? (
-              <div className="text-center py-4 text-xs text-zinc-500">Laden...</div>
+              <div className="text-center py-4 text-xs text-zinc-600">Archieven ophalen...</div>
             ) : conversations.length === 0 ? (
-              <div className="text-center py-4 text-xs text-zinc-500 uppercase font-bold">Geen geschiedenis</div>
+              <div className="text-center py-4 text-[10px] text-zinc-600 uppercase font-bold tracking-widest">Geen actieve sessies</div>
             ) : (
-              <div className="space-y-1.5 max-h-[180px] md:max-h-none overflow-y-auto">
+              <div className="space-y-2 max-h-[180px] md:max-h-none overflow-y-auto pr-1">
                 {conversations.map((conv) => (
                   <div
                     key={conv.id}
@@ -233,14 +231,14 @@ export default function AIAssistantPage() {
                       setActiveConvId(conv.id);
                       loadMessages(conv.id);
                     }}
-                    className={`border-2 border-black p-2 text-xs cursor-pointer font-bold transition-all flex items-center gap-2 truncate ${
+                    className={`p-3 rounded-lg text-xs cursor-pointer font-bold transition-all flex items-center gap-3 truncate border ${
                       activeConvId === conv.id 
-                        ? "bg-zinc-400 shadow-[1px_1px_0px_#000000]" 
-                        : "bg-white hover:bg-zinc-50 shadow-[2px_2px_0px_#000000]"
+                        ? "bg-zinc-900 border-zinc-700 text-white" 
+                        : "bg-transparent border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
                     }`}
                   >
-                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate uppercase">{conv.title}</span>
+                    <MessageSquare className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{conv.title}</span>
                   </div>
                 ))}
               </div>
@@ -249,51 +247,51 @@ export default function AIAssistantPage() {
         </div>
 
         {/* Sentinel Shield Status */}
-        <div className="p-3 bg-zinc-300 border-t-2 border-black flex justify-between items-center text-[8px] font-black uppercase tracking-widest">
-          <span className="flex items-center gap-1.5">
-            <ShieldAlert className={`w-3.5 h-3.5 ${sentinelSafe ? "text-black" : "text-gold animate-pulse"}`} />
-            Sentinel: {sentinelSafe ? "SECURE" : "INTERCEPTED"}
+        <div className="p-4 bg-black/60 border-t border-white/5 flex justify-between items-center text-[9px] font-bold uppercase tracking-widest">
+          <span className="flex items-center gap-2">
+            <ShieldAlert className={`w-4 h-4 ${sentinelSafe ? "text-cyan-500" : "text-red-500 animate-pulse"}`} />
+            Sentinel Core: {sentinelSafe ? <span className="text-cyan-500">SECURE</span> : <span className="text-red-500">INTERCEPTED</span>}
           </span>
-          <span className={`w-2 h-2 rounded-full ${sentinelSafe ? "bg-green-600" : "bg-gold animate-ping"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${sentinelSafe ? "bg-cyan-500" : "bg-red-500 animate-ping"}`} />
         </div>
 
       </div>
 
       {/* RIGHT: ACTIVE CHAT SCREEN */}
-      <div className="flex-1 flex flex-col justify-between h-2/3 md:h-full bg-white">
+      <div className="flex-1 flex flex-col justify-between h-2/3 md:h-full z-10 relative">
         
         {/* Chat Header */}
-        <div className="bg-zinc-200 p-4 border-b-4 border-black flex justify-between items-center">
-          <div className="flex items-center gap-2.5">
-            <div className={`p-1.5 border-2 border-black ${selectedAgent === "HERMES" ? "bg-cyan-100" : "bg-yellow-100"}`}>
-              {selectedAgent === "HERMES" ? <Zap className="w-4 h-4" /> : <Cpu className="w-4 h-4" />}
+        <div className="bg-black/20 p-6 border-b border-white/5 flex justify-between items-center backdrop-blur-md">
+          <div className="flex items-center gap-4">
+            <div className={`p-2.5 rounded-xl bg-black border ${selectedAgent === "HERMES" ? "border-cyan-500/30 text-cyan-400" : "border-indigo-500/30 text-indigo-400"}`}>
+              {selectedAgent === "HERMES" ? <Zap className="w-5 h-5" /> : <Cpu className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-1.5">
-                {selectedAgent} ASSISTANT
+              <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                {selectedAgent} <span className="text-zinc-500 font-medium tracking-normal">Direct Link</span>
               </h2>
-              <span className="text-[8px] text-zinc-500 block uppercase font-bold">
+              <span className="text-[10px] text-zinc-500 block font-medium mt-1">
                 {selectedAgent === "HERMES" 
-                  ? "// 24/7 Executieve Uitvoerder & Code Engine" 
-                  : "// Strategisch Architect & Business Planner"}
+                  ? "24/7 Executieve Uitvoerder & Automation Engine" 
+                  : "Strategisch Architect & Business Planner"}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] bg-zinc-300 border border-zinc-400 px-2 py-0.5 rounded font-mono font-bold uppercase text-zinc-700">
-              API ROUTER: ACTIVE
+            <span className="text-[10px] bg-cyan-950/30 border border-cyan-500/30 px-3 py-1 rounded-full font-bold uppercase text-cyan-400 tracking-wider">
+              Connection: Stable
             </span>
           </div>
         </div>
 
         {/* Messages Body */}
-        <div className="flex-1 p-6 overflow-y-auto bg-zinc-50 flex flex-col gap-4 custom-scrollbar">
+        <div className="flex-1 p-6 overflow-y-auto flex flex-col gap-6 custom-scrollbar">
           {messages.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-8 max-w-lg mx-auto">
-              <Brain className="w-12 h-12 text-zinc-400 mb-3" />
-              <h3 className="text-sm font-black uppercase tracking-wider">Start je RYL AI Commando</h3>
-              <p className="text-zinc-500 text-xs mt-1.5 uppercase font-bold leading-relaxed">
-                Stuur een bericht of klik hieronder op een quick command om direct met {selectedAgent} te communiceren. De AI draait rechtstreeks op jouw eigen API sleutels.
+              <Brain className="w-16 h-16 text-zinc-800 mb-6" />
+              <h3 className="text-lg font-bold uppercase tracking-widest mb-2">Neural Link Geactiveerd</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Je bent nu direct verbonden met {selectedAgent}. Stuur een commando of kies een snelle protocol-optie hieronder om te beginnen.
               </p>
             </div>
           )}
@@ -304,14 +302,14 @@ export default function AIAssistantPage() {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div 
-                className={`max-w-2xl p-4 border-2 border-black shadow-[3px_3px_0px_#000000] text-xs leading-relaxed ${
+                className={`max-w-2xl p-5 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user" 
-                    ? "bg-zinc-200 text-black font-bold" 
-                    : "bg-white text-black"
+                    ? "bg-cyan-900/20 border border-cyan-500/20 text-white" 
+                    : "bg-zinc-900/50 border border-white/5 text-zinc-300"
                 }`}
               >
-                <div className="flex justify-between items-center border-b border-zinc-200 pb-1.5 mb-2 text-[9px] font-black uppercase tracking-widest text-zinc-500">
-                  <span>{msg.role === "user" ? "Henk Semler" : selectedAgent}</span>
+                <div className="flex justify-between items-center pb-3 mb-3 border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  <span className={msg.role === "user" ? "text-cyan-400" : "text-white"}>{msg.role === "user" ? "Operator (Henk)" : selectedAgent}</span>
                   <span>{new Date(msg.createdAt).toLocaleTimeString("nl-NL", {hour: '2-digit', minute:'2-digit'})}</span>
                 </div>
                 <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -321,19 +319,23 @@ export default function AIAssistantPage() {
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white border-2 border-black p-4 shadow-[3px_3px_0px_#000000] text-xs font-bold text-zinc-600 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-black" />
-                {selectedAgent} is aan het nadenken via de Sovereign AI Router...
+              <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-xs font-bold text-zinc-500 flex items-center gap-3">
+                <div className="flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                </div>
+                {selectedAgent} verwerkt data...
               </div>
             </div>
           )}
 
           {error && (
-            <div className="border-4 border-[#d4af37] bg-[#0a192f] p-4 shadow-[4px_4px_0px_#dc2626] text-xs flex items-start gap-2.5 text-[#d4af37] font-bold uppercase">
-              <AlertCircle className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+            <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs flex items-start gap-3 text-red-400">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <div>
-                <span>FOUTMELDING:</span>
-                <p className="mt-1 normal-case text-zinc-800 font-mono font-medium">{error}</p>
+                <span className="font-bold uppercase tracking-widest block mb-1">Systeem Foutmelding</span>
+                <p className="text-red-300/80">{error}</p>
               </div>
             </div>
           )}
@@ -342,22 +344,22 @@ export default function AIAssistantPage() {
         </div>
 
         {/* Quick Strategy Prompts panel */}
-        <div className="px-6 py-3 bg-zinc-100 border-t-2 border-zinc-300 flex flex-wrap gap-2">
+        <div className="px-6 py-4 bg-black/40 border-t border-white/5 flex flex-wrap gap-3">
           {strategyPrompts[selectedAgent].map((prompt, i) => (
             <button
               key={i}
               onClick={() => handleSendMessage(prompt.text)}
               disabled={loading}
-              className="bg-white hover:bg-zinc-50 border-2 border-black text-[9px] font-black uppercase tracking-wider px-3 py-1.5 shadow-[2px_2px_0px_#000000] active:translate-y-0.5 shrink-0 flex items-center gap-1.5"
+              className="bg-zinc-900 hover:bg-zinc-800 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-wider px-4 py-2.5 transition-colors flex items-center gap-2"
             >
-              <Sparkles className="w-3 h-3 text-gold" />
+              <Sparkles className={`w-3.5 h-3.5 ${selectedAgent === "HERMES" ? "text-cyan-400" : "text-indigo-400"}`} />
               {prompt.label}
             </button>
           ))}
         </div>
 
         {/* Chat Input */}
-        <div className="p-4 border-t-4 border-black bg-zinc-200 flex gap-3">
+        <div className="p-6 bg-black/60 border-t border-white/5 flex gap-4 backdrop-blur-md">
           <input
             type="text"
             value={inputValue}
@@ -365,17 +367,17 @@ export default function AIAssistantPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSendMessage();
             }}
-            placeholder={`Stuur een commando naar ${selectedAgent}...`}
+            placeholder={`Commando voor ${selectedAgent}...`}
             disabled={loading}
-            className="flex-1 bg-white border-2 border-black px-4 py-3 text-xs font-bold focus:outline-none placeholder:text-zinc-400"
+            className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-5 py-4 text-sm font-medium focus:outline-none focus:border-cyan-500/50 placeholder:text-zinc-600 transition-colors"
           />
           <button
             onClick={() => handleSendMessage()}
             disabled={loading || !inputValue.trim()}
-            className="bg-black text-white hover:bg-zinc-900 disabled:opacity-40 border-2 border-black font-black uppercase tracking-widest px-6 flex items-center gap-2 shadow-[3px_3px_0px_#22d3ee] active:translate-x-0.5 active:translate-y-0.5"
+            className="bg-white text-black hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-bold uppercase tracking-widest px-8 flex items-center gap-3 transition-colors"
           >
-            SEND
-            <Send className="w-4 h-4 fill-white" />
+            Verstuur
+            <Send className="w-4 h-4" />
           </button>
         </div>
 
@@ -384,4 +386,3 @@ export default function AIAssistantPage() {
     </div>
   );
 }
-
