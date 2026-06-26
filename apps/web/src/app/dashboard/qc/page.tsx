@@ -1,46 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, Flame, ShieldAlert, Eye, TrendingUp, Ghost } from "lucide-react";
-
-// Simulated AI generated content waiting for approval
-const MOCK_QUEUE = [
-  {
-    id: 1,
-    niche: "Stoïcisme & Discipline",
-    title: "Marcus Aurelius Morning Routine",
-    type: "TikTok / Shorts",
-    potentialRevenue: "€450/mnd (Est.)",
-    ghostAccount: "@stoic_emperor_99",
-    thumbnail: "https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&q=80", // Statue
-    status: "pending"
-  },
-  {
-    id: 2,
-    niche: "Luxury Lifestyle 40+",
-    title: "The Quiet Wealth Secret",
-    type: "Instagram Reel",
-    potentialRevenue: "€1,200/mnd (Est.)",
-    ghostAccount: "@oldmoney_archives",
-    thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80", // Mansion
-    status: "pending"
-  },
-  {
-    id: 3,
-    niche: "Tech / AI Tools",
-    title: "Automate your job in 10 mins",
-    type: "YouTube Shorts",
-    potentialRevenue: "€800/mnd (Est.)",
-    ghostAccount: "@ai_hacker_god",
-    thumbnail: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80", // Cyberpunk
-    status: "pending"
-  }
-];
+import { Check, X, Flame, ShieldAlert, Eye, TrendingUp, Ghost, RefreshCw } from "lucide-react";
 
 export default function QualityControlTerminal() {
-  const [queue, setQueue] = useState(MOCK_QUEUE);
+  const [queue, setQueue] = useState<any[]>([]);
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Vervang met echte API call
+    fetch('/api/content-forge/generate')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && res.data) {
+          setQueue(res.data);
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleAction = (id: number, action: "approve" | "reject") => {
     setDirection(action === "approve" ? "right" : "left");
@@ -48,136 +28,104 @@ export default function QualityControlTerminal() {
     setTimeout(() => {
       setQueue((prev) => prev.filter((item) => item.id !== id));
       setDirection(null);
-    }, 400); // Wait for animation
+    }, 300);
   };
 
-  const currentItem = queue[0];
+  if (loading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <RefreshCw className="w-8 h-8 text-cyan-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 relative overflow-hidden">
-      {/* Background FX */}
-      <div className="absolute top-[-20%] left-[-10%] w-96 h-96 bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-navyLight/10 blur-[200px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-black text-white p-4 font-sans flex flex-col items-center justify-center overflow-hidden">
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Header */}
-      <header className="flex justify-between items-center mb-12 relative z-10">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight uppercase flex items-center gap-3">
-            <ShieldAlert className="w-8 h-8 text-gold" />
-            QC Command <span className="text-gold">Terminal</span>
+      <div className="mb-8 text-center relative z-10">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Eye className="w-8 h-8 text-cyan-500" />
+          <h1 className="text-4xl font-black uppercase tracking-widest text-white">
+            Q.C. Terminal
           </h1>
-          <p className="text-slate-400 mt-2 font-mono text-sm">
-            Pending AI Outputs: {queue.length} | Ghost Network Status: <span className="text-green-500">ONLINE</span>
-          </p>
         </div>
-        
-        <div className="flex gap-4">
-          <div className="bg-slate-900/50 border border-slate-800 px-4 py-2 rounded-lg flex items-center gap-2">
-            <Ghost className="w-4 h-4 text-slate-400" />
-            <span className="text-sm font-mono">Active Ghosts: 12</span>
-          </div>
-        </div>
-      </header>
+        <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
+          Beoordeel gegenereerde AI content voordat het live gaat
+        </p>
+      </div>
 
-      {/* Main QC Area (Tinder-style swipe) */}
-      <div className="flex flex-col items-center justify-center max-w-md mx-auto relative z-10 mt-10">
+      <div className="relative w-full max-w-md h-[600px] flex items-center justify-center z-10">
         <AnimatePresence>
-          {currentItem ? (
+          {queue.length > 0 ? (
             <motion.div
-              key={currentItem.id}
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ 
-                x: direction === "left" ? -300 : 300, 
-                opacity: 0, 
-                rotate: direction === "left" ? -20 : 20 
+              key={queue[0].id}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ 
+                scale: 1, 
+                opacity: 1,
+                x: direction === "left" ? -200 : direction === "right" ? 200 : 0,
+                rotate: direction === "left" ? -15 : direction === "right" ? 15 : 0
               }}
-              transition={{ duration: 0.3 }}
-              className="w-full aspect-[9/16] max-h-[600px] bg-slate-900 border border-gold/20 rounded-3xl overflow-hidden relative shadow-[0_0_50px_rgba(212,168,83,0.1)] group"
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="absolute w-full h-full bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
             >
-              {/* Image / Video Thumbnail */}
               <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                style={{ backgroundImage: `url(${currentItem.thumbnail})` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-
-              {/* Data Overlay */}
-              <div className="absolute bottom-0 left-0 w-full p-6 space-y-4">
-                <div className="inline-flex items-center gap-2 bg-gold/20 border border-gold/50 text-gold text-xs px-2 py-1 rounded-md uppercase font-bold tracking-widest">
-                  <Flame className="w-3 h-3" />
-                  {currentItem.niche}
+                className="h-2/3 w-full bg-cover bg-center relative"
+                style={{ backgroundImage: `url(${queue[0].thumbnail})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                <div className="absolute top-4 left-4 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md">
+                  {queue[0].type}
                 </div>
-                
-                <h2 className="text-2xl font-bold text-white">{currentItem.title}</h2>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-black/50 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                    <span className="block text-white/50 text-xs mb-1">Target Account</span>
-                    <span className="font-mono text-sm text-blue-400">{currentItem.ghostAccount}</span>
-                  </div>
-                  <div className="bg-black/50 backdrop-blur-md rounded-lg p-3 border border-white/10">
-                    <span className="block text-white/50 text-xs mb-1">Projected ROI</span>
-                    <span className="font-mono text-sm text-green-400 flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" />
-                      {currentItem.potentialRevenue}
-                    </span>
-                  </div>
+                <div className="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5">
+                  <TrendingUp className="w-3 h-3" /> {queue[0].potentialRevenue}
                 </div>
               </div>
 
-              {/* Hover/Swipe Indicators */}
-              {direction === "right" && (
-                <div className="absolute top-10 left-10 border-4 border-green-500 text-green-500 font-black text-4xl uppercase px-4 py-2 rounded-lg rotate-[-15deg] bg-black/50">
-                  DEPLOY
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2 text-zinc-400">
+                    <Ghost className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-widest">{queue[0].ghostAccount}</span>
+                  </div>
+                  <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2 leading-tight">
+                    {queue[0].title}
+                  </h2>
+                  <p className="text-sm font-medium text-cyan-500">Niche: {queue[0].niche}</p>
                 </div>
-              )}
-              {direction === "left" && (
-                <div className="absolute top-10 right-10 border-4 border-gold text-gold font-black text-4xl uppercase px-4 py-2 rounded-lg rotate-[15deg] bg-black/50">
-                  KILL
+
+                <div className="flex gap-4 mt-6">
+                  <button
+                    onClick={() => handleAction(queue[0].id, "reject")}
+                    className="flex-1 bg-red-950/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 py-4 rounded-xl flex items-center justify-center transition-all group"
+                  >
+                    <X className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                  </button>
+                  <button
+                    onClick={() => handleAction(queue[0].id, "approve")}
+                    className="flex-1 bg-emerald-950/30 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-400 py-4 rounded-xl flex items-center justify-center transition-all group"
+                  >
+                    <Check className="w-8 h-8 group-hover:scale-110 transition-transform" />
+                  </button>
                 </div>
-              )}
+              </div>
             </motion.div>
           ) : (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center space-y-4 py-20"
-            >
-              <div className="w-20 h-20 bg-slate-900 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Check className="w-10 h-10 text-gold" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Queue Empty</h2>
-              <p className="text-slate-400 max-w-xs mx-auto">
-                No new AI content pending review. The GodBrain Factory is generating the next batch.
+            <div className="text-center bg-zinc-950/50 border border-white/5 rounded-3xl w-full h-[400px] flex flex-col items-center justify-center p-8 backdrop-blur-md">
+              <ShieldAlert className="w-16 h-16 text-zinc-700 mb-6" />
+              <h3 className="text-xl font-black uppercase tracking-widest text-zinc-400 mb-2">GEEN WACHTRIJ</h3>
+              <p className="text-xs font-bold uppercase text-zinc-600 tracking-widest leading-relaxed">
+                Je hebt alle live AI-generaties verwerkt. De Swarm is bezig met nieuwe content.
               </p>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
+      </div>
 
-        {/* Action Buttons */}
-        {currentItem && (
-          <div className="flex gap-6 mt-8">
-            <button 
-              onClick={() => handleAction(currentItem.id, "reject")}
-              className="w-16 h-16 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-gold hover:bg-gold/20 hover:border-gold transition-all hover:scale-110 shadow-lg"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <button 
-              className="w-12 h-12 mt-2 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all hover:scale-110"
-              title="Preview / Details"
-            >
-              <Eye className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => handleAction(currentItem.id, "approve")}
-              className="w-16 h-16 rounded-full bg-gold/10 border border-gold flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all hover:scale-110 shadow-[0_0_30px_rgba(212,168,83,0.3)]"
-            >
-              <Check className="w-8 h-8" />
-            </button>
-          </div>
-        )}
+      <div className="mt-8 text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2 relative z-10">
+        <Flame className="w-3 h-3 text-red-500" /> Swipe links = Trash | Swipe rechts = Push to Socials
       </div>
     </div>
   );

@@ -1,14 +1,29 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download, Cpu, Box } from 'lucide-react';
+import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download, Cpu, Box, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Paywall } from '@/components/ui/Paywall';
 import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
 
 export default function EnterpriseOSPage() {
   const { t } = useLanguage();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch live enterprise stats
+    fetch('/api/ceo/metrics')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          setData(res.metrics);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <Paywall requiredTier="ENTERPRISE">
@@ -55,34 +70,45 @@ export default function EnterpriseOSPage() {
                 <h2 className="text-sm font-black uppercase flex items-center gap-2 tracking-widest">
                   <Database className="w-4 h-4 text-cyan-500" /> Wereldwijde Kasstroom Radar
                 </h2>
-                <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30 font-bold tracking-widest animate-pulse">LIVE</span>
+                <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30 font-bold tracking-widest animate-pulse">LIVE DATA</span>
               </div>
               
-              {/* Mock Graph Area */}
-              <div className="h-72 w-full bg-zinc-950/50 border border-white/5 rounded-xl flex items-end p-4 relative overflow-hidden">
-                 {/* Decorative Grid */}
-                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
-                 
-                 {/* Mock Data Lines */}
-                 <div className="w-full flex items-end gap-3 h-full z-10 opacity-80">
-                    {[30, 45, 20, 60, 80, 50, 90, 70, 100, 60, 85, 40].map((h, i) => (
-                      <div key={i} className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/40 border-t-[3px] border-cyan-500 transition-all cursor-pointer rounded-t-sm" style={{ height: `${h}%` }} />
-                    ))}
-                 </div>
-              </div>
+              {loading ? (
+                <div className="h-72 flex items-center justify-center">
+                  <RefreshCw className="w-8 h-8 text-cyan-500 animate-spin" />
+                </div>
+              ) : (
+                <div className="h-72 w-full bg-zinc-950/50 border border-white/5 rounded-xl flex items-end justify-center p-4 relative overflow-hidden text-zinc-500 uppercase tracking-widest font-bold text-xs">
+                   {/* Decorative Grid */}
+                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
+                   
+                   {data?.cashflow ? (
+                     <div className="w-full flex items-end gap-3 h-full z-10 opacity-80">
+                        {data.cashflow.map((h: number, i: number) => (
+                          <div key={i} className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/40 border-t-[3px] border-cyan-500 transition-all cursor-pointer rounded-t-sm" style={{ height: `${h}%` }} />
+                        ))}
+                     </div>
+                   ) : (
+                     <div className="relative z-10 flex flex-col items-center justify-center h-full gap-2">
+                       <Activity className="w-6 h-6 text-cyan-500/30" />
+                       Wachten op eerste transacties via Live API.
+                     </div>
+                   )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Totale Omzet</p>
-                  <p className="text-2xl font-black text-white">€12.4M</p>
+                  <p className="text-2xl font-black text-white">{data?.totalRevenue || "€0,00"}</p>
                 </div>
                 <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">AI Output</p>
-                  <p className="text-2xl font-black text-cyan-400">84.203 <span className="text-xs text-zinc-500">OPS</span></p>
+                  <p className="text-2xl font-black text-cyan-400">{data?.aiOps || "0"} <span className="text-xs text-zinc-500">OPS</span></p>
                 </div>
                 <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Risico Niveau</p>
-                  <p className="text-2xl font-black text-emerald-400 tracking-widest">LAAG</p>
+                  <p className="text-2xl font-black text-emerald-400 tracking-widest">{data?.riskLevel || "LAAG"}</p>
                 </div>
               </div>
             </div>
@@ -102,7 +128,7 @@ export default function EnterpriseOSPage() {
                 <Lock className="w-4 h-4 text-cyan-500" /> Juridische Kluis
               </h2>
               <div className="space-y-3">
-                {['NDA_Alibaba_Supplier.pdf', 'Tax_Audit_Q3_2026.pdf', 'IP_Transfer_Agreement.pdf'].map((doc, i) => (
+                {data?.documents?.length > 0 ? data.documents.map((doc: string, i: number) => (
                   <div key={i} className="flex items-center justify-between p-4 bg-zinc-950/50 border border-white/5 rounded-xl hover:border-cyan-500/30 cursor-pointer transition-colors group">
                     <div className="flex items-center gap-3">
                       <FileText className="w-4 h-4 text-cyan-500/50 group-hover:text-cyan-400" />
@@ -110,7 +136,11 @@ export default function EnterpriseOSPage() {
                     </div>
                     <Download className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                ))}
+                )) : (
+                  <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center py-4 border border-dashed border-white/10 rounded-xl">
+                    Geen contracten geüpload
+                  </div>
+                )}
               </div>
               <button className="w-full mt-6 py-3.5 bg-black hover:bg-zinc-900 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
                 + NIEUW DOCUMENT

@@ -233,15 +233,7 @@ export default function TradingDashboard() {
       };
     });
 
-  const displayChartData = chartData.length > 0 ? chartData : [
-    { name: 'Start', pnl: 0 },
-    { name: 'Tick 1', pnl: 120 },
-    { name: 'Tick 2', pnl: -40 },
-    { name: 'Tick 3', pnl: 220 },
-    { name: 'Tick 4', pnl: 340 },
-    { name: 'Tick 5', pnl: 280 },
-    { name: 'Tick 6', pnl: 450 },
-  ];
+  const displayChartData = chartData;
 
   return (
     <div className="space-y-8 pb-20 max-w-7xl mx-auto px-4 select-none relative z-10 font-sans min-h-[85vh]">
