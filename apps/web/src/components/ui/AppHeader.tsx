@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export function AppHeader() {
   const [time, setTime] = useState<string>("");
+  const pathname = usePathname();
 
   useEffect(() => {
     const updateTime = () => {
@@ -21,6 +23,8 @@ export function AppHeader() {
     const timer = setInterval(updateTime, 50);
     return () => clearInterval(timer);
   }, []);
+
+  if (pathname === '/') return null;
 
   return (
     <motion.header 

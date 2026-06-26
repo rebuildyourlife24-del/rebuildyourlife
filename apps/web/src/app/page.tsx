@@ -30,6 +30,35 @@ export default function MatrixLandingPage() {
         </Link>
       </nav>
 
+      {/* INTRO VIDEO (PANORAMA) */}
+      <motion.div 
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: "auto", opacity: 1 }}
+        transition={{ duration: 1.2, delay: 0.5, ease: "easeInOut" }}
+        className="w-full relative z-40 overflow-hidden bg-black/80 backdrop-blur-md border-b border-cyan-500/20"
+      >
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-6">
+          <div className="w-full aspect-[21/9] md:aspect-[32/9] rounded-none border border-cyan-500/30 relative overflow-hidden bg-black flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.1)] group">
+            {/* Placeholder for the actual video */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
+              <Play className="w-12 h-12 text-cyan-500/50 mb-4 group-hover:text-cyan-400 transition-colors" />
+              <div className="text-cyan-400 font-mono text-sm tracking-widest uppercase animate-pulse">Inkomend Video Signaal...</div>
+              <div className="text-zinc-600 text-xs mt-2 font-mono">[ 7-15 sec Panorama Introductie ]</div>
+            </div>
+            
+            {/* Scanline effect over video */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] z-20 pointer-events-none opacity-50"></div>
+            
+            {/* Real video tag (commented out until we have the file) */}
+            {/* 
+            <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
+              <source src="/pad-naar-je-video.mp4" type="video/mp4" />
+            </video> 
+            */}
+          </div>
+        </div>
+      </motion.div>
+
       {/* HERO SECTION */}
       <main className="relative z-30 flex-1 flex flex-col justify-center px-6 md:px-12 max-w-[1400px] mx-auto w-full py-20">
         <div className="max-w-4xl">
