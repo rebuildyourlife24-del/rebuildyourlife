@@ -141,7 +141,7 @@ export default function SyntheticDashboardPage() {
           'CREATE_STORE', 
           res.data.name, 
           'SUCCESS', 
-          `Store generated with vibe theme: ${generated.theme}. Primary: ${generated.settings?.primaryColor}, Font: ${generated.settings?.fontFamily}. Subdomain registered: ${res.data.subdomain}.rebuildyourlife.eu`
+          `Store generated with vibe theme: ${generated.theme}. Primary: ${generated.settings?.primaryColor}, Font: ${generated.settings?.fontFamily}. Subdomain registecyan: ${res.data.subdomain}.rebuildyourlife.eu`
         );
         
         // Switch to Brand layout tab to show off the generated results

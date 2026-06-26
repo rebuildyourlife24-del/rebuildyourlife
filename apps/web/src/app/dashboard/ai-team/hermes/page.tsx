@@ -89,7 +89,7 @@ export default function HermesChatPage() {
     const res = await sendAIMessageAction("HERMES", userMessageContent, activeConvId || undefined);
     
     if (!res.success) {
-      setError(res.error || "Fout opgetreden");
+      setError(res.error || "Fout opgetcyanen");
       setMessages((prev) => prev.filter(m => m.id !== tempUserMsg.id));
     } else {
       if (!activeConvId && res.conversationId) {

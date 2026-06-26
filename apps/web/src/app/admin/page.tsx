@@ -36,7 +36,7 @@ export default function CommandCenterPage() {
   
   // Navy Matrix Terminal logs
   const [terminalOutput, setTerminalOutput] = useState<string[]>([
-    "INIT SYSTEM RED GOD MODE CONSOLE...",
+    "INIT SYSTEM cyan GOD MODE CONSOLE...",
     "ESTABLISHING SECURE PROTOCOLS...",
     "SUPREME OVERSEER CLEARANCE GRANTED."
   ]);
@@ -62,7 +62,7 @@ export default function CommandCenterPage() {
         `[OK] LIVE STATS SYNCED: Users: ${statsRes.data?.totalUsers || 0}, Active Franchises: ${statsRes.data?.activeFranchises || 0}`,
         `[OK] SYNCED ${usersRes.data?.length || 0} USER NODES`,
         `[OK] SYNCED ${franchisesRes.data?.length || 0} FRANCHISE NODES`,
-        `[SYSTEM_RED] ONLINE AND AWAITING COMMAND.`
+        `[SYSTEM_cyan] ONLINE AND AWAITING COMMAND.`
       ]);
     } catch (err: any) {
       setError(err.message || 'Fout bij het laden van live database.');
@@ -133,11 +133,11 @@ export default function CommandCenterPage() {
       const command = event.results[last][0].transcript.toLowerCase();
       if (command.includes('swarm') || command.includes('initiate swarm') || command.includes('apex')) {
         setSingularityActive(true);
-        setTerminalOutput(prev => [...prev, "[VOICE] APEX PREDATOR MODE ENGAGED VIA VOICE CORE."]);
+        setTerminalOutput(prev => [...prev, "[VOICE] APEX PcyanATOR MODE ENGAGED VIA VOICE CORE."]);
       }
       if (command.includes('deactivate') || command.includes('stop')) {
         setSingularityActive(false);
-        setTerminalOutput(prev => [...prev, "[VOICE] DECONSTRUCTING APEX PREDATOR HIERARCHY."]);
+        setTerminalOutput(prev => [...prev, "[VOICE] DECONSTRUCTING APEX PcyanATOR HIERARCHY."]);
       }
     };
 
@@ -154,7 +154,7 @@ export default function CommandCenterPage() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto text-gold font-mono">
       
-      {/* Header - System Red Aesthetics */}
+      {/* Header - System cyan Aesthetics */}
       <div className="bg-black border border-gold/30 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_30px_rgba(239,68,68,0.15)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#112240] to-transparent"></div>
         <div>
@@ -191,7 +191,7 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
-      {/* Database Live Stats - Navy Matrix Red style */}
+      {/* Database Live Stats - Navy Matrix cyan style */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Stat Card 1: Users */}
@@ -301,7 +301,7 @@ export default function CommandCenterPage() {
                 <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto text-[10px] space-y-1.5 pr-2 font-mono scrollbar-thin scrollbar-thumb-red-950">
+            <div className="flex-1 overflow-y-auto text-[10px] space-y-1.5 pr-2 font-mono scrollbar-thin scrollbar-thumb-cyan-950">
               {terminalOutput.map((log, idx) => (
                 <div key={idx} className="flex gap-2">
                   <span className="text-[#d4af37] font-bold">[{idx}]</span>
@@ -323,7 +323,7 @@ export default function CommandCenterPage() {
                 <Users className="w-5 h-5 text-gold" /> User Matrix Core
               </h2>
               <span className="text-xs bg-[#0a192f]/50 text-gold border border-[#d4af37] px-2 py-0.5 rounded uppercase font-bold">
-                {users.length} Nodes Registered
+                {users.length} Nodes Registecyan
               </span>
             </div>
 
@@ -334,7 +334,7 @@ export default function CommandCenterPage() {
               </div>
             )}
 
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-red-950">
+            <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-950">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-gold/10 text-zinc-500 uppercase tracking-widest text-[9px]">
@@ -417,7 +417,7 @@ export default function CommandCenterPage() {
               </span>
             </div>
 
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-red-950">
+            <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-950">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-gold/10 text-zinc-500 uppercase tracking-widest text-[9px]">
@@ -435,7 +435,7 @@ export default function CommandCenterPage() {
                     </tr>
                   ) : franchises.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-zinc-600">No active franchises registered.</td>
+                      <td colSpan={5} className="py-8 text-center text-zinc-600">No active franchises registecyan.</td>
                     </tr>
                   ) : (
                     franchises.map(f => (
