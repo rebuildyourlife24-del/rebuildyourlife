@@ -406,7 +406,7 @@ export default function FranchiseManager() {
               )}
 
               {createError && (
-                <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-3 text-xs font-bold text-red-400 flex items-center gap-2">
+                <div className="border border-cyan-500/30 bg-cyan-500/20 rounded-xl p-3 text-xs font-bold text-cyan-500 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0" /> {createError}
                 </div>
               )}
@@ -680,7 +680,7 @@ export default function FranchiseManager() {
                                   <button
                                     type="button"
                                     onClick={() => handleDeleteProduct(p.id)}
-                                    className="text-red-400/50 hover:text-red-400 transition-colors"
+                                    className="text-cyan-500/50 hover:text-cyan-500 transition-colors"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -799,7 +799,7 @@ export default function FranchiseManager() {
                         className={
                           log.includes("[SUCCESS]") ? "text-emerald-400 font-bold" : 
                           log.includes("[SYS]") ? "text-cyan-400 font-medium" : 
-                          log.includes("[ERROR]") ? "text-red-400 font-bold" :
+                          log.includes("[ERROR]") ? "text-cyan-500 font-bold" :
                           "text-zinc-400"
                         }
                       >

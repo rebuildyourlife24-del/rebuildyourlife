@@ -100,11 +100,11 @@ export default function TasksPage() {
         
         <div className="space-y-3">
           {columnTasks.map(task => (
-            <Card key={task.id} variant="glass" className="p-4 cursor-grab active:cursor-grabbing hover:border-gold/30 transition-colors">
+            <Card key={task.id} variant="glass" className="p-4 cursor-grab active:cursor-grabbing hover:border-emerald-500/30 transition-colors">
               <div className="flex justify-between items-start mb-2">
                 <Badge variant={priorityColors[task.priority]} size="sm">{task.priority}</Badge>
                 {task.assignedAgentType && (
-                  <span className="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded flex items-center gap-1">
+                  <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded flex items-center gap-1">
                     {AGENT_DEFINITIONS.find(a => a.type === task.assignedAgentType)?.avatarEmoji}
                     {AGENT_DEFINITIONS.find(a => a.type === task.assignedAgentType)?.name}
                   </span>
@@ -117,7 +117,7 @@ export default function TasksPage() {
               
               <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-white/5">
                 {status !== TaskStatus.IN_PROGRESS && (
-                  <button onClick={() => handleStatusChange(task.id, TaskStatus.IN_PROGRESS)} className="text-xs text-gold hover:underline">
+                  <button onClick={() => handleStatusChange(task.id, TaskStatus.IN_PROGRESS)} className="text-xs text-emerald-400 hover:underline">
                     Start
                   </button>
                 )}
@@ -174,7 +174,7 @@ export default function TasksPage() {
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-textPrimary">Beschrijving</label>
             <textarea
-              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none resize-none h-24"
+              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none resize-none h-24"
               value={form.description}
               onChange={e => setForm({...form, description: e.target.value})}
             />
@@ -183,7 +183,7 @@ export default function TasksPage() {
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-textPrimary">Prioriteit</label>
               <select
-                className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none"
+                className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none"
                 value={form.priority}
                 onChange={e => setForm({...form, priority: e.target.value as TaskPriority})}
               >
@@ -195,7 +195,7 @@ export default function TasksPage() {
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-textPrimary">Toewijzen aan AI</label>
               <select
-                className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none"
+                className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none"
                 value={form.assignedAgentType}
                 onChange={e => setForm({...form, assignedAgentType: e.target.value})}
               >

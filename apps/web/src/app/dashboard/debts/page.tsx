@@ -148,7 +148,7 @@ export default function DebtsPage() {
           <Paywall requiredTier="PREMIUM">
             <Button 
               variant="secondary"
-              className="border-gold text-gold hover:bg-gold/10 font-bold tracking-wide text-xs shadow-[0_0_15px_rgba(212,168,83,0.15)] relative overflow-hidden group h-full"
+              className="border-emerald-500 text-emerald-400 hover:bg-emerald-500/10 font-bold tracking-wide text-xs shadow-[0_0_15px_rgba(212,168,83,0.15)] relative overflow-hidden group h-full"
               onClick={() => alert("Legal PDF wordt gegenereerd...")}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
@@ -194,27 +194,27 @@ export default function DebtsPage() {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0a192f] to-transparent"></div>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-white text-xl font-bold tracking-[0.2em] uppercase flex items-center gap-3">
-            <Radar className={`w-6 h-6 text-gold ${isScanning ? 'animate-spin' : ''}`} />
+            <Radar className={`w-6 h-6 text-emerald-400 ${isScanning ? 'animate-spin' : ''}`} />
             GODBRAIN E-MAIL SCANNER
           </h2>
           <Button 
             onClick={handleScanInbox} 
             disabled={isScanning}
-            className="bg-gold hover:bg-gold text-black font-black uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.5)]"
+            className="bg-emerald-500 hover:bg-emerald-500 text-black font-black uppercase tracking-widest shadow-[0_0_15px_rgba(220,38,38,0.5)]"
           >
             {isScanning ? 'SCANNING INBOX...' : 'INITIATE SCAN'}
           </Button>
         </div>
 
         {isScanning && (
-          <div className="text-gold font-mono text-sm animate-pulse flex items-center gap-2">
-            <span className="w-2 h-2 bg-gold rounded-full"></span> 
+          <div className="text-emerald-400 font-mono text-sm animate-pulse flex items-center gap-2">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full"></span> 
             Zoeken naar facturen, incassobrieven en dreigementen...
           </div>
         )}
 
         {scanComplete && scannedDebts.length === 0 && (
-          <div className="text-gold/70 font-mono text-sm">Geen nieuwe vorderingen gedetecteerd.</div>
+          <div className="text-emerald-400/70 font-mono text-sm">Geen nieuwe vorderingen gedetecteerd.</div>
         )}
 
         {scannedDebts.length > 0 && (
@@ -224,24 +224,24 @@ export default function DebtsPage() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-white font-bold text-lg">{debt.creditorName}</h3>
-                    <p className="text-gold/70 text-xs">Bron: {debt.extractedFromEmail} | {new Date(debt.dateFound).toLocaleDateString()}</p>
+                    <p className="text-emerald-400/70 text-xs">Bron: {debt.extractedFromEmail} | {new Date(debt.dateFound).toLocaleDateString()}</p>
                   </div>
-                  <div className="bg-navyLight/40 text-goldLight border border-[#d4af37] px-2 py-1 text-xs font-bold tracking-widest">
+                  <div className="bg-navyLight/40 text-emerald-400Light border border-[#d4af37] px-2 py-1 text-xs font-bold tracking-widest">
                     {debt.status}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mb-4 border-y border-navyLight/30 py-3">
                   <div>
-                    <div className="text-gold/50 text-xs">Oorspronkelijk Bedrag</div>
+                    <div className="text-emerald-400/50 text-xs">Oorspronkelijk Bedrag</div>
                     <div className="text-white font-bold">€{debt.originalAmount.toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-gold/50 text-xs">Illegale Kosten (B*llshit)</div>
-                    <div className="text-gold font-bold line-through">€{debt.illegalCollectionFees.toFixed(2)}</div>
+                    <div className="text-emerald-400/50 text-xs">Illegale Kosten (B*llshit)</div>
+                    <div className="text-emerald-400 font-bold line-through">€{debt.illegalCollectionFees.toFixed(2)}</div>
                   </div>
                   <div>
-                    <div className="text-gold/50 text-xs">Totaal Geëist</div>
+                    <div className="text-emerald-400/50 text-xs">Totaal Geëist</div>
                     <div className="text-white font-bold">€{debt.totalClaimed.toFixed(2)}</div>
                   </div>
                 </div>
@@ -253,8 +253,8 @@ export default function DebtsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="bg-navyLight/20 p-3 border-l-2 border-gold text-sm">
-                      <span className="text-gold font-bold">AI STRATEGIE: </span>
+                    <div className="bg-navyLight/20 p-3 border-l-2 border-emerald-500 text-sm">
+                      <span className="text-emerald-400 font-bold">AI STRATEGIE: </span>
                       <span className="text-white/80">{debt.aiRecommendation}</span>
                     </div>
                     <div className="flex gap-3">
@@ -262,7 +262,7 @@ export default function DebtsPage() {
                         size="sm"
                         disabled={negotiatingId === debt.id}
                         onClick={() => handleNegotiate(debt.id, 'DISPUTE_FEES')}
-                        className="bg-black border border-gold text-gold hover:bg-[#0a192f]"
+                        className="bg-black border border-emerald-500 text-emerald-400 hover:bg-[#0a192f]"
                       >
                         <Shield className="w-4 h-4 mr-2" />
                         BETWIST INCASSOKOSTEN
@@ -271,7 +271,7 @@ export default function DebtsPage() {
                         size="sm"
                         disabled={negotiatingId === debt.id}
                         onClick={() => handleNegotiate(debt.id, 'FINAL_SETTLEMENT')}
-                        className="bg-gold text-black hover:bg-gold font-bold"
+                        className="bg-emerald-500 text-black hover:bg-emerald-500 font-bold"
                       >
                         <Zap className="w-4 h-4 mr-2" />
                         STUUR SCHIKKINGSVOORSTEL
@@ -291,7 +291,7 @@ export default function DebtsPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-xl border border-white/10 bg-surface/30 p-5">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gold">Sneeuwbal Methode</h3>
+                <h3 className="font-semibold text-emerald-400">Sneeuwbal Methode</h3>
                 <span className="text-xs text-textSecondary bg-surface px-2 py-1 rounded">Kleinste eerst</span>
               </div>
               <p className="text-sm text-textSecondary mb-4">Motiveert door snelle overwinningen.</p>
@@ -331,7 +331,7 @@ export default function DebtsPage() {
       {overview?.totalDebts === 0 && (
         <div className="text-center py-12">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-light mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gold" strokeWidth="1.5">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="1.5">
               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
           </div>
@@ -348,7 +348,7 @@ export default function DebtsPage() {
         title="Nieuwe Schuld Toevoegen"
         description="Vul de gegevens in van je schuldeiser."
       >
-        {serverError && <p className="text-gold text-sm mb-4">{serverError}</p>}
+        {serverError && <p className="text-emerald-400 text-sm mb-4">{serverError}</p>}
         <form onSubmit={handleAddDebt} className="space-y-4">
           <Input
             label="Schuldeiser"

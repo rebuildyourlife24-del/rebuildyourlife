@@ -341,7 +341,7 @@ export default function HealthPage() {
               {logs.slice(0, 7).map(log => (
                 <div
                   key={log.id}
-                  className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-gold/20 transition-colors"
+                  className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-emerald-500/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className="text-center min-w-[52px]">
@@ -413,7 +413,7 @@ export default function HealthPage() {
                   background: `linear-gradient(to right, #a78bfa ${((parseFloat(form.sleepScore || '7') - 1) / 9) * 100}%, rgba(255,255,255,0.05) ${((parseFloat(form.sleepScore || '7') - 1) / 9) * 100}%)`
                 }}
               />
-              <p className="text-xs text-gold text-right font-semibold">{form.sleepScore || 7}/10</p>
+              <p className="text-xs text-emerald-400 text-right font-semibold">{form.sleepScore || 7}/10</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -447,7 +447,7 @@ export default function HealthPage() {
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-textSecondary">Type Training</label>
               <select
-                className="w-full rounded-xl border border-white/10 bg-navy-light px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/40"
+                className="w-full rounded-xl border border-white/10 bg-navy-light px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-gold/40"
                 value={form.workoutType}
                 onChange={e => setForm({ ...form, workoutType: e.target.value })}
               >

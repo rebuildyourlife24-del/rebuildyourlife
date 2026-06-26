@@ -39,7 +39,7 @@ const CustomRadarTooltip = ({ active, payload }: any) => {
     return (
       <div className="glass-panel rounded-xl px-3 py-2 text-sm">
         <p className="font-semibold text-textPrimary">{payload[0]?.payload?.name}</p>
-        <p className="text-gold font-bold">{payload[0]?.value}/100</p>
+        <p className="text-emerald-400 font-bold">{payload[0]?.value}/100</p>
       </div>
     );
   }
@@ -163,7 +163,7 @@ export default function LifeBalancePage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="h-8 w-8 rounded-full border-2 border-gold/20 border-t-gold"
+          className="h-8 w-8 rounded-full border-2 border-emerald-500/20 border-t-gold"
         />
       </div>
     );

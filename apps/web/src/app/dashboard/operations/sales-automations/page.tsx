@@ -204,7 +204,7 @@ export default function SalesAutomationsPage() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12 font-sans relative">
       
       {/* Glow overlay */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* HEADER */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
@@ -392,7 +392,7 @@ export default function SalesAutomationsPage() {
               <div className="flex gap-4">
                 <button
                   onClick={handleToggleCall}
-                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-gold hover:bg-[#0a192f] text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]'}`}
+                  className={`px-8 py-5 rounded-full font-black uppercase text-sm tracking-widest flex items-center gap-3 transition-all ${isCalling ? 'bg-emerald-500 hover:bg-[#0a192f] text-white' : 'bg-[#d4af37] hover:bg-white text-black shadow-[0_0_20px_rgba(212,175,55,0.2)]'}`}
                 >
                   <Phone className="w-5 h-5" />
                   {isCalling ? 'Hangs Up' : 'Start Call'}

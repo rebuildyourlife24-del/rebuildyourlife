@@ -39,7 +39,7 @@ export default function HelpCenterPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, type: 'spring' }}
         >
-          <div className="inline-block p-4 rounded-3xl bg-gold/10 text-gold mb-6 backdrop-blur-xl border border-gold/20 shadow-[0_0_40px_rgba(234,179,8,0.2)]">
+          <div className="inline-block p-4 rounded-3xl bg-emerald-500/10 text-emerald-400 mb-6 backdrop-blur-xl border border-emerald-500/20 shadow-[0_0_40px_rgba(234,179,8,0.2)]">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
@@ -76,7 +76,7 @@ export default function HelpCenterPage() {
             >
               <div className="p-4 flex justify-between items-center">
                 <span className="font-medium text-textPrimary">{faq.q}</span>
-                <span className={`transform transition-transform text-gold ${activeFaq === index ? 'rotate-180' : ''}`}>
+                <span className={`transform transition-transform text-emerald-400 ${activeFaq === index ? 'rotate-180' : ''}`}>
                   ▼
                 </span>
               </div>

@@ -109,7 +109,7 @@ export default function QualityControlTerminal() {
                 <div className="flex gap-4 mt-6">
                   <button
                     onClick={() => handleAction(queue[0].id, "reject")}
-                    className="flex-1 bg-red-950/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 py-4 rounded-xl flex items-center justify-center transition-all group"
+                    className="flex-1 bg-cyan-500/30 hover:bg-cyan-500/50 border border-cyan-500/30 text-cyan-500 py-4 rounded-xl flex items-center justify-center transition-all group"
                   >
                     <X className="w-8 h-8 group-hover:scale-110 transition-transform" />
                   </button>
@@ -135,7 +135,7 @@ export default function QualityControlTerminal() {
       </div>
 
       <div className="mt-8 text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2 relative z-10">
-        <Flame className="w-3 h-3 text-red-500" /> Swipe links = Trash | Swipe rechts = Push to Socials
+        <Flame className="w-3 h-3 text-cyan-500" /> Swipe links = Trash | Swipe rechts = Push to Socials
       </div>
     </div>
   );

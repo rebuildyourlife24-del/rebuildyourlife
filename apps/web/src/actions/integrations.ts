@@ -1,80 +1,94 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/db";
-import { revalidatePath } from "next/cache";
-import { getSessionAction } from "@/app/actions/auth";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-export async function saveShopifyCredentials(formData: FormData) {
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret_for_dev";
+
+async function getAuthenticatedUserId(): Promise<string | null> {
+  const token = (await cookies()).get("ryl_session")?.value;
+  if (!token) return null;
   try {
-    const session = await getSessionAction();
-    if (!session.success || !session.user) {
-      return { error: "Niet geauthenticeerd. Log opnieuw in." };
-    }
-
-    let userId = session.user.id;
-    if (userId === "dev-local-admin-id") {
-      const adminUser = await db.user.findUnique({
-        where: { email: "hsemler50@gmail.com" }
-      });
-      if (adminUser) {
-        userId = adminUser.id;
-      }
-    }
-
-    const shopUrl = formData.get("shopUrl")?.toString();
-    const accessToken = formData.get("accessToken")?.toString();
-
-    if (!shopUrl || !accessToken) {
-      return { error: "Winkel URL en Access Token zijn verplicht." };
-    }
-
-    // Maak de URL schoon zodat we alleen de myshopify.com domein overhouden
-    let cleanUrl = shopUrl.replace("https://", "").replace("http://", "").split('/')[0];
-    if (!cleanUrl.includes("myshopify.com")) {
-      return { error: "De URL moet een .myshopify.com domein zijn." };
-    }
-
-    // 1. Verifieer de API Key door een simpele call naar Shopify te doen
-    const testUrl = `https://${cleanUrl}/admin/api/2024-01/shop.json`;
-    const response = await fetch(testUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': accessToken,
-      }
-    });
-
-    if (!response.ok) {
-      return { error: "Ongeldige API sleutel of winkel URL. Shopify weigert toegang." };
-    }
-
-    // 2. Sla de koppeling op in de database
-    await db.shopifyStore.upsert({
-      where: {
-        userId_shopUrl: {
-          userId: userId,
-          shopUrl: cleanUrl,
-        }
-      },
-      update: {
-        accessToken: accessToken,
-        status: "ACTIVE"
-      },
-      create: {
-        userId: userId,
-        shopUrl: cleanUrl,
-        accessToken: accessToken,
-        status: "ACTIVE"
-      }
-    });
-
-    revalidatePath("/dashboard/settings/integrations");
-    revalidatePath("/dashboard/war-room");
-
-    return { success: "Winkel succesvol gekoppeld aan de Godbrain!" };
-  } catch (error: any) {
-    console.error("Integration Save Error:", error);
-    return { error: "Systeemfout bij het opslaan: " + error.message };
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
   }
 }
 
+export async function getShopifyConnectionsAction() {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { success: false, error: 'Unauthorized' };
+
+  try {
+    const stores = await prisma.shopifyStore.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        shopUrl: true,
+        status: true,
+        totalRevenue: true,
+        createdAt: true
+      }
+    });
+    return { success: true, data: stores };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function connectShopifyStoreAction(shopUrl: string, accessToken: string) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { success: false, error: 'Unauthorized' };
+
+  try {
+    // Basic validation
+    if (!shopUrl || !shopUrl.includes('.myshopify.com')) {
+      return { success: false, error: 'Ongeldige Shop URL. Gebruik de .myshopify.com structuur.' };
+    }
+    if (!accessToken || accessToken.length < 20) {
+      return { success: false, error: 'Ongeldige Admin API Access Token.' };
+    }
+
+    // Insert into DB
+    const store = await prisma.shopifyStore.upsert({
+      where: {
+        userId_shopUrl: {
+          userId,
+          shopUrl
+        }
+      },
+      update: {
+        accessToken,
+        status: 'ACTIVE'
+      },
+      create: {
+        userId,
+        shopUrl,
+        accessToken,
+        status: 'ACTIVE',
+        totalRevenue: 0
+      }
+    });
+
+    return { success: true, message: 'Shopify Store succesvol gekoppeld.' };
+  } catch (error: any) {
+    console.error('connectShopifyStoreAction error:', error);
+    return { success: false, error: 'Systeemfout bij het opslaan van Shopify gegevens.' };
+  }
+}
+
+export async function removeShopifyConnectionAction(storeId: string) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { success: false, error: 'Unauthorized' };
+
+  try {
+    await prisma.shopifyStore.delete({
+      where: { id: storeId, userId }
+    });
+    return { success: true, message: 'Shopify Store connectie verwijderd.' };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

@@ -344,7 +344,7 @@ export default function CommandCenterPage() {
                     <th className="py-3 px-2 text-right">Clearance</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-red-500/5 text-zinc-300">
+                <tbody className="divide-y divide-cyan-500/5 text-zinc-300">
                   {loading ? (
                     <tr>
                       <td colSpan={4} className="py-8 text-center text-zinc-500 animate-pulse">Syncing nodes with grid...</td>
@@ -428,7 +428,7 @@ export default function CommandCenterPage() {
                     <th className="py-3 px-2 text-right">Access State</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-red-500/5 text-zinc-300">
+                <tbody className="divide-y divide-cyan-500/5 text-zinc-300">
                   {loading ? (
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-zinc-500 animate-pulse">Syncing franchise nodes...</td>

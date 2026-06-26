@@ -62,6 +62,7 @@ model User {
   interceptionAlerts     InterceptionAlert[]         @relation("TargetedUser")
   justiceLedgers         JusticeLedger[]
   legalContacts          LegalContact[]
+  intelligenceTargets    IntelligenceTarget[]
   lifeAreas              LifeArea[]
   marketingConversions   MarketingConversion[]
   notifications          Notification[]
@@ -84,6 +85,9 @@ model User {
   treasuryVaults         TreasuryVault[]
   lessonProgress         UserLessonProgress[]
   walletTransactions     WalletTransaction[]
+  documents              Document[]
+  habits                 Habit[]
+  books                  Book[]
 
   @@index([email])
   @@index([role])
@@ -1542,3 +1546,64 @@ model AgentEvolutionLog {
   @@index([agentId])
   @@index([appliedAt])
 }
+
+model Document {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   @default("INTELLIGENCE_REPORT") // of "CONTRACT"
+  content     String   @db.Text
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Habit {
+  id              String   @id @default(uuid())
+  name            String
+  emoji           String
+  description     String?
+  weeklyHoursGoal Int      @default(0)
+  weeklyHoursDone Int      @default(0)
+  color           String   @default("#06b6d4")
+  glowColor       String   @default("rgba(6,182,212,0.5)")
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Book {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  read        Boolean  @default(false)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model IntelligenceTarget {
+  id            String   @id @default(uuid())
+  userId        String
+  type          String   // COMMERCE, TRADE, SOCIAL, RYL_DEV
+  target        String   // URL, keyword, niche
+  status        String   @default("ACTIVE")
+  lastScannedAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+

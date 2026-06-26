@@ -333,12 +333,104 @@ export default function AutonomousFactoryPage() {
 
         {/* Tab: E-mail Pitcher */}
         {activeTab === "pitch" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-             <div className="text-center p-12 border border-dashed border-white/10 rounded-2xl">
-               <Send className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-               <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-2">Pitch Module Offline</h3>
-               <p className="text-zinc-500 max-w-md mx-auto">De automatische pitcher wordt momenteel geüpgraded. Gebruik de database om je leads te bekijken en handmatig te benaderen totdat de SMTP integratie is afgerond.</p>
-             </div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex-1 space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Send className="text-cyan-400 w-5 h-5" /> E-mail Pitch Engine
+                  </h2>
+                  <p className="text-zinc-500 text-sm">
+                    Selecteer leads en verstuur gepersonaliseerde acquisitie-emails.
+                  </p>
+                </div>
+
+                {leads.length === 0 ? (
+                  <div className="bg-black border border-white/5 rounded-xl p-6 text-center text-zinc-500">
+                    Geen leads gevonden. Gebruik de B2B Scraper om je database te vullen.
+                  </div>
+                ) : (
+                  <>
+                    <div className="max-h-60 overflow-y-auto bg-black border border-white/10 rounded-xl p-4 space-y-2">
+                      {leads.map((lead) => (
+                        <div key={lead.id} className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedLeads.includes(lead.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedLeads(prev => [...prev, lead.id]);
+                              } else {
+                                setSelectedLeads(prev => prev.filter(id => id !== lead.id));
+                              }
+                            }}
+                            className="w-4 h-4 accent-cyan-500"
+                          />
+                          <div className="text-sm">
+                            <span className="font-bold text-white">{lead.name}</span>
+                            {lead.email ? (
+                              <span className="text-cyan-500 ml-2">({lead.email})</span>
+                            ) : (
+                              <span className="text-zinc-600 ml-2">(Geen e-mail)</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-xs text-cyan-400">{selectedLeads.length} leads geselecteerd</div>
+                  </>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Subject</label>
+                  <input
+                    type="text"
+                    value={pitchSubject}
+                    onChange={(e) => setPitchSubject(e.target.value)}
+                    className="w-full bg-black border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Email Body (HTML)</label>
+                  <textarea
+                    value={pitchTemplate}
+                    onChange={(e) => setPitchTemplate(e.target.value)}
+                    className="w-full bg-black border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-cyan-500/50 h-32 font-mono"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSendPitches}
+                  disabled={isPitching || selectedLeads.length === 0}
+                  className="w-full bg-emerald-950/50 text-emerald-400 border border-emerald-500/50 rounded-xl py-4 font-bold text-sm uppercase tracking-widest hover:bg-emerald-900/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-3"
+                >
+                  {isPitching ? (
+                    <><Loader2 className="w-5 h-5 animate-spin" /> Pitches aan het versturen...</>
+                  ) : (
+                    <><Send className="w-5 h-5" /> Verstuur {selectedLeads.length} Emails</>
+                  )}
+                </button>
+              </div>
+
+              {/* Terminal */}
+              <div className="w-full lg:w-[400px] flex flex-col">
+                <div className="bg-black border border-white/5 rounded-xl p-5 h-full flex flex-col min-h-[300px]">
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 font-bold uppercase border-b border-white/5 pb-3 mb-4">
+                    <Terminal className="w-4 h-4 text-emerald-500" /> Pitch Logs
+                  </div>
+                  <div className="flex-1 font-mono text-xs text-zinc-400 space-y-2 overflow-y-auto">
+                    {pitchLogs.length === 0 ? (
+                      <span className="text-zinc-600">Geen actieve pitch campagnes.</span>
+                    ) : (
+                      pitchLogs.map((log, index) => (
+                        <div key={index}><span className="text-emerald-500">[{index + 1}]</span> {log}</div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </div>

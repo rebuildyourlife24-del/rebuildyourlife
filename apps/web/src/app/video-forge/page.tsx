@@ -65,7 +65,7 @@ export default function VideoForge() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="z-10 w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-2xl p-6 shadow-2xl"
+        className="z-10 w-full max-w-2xl bg-navy border border-white/10 rounded-2xl p-6 shadow-2xl"
       >
         <form onSubmit={handleGenerate} className="flex flex-col gap-6">
           {/* Model Switcher */}
@@ -74,7 +74,7 @@ export default function VideoForge() {
               type="button"
               onClick={() => setModelType("free")}
               className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-lg transition-all ${
-                modelType === "free" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                modelType === "free" ? "bg-navyLight text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               Gratis Engine (1080p)
@@ -104,7 +104,7 @@ export default function VideoForge() {
           <button
             type="submit"
             disabled={isGenerating || !prompt}
-            className="w-full bg-white text-black hover:bg-cyan-400 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
+            className="w-full bg-cyan-500 text-black hover:bg-cyan-400 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
           >
             {isGenerating ? (
               <>
@@ -133,7 +133,7 @@ export default function VideoForge() {
           Output Terminal
         </h2>
         
-        <div className="w-full aspect-video bg-zinc-950 border border-white/5 rounded-2xl flex items-center justify-center overflow-hidden relative">
+        <div className="w-full aspect-video bg-navy border border-white/5 rounded-2xl flex items-center justify-center overflow-hidden relative">
           {videoUrl ? (
             <video 
               src={videoUrl} 

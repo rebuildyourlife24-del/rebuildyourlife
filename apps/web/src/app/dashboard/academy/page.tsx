@@ -91,8 +91,8 @@ export default async function AcademyPage() {
               <div className="w-full h-40 bg-black/50 rounded-lg mb-6 flex items-center justify-center border border-cyan-900/50 relative overflow-hidden">
                 {isLocked ? (
                   <div className="absolute inset-0 bg-[#0a192f]/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-                    <Lock className="w-12 h-12 text-gold mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
-                    <span className="text-gold text-xs font-black uppercase tracking-widest">Apex Operator Only</span>
+                    <Lock className="w-12 h-12 text-emerald-400 mb-2 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
+                    <span className="text-emerald-400 text-xs font-black uppercase tracking-widest">Apex Operator Only</span>
                   </div>
                 ) : (
                   <PlayCircle className="w-16 h-16 text-cyan-500/30 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300" />
@@ -109,7 +109,7 @@ export default async function AcademyPage() {
               <div className="flex justify-between items-start mb-2">
                 <h2 className="text-white font-bold text-lg tracking-tight">{course.title}</h2>
                 {course.tierAccess === 'PREMIUM' && (
-                  <span className="bg-[#0a192f] text-goldLight border border-navyLight/50 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
+                  <span className="bg-[#0a192f] text-emerald-400Light border border-navyLight/50 text-[9px] px-2 py-1 rounded uppercase font-black tracking-wider">
                     Premium
                   </span>
                 )}
@@ -135,7 +135,7 @@ export default async function AcademyPage() {
               {isLocked ? (
                 <button 
                   disabled
-                  className="w-full py-3 rounded text-xs font-black tracking-widest uppercase bg-[#0a192f]/30 text-gold/50 border border-navyLight/30 cursor-not-allowed"
+                  className="w-full py-3 rounded text-xs font-black tracking-widest uppercase bg-[#0a192f]/30 text-emerald-400/50 border border-navyLight/30 cursor-not-allowed"
                 >
                   Upgrade Required
                 </button>

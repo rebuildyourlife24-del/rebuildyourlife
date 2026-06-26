@@ -38,7 +38,7 @@ export default function NetflixAcademyPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#050505] text-white">
-        <RefreshCw className="w-8 h-8 text-gold animate-spin" />
+        <RefreshCw className="w-8 h-8 text-emerald-400 animate-spin" />
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function NetflixAcademyPage() {
           
           <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full max-w-4xl z-10">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-gold font-black tracking-[0.3em] text-sm uppercase">
+              <span className="text-emerald-400 font-black tracking-[0.3em] text-sm uppercase">
                 {featuredVideo.category || "ACADEMY"}
               </span>
               <span className="text-white/50 text-xs tracking-widest px-2 border border-white/20">
@@ -164,7 +164,7 @@ export default function NetflixAcademyPage() {
                 style={{ backgroundImage: `url(${selectedVideo.thumbnail || ''})` }}
               >
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center cursor-pointer">
-                  <div className="w-20 h-20 bg-gold/90 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.6)] group-hover:scale-110 transition-transform">
+                  <div className="w-20 h-20 bg-emerald-500/90 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.6)] group-hover:scale-110 transition-transform">
                     <Play className="w-10 h-10 fill-white ml-2" />
                   </div>
                 </div>
@@ -172,11 +172,11 @@ export default function NetflixAcademyPage() {
                 {/* Player Controls (Fake UI for the real player component to replace) */}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-full h-1 bg-white/20 rounded cursor-pointer mb-4">
-                    <div className="w-1/3 h-full bg-gold rounded"></div>
+                    <div className="w-1/3 h-full bg-emerald-500 rounded"></div>
                   </div>
                   <div className="flex justify-between items-center text-sm font-bold">
                     <div className="flex items-center gap-4">
-                      <Play className="w-6 h-6 fill-white cursor-pointer hover:text-gold" />
+                      <Play className="w-6 h-6 fill-white cursor-pointer hover:text-emerald-400" />
                       <span>{selectedVideo.title}</span>
                     </div>
                     <div className="flex items-center gap-4">

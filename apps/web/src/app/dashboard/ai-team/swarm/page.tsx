@@ -246,7 +246,7 @@ export default function SwarmChatPage() {
         <div className="p-4 md:p-6 bg-black/80 border-t border-fuchsia-500/10 backdrop-blur-xl z-20">
           <div className="max-w-3xl mx-auto">
             {error && (
-              <div className="mb-4 p-3 bg-red-950/50 border border-red-500/50 text-red-400 rounded-xl text-xs font-bold flex items-center gap-2 uppercase">
+              <div className="mb-4 p-3 bg-cyan-500/50 border border-cyan-500/50 text-cyan-500 rounded-xl text-xs font-bold flex items-center gap-2 uppercase">
                 <AlertCircle className="w-4 h-4" /> {error}
               </div>
             )}

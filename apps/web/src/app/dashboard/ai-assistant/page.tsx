@@ -249,10 +249,10 @@ export default function AIAssistantPage() {
         {/* Sentinel Shield Status */}
         <div className="p-4 bg-black/60 border-t border-white/5 flex justify-between items-center text-[9px] font-bold uppercase tracking-widest">
           <span className="flex items-center gap-2">
-            <ShieldAlert className={`w-4 h-4 ${sentinelSafe ? "text-cyan-500" : "text-red-500 animate-pulse"}`} />
-            Sentinel Core: {sentinelSafe ? <span className="text-cyan-500">SECURE</span> : <span className="text-red-500">INTERCEPTED</span>}
+            <ShieldAlert className={`w-4 h-4 ${sentinelSafe ? "text-cyan-500" : "text-cyan-500 animate-pulse"}`} />
+            Sentinel Core: {sentinelSafe ? <span className="text-cyan-500">SECURE</span> : <span className="text-cyan-500">INTERCEPTED</span>}
           </span>
-          <span className={`w-1.5 h-1.5 rounded-full ${sentinelSafe ? "bg-cyan-500" : "bg-red-500 animate-ping"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${sentinelSafe ? "bg-cyan-500" : "bg-cyan-500 animate-ping"}`} />
         </div>
 
       </div>
@@ -331,11 +331,11 @@ export default function AIAssistantPage() {
           )}
 
           {error && (
-            <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs flex items-start gap-3 text-red-400">
+            <div className="border border-cyan-500/30 bg-cyan-500/20 rounded-xl p-4 text-xs flex items-start gap-3 text-cyan-500">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold uppercase tracking-widest block mb-1">Systeem Foutmelding</span>
-                <p className="text-red-300/80">{error}</p>
+                <p className="text-cyan-500/80">{error}</p>
               </div>
             </div>
           )}

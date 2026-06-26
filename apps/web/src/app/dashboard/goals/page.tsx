@@ -103,7 +103,7 @@ export default function GoalsPage() {
         <button
           onClick={() => setActiveTab('ALL')}
           className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-            activeTab === 'ALL' ? 'bg-gold text-navy' : 'bg-surface/50 text-textSecondary hover:text-textPrimary hover:bg-surface'
+            activeTab === 'ALL' ? 'bg-emerald-500 text-navy' : 'bg-surface/50 text-textSecondary hover:text-textPrimary hover:bg-surface'
           }`}
         >
           Alle Doelen
@@ -113,7 +113,7 @@ export default function GoalsPage() {
             key={key}
             onClick={() => setActiveTab(key as GoalTimeframe)}
             className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-              activeTab === key ? 'bg-gold text-navy' : 'bg-surface/50 text-textSecondary hover:text-textPrimary hover:bg-surface'
+              activeTab === key ? 'bg-emerald-500 text-navy' : 'bg-surface/50 text-textSecondary hover:text-textPrimary hover:bg-surface'
             }`}
           >
             {label}
@@ -128,7 +128,7 @@ export default function GoalsPage() {
         ) : filteredGoals.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-light mb-4">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gold" strokeWidth="1.5">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="10"/>
                 <circle cx="12" cy="12" r="6"/>
                 <circle cx="12" cy="12" r="2"/>
@@ -139,7 +139,7 @@ export default function GoalsPage() {
           </div>
         ) : (
           filteredGoals.map(goal => (
-            <Card key={goal.id} variant="glass" className="p-5 flex flex-col gap-4 hover:border-gold/30 transition-colors cursor-pointer">
+            <Card key={goal.id} variant="glass" className="p-5 flex flex-col gap-4 hover:border-emerald-500/30 transition-colors cursor-pointer">
               <div className="flex justify-between items-start gap-4">
                 <h3 className="font-semibold text-textPrimary line-clamp-2">{goal.title}</h3>
                 <Badge variant={statusColors[goal.status]} dot>{goal.status.replace('_', ' ')}</Badge>
@@ -179,7 +179,7 @@ export default function GoalsPage() {
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-textPrimary">Beschrijving (Optioneel)</label>
             <textarea
-              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none focus:ring-1 focus:ring-gold/50 transition-all resize-none h-24"
+              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-gold/50 transition-all resize-none h-24"
               value={form.description}
               onChange={e => setForm({...form, description: e.target.value})}
               placeholder="Geef wat meer context over dit doel..."
@@ -188,7 +188,7 @@ export default function GoalsPage() {
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-textPrimary">Tijdsframe</label>
             <select
-              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-gold/50 focus:outline-none focus:ring-1 focus:ring-gold/50"
+              className="w-full rounded-xl border border-white/[0.06] bg-surface/50 px-4 py-2.5 text-sm text-textPrimary focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-gold/50"
               value={form.timeframe}
               onChange={e => setForm({...form, timeframe: e.target.value as GoalTimeframe})}
             >

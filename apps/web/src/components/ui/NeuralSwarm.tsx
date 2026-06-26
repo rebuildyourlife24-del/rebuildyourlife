@@ -8,7 +8,7 @@ import { Button } from './Button';
 import { Mic } from 'lucide-react';
 
 interface NeuralSwarmProps {
-  theme?: 'red' | 'blue';
+  theme?: 'red' | 'blue' | 'cyan' | 'purple';
 }
 
 function SwarmCore({ isSpeaking }: { isSpeaking: boolean }) {

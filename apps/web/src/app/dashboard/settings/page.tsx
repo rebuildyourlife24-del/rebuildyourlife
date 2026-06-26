@@ -17,6 +17,7 @@ import {
   CheckCircle2, 
   FileText
 } from 'lucide-react';
+import { IntegrationsVault } from '@/components/ui/IntegrationsVault';
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -216,7 +217,7 @@ Rebuild Your Life.
               </div>
             )}
             {profileError && (
-              <div className="mb-6 p-4 rounded-xl bg-gold/5 text-goldLight border border-gold/20 text-xs font-mono flex items-center gap-2">
+              <div className="mb-6 p-4 rounded-xl bg-emerald-500/5 text-emerald-400Light border border-emerald-500/20 text-xs font-mono flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> {profileError}
               </div>
             )}
@@ -288,7 +289,7 @@ Rebuild Your Life.
               </div>
             )}
             {passwordError && (
-              <div className="mb-6 p-4 rounded-xl bg-gold/5 text-goldLight border border-gold/20 text-xs font-mono flex items-center gap-2">
+              <div className="mb-6 p-4 rounded-xl bg-emerald-500/5 text-emerald-400Light border border-emerald-500/20 text-xs font-mono flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> {passwordError}
               </div>
             )}

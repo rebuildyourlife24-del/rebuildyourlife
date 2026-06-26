@@ -164,7 +164,7 @@ export default function BudgetPage() {
       {!summary || !summary.hasBudget ? (
         <div className="text-center py-16 max-w-md mx-auto">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-light mb-4">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gold" strokeWidth="1.5">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-400" strokeWidth="1.5">
               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
           </div>
@@ -197,7 +197,7 @@ export default function BudgetPage() {
             </Card>
             <Card variant="glass" className="p-6">
               <h3 className="text-sm font-medium text-textSecondary">Restant</h3>
-              <p className={`mt-2 text-2xl font-bold ${(summary.balance || 0) < 0 ? 'text-danger' : 'text-gold'}`}>
+              <p className={`mt-2 text-2xl font-bold ${(summary.balance || 0) < 0 ? 'text-danger' : 'text-emerald-400'}`}>
                 € {(summary.balance || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
               </p>
             </Card>

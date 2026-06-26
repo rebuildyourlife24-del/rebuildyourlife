@@ -293,10 +293,10 @@ export default function AppFactoryPage() {
                       </div>
                       <div className="space-y-2 border-t border-white/5 pt-4">
                         <span className="text-zinc-500 font-bold uppercase tracking-widest block mb-2">Geïdentificeerde beperkingen (Knelpunten):</span>
-                        <ul className="space-y-2 text-red-400/90 font-bold">
+                        <ul className="space-y-2 text-cyan-500/90 font-bold">
                           {selectedAsset.issues.map((issue, idx) => (
-                            <li key={idx} className="flex items-start gap-2 bg-red-950/20 p-2 rounded-lg border border-red-500/10">
-                              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
+                            <li key={idx} className="flex items-start gap-2 bg-cyan-500/20 p-2 rounded-lg border border-cyan-500/10">
+                              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-cyan-500" />
                               <span>{issue}</span>
                             </li>
                           ))}

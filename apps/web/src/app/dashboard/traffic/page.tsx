@@ -357,7 +357,7 @@ export default function TrafficPage() {
             </div>
 
             {errorMessage && (
-              <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs flex items-center gap-3 text-red-400">
+              <div className="border border-cyan-500/30 bg-cyan-500/20 rounded-xl p-4 text-xs flex items-center gap-3 text-cyan-500">
                 <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                 <span className="font-medium">{errorMessage}</span>
               </div>

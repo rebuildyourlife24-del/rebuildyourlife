@@ -240,11 +240,11 @@ export default function SyndicatePage() {
 
   const getTierColor = (tier: number) => {
     switch (tier) {
-      case 1: return "border-zinc-500 text-zinc-400 bg-zinc-950";
-      case 2: return "border-indigo-500/50 text-indigo-400 bg-indigo-950/20";
-      case 3: return "border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_10px_rgba(59,130,246,0.2)]";
-      case 4: return "border-cyan-400 bg-cyan-500/20 text-cyan-400 font-black animate-pulse shadow-[0_0_15px_rgba(6,182,212,0.3)]";
-      default: return "border-zinc-800 text-zinc-500";
+      case 1: return "border-cyan-900/50 text-cyan-700 bg-black";
+      case 2: return "border-cyan-800/80 text-cyan-600 bg-cyan-950/10";
+      case 3: return "border-cyan-500 text-cyan-400 bg-cyan-950/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]";
+      case 4: return "border-cyan-400 bg-cyan-500/20 text-cyan-300 font-black animate-pulse shadow-[0_0_15px_rgba(6,182,212,0.3)]";
+      default: return "border-cyan-900/30 text-cyan-800";
     }
   };
 
@@ -700,11 +700,11 @@ export default function SyndicatePage() {
                                   <td className="p-4 font-medium text-white">€{t.debtAmount?.toFixed(2) || '0.00'}</td>
                                   <td className="p-4 text-right">
                                     {t.status === 'SENT' ? (
-                                      <span className="inline-flex items-center gap-1.5 text-emerald-400 font-bold tracking-widest text-[9px] bg-emerald-950/20 px-2.5 py-1 rounded-md border border-emerald-500/30">
+                                      <span className="inline-flex items-center gap-1.5 text-cyan-400 font-bold tracking-widest text-[9px] bg-cyan-950/20 px-2.5 py-1 rounded-md border border-cyan-500/30">
                                         <CheckCircle2 className="w-3 h-3"/> DISPATCHED
                                       </span>
                                     ) : (
-                                      <span className="text-zinc-600 font-bold tracking-widest text-[9px] uppercase">PENDING LAUNCH</span>
+                                      <span className="text-cyan-800 font-bold tracking-widest text-[9px] uppercase">PENDING LAUNCH</span>
                                     )}
                                   </td>
                                 </tr>

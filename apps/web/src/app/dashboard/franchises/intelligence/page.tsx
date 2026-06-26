@@ -169,8 +169,8 @@ export default function SupplierIntelligenceDashboard() {
 
         {/* No Data State / Seed Banner */}
         {suppliers.length === 0 && !loading && (
-          <div className="bg-red-950/20 border border-red-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-[0_0_30px_rgba(239,68,68,0.1)] mb-8">
-            <h3 className="text-lg font-black uppercase flex items-center gap-2 text-red-400 mb-2">
+          <div className="bg-cyan-500/20 border border-cyan-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-[0_0_30px_rgba(239,68,68,0.1)] mb-8">
+            <h3 className="text-lg font-black uppercase flex items-center gap-2 text-cyan-500 mb-2">
               <ShieldAlert className="w-5 h-5" /> Leveranciersdata Ontbreekt!
             </h3>
             <p className="text-xs font-bold uppercase text-zinc-400 tracking-widest">
@@ -179,12 +179,12 @@ export default function SupplierIntelligenceDashboard() {
             <button
               onClick={handleSeed}
               disabled={seeding}
-              className="mt-6 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/50 rounded-xl font-black uppercase px-6 py-3 text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="mt-6 bg-cyan-500/10 text-cyan-500 hover:bg-cyan-500/20 border border-cyan-500/50 rounded-xl font-black uppercase px-6 py-3 text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               <Database className="w-4 h-4" /> {seeding ? "INITIALISEREN..." : "SEED SUPPLIER INTELLIGENCE DATA"}
             </button>
             {seedResult && (
-              <div className="mt-4 text-xs font-black uppercase bg-black/60 text-white p-3 rounded-lg border border-red-500/20">
+              <div className="mt-4 text-xs font-black uppercase bg-black/60 text-white p-3 rounded-lg border border-cyan-500/20">
                 {seedResult}
               </div>
             )}
@@ -348,14 +348,14 @@ export default function SupplierIntelligenceDashboard() {
                               className={`p-3 rounded-xl border text-[10px] font-black uppercase tracking-widest flex justify-between items-center ${
                                 log.success 
                                   ? "bg-cyan-950/20 border-cyan-500/20 text-zinc-300" 
-                                  : "bg-red-950/20 border-red-500/20 text-red-400"
+                                  : "bg-cyan-500/20 border-cyan-500/20 text-cyan-500"
                               }`}
                             >
                               <div className="flex items-center gap-2">
                                 {log.success ? (
                                   <CheckCircle2 className="w-4 h-4 text-cyan-500 shrink-0" />
                                 ) : (
-                                  <XCircle className="w-4 h-4 text-red-500 shrink-0" />
+                                  <XCircle className="w-4 h-4 text-cyan-500 shrink-0" />
                                 )}
                                 <span>Order: {log.orderId.substring(0, 8)}...</span>
                               </div>
@@ -363,7 +363,7 @@ export default function SupplierIntelligenceDashboard() {
                                 {log.success ? (
                                   <span className="text-zinc-400">{log.deliveryTime?.toFixed(1)} dagen</span>
                                 ) : (
-                                  <span className="text-red-400">Mislukt</span>
+                                  <span className="text-cyan-500">Mislukt</span>
                                 )}
                               </div>
                             </div>

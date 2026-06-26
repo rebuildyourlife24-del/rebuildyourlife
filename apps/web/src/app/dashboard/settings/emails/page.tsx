@@ -27,10 +27,10 @@ export default function EmailVaultPage() {
     <div className="max-w-4xl mx-auto space-y-8 font-mono">
       <div className="border-b-2 border-[#d4af37] pb-4 relative overflow-hidden">
         <h1 className="text-3xl font-black text-white tracking-[0.2em] uppercase flex items-center gap-3 relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
-          <Mail className="w-8 h-8 text-gold" />
+          <Mail className="w-8 h-8 text-emerald-400" />
           E-MAIL VAULT
         </h1>
-        <p className="text-gold/80 mt-2 text-sm tracking-widest relative z-10">
+        <p className="text-emerald-400/80 mt-2 text-sm tracking-widest relative z-10">
           KOPPEL JOUW POSTVAK AAN DE GODBRAIN AI.
         </p>
       </div>
@@ -40,20 +40,20 @@ export default function EmailVaultPage() {
         <div className="space-y-6">
           <div className="border border-navyLight bg-black p-6 shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
             <h2 className="text-white text-lg font-bold mb-4 tracking-widest flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-gold" /> AUTONOME SCANNER
+              <ShieldAlert className="w-5 h-5 text-emerald-400" /> AUTONOME SCANNER
             </h2>
-            <p className="text-gold/80 text-sm leading-relaxed mb-4">
+            <p className="text-emerald-400/80 text-sm leading-relaxed mb-4">
               Zodra je jouw e-mail koppelt, krijgt de Godbrain Neural Network de opdracht om in de achtergrond facturen en incassobrieven op te sporen.
             </p>
             <ul className="text-sm text-white space-y-2">
               <li className="flex items-start gap-2">
-                <span className="text-gold font-bold">&gt;</span> Herkent PDF facturen en incassodreigementen.
+                <span className="text-emerald-400 font-bold">&gt;</span> Herkent PDF facturen en incassodreigementen.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-gold font-bold">&gt;</span> Berekent automatisch illegale extra kosten.
+                <span className="text-emerald-400 font-bold">&gt;</span> Berekent automatisch illegale extra kosten.
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-gold font-bold">&gt;</span> Stuurt deze naar het Debt Center ter goedkeuring.
+                <span className="text-emerald-400 font-bold">&gt;</span> Stuurt deze naar het Debt Center ter goedkeuring.
               </li>
             </ul>
           </div>
@@ -63,12 +63,12 @@ export default function EmailVaultPage() {
         <div className="border border-navyLight bg-black p-6 relative overflow-hidden shadow-[inset_0_0_30px_rgba(153,27,27,0.2)]">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0a192f] to-transparent"></div>
           <h2 className="text-white text-lg font-bold mb-6 tracking-widest flex items-center gap-2">
-            <Key className="w-5 h-5 text-gold" /> NIEUWE KOPPELING
+            <Key className="w-5 h-5 text-emerald-400" /> NIEUWE KOPPELING
           </h2>
 
           <form onSubmit={handleConnect} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gold uppercase tracking-widest">
+              <label className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
                 E-mailadres
               </label>
               <input
@@ -76,22 +76,22 @@ export default function EmailVaultPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
+                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-emerald-500 transition-colors"
                 placeholder="bijv. administratie@jouwbedrijf.nl"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gold uppercase tracking-widest flex justify-between">
+              <label className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex justify-between">
                 <span>App Wachtwoord (IMAP)</span>
-                <span className="text-[#d4af37] cursor-pointer hover:text-gold transition-colors">Hoe kom ik hieraan?</span>
+                <span className="text-[#d4af37] cursor-pointer hover:text-emerald-400 transition-colors">Hoe kom ik hieraan?</span>
               </label>
               <input
                 type="password"
                 value={appPassword}
                 onChange={(e) => setAppPassword(e.target.value)}
                 required
-                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors"
+                className="w-full bg-[#0a192f]/20 border border-navyLight text-white px-4 py-3 focus:outline-none focus:border-emerald-500 transition-colors"
                 placeholder="••••••••••••••••"
               />
             </div>
@@ -99,7 +99,7 @@ export default function EmailVaultPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gold hover:bg-gold text-black font-black uppercase tracking-[0.2em] py-4 transition-all disabled:opacity-50 mt-4 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+              className="w-full bg-emerald-500 hover:bg-emerald-500 text-black font-black uppercase tracking-[0.2em] py-4 transition-all disabled:opacity-50 mt-4 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
             >
               {loading ? "BEZIG MET ASSIMILEREN..." : "KOPPEL POSTVAK"}
             </button>

@@ -13,7 +13,7 @@ export default function ConciergePage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            The AI Concierge <Shield className="w-6 h-6 text-gold-500" />
+            The AI Concierge <Shield className="w-6 h-6 text-emerald-400-500" />
           </h1>
           <p className="mt-2 text-zinc-400">Jouw 24/7 Private Banker. Beheer spaardoelen of vraag direct noodkapitaal aan.</p>
         </div>
@@ -35,10 +35,10 @@ export default function ConciergePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Nood Verzoek Paneel */}
-        <div className="bg-black/40 border border-gold/20 rounded-2xl p-6">
+        <div className="bg-black/40 border border-emerald-500/20 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gold/10 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-gold" />
+            <div className="p-2 bg-emerald-500/10 rounded-lg">
+              <AlertTriangle className="w-5 h-5 text-emerald-400" />
             </div>
             <h2 className="text-xl font-bold text-white">Emergency Request</h2>
           </div>
@@ -66,7 +66,7 @@ export default function ConciergePage() {
                 className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 text-white mt-1 h-24 resize-none"
               />
             </div>
-            <Button fullWidth className="bg-gold hover:bg-[#0a192f] text-white border-none gap-2">
+            <Button fullWidth className="bg-emerald-500 hover:bg-[#0a192f] text-white border-none gap-2">
               <Send className="w-4 h-4" /> Vraag Kapitaal Aan (5-Min Release)
             </Button>
           </div>
@@ -75,8 +75,8 @@ export default function ConciergePage() {
         {/* Spaar Doel Paneel */}
         <div className="bg-black/40 border border-zinc-800/50 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gold-500/10 rounded-lg">
-              <Target className="w-5 h-5 text-gold-500" />
+            <div className="p-2 bg-emerald-500-500/10 rounded-lg">
+              <Target className="w-5 h-5 text-emerald-400-500" />
             </div>
             <h2 className="text-xl font-bold text-white">Nieuw Spaardoel</h2>
           </div>
@@ -101,7 +101,7 @@ export default function ConciergePage() {
                 className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 text-white mt-1"
               />
             </div>
-            <Button fullWidth className="bg-gold-500 hover:bg-gold-400 text-black border-none gap-2">
+            <Button fullWidth className="bg-emerald-500-500 hover:bg-emerald-500-400 text-black border-none gap-2">
               <Target className="w-4 h-4" /> Start Spaar-Protocol
             </Button>
           </div>

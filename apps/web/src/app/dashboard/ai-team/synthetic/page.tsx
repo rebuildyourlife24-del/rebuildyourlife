@@ -237,7 +237,7 @@ export default function SyntheticDashboardPage() {
     switch (status) {
       case 'SUCCESS': return <span className="text-emerald-400 font-bold">[OK]</span>;
       case 'WARNING': return <span className="text-amber-400 font-bold">[WRN]</span>;
-      case 'FAILED': return <span className="text-gold font-bold">[ERR]</span>;
+      case 'FAILED': return <span className="text-emerald-400 font-bold">[ERR]</span>;
     }
   };
 
@@ -403,7 +403,7 @@ export default function SyntheticDashboardPage() {
               {/* Terminal header */}
               <div className="flex justify-between items-center border-b-2 border-zinc-800 pb-3 mb-4 text-[10px] text-zinc-500 uppercase">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-gold inline-block"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
                   <span className="w-2.5 h-2.5 rounded-full bg-yellow-600 inline-block"></span>
                   <span className="w-2.5 h-2.5 rounded-full bg-green-600 inline-block"></span>
                   <span className="font-bold text-zinc-400 ml-2">SYSTEM CONSOLE LOG</span>

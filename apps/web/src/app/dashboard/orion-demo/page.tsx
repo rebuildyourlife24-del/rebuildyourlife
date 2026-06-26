@@ -97,7 +97,7 @@ export default function OrionDemoPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] items-center justify-center p-6 bg-black/50 rounded-2xl border border-white/10">
       <div className="w-full max-w-2xl text-center mb-8">
-        <h1 className="text-3xl font-bold text-gold mb-2">ORION: Sentient Prototype</h1>
+        <h1 className="text-3xl font-bold text-emerald-400 mb-2">ORION: Sentient Prototype</h1>
         <p className="text-textSecondary">Test de zware 'Vin Diesel' achtige stem en de audio-reactieve 3D kern.</p>
       </div>
       

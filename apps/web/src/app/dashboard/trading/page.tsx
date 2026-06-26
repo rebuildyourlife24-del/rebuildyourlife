@@ -283,11 +283,11 @@ export default function TradingDashboard() {
 
       {/* -------------------- LIVE API CONNECTIVITY ERROR -------------------- */}
       {liveError && (
-        <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs font-bold uppercase tracking-wider flex items-center gap-3 text-red-400">
+        <div className="border border-cyan-500/30 bg-cyan-500/20 rounded-xl p-4 text-xs font-bold uppercase tracking-wider flex items-center gap-3 text-cyan-500">
           <ShieldAlert className="w-6 h-6 flex-shrink-0 animate-bounce" />
           <div>
             <span className="block mb-1">EXCHANGE CONNECTIVITY ERROR:</span>
-            <span className="text-[10px] text-red-400/80">{liveError}. Please verify your API key, secret, and IP restrictions on the exchange.</span>
+            <span className="text-[10px] text-cyan-500/80">{liveError}. Please verify your API key, secret, and IP restrictions on the exchange.</span>
           </div>
         </div>
       )}
@@ -555,7 +555,7 @@ export default function TradingDashboard() {
                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
               </div>
               {simLogs.map((log, idx) => (
-                <div key={idx} className={`leading-relaxed border-l border-white/10 pl-3 ${log.includes('FOUT') ? 'text-red-400' : log.includes('+') ? 'text-emerald-400' : 'text-zinc-400'}`}>
+                <div key={idx} className={`leading-relaxed border-l border-white/10 pl-3 ${log.includes('FOUT') ? 'text-cyan-500' : log.includes('+') ? 'text-emerald-400' : 'text-zinc-400'}`}>
                   {log}
                 </div>
               ))}
