@@ -56,7 +56,7 @@ export default function VideoForge() {
           Video <span className="text-cyan-400">Forge</span>
         </h1>
         <p className="text-zinc-400 max-w-2xl mx-auto">
-          Render cinematische beelden zonder abonnementen via het decentrale GPU netwerk.
+          Render 100% gratis beelden via het decentrale Hugging Face ZeroGPU netwerk.
         </p>
       </motion.div>
 
