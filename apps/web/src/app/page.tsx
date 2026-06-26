@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { motion } from 'framer-motion';
 import { Command, Play, ArrowRight } from 'lucide-react';
@@ -62,7 +62,7 @@ export default function CinematicLandingPage() {
             </Link>
             
             <div className="text-lg md:text-xl text-zinc-400 font-medium leading-relaxed border-l-4 border-gold pl-6 py-2 max-w-xl">
-              Herbouw je leven met zekerheid. Krijg toegang tot de tools, de strategieën en het netwerk dat je nodig hebt voor <strong className="text-white">echte financiële vrijheid</strong>.
+              Herbouw je leven met zekerheid. Krijg toegang tot de tools, de strategieÃ«n en het netwerk dat je nodig hebt voor <strong className="text-white">echte financiÃ«le vrijheid</strong>.
             </div>
           </motion.div>
         </div>
@@ -76,7 +76,7 @@ export default function CinematicLandingPage() {
           <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-gold transition-colors">START-UP BLAUWDRUK</div>
           <div className="text-sm text-zinc-400 font-medium mb-4">De perfecte basis voor jouw eerste e-commerce stappen.</div>
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-lg font-bold text-white">€50<span className="text-xs text-zinc-500">/mnd</span></span>
+            <span className="text-lg font-bold text-white">EUR 50<span className="text-xs text-zinc-500">/mnd</span></span>
             <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-gold transition-colors" />
           </div>
         </Link>
@@ -86,7 +86,7 @@ export default function CinematicLandingPage() {
           <div className="text-xl font-black uppercase tracking-widest mb-1 group-hover:text-gold transition-colors">SCHAALBAAR SUCCES</div>
           <div className="text-sm text-zinc-400 font-medium mb-4">Voor de ondernemer die klaar is voor de volgende stap.</div>
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-lg font-bold text-white">€99<span className="text-xs text-zinc-500">/mnd</span></span>
+            <span className="text-lg font-bold text-white">EUR 99<span className="text-xs text-zinc-500">/mnd</span></span>
             <ArrowRight className="w-5 h-5 text-zinc-600 group-hover:text-gold transition-colors" />
           </div>
         </Link>
