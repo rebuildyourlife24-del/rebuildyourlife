@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Command, ChevronRight, Play, ArrowRight } from 'lucide-react';
+import { Command, Play, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CinematicLandingPage() {
@@ -105,3 +105,4 @@ export default function CinematicLandingPage() {
     </div>
   );
 }
+
