@@ -48,9 +48,7 @@ export default async function middleware(request: NextRequest) {
 
   // 3. CLIENT DOMAIN (rebuildyourlife.eu)
   if (cleanHostname === 'rebuildyourlife.eu') {
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
+    // Geen blokkade meer voor /dashboard of /admin op het hoofddomein
     return response;
   }
 
