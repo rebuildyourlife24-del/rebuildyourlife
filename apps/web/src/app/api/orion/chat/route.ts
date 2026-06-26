@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { routeAIRequest } from '@/lib/ai-router';
-import { getWarRoomStatsAction } from '@/actions/warRoomData';
+import { getWarRoomStatsAction } from '../../../actions/warRoomData';
 
 const BASE_SYSTEM_PROMPT = `Je bent Orion — de autonome AI-kern van The Sovereign Grid.
 Je spreekt als een genadeloze, intelligente architect. Geen overbodige woorden.
