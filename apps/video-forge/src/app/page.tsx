@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Loader2, Video, DatabaseZap } from "lucide-react";
+import { Play, Loader2, Video, DatabaseZap, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function VideoForge() {
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [modelType, setModelType] = useState<"free" | "premium">("free");
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export default function VideoForge() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, modelType }),
       });
 
       const data = await res.json();
@@ -56,7 +57,7 @@ export default function VideoForge() {
           Video <span className="text-cyan-400">Forge</span>
         </h1>
         <p className="text-zinc-400 max-w-2xl mx-auto">
-          Render 100% gratis beelden via het decentrale Hugging Face ZeroGPU netwerk.
+          Kies tussen 100% gratis rendering via Hugging Face of activeer de premium 4K Mochi-1 engine voor maximale kwaliteit.
         </p>
       </motion.div>
 
@@ -66,7 +67,29 @@ export default function VideoForge() {
         transition={{ delay: 0.1 }}
         className="z-10 w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-2xl p-6 shadow-2xl"
       >
-        <form onSubmit={handleGenerate} className="flex flex-col gap-4">
+        <form onSubmit={handleGenerate} className="flex flex-col gap-6">
+          {/* Model Switcher */}
+          <div className="flex bg-black border border-white/10 rounded-xl p-1">
+            <button
+              type="button"
+              onClick={() => setModelType("free")}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-lg transition-all ${
+                modelType === "free" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              Gratis Engine (1080p)
+            </button>
+            <button
+              type="button"
+              onClick={() => setModelType("premium")}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all ${
+                modelType === "premium" ? "bg-cyan-900/50 text-cyan-400 border border-cyan-500/30" : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              <Star className="w-3 h-3" /> Premium 4K (Mochi-1)
+            </button>
+          </div>
+
           <div>
             <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Prompt (Beschrijf de video)</label>
             <textarea
