@@ -88,7 +88,7 @@ export function SwarmBrain({ isSpeaking, analyserRef, theme = 'blue' }: SwarmBra
       <mesh ref={shellRef}>
         <sphereGeometry args={[2.5, 32, 32]} />
         <meshBasicMaterial 
-          color={theme === 'red' ? '#ef4444' : '#00f0ff'} 
+          color={theme === 'red' ? '#06b6d4' : '#00f0ff'} 
           wireframe={true} 
           transparent={true} 
           opacity={0.05} 
@@ -99,7 +99,7 @@ export function SwarmBrain({ isSpeaking, analyserRef, theme = 'blue' }: SwarmBra
       <Points ref={pointsRef} positions={positions} stride={3}>
         <PointMaterial
           transparent
-          color={theme === 'red' ? '#dc2626' : '#d4a853'} // Darker red or Gold
+          color={theme === 'red' ? '#0891b2' : '#d4a853'} // Darker red or Gold
           size={0.05}
           sizeAttenuation={true}
           depthWrite={false}

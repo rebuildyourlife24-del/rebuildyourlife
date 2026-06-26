@@ -7,10 +7,19 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Paywall } from '@/components/ui/Paywall';
 import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
 
+import { getDocuments } from '@/actions/enterprise';
+import { addIntelligenceTarget, getIntelligenceTargets } from '@/actions/intelligence';
+
 export default function EnterpriseOSPage() {
   const { t } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [docs, setDocs] = useState<any[]>([]);
+  const [targets, setTargets] = useState<any[]>([]);
+  const [subject, setSubject] = useState('');
+  const [targetType, setTargetType] = useState('COMMERCE');
+  const [generating, setGenerating] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<any>(null);
 
   useEffect(() => {
     // Fetch live enterprise stats
@@ -23,7 +32,26 @@ export default function EnterpriseOSPage() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
+
+    // Fetch documents and targets
+    getDocuments().then(setDocs);
+    getIntelligenceTargets().then(setTargets);
   }, []);
+
+  const handleAddTarget = async () => {
+    if (!subject.trim() || generating) return;
+    setGenerating(true);
+    try {
+      const res = await addIntelligenceTarget(subject.trim(), targetType);
+      if (res.success) {
+        setTargets([res.target, ...targets]);
+        setSubject('');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+    setGenerating(false);
+  };
 
   return (
     <Paywall requiredTier="ENTERPRISE">
@@ -127,50 +155,95 @@ export default function EnterpriseOSPage() {
               <h2 className="text-sm font-black uppercase flex items-center gap-2 mb-6 border-b border-white/5 pb-4 tracking-widest">
                 <Lock className="w-4 h-4 text-cyan-500" /> Juridische Kluis
               </h2>
-              <div className="space-y-3">
-                {data?.documents?.length > 0 ? data.documents.map((doc: string, i: number) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-zinc-950/50 border border-white/5 rounded-xl hover:border-cyan-500/30 cursor-pointer transition-colors group">
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {docs.length > 0 ? docs.map((doc: any, i: number) => (
+                  <div key={i} onClick={() => setSelectedDoc(doc)} className="flex items-center justify-between p-4 bg-zinc-950/50 border border-white/5 rounded-xl hover:border-cyan-500/30 cursor-pointer transition-colors group">
                     <div className="flex items-center gap-3">
                       <FileText className="w-4 h-4 text-cyan-500/50 group-hover:text-cyan-400" />
-                      <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors">{doc}</span>
+                      <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors">{doc.title}</span>
                     </div>
                     <Download className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 )) : (
                   <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center py-4 border border-dashed border-white/10 rounded-xl">
-                    Geen contracten geüpload
+                    Geen documenten geüpload
                   </div>
                 )}
               </div>
-              <button className="w-full mt-6 py-3.5 bg-black hover:bg-zinc-900 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
-                + NIEUW DOCUMENT
-              </button>
+              
+              {selectedDoc && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                  <div className="bg-zinc-950 border border-white/10 rounded-2xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+                    <div className="p-4 border-b border-white/10 flex justify-between items-center">
+                      <h3 className="font-bold text-white uppercase tracking-widest">{selectedDoc.title}</h3>
+                      <button onClick={() => setSelectedDoc(null)} className="text-zinc-500 hover:text-white">Sluiten</button>
+                    </div>
+                    <div className="p-6 overflow-y-auto text-sm text-zinc-300 whitespace-pre-wrap">
+                      {selectedDoc.content}
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
-            {/* Module C: Intelligence & PDF Reports */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-black/40 border border-white/5 p-6 md:p-8 rounded-2xl relative overflow-hidden backdrop-blur-md group hover:border-white/10 transition-colors"
-            >
-              <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative z-10">
-                <h2 className="text-sm font-black uppercase flex items-center gap-2 mb-3 tracking-widest text-white border-b border-white/5 pb-4">
-                  <Search className="w-4 h-4 text-cyan-500" /> Inlichtingen Motor
-                </h2>
-                <p className="text-[10px] text-zinc-400 mb-6 font-bold uppercase tracking-widest leading-relaxed">Genereer 10-pagina marktonderzoek PDFs via de Neural Swarm AI architectuur.</p>
-                
-                <input 
-                  type="text" 
-                  placeholder="Onderwerp (bijv. Vastgoed Dubai 2027)" 
-                  className="w-full bg-zinc-950 border border-white/10 rounded-xl p-4 text-xs focus:outline-none focus:border-cyan-500/50 mb-4 text-white font-medium transition-colors"
-                />
-                
-                <button className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] rounded-xl transition-all flex items-center justify-center gap-2 text-xs">
-                  <Box className="w-4 h-4" /> GENEREER DOSSIER [PDF]
-                </button>
-              </div>
+            {/* Module C: Intelligence Targets */} 
+            <motion.div  
+              initial={{ opacity: 0, x: 20 }} 
+              animate={{ opacity: 1, x: 0 }} 
+              transition={{ delay: 0.2 }} 
+              className="bg-black/40 border border-white/5 p-6 md:p-8 rounded-2xl relative overflow-hidden backdrop-blur-md group hover:border-white/10 transition-colors" 
+            > 
+              <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" /> 
+              <div className="relative z-10"> 
+                <h2 className="text-sm font-black uppercase flex items-center gap-2 mb-3 tracking-widest text-white border-b border-white/5 pb-4"> 
+                  <Search className="w-4 h-4 text-cyan-500" /> Omni-Vector Targets (The Swarm) 
+                </h2> 
+                <p className="text-[10px] text-zinc-400 mb-4 font-bold uppercase tracking-widest leading-relaxed">
+                  Voeg onderzoekspunten toe. De "Alles-Herkenner" en "Uitwerker" AI's zullen deze vannacht scannen.
+                </p> 
+                 
+                <div className="flex gap-2 mb-4">
+                  <select
+                    value={targetType}
+                    onChange={(e) => setTargetType(e.target.value)}
+                    className="bg-zinc-950 border border-white/10 rounded-xl p-3 text-xs focus:outline-none focus:border-cyan-500/50 text-white font-medium transition-colors w-1/3"
+                  >
+                    <option value="COMMERCE">Commerce (Shopify)</option>
+                    <option value="TRADE">Trade (Markten)</option>
+                    <option value="SOCIAL">Social (Trends)</option>
+                    <option value="RYL_DEV">RYL (Onderhoud)</option>
+                  </select>
+                  <input  
+                    type="text"  
+                    value={subject} 
+                    onChange={(e) => setSubject(e.target.value)} 
+                    placeholder="Onderwerp, niche of URL..."  
+                    className="w-2/3 bg-zinc-950 border border-white/10 rounded-xl p-3 text-xs focus:outline-none focus:border-cyan-500/50 text-white font-medium transition-colors" 
+                  /> 
+                </div>
+                 
+                <button  
+                  onClick={handleAddTarget} 
+                  disabled={generating} 
+                  className={`w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] rounded-xl transition-all flex items-center justify-center gap-2 text-xs mb-6 ${generating ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                > 
+                  {generating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Box className="w-4 h-4" />}  
+                  {generating ? 'DEPLOYING TARGET...' : 'ADD TARGET TO SWARM'} 
+                </button> 
+
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {targets.length > 0 ? targets.map((t: any, i: number) => (
+                    <div key={i} className="flex justify-between items-center bg-zinc-950/50 border border-white/5 p-3 rounded-lg">
+                      <span className="text-xs text-zinc-300 font-medium truncate w-2/3">{t.target}</span>
+                      <span className={`text-[9px] px-2 py-1 rounded-full border tracking-widest font-bold ${t.status === 'ACTIVE' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'bg-zinc-800 text-zinc-500 border-zinc-700'}`}>
+                        {t.type}
+                      </span>
+                    </div>
+                  )) : (
+                    <p className="text-[10px] text-zinc-600 text-center uppercase tracking-widest py-4">No active targets</p>
+                  )}
+                </div>
+              </div> 
             </motion.div>
 
           </div>

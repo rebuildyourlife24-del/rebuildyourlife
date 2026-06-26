@@ -17,8 +17,8 @@ function OrbitalCore({ isSpeaking, isPunishing }: { isSpeaking: boolean, isPunis
   const ring2Ref = useRef<THREE.Mesh>(null);
   const ring3Ref = useRef<THREE.Mesh>(null);
 
-  const mainColor = isPunishing ? '#ef4444' : '#06b6d4'; // Red if punishing, Cyan if normal
-  const glowColor = isPunishing ? '#b91c1c' : '#0891b2';
+  const mainColor = isPunishing ? '#06b6d4' : '#06b6d4'; // Red if punishing, Cyan if normal
+  const glowColor = isPunishing ? '#164e63' : '#0891b2';
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
@@ -95,7 +95,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
       <div className="flex-1 relative z-10">
         <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
           <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={punishmentProtocol ? 2 : 1} color={punishmentProtocol ? '#ef4444' : '#06b6d4'} />
+          <pointLight position={[10, 10, 10]} intensity={punishmentProtocol ? 2 : 1} color={punishmentProtocol ? '#06b6d4' : '#06b6d4'} />
           <OrbitalCore isSpeaking={isSyncing} isPunishing={punishmentProtocol} />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
           <Environment preset="city" />
