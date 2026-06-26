@@ -10,45 +10,8 @@ export default async function OpportunitiesPage() {
     return <div className="p-10 text-white">Geen gebruiker gevonden. Log in.</div>;
   }
 
-  // ELITE CHECK
-  // Alleen toegankelijk voor "ELITE" tier of hoger (bijv. clearanceLevel >= 5)
-  const isElite = currentUser.subscriptionTier === 'ELITE' || currentUser.clearanceLevel >= 5;
-
-  if (!isElite) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6">
-        <div className="max-w-2xl w-full bg-zinc-950 border border-gold/30 rounded-2xl p-10 text-center relative overflow-hidden">
-          {/* Scanline Effect */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.05)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none opacity-50"></div>
-          
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-[#0a192f] border border-gold/50 flex items-center justify-center mb-6 animate-pulse">
-              <ShieldAlert className="w-12 h-12 text-gold" />
-            </div>
-            
-            <h1 className="text-3xl font-black text-white tracking-wider uppercase mb-2">
-              Toegang Geweigerd
-            </h1>
-            <p className="text-goldLight font-mono text-sm tracking-widest uppercase mb-8">
-              Clearance Level: INSUFFICIENT
-            </p>
-            
-            <p className="text-zinc-400 text-lg leading-relaxed mb-8 max-w-lg">
-              De Sovereign Wealth Generator en autonome verdienmodellen zijn exclusief geclassificeerd voor het <strong className="text-white">Elite Team</strong>. Je huidige abonnement ({currentUser.subscriptionTier}) geeft geen toegang tot deze Hermes-modules.
-            </p>
-
-            <Link 
-              href="/vsl"
-              className="bg-gold hover:bg-gold text-white px-8 py-4 rounded-xl font-bold tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] flex items-center gap-3"
-            >
-              <Lock className="w-5 h-5" />
-              Upgrade naar Elite Status
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Bypassed Elite check for testing purposes
+  const isElite = true;
 
   // ALS ELITE: Haal de opportunities op
   const opportunities = await db.opportunityReport.findMany({
@@ -69,9 +32,15 @@ export default async function OpportunitiesPage() {
               Elite Clearance Accepted. Live Hermes Feed.
             </p>
           </div>
-          <div className="px-4 py-2 bg-cyan-950/50 border border-cyan-500/30 rounded-lg text-cyan-400 font-mono text-xs uppercase tracking-widest flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            Hermes Analytics Active
+          <div className="flex flex-col items-end gap-3">
+            <div className="px-4 py-2 bg-cyan-950/50 border border-cyan-500/30 rounded-lg text-cyan-400 font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              Hermes Analytics Active
+            </div>
+            <button className="flex items-center gap-2 px-6 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/50 hover:border-cyan-400 rounded-lg text-cyan-400 font-bold uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] group">
+              <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              Deploy Hermes Scout
+            </button>
           </div>
         </div>
 
