@@ -17,7 +17,8 @@ import {
   TrendingUp,
   Sliders,
   Terminal,
-  Tv
+  Tv,
+  Cpu
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -264,47 +265,41 @@ export default function TrafficPage() {
     }
   };
 
-  // Render simulation visual progress bar
-  const renderProgressBarASCII = (progress: number) => {
-    const totalBars = 10;
-    const filledBars = Math.round((progress / 100) * totalBars);
-    const emptyBars = totalBars - filledBars;
-    const barStr = '█'.repeat(filledBars) + '░'.repeat(emptyBars);
-    return `[${barStr}] ${progress}%`;
-  };
-
   return (
-    <div className="font-mono text-white min-h-screen space-y-8 pb-12 select-none">
+    <div className="max-w-7xl mx-auto font-sans text-white min-h-[85vh] space-y-8 pb-12 select-none relative z-10">
       
-      {/* Top Banner / Brutalist Header */}
-      <div className="border-4 border-white bg-black p-8 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      {/* Background glow */}
+      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
+      {/* Top Banner / Future Blue Header */}
+      <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)]">
         <div>
-          <h1 className="text-4xl font-extrabold uppercase tracking-tighter flex items-center gap-4">
-            PR TRAFFIC ENGINE <Tv className="w-8 h-8 text-white animate-pulse" />
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-widest flex items-center gap-4 text-white">
+            PR TRAFFIC ENGINE <Cpu className="w-8 h-8 text-cyan-400" />
           </h1>
-          <p className="text-zinc-400 mt-2 text-sm uppercase">Autonome TikTok Ad & Video Render Factory • Fase 3 Imperial Expansion</p>
+          <p className="text-cyan-400/60 mt-2 text-xs md:text-sm uppercase font-bold tracking-widest">Autonome TikTok Ad & Video Render Factory • Fase 3 Imperial Expansion</p>
         </div>
         
         {/* Credits Widget */}
-        <div className="border-2 border-zinc-700 bg-zinc-900/80 p-4 min-w-[240px] shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-xs uppercase font-bold text-zinc-400 flex items-center gap-1">
+        <div className="bg-cyan-950/20 border border-cyan-500/30 rounded-xl p-5 min-w-[280px]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] uppercase font-bold text-cyan-500 tracking-widest flex items-center gap-1.5">
               <Coins className="w-4 h-4" /> AD-CREDITS BALANCE
             </span>
           </div>
-          <div className="text-3xl font-extrabold text-white flex items-baseline gap-2">
+          <div className="text-4xl font-black text-white flex items-baseline gap-2 mb-4">
             {isLoadingCredits ? (
-              <span className="animate-pulse">---</span>
+              <span className="animate-pulse opacity-50">---</span>
             ) : (
               <span>{credits}</span>
             )}
-            <span className="text-xs text-zinc-500 uppercase">Credits</span>
+            <span className="text-xs text-zinc-500 uppercase tracking-widest">Credits</span>
           </div>
           <button 
             onClick={() => setShowBuyModal(true)}
-            className="w-full mt-3 bg-white text-black font-bold uppercase text-xs py-2 px-3 hover:bg-black hover:text-white border border-white transition-all duration-100 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]"
+            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs py-3 px-4 rounded-lg transition-all duration-200 flex justify-center items-center gap-2"
           >
-            + Buy Ad-Credits (Mollie)
+            <Plus className="w-4 h-4" /> Buy Ad-Credits (Mollie)
           </button>
         </div>
       </div>
@@ -313,38 +308,38 @@ export default function TrafficPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Launch Campaign Panel */}
-        <div className="lg:col-span-1 border-4 border-white bg-black p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] space-y-6">
-          <h2 className="text-xl font-bold uppercase tracking-tight border-b-2 border-zinc-800 pb-3 flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-white" /> CAMPAIGN DEPLOYMENT
+        <div className="lg:col-span-1 bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md space-y-6">
+          <h2 className="text-sm font-black uppercase tracking-widest border-b border-white/5 pb-4 flex items-center gap-2 text-white">
+            <Sliders className="w-4 h-4 text-cyan-500" /> CAMPAIGN DEPLOYMENT
           </h2>
 
-          <form onSubmit={handleLaunchCampaign} className="space-y-4">
+          <form onSubmit={handleLaunchCampaign} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold text-zinc-400">Campaign Identifier</label>
+              <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">Campaign Identifier</label>
               <input 
                 type="text" 
                 placeholder="e.g. DUBAI_HOOK_V1" 
                 value={campaignName}
                 onChange={(e) => setCampaignName(e.target.value)}
                 required
-                className="w-full bg-zinc-900 border-2 border-zinc-800 focus:border-white focus:outline-none p-3 text-white text-sm"
+                className="w-full bg-zinc-950 border border-white/10 rounded-xl focus:border-cyan-500/50 focus:outline-none px-4 py-3 text-white text-sm transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold text-zinc-400">Platform Vector</label>
+              <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">Platform Vector</label>
               <input 
                 type="text" 
                 disabled 
                 value="TIKTOK ADS (VIDEO RENDERS)" 
-                className="w-full bg-zinc-950 border-2 border-zinc-900 p-3 text-zinc-500 text-xs font-bold"
+                className="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-cyan-500/50 text-xs font-bold tracking-widest"
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs uppercase font-bold text-zinc-400">Ad Budget Allocation</label>
-                <span className="text-xs text-white font-bold">{budget} Credits</span>
+                <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">Ad Budget Allocation</label>
+                <span className="text-xs text-cyan-400 font-bold">{budget} Credits</span>
               </div>
               <input 
                 type="range" 
@@ -353,70 +348,70 @@ export default function TrafficPage() {
                 step="50"
                 value={budget}
                 onChange={(e) => setBudget(parseInt(e.target.value))}
-                className="w-full accent-white"
+                className="w-full accent-cyan-500 h-2 bg-zinc-900 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:rounded-full"
               />
-              <div className="flex justify-between text-[10px] text-zinc-500 font-bold uppercase">
+              <div className="flex justify-between text-[9px] text-zinc-600 font-bold uppercase tracking-widest">
                 <span>50 Cr (Micro)</span>
                 <span>2000 Cr (Viral)</span>
               </div>
             </div>
 
             {errorMessage && (
-              <div className="border border-gold bg-navy/20 p-3 text-gold text-xs flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                <span>{errorMessage}</span>
+              <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs flex items-center gap-3 text-red-400">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium">{errorMessage}</span>
               </div>
             )}
 
             <button 
               type="submit" 
               disabled={isLaunching || !campaignName}
-              className="w-full bg-white text-black font-extrabold uppercase py-3 border-2 border-white hover:bg-black hover:text-white transition-all duration-150 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] disabled:opacity-50"
+              className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-bold uppercase tracking-widest py-3.5 transition-colors flex justify-center items-center gap-2"
             >
-              {isLaunching ? 'RENDER ENGINE DEPLOYING...' : '⚡ LAUNCH TIKTOK ADS'}
+              {isLaunching ? 'DEPLOYING...' : '⚡ LAUNCH TIKTOK ADS'}
             </button>
           </form>
 
-          {/* Mini Brutalist Terminal Logs */}
-          <div className="border border-zinc-800 bg-zinc-950/50 p-4">
-            <h4 className="text-[10px] uppercase font-bold text-zinc-500 flex items-center gap-1 mb-2">
-              <Terminal className="w-3 h-3" /> Terminal System Logs
+          {/* Mini Terminal Logs */}
+          <div className="bg-black/60 border border-white/5 rounded-xl p-5">
+            <h4 className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest flex items-center gap-2 mb-3">
+              <Terminal className="w-3.5 h-3.5" /> Terminal System Logs
             </h4>
-            <div className="text-[10px] font-mono text-zinc-400 space-y-1 overflow-y-auto max-h-[160px]">
+            <div className="text-[10px] font-mono text-cyan-400/70 space-y-2 overflow-y-auto max-h-[160px] custom-scrollbar">
               {terminalLogs.length === 0 ? (
-                <span className="text-zinc-600">[SYSTEM IDLE. AWAITING OPERATION...]</span>
+                <span className="text-zinc-600 font-medium">[SYSTEM IDLE. AWAITING OPERATION...]</span>
               ) : (
-                terminalLogs.map((log, idx) => <div key={idx}>{log}</div>)
+                terminalLogs.map((log, idx) => <div key={idx} className="leading-relaxed">{log}</div>)
               )}
             </div>
           </div>
         </div>
 
         {/* Campaign Monitor / Dashboard Listing */}
-        <div className="lg:col-span-2 border-4 border-white bg-black p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md flex flex-col justify-between">
           <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-tight border-b-2 border-zinc-800 pb-3 flex items-center justify-between">
-              <span className="flex items-center gap-2"><Video className="w-5 h-5 text-white" /> CAMPAIGN DEPLOYMENT GRID</span>
+            <h2 className="text-sm font-black uppercase tracking-widest border-b border-white/5 pb-4 flex items-center justify-between text-white">
+              <span className="flex items-center gap-2"><Video className="w-4 h-4 text-cyan-500" /> CAMPAIGN DEPLOYMENT GRID</span>
               <button 
                 onClick={() => { fetchCampaigns(); fetchCredits(); }}
-                className="text-xs uppercase text-zinc-400 hover:text-white flex items-center gap-1"
+                className="text-[10px] uppercase text-zinc-500 hover:text-cyan-400 flex items-center gap-1.5 transition-colors font-bold"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
               </button>
             </h2>
 
             {isLoadingCampaigns ? (
-              <div className="py-12 text-center text-zinc-500 uppercase animate-pulse">
+              <div className="py-16 text-center text-cyan-500 uppercase tracking-widest text-xs font-bold animate-pulse">
                 SCANNEN VAN AD-VECTORS...
               </div>
             ) : campaigns.length === 0 ? (
-              <div className="py-16 text-center border-2 border-dashed border-zinc-800 bg-zinc-950/30">
-                <AlertTriangle className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-                <h3 className="text-white font-bold uppercase text-sm mb-1">Geen actieve campagnes</h3>
-                <p className="text-xs text-zinc-500 uppercase">Launcheer een TikTok ad hiernaast om renders te genereren.</p>
+              <div className="py-20 text-center rounded-xl bg-zinc-950/50 border border-white/5">
+                <AlertTriangle className="w-10 h-10 text-zinc-600 mx-auto mb-4" />
+                <h3 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Geen actieve campagnes</h3>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Launcheer een TikTok ad hiernaast om renders te genereren.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2 custom-scrollbar">
                 {campaigns.map((c) => {
                   const isRendering = c.renderStatus === 'RENDERING';
                   const isSelected = selectedCampaign?.id === c.id;
@@ -425,20 +420,20 @@ export default function TrafficPage() {
                     <div 
                       key={c.id} 
                       onClick={() => setSelectedCampaign(c)}
-                      className={`cursor-pointer p-4 border-2 transition-all duration-100 ${
+                      className={`cursor-pointer p-5 rounded-xl border transition-all duration-200 ${
                         isSelected 
-                          ? 'border-white bg-zinc-900 shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]' 
-                          : 'border-zinc-800 bg-zinc-950 hover:border-zinc-500'
+                          ? 'border-cyan-500/50 bg-cyan-950/20 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
+                          : 'border-white/5 bg-zinc-950/50 hover:bg-zinc-900/50 hover:border-white/10'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-sm font-extrabold uppercase text-white truncate max-w-[150px]">{c.campaignName}</span>
-                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 border ${
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="text-xs font-bold uppercase text-white tracking-wider truncate max-w-[150px]">{c.campaignName}</span>
+                        <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
                           c.status === 'VIRAL' 
-                            ? 'border-gold bg-navy/40 text-gold font-extrabold animate-pulse' 
+                            ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
                             : c.status === 'ACTIVE' 
-                              ? 'border-emerald-500 bg-emerald-950/40 text-emerald-500' 
-                              : 'border-yellow-500 bg-yellow-950/40 text-yellow-500'
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                              : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                         }`}>
                           {c.status}
                         </span>
@@ -446,23 +441,27 @@ export default function TrafficPage() {
 
                       {/* Video Render progress */}
                       {isRendering ? (
-                        <div className="mt-4 space-y-1">
-                          <div className="flex justify-between text-[10px] uppercase font-bold text-yellow-500">
-                            <span>RE-RENDERING METADATA...</span>
-                          </div>
-                          <div className="font-mono text-xs text-yellow-500 bg-yellow-500/10 p-2 border border-yellow-500/20">
-                            {renderProgressBarASCII(c.renderProgress)}
-                          </div>
-                        </div>
+                         <div className="mt-4 space-y-2">
+                           <div className="flex justify-between text-[9px] uppercase font-bold text-cyan-500 tracking-widest">
+                             <span>RE-RENDERING METADATA...</span>
+                             <span>{c.renderProgress}%</span>
+                           </div>
+                           <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                             <div 
+                               className="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                               style={{ width: `${c.renderProgress}%` }}
+                             />
+                           </div>
+                         </div>
                       ) : (
-                        <div className="mt-4 grid grid-cols-2 gap-4 border-t border-zinc-800 pt-3 text-xs">
+                        <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/5 pt-4 text-xs">
                           <div>
-                            <span className="text-zinc-500 block uppercase text-[10px] font-bold">TOTAL VIEWS</span>
-                            <span className="text-white font-extrabold text-sm">{c.totalViews.toLocaleString()}</span>
+                            <span className="text-zinc-500 block uppercase text-[9px] font-bold tracking-widest mb-1">TOTAL VIEWS</span>
+                            <span className="text-white font-black text-sm">{c.totalViews.toLocaleString()}</span>
                           </div>
                           <div>
-                            <span className="text-zinc-500 block uppercase text-[10px] font-bold">BUDGET USED</span>
-                            <span className="text-white font-extrabold text-sm">{c.budgetCredits} Credits</span>
+                            <span className="text-zinc-500 block uppercase text-[9px] font-bold tracking-widest mb-1">BUDGET USED</span>
+                            <span className="text-cyan-400 font-black text-sm">{c.budgetCredits} <span className="text-[10px] text-zinc-500">CR</span></span>
                           </div>
                         </div>
                       )}
@@ -479,15 +478,15 @@ export default function TrafficPage() {
       <AnimatePresence mode="wait">
         {selectedCampaign && selectedCampaign.renderStatus === 'COMPLETED' && (
           <motion.div 
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="border-4 border-white bg-black p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] space-y-6"
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md space-y-8"
           >
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-zinc-800 pb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-6">
               <div>
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">CAMPAIGN AUDIT MONITOR</span>
-                <h3 className="text-2xl font-bold uppercase text-white tracking-tight">{selectedCampaign.campaignName}</h3>
+                <span className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-2 block flex items-center gap-2"><Tv className="w-3.5 h-3.5" /> CAMPAIGN AUDIT MONITOR</span>
+                <h3 className="text-2xl md:text-3xl font-black uppercase text-white tracking-widest">{selectedCampaign.campaignName}</h3>
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -496,44 +495,44 @@ export default function TrafficPage() {
                   <button
                     onClick={() => handleTriggerViral(selectedCampaign.id)}
                     disabled={isBoosting}
-                    className="bg-black border-2 border-gold text-gold hover:bg-gold hover:text-black font-extrabold uppercase px-4 py-2 text-xs transition-all duration-100 flex items-center gap-2 shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]"
+                    className="bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/50 text-orange-400 rounded-xl font-bold uppercase tracking-widest px-6 py-3 text-xs transition-colors flex items-center gap-3 disabled:opacity-50"
                   >
-                    <Flame className="w-4 h-4 animate-bounce" /> INJECT VIRAL ALGORITHM (BOOST)
+                    <Flame className="w-4 h-4" /> INJECT VIRAL ALGORITHM (BOOST)
                   </button>
                 ) : (
-                  <span className="border-2 border-gold/30 bg-navy/20 text-gold px-4 py-2 text-xs font-extrabold uppercase flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-gold" /> VIRAL MULTIPLIER ACTIVE (12.0X)
+                  <span className="bg-orange-500/20 border border-orange-500/50 text-orange-400 rounded-xl px-6 py-3 text-xs font-bold uppercase tracking-widest flex items-center gap-3">
+                    <Flame className="w-4 h-4 text-orange-400 animate-pulse" /> VIRAL MULTIPLIER ACTIVE (12.0X)
                   </span>
                 )}
               </div>
             </div>
 
             {/* Campaign analytics metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="border border-zinc-800 bg-zinc-950 p-4">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">Estimated Views</span>
-                <span className="text-2xl font-extrabold text-white block mt-1">{selectedCampaign.totalViews.toLocaleString()}</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Estimated Views</span>
+                <span className="text-2xl font-black text-white block mt-2">{selectedCampaign.totalViews.toLocaleString()}</span>
               </div>
               
-              <div className="border border-zinc-800 bg-zinc-950 p-4">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">Estimated Impressions</span>
-                <span className="text-2xl font-extrabold text-white block mt-1">{selectedCampaign.totalImpressions.toLocaleString()}</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Estimated Impressions</span>
+                <span className="text-2xl font-black text-white block mt-2">{selectedCampaign.totalImpressions.toLocaleString()}</span>
               </div>
 
-              <div className="border border-zinc-800 bg-zinc-950 p-4">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">Click-Through Rate (CTR)</span>
-                <span className="text-2xl font-extrabold text-white block mt-1">{(selectedCampaign.status === 'VIRAL' ? 8.4 : 3.2).toFixed(1)}%</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Click-Through Rate (CTR)</span>
+                <span className="text-2xl font-black text-cyan-400 block mt-2">{(selectedCampaign.status === 'VIRAL' ? 8.4 : 3.2).toFixed(1)}%</span>
               </div>
 
-              <div className="border border-zinc-800 bg-zinc-950 p-4">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">Viral Multiplier</span>
-                <span className="text-2xl font-extrabold text-white block mt-1">{selectedCampaign.status === 'VIRAL' ? '12.0x' : '1.0x'}</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Viral Multiplier</span>
+                <span className="text-2xl font-black text-white block mt-2">{selectedCampaign.status === 'VIRAL' ? '12.0x' : '1.0x'}</span>
               </div>
             </div>
 
             {/* Graphic Chart (Recharts) */}
-            <div className="h-72 mt-6">
-              <h4 className="text-xs font-bold uppercase text-zinc-400 mb-4 flex items-center gap-2">
+            <div className="h-80 pt-4">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" /> 7-Day Performance Flow Matrix (Views / Impressions)
               </h4>
               {selectedCampaign.viewsHistory && selectedCampaign.viewsHistory.length > 0 ? (
@@ -541,23 +540,23 @@ export default function TrafficPage() {
                   <AreaChart data={selectedCampaign.viewsHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ffffff" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid stroke="#27272a" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} />
-                    <YAxis stroke="#71717a" fontSize={10} tickLine={false} />
+                    <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#000', border: '2px solid #52525b', borderRadius: '0px', fontFamily: 'monospace' }}
-                      itemStyle={{ color: '#fff' }}
-                      labelStyle={{ color: '#888' }}
+                      contentStyle={{ backgroundColor: 'rgba(9, 9, 11, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}
+                      itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                      labelStyle={{ color: '#06b6d4', fontSize: '10px', textTransform: 'uppercase', tracking: 'widest', marginBottom: '4px' }}
                     />
-                    <Area type="monotone" dataKey="views" stroke="#ffffff" strokeWidth={2} fillOpacity={1} fill="url(#colorViews)" />
+                    <Area type="monotone" dataKey="views" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center border border-zinc-800 text-zinc-500 uppercase text-xs">
+                <div className="h-full flex items-center justify-center rounded-xl border border-white/5 bg-zinc-950/30 text-zinc-500 uppercase tracking-widest text-[10px] font-bold">
                   AWAITING DATASHEET POPULATION FROM AD NETWORKS...
                 </div>
               )}
@@ -568,43 +567,48 @@ export default function TrafficPage() {
 
       {/* MODAL: Buy credits modal */}
       {showBuyModal && (
-        <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-          <div className="border-4 border-white bg-black p-6 max-w-md w-full shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] space-y-6">
-            <div className="flex justify-between items-start border-b-2 border-zinc-800 pb-3">
-              <h3 className="text-xl font-bold uppercase flex items-center gap-2">
-                <Coins className="w-5 h-5" /> RECHARGE CREDITS
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-950 border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
+            <div className="flex justify-between items-center border-b border-white/5 pb-4">
+              <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-3">
+                <Coins className="w-5 h-5 text-cyan-500" /> RECHARGE CREDITS
               </h3>
-              <button onClick={() => setShowBuyModal(false)} className="text-zinc-500 hover:text-white font-bold uppercase text-xs">Close [X]</button>
+              <button onClick={() => setShowBuyModal(false)} className="text-zinc-500 hover:text-white transition-colors">
+                <Plus className="w-5 h-5 rotate-45" />
+              </button>
             </div>
 
-            <form onSubmit={handleBuyCredits} className="space-y-4">
-              <p className="text-xs text-zinc-400 uppercase">Selecteer het aantal ad-credits om de TikTok video-render pipelines op te laden. Tarieven worden berekend via Mollie.</p>
+            <form onSubmit={handleBuyCredits} className="space-y-6">
+              <p className="text-[11px] leading-relaxed text-zinc-400 font-medium">Selecteer het aantal ad-credits om de TikTok video-render pipelines op te laden. Tarieven worden veilig verwerkt via Mollie.</p>
               
-              <div className="space-y-2">
-                <label className="text-xs uppercase font-bold text-zinc-400">Credit Pack Size</label>
-                <select 
-                  value={buyAmount}
-                  onChange={(e) => setBuyAmount(parseInt(e.target.value))}
-                  className="w-full bg-zinc-900 border-2 border-zinc-800 focus:border-white focus:outline-none p-3 text-white text-sm"
-                >
-                  <option value={250}>250 Credits (€25.00)</option>
-                  <option value={500}>500 Credits (€50.00)</option>
-                  <option value={1000}>1000 Credits (€100.00)</option>
-                  <option value={2500}>2500 Credits (€250.00)</option>
-                </select>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">Credit Pack Size</label>
+                <div className="relative">
+                  <select 
+                    value={buyAmount}
+                    onChange={(e) => setBuyAmount(parseInt(e.target.value))}
+                    className="w-full bg-black border border-white/10 rounded-xl focus:border-cyan-500/50 focus:outline-none px-4 py-3.5 text-white text-sm appearance-none"
+                  >
+                    <option value={250}>250 Credits (€25.00)</option>
+                    <option value={500}>500 Credits (€50.00)</option>
+                    <option value={1000}>1000 Credits (€100.00)</option>
+                    <option value={2500}>2500 Credits (€250.00)</option>
+                  </select>
+                  <ChevronRight className="w-4 h-4 text-zinc-500 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
+                </div>
               </div>
 
-              <div className="border border-zinc-800 bg-zinc-950 p-3 text-xs text-zinc-400 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-white flex-shrink-0" />
-                <span>Instant recharge via Mollie test/live omgeving</span>
+              <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-4 text-[11px] text-cyan-400 flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="leading-relaxed">Instant recharge via Mollie test/live omgeving geactiveerd voor jouw account.</span>
               </div>
 
               <button 
                 type="submit" 
                 disabled={isBuying}
-                className="w-full bg-white text-black font-extrabold uppercase py-3 border-2 border-white hover:bg-black hover:text-white transition-all duration-150 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
+                className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest py-3.5 rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
               >
-                {isBuying ? 'PROCESSING PAYMENT GATEWAY...' : '💳 RECHARGE VIA MOLLIE'}
+                {isBuying ? 'PROCESSING...' : '💳 RECHARGE VIA MOLLIE'}
               </button>
             </form>
           </div>
@@ -613,32 +617,32 @@ export default function TrafficPage() {
 
       {/* MODAL: MOLLIE SANDBOX SIMULATOR */}
       {showSandboxModal && (
-        <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
-          <div className="border-4 border-gold bg-black p-8 max-w-md w-full shadow-[8px_8px_0px_0px_rgba(239,68,68,0.2)] space-y-6">
-            <div className="border-b-2 border-gold pb-3 flex items-center gap-3">
-              <div className="w-3 h-3 bg-gold animate-ping rounded-full" />
-              <h3 className="text-xl font-bold uppercase tracking-tight text-gold font-mono">
-                MOLLIE_PAYMENT_GATEWAY_V3 (SANDBOX)
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-950 border border-cyan-500/30 rounded-2xl p-8 max-w-md w-full shadow-[0_0_30px_rgba(6,182,212,0.15)] space-y-6">
+            <div className="border-b border-white/10 pb-4 flex items-center gap-4">
+              <div className="w-3 h-3 bg-cyan-500 animate-ping rounded-full" />
+              <h3 className="text-sm font-black uppercase tracking-widest text-cyan-400">
+                MOLLIE GATEWAY (SANDBOX)
               </h3>
             </div>
 
-            <div className="space-y-4 text-xs font-mono text-zinc-400">
-              <div className="bg-zinc-950 p-4 border border-zinc-900 space-y-2 text-zinc-300">
-                <div><span className="text-zinc-500">TRANSACTION ID:</span> {sandboxTxId}</div>
-                <div><span className="text-zinc-500">CREDIT PACKAGE:</span> {sandboxCredits} Credits</div>
-                <div><span className="text-zinc-500">PAYMENT TOTAL:</span> €{(sandboxCredits/10).toFixed(2)}</div>
-                <div><span className="text-zinc-500">ENVIRONMENT:</span> local_sandbox_gateway</div>
+            <div className="space-y-5 text-sm font-medium text-zinc-300">
+              <div className="bg-black/50 p-5 rounded-xl border border-white/5 space-y-3">
+                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">TRANSACTION ID:</span> <span className="text-white text-xs">{sandboxTxId}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">CREDIT PACKAGE:</span> <span className="text-cyan-400 font-bold text-xs">{sandboxCredits} Credits</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">PAYMENT TOTAL:</span> <span className="text-white text-xs">€{(sandboxCredits/10).toFixed(2)}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">ENVIRONMENT:</span> <span className="text-emerald-400 text-[10px] uppercase font-bold tracking-widest">local_sandbox</span></div>
               </div>
 
-              <p className="uppercase text-[10px] text-zinc-500">U heeft zojuist de Mollie gateway betaling afgerond in testmodus. Klik op de onderstaande knop om de credits direct bij te schrijven op uw Rebuild account.</p>
+              <p className="text-[11px] leading-relaxed text-zinc-400 text-center px-2">U heeft zojuist de Mollie gateway betaling afgerond in testmodus. Klik op de onderstaande knop om de credits direct bij te schrijven op uw Rebuild account.</p>
             </div>
 
             <button 
               onClick={handleCompleteSandboxPayment}
               disabled={isBuying}
-              className="w-full bg-gold text-black font-extrabold uppercase py-3 border-2 border-gold hover:bg-black hover:text-gold transition-all duration-150 shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]"
+              className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest py-3.5 rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
             >
-              {isBuying ? 'PROCESSING TRANSACTION...' : '✅ CONFIRM betaling & UPDATE SALDO'}
+              {isBuying ? 'PROCESSING...' : '✅ CONFIRM & UPDATE SALDO'}
             </button>
           </div>
         </div>
