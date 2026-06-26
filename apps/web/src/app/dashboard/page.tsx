@@ -91,9 +91,9 @@ export default function DashboardPage() {
                 </span>
              </div>
 
-             <div className="bg-black/80 backdrop-blur-3xl rounded-[2rem] border border-white/5 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group/card hover:border-emerald-500/30 transition-all duration-700 shadow-[0_0_0_rgba(255,0,51,0)] hover:shadow-[0_0_40px_rgba(255,0,51,0.15)]">
+             <div className="bg-black/80 backdrop-blur-3xl rounded-[2rem] border border-white/5 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group/card hover:border-emerald-500/30 transition-all duration-700 shadow-[0_0_0_rgba(6,182,212,0)] hover:shadow-[0_0_40px_rgba(6,182,212,0.15)]">
                 <div className="absolute inset-0 bg-gradient-to-r from-gold/0 via-[#112240]/0 to-[#0a192f]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-emerald-500 shadow-[0_0_15px_rgba(255,0,51,0.5)] scale-y-0 group-hover/card:scale-y-100 transition-transform duration-500 origin-top"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-emerald-500 shadow-[0_0_15px_rgba(6,182,212,0.5)] scale-y-0 group-hover/card:scale-y-100 transition-transform duration-500 origin-top"></div>
                 
                 {hasSynced ? (
                   <>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
                         Financial baseline extracted. The algorithm is now continuously monitoring your transactions to identify and terminate inefficiencies.
                       </p>
                     </div>
-                    <div className="w-32 h-32 rounded-full border border-emerald-500/30 flex items-center justify-center bg-emerald-500/10 shrink-0 relative z-10 shadow-[0_0_30px_rgba(255,0,51,0.2)]">
+                    <div className="w-32 h-32 rounded-full border border-emerald-500/30 flex items-center justify-center bg-emerald-500/10 shrink-0 relative z-10 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
                       <CheckCircle2 className="w-12 h-12 text-emerald-400" />
                     </div>
                   </>
@@ -118,7 +118,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-6">
                         <Button 
                           onClick={() => setIsSyncing(true)}
-                          className="bg-white hover:bg-emerald-500 hover:text-white text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,0,51,0.4)] transition-all duration-500 transform group-hover/card:scale-105"
+                          className="bg-white hover:bg-emerald-500 hover:text-white text-black font-black uppercase tracking-widest px-8 py-6 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-500 transform group-hover/card:scale-105"
                         >
                           Connect Now
                         </Button>
