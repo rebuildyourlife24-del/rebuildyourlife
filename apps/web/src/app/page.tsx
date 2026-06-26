@@ -49,10 +49,12 @@ export default function MatrixLandingPage() {
             {/* Scanline effect over video */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] z-20 pointer-events-none opacity-50"></div>
             
-            {/* Real video tag */}
+            {/* Real video tag (commented out until we have the file) */}
+            {/* 
             <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
-              <source src="/panorama_intro.mp4" type="video/mp4" />
-            </video>
+              <source src="/pad-naar-je-video.mp4" type="video/mp4" />
+            </video> 
+            */}
           </div>
         </div>
       </motion.div>
