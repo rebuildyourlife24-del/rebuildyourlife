@@ -73,6 +73,7 @@ export default function MatrixLandingPage() {
             </div>
             
             <h1 className="text-5xl sm:text-6xl md:text-[6rem] font-black leading-[1] uppercase tracking-tighter mb-6">
+              <span className="sr-only">Het AI Besturingssysteem voor Jouw Succes. </span>
               Ontsnap aan de massa.<br/>
               <span className="text-cyan-400 block mt-2 drop-shadow-[0_0_25px_rgba(6,182,212,0.3)]">Herbouw Je Leven.</span>
             </h1>
@@ -94,6 +95,7 @@ export default function MatrixLandingPage() {
               <div className="text-left">
                 <div className="text-xs font-bold text-cyan-400 uppercase tracking-[0.2em] mb-1">Initialiseer Protocol</div>
                 <div className="text-xl md:text-2xl font-black text-white uppercase tracking-wider">Start Jouw Reis</div>
+                <div className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest font-bold">Direct toegang tot de War Room</div>
               </div>
             </Link>
             
@@ -178,7 +180,34 @@ export default function MatrixLandingPage() {
           </Link>
 
         </div>
+
+        {/* TRUST SIGNALS */}
+        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+          <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest w-full text-center md:w-auto md:mr-2">Veilig Afrekenen via:</div>
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded border border-white/10">
+            <ShieldCheck className="w-4 h-4 text-zinc-400" />
+            <span className="text-xs font-black tracking-widest text-zinc-300">MOLLIE</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded border border-white/10">
+            <span className="text-xs font-black tracking-widest text-zinc-300">iDEAL</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded border border-white/10">
+            <span className="text-xs font-black tracking-widest text-zinc-300">CREDITCARD</span>
+          </div>
+        </div>
       </div>
+
+      {/* SEO MANIFESTO (Hidden visually for clean look, visible for crawlers and reading) */}
+      <div className="bg-black border-t border-white/5 py-16">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 opacity-30 hover:opacity-70 transition-opacity duration-500">
+          <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Rebuild Your Life: Het AI E-commerce Besturingssysteem</h2>
+          <div className="prose prose-invert prose-sm text-zinc-600 max-w-4xl">
+            <p className="mb-4">Welkom bij Rebuild Your Life. Wij bieden ambitieuze ondernemers de ultieme E-commerce blauwdrukken, AI business automatisering en toegang tot een exclusief private equity netwerk. Ons platform fungeert als jouw persoonlijke commandocentrum (War Room) waarmee je schulden elimineert, vermogen opbouwt, en schaalbare bedrijfsmodellen lanceert met behulp van de nieuwste kunstmatige intelligentie.</p>
+            <p>Onze AI Coworkers en geavanceerde dashboards stellen je in staat om razendsnel data te analyseren, winstgevende producten te vinden en je conversie drastisch te verhogen. Sluit je aan bij de elite en claim jouw financiële vrijheid met onze bewezen systemen.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
