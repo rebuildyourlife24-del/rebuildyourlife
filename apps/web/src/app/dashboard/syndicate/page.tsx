@@ -241,9 +241,9 @@ export default function SyndicatePage() {
   const getTierColor = (tier: number) => {
     switch (tier) {
       case 1: return "border-zinc-500 text-zinc-400 bg-zinc-950";
-      case 2: return "border-gold/50 text-goldLight bg-[#0a192f]/20";
-      case 3: return "border-[#d4af37] text-gold bg-[#0a192f]/30 shadow-[0_0_10px_rgba(220,38,38,0.2)]";
-      case 4: return "border-gold bg-gold text-black font-black animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]";
+      case 2: return "border-indigo-500/50 text-indigo-400 bg-indigo-950/20";
+      case 3: return "border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_10px_rgba(59,130,246,0.2)]";
+      case 4: return "border-cyan-400 bg-cyan-500/20 text-cyan-400 font-black animate-pulse shadow-[0_0_15px_rgba(6,182,212,0.3)]";
       default: return "border-zinc-800 text-zinc-500";
     }
   };
@@ -260,60 +260,63 @@ export default function SyndicatePage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-8 max-w-6xl mx-auto pb-20 font-mono text-zinc-300"
+      className="max-w-7xl mx-auto font-sans text-white min-h-[85vh] space-y-8 pb-12 select-none relative z-10"
     >
+      {/* Background glow */}
+      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b-4 border-[#d4af37] pb-8">
+      <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)]">
         <div>
-          <div className="flex items-center gap-3 mb-3">
-             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase flex items-center gap-3">
-               <Ghost className="w-10 h-10 text-gold animate-pulse" />
+          <div className="flex items-center gap-4 mb-3">
+             <h1 className="text-3xl md:text-4xl font-black text-white tracking-widest uppercase flex items-center gap-4">
+               <Ghost className="w-8 h-8 text-cyan-500" />
                THE SYNDICATE
              </h1>
-             <Badge variant="outline" className="tracking-widest text-[10px] text-gold border-gold bg-[#0a192f]/20 px-3 py-1 font-bold">
+             <span className="text-[10px] font-bold tracking-widest text-cyan-400 border border-cyan-500/30 bg-cyan-950/20 px-3 py-1 rounded-full uppercase">
                SECURED INTERFACE
-             </Badge>
+             </span>
           </div>
-          <p className="text-zinc-500 uppercase tracking-widest text-xs flex items-center gap-2">
-             <Skull className="w-4 h-4 text-gold" /> ENCRYPTED NODE // PROTOCOLS: COMMUNICATION FEED & ATTACK PROXY
+          <p className="text-cyan-400/60 uppercase tracking-widest text-xs flex items-center gap-2 font-bold">
+             <Skull className="w-4 h-4" /> ENCRYPTED NODE // PROTOCOLS: COMMUNICATION FEED & ATTACK PROXY
           </p>
         </div>
 
         {/* User Card */}
         {currentUser && (
-          <div className="border-2 border-[#d4af37] bg-black p-4 shadow-[4px_4px_0px_0px_#ef4444] min-w-[280px]">
-            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1 border-b border-zinc-900 pb-1">OPERATIVE PROFILE</div>
-            <div className="font-bold text-white text-sm uppercase">{currentUser.firstName} {currentUser.lastName}</div>
-            <div className="text-[10px] text-zinc-400 mt-1 flex justify-between">
+          <div className="bg-cyan-950/20 border border-cyan-500/30 rounded-xl p-5 min-w-[280px]">
+            <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-2 font-bold">OPERATIVE PROFILE</div>
+            <div className="font-black text-white text-sm uppercase tracking-widest mb-3">{currentUser.firstName} {currentUser.lastName}</div>
+            <div className="text-[10px] text-zinc-400 flex justify-between mb-1.5 font-bold uppercase tracking-widest">
               <span>CLEARANCE TIER:</span>
-              <span className="text-gold font-bold">LEVEL {userClearance} ({getTierLabel(userClearance)})</span>
+              <span className="text-cyan-400">LEVEL {userClearance} ({getTierLabel(userClearance)})</span>
             </div>
-            <div className="text-[10px] text-zinc-400 flex justify-between">
+            <div className="text-[10px] text-zinc-400 flex justify-between font-bold uppercase tracking-widest">
               <span>FACTION ROLE:</span>
-              <span className="text-zinc-300 font-bold">{currentUser.role}</span>
+              <span className="text-white">{currentUser.role}</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Brutalist Tab Switcher */}
-      <div className="flex border-4 border-black bg-zinc-950 p-1">
+      {/* Smooth Tab Switcher */}
+      <div className="flex bg-black/40 border border-white/5 rounded-xl p-1.5 backdrop-blur-md">
         <button
           onClick={() => setActiveTab('feed')}
-          className={`flex-1 py-4 text-center font-black uppercase tracking-[0.2em] text-sm transition-all border-r-2 border-black last:border-r-0 ${
+          className={`flex-1 py-3.5 text-center font-bold uppercase tracking-widest text-xs rounded-lg transition-all ${
             activeTab === 'feed'
-              ? 'bg-gold text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
-              : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+              ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+              : 'text-zinc-500 hover:text-white hover:bg-zinc-900/50'
           }`}
         >
           [ 01 // SYNDICATE FEED ]
         </button>
         <button
           onClick={() => setActiveTab('proxy')}
-          className={`flex-1 py-4 text-center font-black uppercase tracking-[0.2em] text-sm transition-all ${
+          className={`flex-1 py-3.5 text-center font-bold uppercase tracking-widest text-xs rounded-lg transition-all ${
             activeTab === 'proxy'
-              ? 'bg-gold text-black shadow-[inset_4px_4px_0px_0px_rgba(0,0,0,0.15)]'
-              : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+              ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+              : 'text-zinc-500 hover:text-white hover:bg-zinc-900/50'
           }`}
         >
           [ 02 // PROXY ATTACK ENGINE ]
@@ -332,27 +335,27 @@ export default function SyndicatePage() {
           >
             {/* Create Post (Left Column) */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="border-4 border-black bg-black p-6 shadow-[6px_6px_0px_0px_#ffffff] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 rotate-45 transform translate-x-12 -translate-y-12 border-l border-gold" />
-                <h2 className="text-xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b-2 border-zinc-900 pb-3">
-                  <Shield className="w-5 h-5 text-gold" /> BROADCAST DATA
+              <div className="bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rotate-45 transform translate-x-12 -translate-y-12 border-l border-cyan-500/20" />
+                <h2 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-white/5 pb-4">
+                  <Shield className="w-4 h-4 text-cyan-500" /> BROADCAST DATA
                 </h2>
                 
                 <form onSubmit={handleCreatePost} className="space-y-5">
                   <div>
-                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest block mb-2 font-bold">
+                    <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2 font-bold">
                       DATA HEADER / TITLE (OPTIONAL)
                     </label>
                     <Input 
                       value={newPostTitle}
                       onChange={e => setNewPostTitle(e.target.value)}
                       placeholder="e.g., RECON REPORT #291"
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold h-10 font-mono"
+                      className="bg-zinc-950 border border-white/10 rounded-xl text-white focus:border-cyan-500/50 h-12 font-sans px-4 text-sm"
                     />
                   </div>
                   
                   <div>
-                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest block mb-2 font-bold">
+                    <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2 font-bold">
                       BROADCAST CONTENT
                     </label>
                     <textarea 
@@ -361,12 +364,12 @@ export default function SyndicatePage() {
                       placeholder="Write encrypted intelligence..."
                       required
                       rows={5}
-                      className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold p-3 font-mono text-sm focus:outline-none focus:ring-0"
+                      className="w-full bg-zinc-950 border border-white/10 rounded-xl text-white focus:border-cyan-500/50 p-4 font-sans text-sm focus:outline-none focus:ring-0 custom-scrollbar resize-none"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest block mb-2 font-bold">
+                    <label className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-2 font-bold">
                       ACCESS CLEARANCE LEVEL REQUIRED
                     </label>
                     <div className="grid grid-cols-4 gap-2">
@@ -378,12 +381,12 @@ export default function SyndicatePage() {
                             type="button"
                             disabled={!isAllowed}
                             onClick={() => setNewPostTier(tier)}
-                            className={`py-2 text-center text-xs font-bold transition-all border-2 ${
+                            className={`py-2.5 rounded-lg text-center text-xs font-bold transition-all border ${
                               !isAllowed 
-                                ? 'border-zinc-900 text-zinc-700 bg-zinc-950/40 cursor-not-allowed'
+                                ? 'border-white/5 text-zinc-700 bg-zinc-950/40 cursor-not-allowed'
                                 : newPostTier === tier
-                                  ? 'border-gold bg-[#0a192f]/30 text-white font-black'
-                                  : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 bg-zinc-950'
+                                  ? 'border-cyan-500 bg-cyan-950/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.15)]'
+                                  : 'border-white/10 text-zinc-500 hover:border-white/20 hover:text-white bg-black'
                             }`}
                           >
                             T{tier}
@@ -392,7 +395,7 @@ export default function SyndicatePage() {
                       })}
                     </div>
                     {newPostTier > 1 && (
-                      <p className="text-[9px] text-goldLight/80 mt-2 uppercase tracking-wider">
+                      <p className="text-[9px] text-cyan-400/80 mt-3 uppercase tracking-widest font-bold">
                         ⚠️ Restricting view to Level {newPostTier}+ agents.
                       </p>
                     )}
@@ -401,20 +404,20 @@ export default function SyndicatePage() {
                   <Button 
                     type="submit" 
                     disabled={isPosting || !newPostContent.trim()}
-                    className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest rounded-none border-2 border-black py-6 shadow-[4px_4px_0px_0px_#ef4444]"
+                    className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest rounded-xl py-4 transition-colors disabled:opacity-40"
                   >
                     {isPosting ? 'BROADCASTING...' : 'DISPATCH TO SYNDICATE'}
                   </Button>
                 </form>
 
                 {/* Seed button */}
-                <div className="mt-8 border-t border-zinc-900 pt-4 flex justify-between items-center">
-                  <span className="text-[9px] text-zinc-500 uppercase">System DB Diagnostics</span>
+                <div className="mt-8 border-t border-white/5 pt-5 flex justify-between items-center">
+                  <span className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest">System DB Diagnostics</span>
                   <button 
                     onClick={handleManualSeed}
-                    className="text-[9px] text-gold hover:text-goldLight font-bold uppercase tracking-widest flex items-center gap-1 bg-[#0a192f]/20 border border-[#d4af37] px-2 py-1"
+                    className="text-[9px] text-zinc-400 hover:text-white font-bold uppercase tracking-widest flex items-center gap-1.5 bg-black border border-white/10 px-3 py-1.5 rounded-md transition-colors"
                   >
-                    <RefreshCw className="w-3 h-3" /> Force Seed Mock Data
+                    <RefreshCw className="w-3 h-3" /> Force Seed DB
                   </button>
                 </div>
               </div>
@@ -423,18 +426,18 @@ export default function SyndicatePage() {
             {/* Posts Feed (Right 2 Columns) */}
             <div className="lg:col-span-2 space-y-6">
               {/* Filter bar */}
-              <div className="border-2 border-zinc-850 bg-black p-4 flex flex-wrap items-center justify-between gap-4">
-                <span className="text-xs uppercase text-zinc-500 tracking-wider">Filter Feed by Clearance:</span>
-                <div className="flex gap-2">
+              <div className="bg-black/40 border border-white/5 rounded-xl p-4 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+                <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest">Filter Feed by Clearance:</span>
+                <div className="flex gap-2 bg-black p-1 rounded-lg border border-white/5">
                   <button
                     onClick={() => setFeedFilterTier('all')}
-                    className={`px-3 py-1 text-xs font-bold transition-all border ${
+                    className={`px-4 py-1.5 text-[10px] rounded-md font-bold transition-all uppercase tracking-widest ${
                       feedFilterTier === 'all' 
-                        ? 'border-gold bg-[#0a192f]/20 text-white' 
-                        : 'border-zinc-800 text-zinc-500 hover:text-white'
+                        ? 'bg-zinc-800 text-white' 
+                        : 'text-zinc-500 hover:text-white hover:bg-zinc-900/50'
                     }`}
                   >
-                    ALL ACCESS
+                    ALL
                   </button>
                   {[1, 2, 3, 4].map(tier => {
                     const isAllowed = tier <= userClearance;
@@ -442,12 +445,12 @@ export default function SyndicatePage() {
                       <button
                         key={tier}
                         onClick={() => isAllowed && setFeedFilterTier(tier)}
-                        className={`px-3 py-1 text-xs font-bold transition-all border ${
+                        className={`px-4 py-1.5 text-[10px] rounded-md font-bold transition-all uppercase tracking-widest ${
                           !isAllowed 
-                            ? 'border-zinc-950 text-zinc-800 cursor-not-allowed'
+                            ? 'text-zinc-800 cursor-not-allowed'
                             : feedFilterTier === tier
-                              ? 'border-gold bg-[#0a192f]/20 text-white'
-                              : 'border-zinc-800 text-zinc-500 hover:text-white'
+                              ? 'bg-cyan-500/20 text-cyan-400'
+                              : 'text-zinc-500 hover:text-white hover:bg-zinc-900/50'
                         }`}
                       >
                         T{tier}
@@ -458,11 +461,11 @@ export default function SyndicatePage() {
               </div>
 
               {loadingPosts ? (
-                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-[#d4af37]">
+                <div className="text-cyan-500 animate-pulse font-black uppercase tracking-widest py-16 text-center rounded-2xl bg-black/40 border border-white/5 backdrop-blur-md text-xs">
                   DECRYPTING DATABASE FEED DATA STREAM...
                 </div>
               ) : filteredPosts.length === 0 ? (
-                <div className="text-zinc-500 uppercase tracking-widest border-2 border-dashed border-zinc-850 p-12 text-center">
+                <div className="text-zinc-500 font-bold uppercase tracking-widest rounded-2xl bg-black/40 border border-white/5 p-16 text-center backdrop-blur-md text-xs">
                   NO INTEL LOGGED AT TIER {feedFilterTier !== 'all' ? feedFilterTier : '1-4'}.
                 </div>
               ) : (
@@ -473,43 +476,43 @@ export default function SyndicatePage() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: Math.min(index * 0.05, 0.4) }}
-                      className="border-4 border-black bg-zinc-950 p-6 shadow-[5px_5px_0px_0px_rgba(255,255,255,0.08)] hover:shadow-[5px_5px_0px_0px_rgba(239,68,68,0.3)] transition-all"
+                      className="bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md hover:border-white/10 transition-colors"
                     >
                       {/* Post Header */}
-                      <div className="flex justify-between items-start gap-4 border-b-2 border-zinc-900 pb-4 mb-4">
+                      <div className="flex justify-between items-start gap-4 border-b border-white/5 pb-4 mb-4">
                         <div>
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <div className="flex flex-wrap items-center gap-3 mb-2">
                             {post.title && (
-                              <h3 className="text-lg font-black text-white uppercase tracking-wider">
+                              <h3 className="text-base font-black text-white uppercase tracking-widest">
                                 {post.title}
                               </h3>
                             )}
-                            <Badge className={`text-[9px] font-black tracking-widest border py-0.5 px-2 ${getTierColor(post.tier)}`}>
+                            <span className={`text-[9px] font-bold tracking-widest rounded-full border py-0.5 px-2.5 ${getTierColor(post.tier)}`}>
                               {getTierLabel(post.tier)} REQUIRED
-                            </Badge>
+                            </span>
                           </div>
-                          <div className="text-[10px] text-zinc-500 uppercase">
-                            AGENT: <span className="text-zinc-300 font-bold">{post.author.firstName || "ANONYMOUS"}</span> // ID: <span className="text-zinc-400">{post.author.id.substring(0,8)}</span>
+                          <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
+                            AGENT: <span className="text-white">{post.author.firstName || "ANONYMOUS"}</span> <span className="text-zinc-700 mx-1">|</span> ID: <span className="text-cyan-500/70">{post.author.id.substring(0,8)}</span>
                           </div>
                         </div>
-                        <div className="text-right text-[10px] text-zinc-500">
-                          {new Date(post.createdAt).toLocaleString('nl-NL')}
+                        <div className="text-right text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+                          {new Date(post.createdAt).toLocaleDateString('nl-NL')}
                         </div>
                       </div>
 
                       {/* Content */}
-                      <div className="text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed font-mono py-2 select-text selection:bg-gold selection:text-white">
+                      <div className="text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed py-2 select-text selection:bg-cyan-500/30 selection:text-white">
                         {post.content}
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="flex items-center gap-4 mt-6 pt-4 border-t border-zinc-900">
+                      <div className="flex items-center gap-4 mt-6 pt-4 border-t border-white/5">
                         <button
                           onClick={() => handleToggleLike(post.id)}
-                          className={`flex items-center gap-2 text-xs font-black uppercase px-3 py-1.5 border transition-all ${
+                          className={`flex items-center gap-2 text-[10px] rounded-lg font-black uppercase px-4 py-2 border transition-all tracking-widest ${
                             post.isLiked
-                              ? 'bg-gold border-gold text-black shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
-                              : 'border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 bg-black'
+                              ? 'bg-cyan-500 border-cyan-500 text-black shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                              : 'border-white/10 text-zinc-400 hover:text-white hover:border-white/20 bg-black/50'
                           }`}
                         >
                           <ThumbsUp className="w-3.5 h-3.5" />
@@ -518,10 +521,10 @@ export default function SyndicatePage() {
 
                         <button
                           onClick={() => toggleCommentsExpanded(post.id)}
-                          className={`flex items-center gap-2 text-xs font-black uppercase px-3 py-1.5 border transition-all ${
+                          className={`flex items-center gap-2 text-[10px] rounded-lg font-black uppercase px-4 py-2 border transition-all tracking-widest ${
                             expandedComments[post.id]
                               ? 'bg-zinc-800 border-zinc-700 text-white'
-                              : 'border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 bg-black'
+                              : 'border-white/10 text-zinc-400 hover:text-white hover:border-white/20 bg-black/50'
                           }`}
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
@@ -531,25 +534,25 @@ export default function SyndicatePage() {
 
                       {/* Comments Section */}
                       {expandedComments[post.id] && (
-                        <div className="mt-6 border-t-2 border-zinc-900 pt-6 space-y-4">
-                          <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
-                            DECRYPTED TRANSMISSION FEEDBACK
+                        <div className="mt-6 border-t border-white/5 pt-6 space-y-4">
+                          <h4 className="text-[10px] font-black text-cyan-500 uppercase tracking-widest flex items-center gap-2">
+                            <Zap className="w-3 h-3" /> DECRYPTED TRANSMISSION FEEDBACK
                           </h4>
 
                           {/* List comments */}
                           <div className="space-y-3">
                             {post.comments.length === 0 ? (
-                              <p className="text-xs text-zinc-600 uppercase italic">No transmission responses recorded.</p>
+                              <p className="text-[10px] text-zinc-600 uppercase font-bold tracking-widest">No transmission responses recorded.</p>
                             ) : (
                               post.comments.map((comment: any) => (
-                                <div key={comment.id} className="bg-black/60 p-3 border border-zinc-900 text-xs">
-                                  <div className="flex justify-between items-center text-[9px] text-zinc-500 mb-1 border-b border-zinc-950 pb-1">
-                                    <span className="font-bold text-zinc-400 uppercase">
+                                <div key={comment.id} className="bg-black/50 p-4 rounded-xl border border-white/5 text-xs">
+                                  <div className="flex justify-between items-center text-[9px] text-zinc-500 mb-2 border-b border-white/5 pb-2">
+                                    <span className="font-bold text-zinc-300 uppercase tracking-widest">
                                       AGENT: {comment.author.firstName}
                                     </span>
-                                    <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                                    <span className="tracking-widest">{new Date(comment.createdAt).toLocaleString()}</span>
                                   </div>
-                                  <p className="text-zinc-300 font-mono leading-relaxed">{comment.content}</p>
+                                  <p className="text-zinc-400 leading-relaxed">{comment.content}</p>
                                 </div>
                               ))
                             )}
@@ -558,22 +561,22 @@ export default function SyndicatePage() {
                           {/* Add comment Form */}
                           <form 
                             onSubmit={(e) => handleAddComment(post.id, e)}
-                            className="flex items-center gap-2 mt-4"
+                            className="flex items-center gap-3 mt-4"
                           >
                             <Input
                               value={commentInputs[post.id] || ''}
                               onChange={e => setCommentInputs(prev => ({ ...prev, [post.id]: e.target.value }))}
                               placeholder="Type secured reply..."
-                              className="bg-black border-2 border-zinc-800 rounded-none text-xs focus:border-gold text-white font-mono h-9"
+                              className="bg-black border border-white/10 rounded-xl text-xs focus:border-cyan-500/50 text-white h-11 px-4 flex-1"
                               disabled={submittingComment[post.id]}
                             />
                             <Button 
                               type="submit" 
                               disabled={submittingComment[post.id] || !commentInputs[post.id]?.trim()}
-                              className="bg-white hover:bg-zinc-200 text-black rounded-none border-2 border-black h-9 px-4 font-black flex items-center gap-1.5"
+                              className="bg-white hover:bg-zinc-200 text-black rounded-xl border-none h-11 px-6 font-black flex items-center gap-2 transition-colors disabled:opacity-40"
                             >
-                              <Send className="w-3 h-3" />
-                              <span className="text-xs uppercase font-black">SEND</span>
+                              <Send className="w-4 h-4" />
+                              <span className="text-[10px] uppercase tracking-widest">SEND</span>
                             </Button>
                           </form>
                         </div>
@@ -596,13 +599,13 @@ export default function SyndicatePage() {
           >
             {/* Left Col: Create Campaign */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="border-4 border-black bg-black p-6 shadow-[6px_6px_0px_0px_#ffffff]">
-                <h2 className="text-xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b-2 border-zinc-900 pb-3">
-                  <Target className="w-5 h-5 text-gold" /> INITIATE CAMPAIGN
+              <div className="bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md">
+                <h2 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-white/5 pb-4">
+                  <Target className="w-4 h-4 text-cyan-500" /> INITIATE CAMPAIGN
                 </h2>
-                <form onSubmit={handleCreateCampaign} className="space-y-4">
+                <form onSubmit={handleCreateCampaign} className="space-y-5">
                   <div>
-                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold block mb-1">
+                    <label className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold block mb-2">
                       CAMPAIGN NAME (e.g., NON-PAYERS DEBT Q2)
                     </label>
                     <Input 
@@ -610,24 +613,24 @@ export default function SyndicatePage() {
                       onChange={e => setNewCampaignName(e.target.value)}
                       placeholder="Campaign name..."
                       required
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold font-mono"
+                      className="bg-zinc-950 border border-white/10 rounded-xl text-white focus:border-cyan-500/50 h-12 px-4"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold block mb-1">
+                    <label className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold block mb-2">
                       DESCRIPTION / INTERNAL MEMO
                     </label>
                     <Input 
                       value={newCampaignDesc}
                       onChange={e => setNewCampaignDesc(e.target.value)}
                       placeholder="Notes and briefing..."
-                      className="bg-zinc-950 border-2 border-zinc-800 rounded-none text-white focus:border-gold font-mono"
+                      className="bg-zinc-950 border border-white/10 rounded-xl text-white focus:border-cyan-500/50 h-12 px-4"
                     />
                   </div>
                   <Button 
                     type="submit" 
                     disabled={isCreatingCampaign}
-                    className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest rounded-none border-2 border-black py-5 shadow-[4px_4px_0px_0px_#ef4444]"
+                    className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest rounded-xl py-4 transition-colors disabled:opacity-40"
                   >
                     {isCreatingCampaign ? 'GENERATING...' : 'INITIALIZE PROTOCOL'}
                   </Button>
@@ -638,70 +641,70 @@ export default function SyndicatePage() {
             {/* Right Col: Active Campaigns */}
             <div className="lg:col-span-2 space-y-6">
               {loadingCampaigns ? (
-                <div className="text-gold animate-pulse font-black uppercase tracking-widest py-12 text-center border-2 border-dashed border-[#d4af37]">
+                <div className="text-cyan-500 animate-pulse font-black uppercase tracking-widest py-16 text-center rounded-2xl bg-black/40 border border-white/5 backdrop-blur-md text-xs">
                   DECRYPTING ACTIVE CAMPAIGN RECORDS...
                 </div>
               ) : campaigns.length === 0 ? (
-                <div className="text-zinc-500 uppercase tracking-widest border-2 border-dashed border-zinc-850 p-12 text-center">
+                <div className="text-zinc-500 font-bold uppercase tracking-widest rounded-2xl bg-black/40 border border-white/5 p-16 text-center backdrop-blur-md text-xs">
                   NO ACTIVE PROXY EMAIL CAMPAIGNS REGISTERED.
                 </div>
               ) : (
                 campaigns.map(camp => (
                   <div 
                     key={camp.id} 
-                    className="border-4 border-black bg-zinc-950 p-6 shadow-[5px_5px_0px_0px_rgba(255,255,255,0.08)] relative overflow-hidden"
+                    className="bg-black/40 border border-white/5 rounded-2xl p-6 backdrop-blur-md hover:border-white/10 transition-colors"
                   >
-                    <div className="flex justify-between items-start mb-6 border-b-2 border-zinc-900 pb-4">
+                    <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-5">
                       <div>
-                        <h3 className="text-2xl font-black text-white uppercase tracking-widest">{camp.name}</h3>
-                        <p className="text-xs text-zinc-500 mt-1 uppercase">{camp.description || 'NO ADDITIONAL DATA ENTERED'}</p>
+                        <h3 className="text-xl font-black text-white uppercase tracking-widest">{camp.name}</h3>
+                        <p className="text-[10px] text-zinc-500 mt-2 uppercase tracking-widest font-bold">{camp.description || 'NO ADDITIONAL DATA ENTERED'}</p>
                       </div>
                       <div className="text-right">
-                        <Badge className={`px-2 py-0.5 text-xs font-black uppercase border rounded-none ${
+                        <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest border rounded-full ${
                           camp.status === 'ACTIVE' 
-                            ? 'border-gold bg-[#0a192f]/20 text-goldLight' 
-                            : 'border-zinc-800 text-zinc-400 bg-black'
+                            ? 'border-cyan-500/50 bg-cyan-950/20 text-cyan-400' 
+                            : 'border-white/10 text-zinc-500 bg-black/50'
                         }`}>
                           {camp.status}
-                        </Badge>
-                        <p className="text-[10px] text-zinc-500 mt-2 uppercase tracking-widest">DISPATCHED: {camp.totalSent} MAILS</p>
+                        </span>
+                        <p className="text-[9px] text-zinc-600 mt-3 uppercase tracking-widest font-bold">DISPATCHED: <span className="text-white">{camp.totalSent}</span> MAILS</p>
                       </div>
                     </div>
 
                     <div className="space-y-4 mb-6">
-                      <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                        <Target className="w-4 h-4 text-gold" /> SYSTEM TARGETS ({camp.targets.length})
+                      <h4 className="text-[10px] font-black text-cyan-500 uppercase tracking-widest flex items-center gap-2">
+                        <Target className="w-3.5 h-3.5" /> SYSTEM TARGETS ({camp.targets.length})
                       </h4>
                       {camp.targets.length === 0 && (
-                        <p className="text-xs text-zinc-600 uppercase italic">No proxy email targets added yet.</p>
+                        <p className="text-[10px] text-zinc-600 uppercase font-bold tracking-widest">No proxy email targets added yet.</p>
                       )}
                       
                       {camp.targets.length > 0 && (
-                        <div className="overflow-x-auto border border-zinc-900">
-                          <table className="w-full text-left text-xs text-zinc-400 font-mono">
+                        <div className="overflow-x-auto rounded-xl border border-white/5">
+                          <table className="w-full text-left text-xs text-zinc-400">
                             <thead>
-                              <tr className="border-b-2 border-zinc-950 bg-black uppercase tracking-widest text-[9px]">
-                                <th className="p-3">NAME / TARGET ORG</th>
-                                <th className="p-3">EMAIL ADDRESS</th>
-                                <th className="p-3">DEBT VALUE</th>
-                                <th className="p-3 text-right">STATUS</th>
+                              <tr className="border-b border-white/5 bg-black/60 uppercase tracking-widest text-[9px] font-bold">
+                                <th className="p-4 text-zinc-500">NAME / TARGET ORG</th>
+                                <th className="p-4 text-zinc-500">EMAIL ADDRESS</th>
+                                <th className="p-4 text-zinc-500">DEBT VALUE</th>
+                                <th className="p-4 text-right text-zinc-500">STATUS</th>
                               </tr>
                             </thead>
                             <tbody>
                               {camp.targets.map((t: any) => (
-                                <tr key={t.id} className="border-b border-zinc-950 bg-black/30 hover:bg-zinc-900/20">
-                                  <td className="p-3 text-white font-bold">
-                                    {t.name} <span className="text-zinc-650 font-normal">({t.company || 'n/v/t'})</span>
+                                <tr key={t.id} className="border-b border-white/5 bg-black/20 hover:bg-white/5 transition-colors">
+                                  <td className="p-4 text-white font-medium">
+                                    {t.name} <span className="text-zinc-600 text-[10px] ml-1">({t.company || 'n/v/t'})</span>
                                   </td>
-                                  <td className="p-3 text-goldLight">{t.email}</td>
-                                  <td className="p-3 font-mono">€{t.debtAmount?.toFixed(2) || '0.00'}</td>
-                                  <td className="p-3 text-right">
+                                  <td className="p-4 text-cyan-400/80">{t.email}</td>
+                                  <td className="p-4 font-medium text-white">€{t.debtAmount?.toFixed(2) || '0.00'}</td>
+                                  <td className="p-4 text-right">
                                     {t.status === 'SENT' ? (
-                                      <span className="inline-flex items-center gap-1 text-gold font-black tracking-widest text-[9px] bg-[#0a192f]/20 px-2 py-0.5 border border-[#d4af37]">
+                                      <span className="inline-flex items-center gap-1.5 text-emerald-400 font-bold tracking-widest text-[9px] bg-emerald-950/20 px-2.5 py-1 rounded-md border border-emerald-500/30">
                                         <CheckCircle2 className="w-3 h-3"/> DISPATCHED
                                       </span>
                                     ) : (
-                                      <span className="text-zinc-600 font-bold text-[9px]">PENDING LAUNCH</span>
+                                      <span className="text-zinc-600 font-bold tracking-widest text-[9px] uppercase">PENDING LAUNCH</span>
                                     )}
                                   </td>
                                 </tr>
@@ -713,14 +716,14 @@ export default function SyndicatePage() {
                     </div>
 
                     {/* Add Target Form */}
-                    <div className="bg-black p-4 border border-zinc-900 mb-6">
-                      <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-3 font-bold">ADD NEW TARGET TO THIS PROTOCOL</div>
+                    <div className="bg-black/40 p-5 rounded-xl border border-white/5 mb-6">
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-widest mb-4 font-bold">ADD NEW TARGET TO THIS PROTOCOL</div>
                       <form onSubmit={(e) => handleAddTarget(e, camp.id)} className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                        <Input value={targetName} onChange={e=>setTargetName(e.target.value)} placeholder="Full Name" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
-                        <Input value={targetEmail} onChange={e=>setTargetEmail(e.target.value)} type="email" placeholder="Email" required className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
-                        <Input value={targetCompany} onChange={e=>setTargetCompany(e.target.value)} placeholder="Company (opt)" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
-                        <Input value={targetDebt} onChange={e=>setTargetDebt(e.target.value)} type="number" placeholder="Debt Value €" className="h-9 text-xs bg-zinc-950 border-zinc-800 rounded-none text-white focus:border-gold font-mono"/>
-                        <Button type="submit" disabled={addingToCampaign === camp.id} className="h-9 bg-white hover:bg-zinc-200 text-black font-black uppercase text-xs rounded-none border border-black">+</Button>
+                        <Input value={targetName} onChange={e=>setTargetName(e.target.value)} placeholder="Full Name" required className="h-10 text-xs bg-zinc-950 border-white/10 rounded-lg text-white focus:border-cyan-500/50 px-3"/>
+                        <Input value={targetEmail} onChange={e=>setTargetEmail(e.target.value)} type="email" placeholder="Email" required className="h-10 text-xs bg-zinc-950 border-white/10 rounded-lg text-white focus:border-cyan-500/50 px-3"/>
+                        <Input value={targetCompany} onChange={e=>setTargetCompany(e.target.value)} placeholder="Company (opt)" className="h-10 text-xs bg-zinc-950 border-white/10 rounded-lg text-white focus:border-cyan-500/50 px-3"/>
+                        <Input value={targetDebt} onChange={e=>setTargetDebt(e.target.value)} type="number" placeholder="Debt Value €" className="h-10 text-xs bg-zinc-950 border-white/10 rounded-lg text-white focus:border-cyan-500/50 px-3"/>
+                        <Button type="submit" disabled={addingToCampaign === camp.id} className="h-10 bg-white hover:bg-zinc-200 text-black font-black uppercase text-xs rounded-lg border-none transition-colors">+</Button>
                       </form>
                     </div>
 
@@ -728,15 +731,15 @@ export default function SyndicatePage() {
                     <Button 
                       onClick={() => handleLaunch(camp.id)}
                       disabled={launchingId === camp.id || camp.targets.filter((t:any) => t.status !== 'SENT').length === 0}
-                      className="w-full bg-[#0a192f] hover:bg-gold text-black font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(220,38,38,0.2)] hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all rounded-none border-2 border-black py-6 text-sm"
+                      className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all rounded-xl border-none py-4 text-xs disabled:opacity-40 disabled:shadow-none"
                     >
                       {launchingId === camp.id ? (
-                        <span className="flex items-center justify-center gap-2 animate-pulse">
-                          <Zap className="w-5 h-5 text-black" /> DISPATCHING EMAILS VIA SECURITY MASK...
+                        <span className="flex items-center justify-center gap-3 animate-pulse">
+                          <Zap className="w-4 h-4" /> DISPATCHING EMAILS VIA SECURITY MASK...
                         </span>
                       ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          <Zap className="w-5 h-5 text-black" /> LAUNCH ATTACK PROTOCOL
+                        <span className="flex items-center justify-center gap-3">
+                          <Zap className="w-4 h-4" /> LAUNCH ATTACK PROTOCOL
                         </span>
                       )}
                     </Button>
@@ -750,4 +753,3 @@ export default function SyndicatePage() {
     </motion.div>
   );
 }
-

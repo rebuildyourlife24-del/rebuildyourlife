@@ -18,7 +18,8 @@ import {
   Eye, 
   EyeOff, 
   Cpu, 
-  Skull
+  Skull,
+  Crosshair
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
@@ -118,9 +119,9 @@ export default function TradingDashboard() {
               const execType = r.execution === 'REAL_EXCHANGE' ? 'LIVE ORDER' : 'LIVE TICKER';
               return `[${time}] [${execType}] Bot [${r.userEmail}] opent ${r.type} ${r.symbol} op ${r.entryPrice.toFixed(2)} met ${r.leverage}x leverage`;
             } else if (r.action === 'CLOSED_HENK_TRADE') {
-              return `[${time}] GOD BOT (Henk) sluit trade ${r.symbol}: +${formatEur(r.pnlAmount)} (${r.pnlPercentage.toFixed(2)}%)`;
+              return `[${time}] OVERSEER (Henk) sluit trade ${r.symbol}: +${formatEur(r.pnlAmount)} (${r.pnlPercentage.toFixed(2)}%)`;
             } else if (r.action === 'OPENED_HENK_TRADE') {
-              return `[${time}] GOD BOT (Henk) opent 10x trade op ${r.symbol}`;
+              return `[${time}] OVERSEER (Henk) opent 10x trade op ${r.symbol}`;
             } else if (r.action === 'ERROR') {
               return `[${time}] ⚠️ EXECUTIE FOUT: ${r.error}`;
             }
@@ -206,10 +207,10 @@ export default function TradingDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-[60vh] items-center justify-center bg-black">
+      <div className="flex h-[60vh] items-center justify-center bg-transparent">
         <div className="flex flex-col items-center gap-4">
-          <RefreshCw className="h-8 w-8 animate-spin text-white" />
-          <p className="font-mono text-xs uppercase tracking-widest text-zinc-500">Connecting to Trading Floor...</p>
+          <RefreshCw className="h-8 w-8 animate-spin text-cyan-500" />
+          <p className="font-sans text-xs font-bold uppercase tracking-widest text-cyan-400">Connecting to Alpha Network...</p>
         </div>
       </div>
     );
@@ -243,38 +244,44 @@ export default function TradingDashboard() {
   ];
 
   return (
-    <div className="space-y-8 pb-20 max-w-7xl mx-auto px-4 select-none">
+    <div className="space-y-8 pb-20 max-w-7xl mx-auto px-4 select-none relative z-10 font-sans min-h-[85vh]">
       
-      {/* -------------------- HEADER: BRUTALIST STYLE -------------------- */}
-      <div className="border-4 border-white bg-black p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+      {/* Background glow */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
+      {/* -------------------- HEADER: FUTURE BLUE STYLE -------------------- */}
+      <div className="bg-black/40 border border-white/5 rounded-2xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)] backdrop-blur-xl">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase font-sans">
-              Alpha Engine
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-widest uppercase flex items-center gap-4">
+              ALPHA ENGINE <Cpu className="w-8 h-8 text-cyan-400" />
             </h1>
-            <span className="bg-white text-black text-xs font-mono font-bold px-2 py-0.5 uppercase tracking-widest border border-white">
+            <span className="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-cyan-500/30">
               V1.20
             </span>
           </div>
-          <p className="text-zinc-400 font-mono text-xs uppercase tracking-widest mt-2 flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-zinc-300" />
+          <p className="text-cyan-400/60 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
             100% Real Live Trading Engine // Bybit & Binance API Integration
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <div className={`border-2 font-mono text-xs font-bold uppercase tracking-widest px-4 py-2 flex items-center gap-3 ${bot?.status === 'TRADING' ? 'bg-white text-black border-white' : 'bg-black text-zinc-500 border-zinc-800'}`}>
-            <span className={`w-2.5 h-2.5 ${bot?.status === 'TRADING' ? 'bg-black animate-pulse' : 'bg-zinc-800'} rounded-none`} />
+          <div className={`border font-bold text-xs uppercase tracking-widest px-5 py-3 rounded-xl flex items-center gap-3 transition-colors ${
+            bot?.status === 'TRADING' 
+              ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
+              : 'bg-zinc-950 text-zinc-500 border-white/5'
+          }`}>
+            <span className={`w-2.5 h-2.5 rounded-full ${bot?.status === 'TRADING' ? 'bg-cyan-400 animate-pulse' : 'bg-zinc-700'}`} />
             System: {bot?.status === 'TRADING' ? 'RUNNING' : 'IDLE'}
           </div>
 
           <button
             onClick={handleToggleBot}
             disabled={toggling}
-            className={`px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest border-2 transition-all ${
+            className={`px-8 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
               bot?.status === 'TRADING'
-                ? 'bg-black border-white text-white hover:bg-white hover:text-black shadow-[4px_4px_0px_#ffffff] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_#ffffff]'
-                : 'bg-white border-white text-black hover:bg-black hover:text-white shadow-[4px_4px_0px_rgba(255,255,255,0.2)] active:translate-x-1 active:translate-y-1'
+                ? 'bg-white text-black hover:bg-zinc-200 shadow-lg'
+                : 'bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(6,182,212,0.2)]'
             }`}
           >
             {toggling ? 'PROCCESSING...' : bot?.status === 'TRADING' ? 'EMERGENCY STOP' : 'ACTIVATE ENGINE'}
@@ -284,11 +291,11 @@ export default function TradingDashboard() {
 
       {/* -------------------- LIVE API CONNECTIVITY ERROR -------------------- */}
       {liveError && (
-        <div className="border-4 border-gold bg-[#0a192f]/20 text-white p-4 font-mono text-xs uppercase tracking-wider flex items-center gap-3 shadow-[8px_8px_0px_0px_#ef4444]">
-          <ShieldAlert className="w-6 h-6 text-gold flex-shrink-0 animate-bounce" />
+        <div className="border border-red-500/30 bg-red-950/20 rounded-xl p-4 text-xs font-bold uppercase tracking-wider flex items-center gap-3 text-red-400">
+          <ShieldAlert className="w-6 h-6 flex-shrink-0 animate-bounce" />
           <div>
-            <span className="font-bold block text-gold mb-1">EXCHANGE CONNECTIVITY ERROR:</span>
-            <span>{liveError}. Please verify your API key, secret, and IP restrictions on the exchange.</span>
+            <span className="block mb-1">EXCHANGE CONNECTIVITY ERROR:</span>
+            <span className="text-[10px] text-red-400/80">{liveError}. Please verify your API key, secret, and IP restrictions on the exchange.</span>
           </div>
         </div>
       )}
@@ -297,57 +304,57 @@ export default function TradingDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Cumulative PNL */}
-        <div className="border-4 border-white bg-black p-6 relative overflow-hidden shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] flex flex-col justify-between min-h-[160px]">
+        <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg flex flex-col justify-between min-h-[160px] group hover:border-white/10 transition-colors">
           <div>
-            <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest block mb-1">CUMULATIVE PROFIT / LOSS</span>
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">CUMULATIVE PROFIT / LOSS</span>
             <div className="flex items-baseline gap-2">
-              <span className={`text-4xl md:text-5xl font-black font-sans tracking-tight ${bot?.currentPnl >= 0 ? 'text-white' : 'text-zinc-500'}`}>
+              <span className={`text-4xl md:text-5xl font-black tracking-tight ${bot?.currentPnl >= 0 ? 'text-white' : 'text-zinc-500'}`}>
                 {bot?.currentPnl >= 0 ? '+' : ''}{formatEur(bot?.currentPnl || 0)}
               </span>
             </div>
           </div>
-          <div className="flex justify-between items-center border-t border-zinc-800 pt-4 mt-4 font-mono text-[10px] text-zinc-500">
+          <div className="flex justify-between items-center border-t border-white/5 pt-5 mt-5 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
             <span>ROE: {((bot?.currentPnl / (bot?.allocatedFunds || 1)) * 100).toFixed(2)}%</span>
-            <span>SYSTEM LAUNCHED: 24/06/2026</span>
+            <span>LAUNCHED: 24/06/2026</span>
           </div>
         </div>
 
         {/* Allocated Funds */}
-        <div className="border-4 border-white bg-black p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] flex flex-col justify-between min-h-[160px]">
+        <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg flex flex-col justify-between min-h-[160px] group hover:border-white/10 transition-colors">
           <div>
-            <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest block mb-1">ALLOCATED CAPITAL</span>
-            <span className="text-4xl md:text-5xl font-black font-sans tracking-tight text-white">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">ALLOCATED CAPITAL</span>
+            <span className="text-4xl md:text-5xl font-black tracking-tight text-white">
               {formatEur(bot?.allocatedFunds || 0)}
             </span>
           </div>
-          <div className="flex justify-between items-center border-t border-zinc-800 pt-4 mt-4 font-mono text-[10px] text-zinc-500">
+          <div className="flex justify-between items-center border-t border-white/5 pt-5 mt-5 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
             <span>EXCHANGE: {bot?.exchange || 'BYBIT_TESTNET'}</span>
-            <span>LEVERAGE: {bot?.mode === 'APEX_AGGRESSIVE' ? 'MAX 20X' : 'MAX 3X'}</span>
+            <span className="text-cyan-400">LEVERAGE: {bot?.mode === 'APEX_AGGRESSIVE' ? 'MAX 20X' : 'MAX 3X'}</span>
           </div>
         </div>
 
         {/* Risk Profile & Control */}
-        <div className="border-4 border-white bg-black p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] flex flex-col justify-between min-h-[160px]">
+        <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg flex flex-col justify-between min-h-[160px] group hover:border-white/10 transition-colors">
           <div>
-            <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest block mb-2">RISK CONFIGURATION</span>
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-3">RISK CONFIGURATION</span>
             
-            <div className="grid grid-cols-2 gap-2 border border-zinc-800 p-1 bg-zinc-950">
+            <div className="grid grid-cols-2 gap-2 bg-black/50 p-1.5 rounded-xl border border-white/5">
               <button
                 onClick={() => handleModeChange('CONSERVATIVE')}
-                className={`py-2 text-center font-mono text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`py-2.5 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest transition-all ${
                   bot?.mode === 'CONSERVATIVE'
-                    ? 'bg-white text-black'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'
+                    : 'text-zinc-500 hover:text-white hover:bg-zinc-900'
                 }`}
               >
                 Conservative
               </button>
               <button
                 onClick={() => handleModeChange('APEX_AGGRESSIVE')}
-                className={`py-2 text-center font-mono text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`py-2.5 rounded-lg text-center text-[10px] font-bold uppercase tracking-widest transition-all ${
                   bot?.mode === 'APEX_AGGRESSIVE'
-                    ? 'bg-white text-black'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'
+                    : 'text-zinc-500 hover:text-white hover:bg-zinc-900'
                 }`}
               >
                 APEX Mode
@@ -355,7 +362,7 @@ export default function TradingDashboard() {
             </div>
           </div>
 
-          <div className="text-[10px] font-mono text-zinc-500 mt-3 leading-relaxed">
+          <div className="text-[9px] font-bold text-zinc-500 mt-4 leading-relaxed uppercase tracking-widest">
             {bot?.mode === 'APEX_AGGRESSIVE' 
               ? 'WARNING: Agressieve leverage (5-20x), verhoogde volatiliteit. AI jaagt op micro-schommelingen.'
               : 'NORMAL: Defensieve opzet (1-3x leverage). Kapitaalbehoud en stabiele stablecoin yield.'}
@@ -369,34 +376,40 @@ export default function TradingDashboard() {
         
         {/* Real-time Graph (Left Column - 2/3 wide) */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="border-4 border-white bg-black p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-black uppercase tracking-widest text-white">PNL Performance Timeline</h2>
-              <span className="font-mono text-xs text-zinc-400">MONOCHROME RENDER</span>
+          <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg group hover:border-white/10 transition-colors">
+            <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+              <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
+                <Activity className="w-4 h-4 text-cyan-500" />
+                PNL Performance Timeline
+              </h2>
+              <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30 font-bold tracking-widest animate-pulse">
+                LIVE RENDER
+              </span>
             </div>
 
-            <div className="h-[300px] w-full bg-zinc-950/50 border border-zinc-800 p-2 font-mono">
+            <div className="h-[350px] w-full bg-zinc-950/50 border border-white/5 rounded-xl p-4 font-mono">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={displayChartData} margin={{ top: 20, right: 10, left: -10, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="pnlGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                    <linearGradient id="pnlGradientFuture" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="name" stroke="#52525b" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#52525b" fontSize={10} tickLine={false} />
+                  <XAxis dataKey="name" stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#000000', borderColor: '#ffffff', color: '#ffffff', borderRadius: 0, fontFamily: 'monospace' }}
-                    labelStyle={{ fontWeight: 'bold' }}
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', color: '#06b6d4', borderRadius: '12px', fontFamily: 'monospace', fontSize: '12px' }}
+                    labelStyle={{ color: '#a1a1aa' }}
+                    itemStyle={{ color: '#06b6d4' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="pnl" 
-                    stroke="#ffffff" 
-                    strokeWidth={2} 
+                    stroke="#06b6d4" 
+                    strokeWidth={3} 
                     fillOpacity={1} 
-                    fill="url(#pnlGradient)" 
+                    fill="url(#pnlGradientFuture)" 
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -404,41 +417,41 @@ export default function TradingDashboard() {
           </div>
 
           {/* Active Positions */}
-          <div className="border-4 border-white bg-black p-0 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
-            <div className="p-4 border-b-2 border-white flex justify-between items-center bg-zinc-950">
+          <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-md shadow-lg">
+            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/40">
               <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
-                <Layers className="w-4 h-4" />
+                <Layers className="w-4 h-4 text-cyan-500" />
                 Active Market Exposures
               </h3>
-              <Badge variant="outline" className="border-white text-white font-mono rounded-none">
+              <Badge variant="outline" className="border-white/10 text-zinc-400 text-[10px] uppercase font-bold tracking-widest rounded-full px-3">
                 {bot?.trades?.filter((t: any) => t.status === 'OPEN').length} POSITION(S)
               </Badge>
             </div>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse font-mono text-xs">
+              <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-widest text-[9px]">
-                    <th className="p-4 font-normal">Asset Pair</th>
-                    <th className="p-4 font-normal">Type / Leverage</th>
-                    <th className="p-4 font-normal text-right">Entry Price</th>
-                    <th className="p-4 font-normal text-right">Target Duration</th>
-                    <th className="p-4 font-normal text-right">Status</th>
+                  <tr className="bg-black/60 border-b border-white/5 text-zinc-500 uppercase tracking-widest text-[9px] font-bold">
+                    <th className="p-5">Asset Pair</th>
+                    <th className="p-5">Type / Leverage</th>
+                    <th className="p-5 text-right">Entry Price</th>
+                    <th className="p-5 text-right">Target Duration</th>
+                    <th className="p-5 text-right">Status</th>
                   </tr>
                 </thead>
                 <tbody className="text-zinc-300">
                   {bot?.trades?.filter((t: any) => t.status === 'OPEN').map((trade: any) => (
-                    <tr key={trade.id} className="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
-                      <td className="p-4 font-bold text-white">{trade.symbol}</td>
-                      <td className="p-4">
-                        <span className="bg-white text-black px-2 py-0.5 font-bold uppercase text-[10px]">
+                    <tr key={trade.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="p-5 font-bold text-white">{trade.symbol}</td>
+                      <td className="p-5">
+                        <span className="bg-cyan-950/30 border border-cyan-500/30 text-cyan-400 rounded-md px-2.5 py-1 font-bold uppercase text-[9px] tracking-widest">
                           {trade.type} {trade.leverage}x
                         </span>
                       </td>
-                      <td className="p-4 text-right text-white font-bold">{trade.entryPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</td>
-                      <td className="p-4 text-right text-zinc-500">EXCHANGE ORDER</td>
-                      <td className="p-4 text-right">
-                        <span className="text-white border border-white px-2 py-0.5 text-[9px] uppercase font-bold animate-pulse">
+                      <td className="p-5 text-right text-white font-medium">{trade.entryPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</td>
+                      <td className="p-5 text-right text-zinc-500 font-bold uppercase text-[9px] tracking-widest">EXCHANGE ORDER</td>
+                      <td className="p-5 text-right">
+                        <span className="inline-flex items-center gap-1.5 text-emerald-400 font-bold tracking-widest text-[9px] bg-emerald-950/20 px-2.5 py-1 rounded-md border border-emerald-500/30 uppercase animate-pulse">
                           EXECUTING
                         </span>
                       </td>
@@ -446,7 +459,7 @@ export default function TradingDashboard() {
                   ))}
                   {bot?.trades?.filter((t: any) => t.status === 'OPEN').length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-zinc-600 uppercase tracking-widest">
+                      <td colSpan={5} className="p-8 text-center text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
                         NO ACTIVE EXCHANGES POSITIONS. BOT IS MONITORING BYBIT TICKERS.
                       </td>
                     </tr>
@@ -457,46 +470,47 @@ export default function TradingDashboard() {
           </div>
 
           {/* Trade Ledger */}
-          <div className="border-4 border-white bg-black p-0 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
-            <div className="p-4 border-b-2 border-white flex justify-between items-center bg-zinc-950">
-              <h3 className="text-sm font-black uppercase tracking-widest text-white">
+          <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-md shadow-lg">
+            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/40">
+              <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
+                <Crosshair className="w-4 h-4 text-cyan-500" />
                 Audited Trade Ledger
               </h3>
-              <span className="font-mono text-xs text-zinc-500">LAST 10 TRADES</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">LAST 10 TRADES</span>
             </div>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse font-mono text-xs">
+              <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-widest text-[9px]">
-                    <th className="p-4 font-normal">Execution Time</th>
-                    <th className="p-4 font-normal">Asset</th>
-                    <th className="p-4 font-normal">Side</th>
-                    <th className="p-4 font-normal text-right">Entry</th>
-                    <th className="p-4 font-normal text-right">Exit</th>
-                    <th className="p-4 font-normal text-right">PnL Amount</th>
-                    <th className="p-4 font-normal text-right">PnL %</th>
+                  <tr className="bg-black/60 border-b border-white/5 text-zinc-500 uppercase tracking-widest text-[9px] font-bold">
+                    <th className="p-5">Execution Time</th>
+                    <th className="p-5">Asset</th>
+                    <th className="p-5">Side</th>
+                    <th className="p-5 text-right">Entry</th>
+                    <th className="p-5 text-right">Exit</th>
+                    <th className="p-5 text-right">PnL Amount</th>
+                    <th className="p-5 text-right">PnL %</th>
                   </tr>
                 </thead>
                 <tbody className="text-zinc-300">
                   {closedTrades.slice(0, 10).map((trade: any) => (
-                    <tr key={trade.id} className="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
-                      <td className="p-4 text-zinc-500">{new Date(trade.closedAt || trade.openedAt).toLocaleTimeString()}</td>
-                      <td className="p-4 font-bold text-white">{trade.symbol}</td>
-                      <td className="p-4 text-zinc-400">{trade.type} {trade.leverage}x</td>
-                      <td className="p-4 text-right">{trade.entryPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2 })}</td>
-                      <td className="p-4 text-right">{trade.exitPrice?.toLocaleString('nl-NL', { minimumFractionDigits: 2 }) || '-'}</td>
-                      <td className={`p-4 text-right font-bold ${trade.pnlAmount >= 0 ? 'text-white' : 'text-zinc-600'}`}>
+                    <tr key={trade.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="p-5 text-zinc-500 font-medium">{new Date(trade.closedAt || trade.openedAt).toLocaleTimeString()}</td>
+                      <td className="p-5 font-bold text-white">{trade.symbol}</td>
+                      <td className="p-5 text-zinc-400 font-medium">{trade.type} {trade.leverage}x</td>
+                      <td className="p-5 text-right text-zinc-300">{trade.entryPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2 })}</td>
+                      <td className="p-5 text-right text-zinc-300">{trade.exitPrice?.toLocaleString('nl-NL', { minimumFractionDigits: 2 }) || '-'}</td>
+                      <td className={`p-5 text-right font-bold ${trade.pnlAmount >= 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
                         {trade.pnlAmount >= 0 ? '+' : ''}{formatEur(trade.pnlAmount)}
                       </td>
-                      <td className={`p-4 text-right font-bold ${trade.pnlAmount >= 0 ? 'text-white' : 'text-zinc-600'}`}>
+                      <td className={`p-5 text-right font-bold ${trade.pnlAmount >= 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
                         {trade.pnlAmount >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(2)}%
                       </td>
                     </tr>
                   ))}
                   {closedTrades.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="p-8 text-center text-zinc-600 uppercase tracking-widest">
+                      <td colSpan={7} className="p-8 text-center text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
                         NO SETTLED EXCHANGES TRANSACTIONS YET.
                       </td>
                     </tr>
@@ -512,22 +526,22 @@ export default function TradingDashboard() {
         <div className="space-y-8">
           
           {/* Simulation Command Center */}
-          <div className="border-4 border-white bg-black p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-            <h3 className="text-lg font-black uppercase tracking-widest text-white mb-4 flex items-center gap-2">
-              <Zap className="w-5 h-5" />
+          <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white mb-6 flex items-center gap-2 border-b border-white/5 pb-4">
+              <Zap className="w-4 h-4 text-cyan-500" />
               Engine Simulation
             </h3>
             
-            <p className="text-zinc-400 font-mono text-xs leading-relaxed mb-6">
+            <p className="text-zinc-400 text-[11px] leading-relaxed mb-6 font-medium">
               De API endpoints kunnen direct vanuit deze War Room gesimuleerd worden. Trigger willekeurige marktbewegingen of activeer automatische realtime ticks.
             </p>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between border border-zinc-800 p-3 bg-zinc-950 font-mono text-xs">
-                <span className="text-zinc-400 uppercase">Auto-tick (6s):</span>
+              <div className="flex items-center justify-between border border-white/5 p-4 bg-zinc-950/50 rounded-xl">
+                <span className="text-zinc-400 font-bold uppercase tracking-widest text-[10px]">Auto-tick (6s)</span>
                 <button
                   onClick={() => setAutoSimulate(!autoSimulate)}
-                  className={`px-3 py-1 font-bold border uppercase text-[10px] ${autoSimulate ? 'bg-white text-black border-white' : 'bg-black text-zinc-500 border-zinc-800'}`}
+                  className={`px-4 py-2 font-bold rounded-lg uppercase text-[10px] transition-colors tracking-widest ${autoSimulate ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-black text-zinc-500 border border-white/10'}`}
                 >
                   {autoSimulate ? 'ACTIVE' : 'PAUSED'}
                 </button>
@@ -536,69 +550,72 @@ export default function TradingDashboard() {
               <button
                 onClick={triggerSimulation}
                 disabled={simulating}
-                className="w-full py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest border border-white hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_#ffffff] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                className="w-full py-4 bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-widest rounded-xl transition-all disabled:opacity-40"
               >
                 {simulating ? 'SIMULATING MARKET...' : 'TRIGGER MARKET TICK'}
               </button>
             </div>
 
             {/* Simulation Log Console */}
-            <div className="mt-6 border border-zinc-800 bg-zinc-950 p-4 font-mono text-[9px] text-zinc-400 h-[150px] overflow-y-auto space-y-1 custom-scrollbar">
-              <div className="text-white border-b border-zinc-800 pb-1 mb-2 uppercase tracking-widest font-bold">
-                Console Output log
+            <div className="mt-6 border border-white/5 bg-black/60 rounded-xl p-4 font-mono text-[9px] text-zinc-400 h-[180px] overflow-y-auto space-y-2 custom-scrollbar">
+              <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-3">
+                 <span className="text-cyan-500 uppercase tracking-widest font-bold">Terminal Output</span>
+                 <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
               </div>
               {simLogs.map((log, idx) => (
-                <div key={idx} className="leading-normal border-l-2 border-zinc-700 pl-2">
+                <div key={idx} className={`leading-relaxed border-l border-white/10 pl-3 ${log.includes('FOUT') ? 'text-red-400' : log.includes('+') ? 'text-emerald-400' : 'text-zinc-400'}`}>
                   {log}
                 </div>
               ))}
               {simLogs.length === 0 && (
-                <div className="text-zinc-700 italic">Console idle. Wachten op markt ticks...</div>
+                <div className="text-zinc-600 italic mt-4 pl-2">System idle. Wachten op markt ticks...</div>
               )}
             </div>
           </div>
 
           {/* Credentials Config */}
-          <div className="border-4 border-white bg-black p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-            <h3 className="text-lg font-black uppercase tracking-widest text-white mb-4 flex items-center gap-2">
-              <Key className="w-5 h-5" />
+          <div className="bg-black/40 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-lg">
+            <h3 className="text-sm font-black uppercase tracking-widest text-white mb-6 flex items-center gap-2 border-b border-white/5 pb-4">
+              <Key className="w-4 h-4 text-cyan-500" />
               Exchange Keys
             </h3>
             
-            <form onSubmit={handleSaveConfig} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] text-zinc-400 uppercase block">Selected Exchange</label>
-                <select
-                  value={exchange}
-                  onChange={(e) => setExchange(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 text-white font-mono text-xs p-3 focus:outline-none focus:border-white transition-colors"
-                >
-                  <option value="BYBIT_TESTNET">BYBIT TESTNET (SANDBOX)</option>
-                  <option value="BYBIT">BYBIT MAINNET (LIVE)</option>
-                  <option value="BINANCE">BINANCE EXCHANGE</option>
-                  <option value="KRAKEN">KRAKEN GLOBAL</option>
-                </select>
+            <form onSubmit={handleSaveConfig} className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">Selected Exchange</label>
+                <div className="relative">
+                  <select
+                    value={exchange}
+                    onChange={(e) => setExchange(e.target.value)}
+                    className="w-full bg-zinc-950 border border-white/10 rounded-xl text-white font-medium text-xs p-3.5 focus:outline-none focus:border-cyan-500/50 transition-colors appearance-none"
+                  >
+                    <option value="BYBIT_TESTNET">BYBIT TESTNET (SANDBOX)</option>
+                    <option value="BYBIT">BYBIT MAINNET (LIVE)</option>
+                    <option value="BINANCE">BINANCE EXCHANGE</option>
+                    <option value="KRAKEN">KRAKEN GLOBAL</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] text-zinc-400 uppercase block">Allocated Capital ($)</label>
+              <div className="space-y-2">
+                <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">Allocated Capital ($)</label>
                 <input
                   type="number"
                   value={allocatedFunds}
                   onChange={(e) => setAllocatedFunds(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 text-white font-mono text-xs p-3 focus:outline-none focus:border-white transition-colors"
+                  className="w-full bg-zinc-950 border border-white/10 rounded-xl text-white font-medium text-xs p-3.5 focus:outline-none focus:border-cyan-500/50 transition-colors"
                   placeholder="Instelkosten"
                   required
                 />
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="font-mono text-[10px] text-zinc-400 uppercase block">API Key</label>
+                  <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">API Key</label>
                   <button
                     type="button"
                     onClick={() => setShowKeys(!showKeys)}
-                    className="font-mono text-[9px] text-zinc-500 hover:text-white uppercase flex items-center gap-1"
+                    className="text-[9px] text-zinc-400 hover:text-white uppercase font-bold tracking-widest flex items-center gap-1 transition-colors"
                   >
                     {showKeys ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                     {showKeys ? 'Hide' : 'Show'}
@@ -608,18 +625,18 @@ export default function TradingDashboard() {
                   type={showKeys ? 'text' : 'password'}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 text-white font-mono text-xs p-3 focus:outline-none focus:border-white transition-colors"
+                  className="w-full bg-zinc-950 border border-white/10 rounded-xl text-white font-medium text-xs p-3.5 focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-zinc-600"
                   placeholder="Envision Api Key..."
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-mono text-[10px] text-zinc-400 uppercase block">API Secret</label>
+              <div className="space-y-2">
+                <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block">API Secret</label>
                 <input
                   type={showKeys ? 'text' : 'password'}
                   value={apiSecret}
                   onChange={(e) => setApiSecret(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 text-white font-mono text-xs p-3 focus:outline-none focus:border-white transition-colors"
+                  className="w-full bg-zinc-950 border border-white/10 rounded-xl text-white font-medium text-xs p-3.5 focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-zinc-600"
                   placeholder="Envision Api Secret..."
                 />
               </div>
@@ -627,7 +644,7 @@ export default function TradingDashboard() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 mt-2 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest border border-white hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_#ffffff] active:translate-x-1 active:translate-y-1"
+                className="w-full py-4 mt-4 bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-black uppercase tracking-widest rounded-xl transition-colors disabled:opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.15)]"
               >
                 {submitting ? 'SAVING CONFIG...' : 'COMMIT CONFIGURATION'}
               </button>
@@ -645,77 +662,84 @@ export default function TradingDashboard() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
-            className="border-4 border-zinc-200 bg-zinc-950 p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] space-y-6"
+            className="bg-black/60 border border-cyan-500/30 rounded-2xl p-6 md:p-8 shadow-[0_0_30px_rgba(6,182,212,0.1)] space-y-6 backdrop-blur-xl relative overflow-hidden"
           >
-            <div className="border-b border-zinc-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            {/* Ambient inner glow */}
+            <div className="absolute inset-0 bg-cyan-500/5 pointer-events-none" />
+
+            <div className="border-b border-white/5 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
               <div>
-                <h3 className="text-2xl font-black uppercase tracking-tight text-white flex items-center gap-3 font-sans">
-                  <Skull className="w-6 h-6 text-white" />
-                  Supreme Performance Fee Cockpit
+                <h3 className="text-xl md:text-2xl font-black uppercase tracking-widest text-cyan-400 flex items-center gap-3">
+                  <Skull className="w-6 h-6" />
+                  Supreme Performance Cockpit
                 </h3>
-                <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest mt-1">
+                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-2">
                   Global System Administrator Dashboard // Performance Fee: 20%
                 </p>
               </div>
-              <div className="bg-white text-black font-mono text-xs font-bold px-4 py-2 uppercase tracking-widest border border-white">
+              <div className="bg-cyan-950/30 text-cyan-400 text-[10px] font-black px-4 py-2 uppercase tracking-widest border border-cyan-500/50 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.1)]">
                 Overseer: HENK SEMLER
               </div>
             </div>
 
             {/* Supreme Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono">
-              <div className="bg-black border border-zinc-800 p-4">
-                <span className="text-[9px] text-zinc-500 uppercase block mb-1">TOTAL FEES EARNED</span>
-                <span className="text-2xl font-bold text-white">{formatEur(systemStats?.totalFeesEarned || 0)}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 relative z-10">
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">TOTAL FEES EARNED</span>
+                <span className="text-2xl font-black text-cyan-400">{formatEur(systemStats?.totalFeesEarned || 0)}</span>
               </div>
-              <div className="bg-black border border-zinc-800 p-4">
-                <span className="text-[9px] text-zinc-500 uppercase block mb-1">TOTAL SYSTEM CAPITAL</span>
-                <span className="text-2xl font-bold text-white">{formatEur(systemStats?.totalAllocatedFunds || 0)}</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">TOTAL SYSTEM CAPITAL</span>
+                <span className="text-2xl font-black text-white">{formatEur(systemStats?.totalAllocatedFunds || 0)}</span>
               </div>
-              <div className="bg-black border border-zinc-800 p-4">
-                <span className="text-[9px] text-zinc-500 uppercase block mb-1">TOTAL SYSTEM PNL</span>
-                <span className="text-2xl font-bold text-white">{systemStats?.totalSystemPnl >= 0 ? '+' : ''}{formatEur(systemStats?.totalSystemPnl || 0)}</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">TOTAL SYSTEM PNL</span>
+                <span className={`text-2xl font-black ${systemStats?.totalSystemPnl >= 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                  {systemStats?.totalSystemPnl >= 0 ? '+' : ''}{formatEur(systemStats?.totalSystemPnl || 0)}
+                </span>
               </div>
-              <div className="bg-black border border-zinc-800 p-4">
-                <span className="text-[9px] text-zinc-500 uppercase block mb-1">ACTIVE SYSTEM BOTS</span>
-                <span className="text-2xl font-bold text-white">{systemStats?.activeBots} / {systemStats?.totalBots}</span>
+              <div className="bg-zinc-950/50 border border-white/5 rounded-xl p-5">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">ACTIVE SYSTEM BOTS</span>
+                <span className="text-2xl font-black text-white">{systemStats?.activeBots} / <span className="text-zinc-500">{systemStats?.totalBots}</span></span>
               </div>
             </div>
 
             {/* Global Bots List */}
-            <div className="border border-zinc-800 bg-black overflow-hidden">
-              <div className="p-3 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center">
-                <span className="font-mono text-xs font-bold text-white uppercase">Systeem Bots Registratie</span>
-                <span className="font-mono text-[9px] text-zinc-500">REALTIME NETWORK LOG</span>
+            <div className="border border-white/5 rounded-xl overflow-hidden bg-zinc-950/50 relative z-10">
+              <div className="p-5 bg-black/40 border-b border-white/5 flex justify-between items-center">
+                <span className="text-xs font-black text-white uppercase tracking-widest">Systeem Bots Registratie</span>
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Activity className="w-3 h-3 text-cyan-500" /> REALTIME NETWORK LOG
+                </span>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse font-mono text-xs">
+                <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-zinc-800 text-zinc-500 uppercase tracking-widest text-[9px] bg-zinc-950">
-                      <th className="p-3 font-normal">Operator</th>
-                      <th className="p-3 font-normal">Bot Email</th>
-                      <th className="p-3 font-normal">Exchange</th>
-                      <th className="p-3 font-normal">Status</th>
-                      <th className="p-3 font-normal">Modus</th>
-                      <th className="p-3 font-normal text-right">Capital</th>
-                      <th className="p-3 font-normal text-right">Accumulated PnL</th>
+                    <tr className="border-b border-white/5 text-zinc-500 uppercase tracking-widest text-[9px] font-bold bg-black/20">
+                      <th className="p-4">Operator</th>
+                      <th className="p-4">Bot Email</th>
+                      <th className="p-4">Exchange</th>
+                      <th className="p-4">Status</th>
+                      <th className="p-4">Modus</th>
+                      <th className="p-4 text-right">Capital</th>
+                      <th className="p-4 text-right">Accumulated PnL</th>
                     </tr>
                   </thead>
                   <tbody className="text-zinc-300">
                     {systemStats?.botsList?.map((sysBot: any) => (
-                      <tr key={sysBot.botId} className="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors">
-                        <td className="p-3 font-bold text-white">{sysBot.userName}</td>
-                        <td className="p-3 text-zinc-400">{sysBot.email}</td>
-                        <td className="p-3 text-[10px] text-zinc-500">{sysBot.exchange}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 text-[9px] font-bold ${sysBot.status === 'TRADING' ? 'bg-white text-black' : 'border border-zinc-800 text-zinc-600'}`}>
+                      <tr key={sysBot.botId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="p-4 font-bold text-white">{sysBot.userName}</td>
+                        <td className="p-4 text-zinc-400">{sysBot.email}</td>
+                        <td className="p-4 text-[9px] font-bold tracking-widest uppercase text-zinc-500">{sysBot.exchange}</td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest ${sysBot.status === 'TRADING' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-zinc-900 text-zinc-500 border border-white/5'}`}>
                             {sysBot.status}
                           </span>
                         </td>
-                        <td className="p-3 text-[10px]">{sysBot.mode}</td>
-                        <td className="p-3 text-right text-white font-bold">{formatEur(sysBot.allocatedFunds)}</td>
-                        <td className={`p-3 text-right font-bold ${sysBot.currentPnl >= 0 ? 'text-white' : 'text-zinc-600'}`}>
+                        <td className="p-4 text-[9px] font-bold tracking-widest uppercase text-zinc-400">{sysBot.mode}</td>
+                        <td className="p-4 text-right text-white font-medium">{formatEur(sysBot.allocatedFunds)}</td>
+                        <td className={`p-4 text-right font-bold ${sysBot.currentPnl >= 0 ? 'text-emerald-400' : 'text-zinc-500'}`}>
                           {sysBot.currentPnl >= 0 ? '+' : ''}{formatEur(sysBot.currentPnl)}
                         </td>
                       </tr>
@@ -730,4 +754,3 @@ export default function TradingDashboard() {
     </div>
   );
 }
-

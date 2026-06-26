@@ -2,41 +2,46 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download } from 'lucide-react';
+import { ShieldAlert, Activity, FileText, Database, Lock, Search, Download, Cpu, Box } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Paywall } from '@/components/ui/Paywall';
 import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
 
-// Simuleer recharts (zou in een echte implementatie geïnstalleerd moeten zijn)
 export default function EnterpriseOSPage() {
   const { t } = useLanguage();
 
   return (
     <Paywall requiredTier="ENTERPRISE">
-      <div className="min-h-screen bg-[#050505] p-6 text-gold font-mono selection:bg-navyLight selection:text-white">
+      <div className="min-h-[85vh] p-6 text-white font-sans selection:bg-cyan-500/30 selection:text-white relative z-10">
+        
+        {/* Background glow */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
         {/* Header */}
-        <div className="flex justify-between items-end mb-8 border-b border-gold/30 pb-4">
+        <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-8">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter uppercase drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]">
-              Red Billionaire OS
+            <h1 className="text-3xl md:text-4xl font-black tracking-widest uppercase flex items-center gap-4 text-white">
+              IMPERIAL BILLIONAIRE OS <Cpu className="w-8 h-8 text-cyan-400" />
             </h1>
-            <p className="text-gold/60 mt-1 uppercase text-xs tracking-widest">
+            <p className="text-cyan-400/60 mt-2 uppercase text-xs font-bold tracking-widest">
               Hoofdcommando Centrum // Toegangsniveau: GODMODE
             </p>
           </div>
           <div className="flex gap-4">
-            <div className="flex items-center gap-2 bg-[#0a192f]/30 border border-gold/50 px-4 py-2 rounded-sm shadow-[0_0_10px_rgba(239,68,68,0.2)]">
-              <Activity className="w-4 h-4 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-widest">Systeem Online</span>
+            <div className="flex items-center gap-2 bg-cyan-950/20 border border-cyan-500/30 px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+              <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Systeem Online</span>
             </div>
           </div>
         </div>
 
         {/* Swarm Avatar 3D Visualizer & Command Interface */}
-          <NeuralSwarm theme="red" />
+        <div className="mb-8">
+          <NeuralSwarm theme="blue" />
+        </div>
 
         {/* 3 Kernmodules */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Module A: God-View Data Hub */}
           <motion.div 
@@ -44,40 +49,40 @@ export default function EnterpriseOSPage() {
             animate={{ opacity: 1, y: 0 }}
             className="lg:col-span-2 space-y-6"
           >
-            <div className="bg-[#0a0a0a] border border-gold/20 p-6 rounded-lg relative overflow-hidden group hover:border-gold/50 transition-colors shadow-[0_0_20px_rgba(239,68,68,0.05)] hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-navyLight via-[#112240] to-navyLight opacity-50" />
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold uppercase flex items-center gap-2">
-                  <Database className="w-5 h-5" /> Wereldwijde Kasstroom Radar
+            <div className="bg-black/40 border border-white/5 p-6 md:p-8 rounded-2xl relative overflow-hidden group hover:border-white/10 transition-colors backdrop-blur-md">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500/20 via-cyan-400 to-cyan-500/20 opacity-50" />
+              <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                <h2 className="text-sm font-black uppercase flex items-center gap-2 tracking-widest">
+                  <Database className="w-4 h-4 text-cyan-500" /> Wereldwijde Kasstroom Radar
                 </h2>
-                <span className="text-xs bg-gold/10 text-goldLight px-2 py-1 rounded border border-gold/20">LIVE</span>
+                <span className="text-[9px] bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30 font-bold tracking-widest animate-pulse">LIVE</span>
               </div>
               
               {/* Mock Graph Area */}
-              <div className="h-64 w-full bg-gradient-to-b from-navyLight/10 to-transparent border border-gold/10 rounded-lg flex items-end p-4 relative">
+              <div className="h-72 w-full bg-zinc-950/50 border border-white/5 rounded-xl flex items-end p-4 relative overflow-hidden">
                  {/* Decorative Grid */}
-                 <div className="absolute inset-0 bg-[linear-gradient(rgba(239,68,68,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" />
+                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
                  
                  {/* Mock Data Lines */}
-                 <div className="w-full flex items-end gap-2 h-full z-10 opacity-70">
+                 <div className="w-full flex items-end gap-3 h-full z-10 opacity-80">
                     {[30, 45, 20, 60, 80, 50, 90, 70, 100, 60, 85, 40].map((h, i) => (
-                      <div key={i} className="flex-1 bg-gold/20 hover:bg-gold/50 border-t-2 border-gold transition-all cursor-pointer group-hover:border-[#d4af37]" style={{ height: `${h}%` }} />
+                      <div key={i} className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/40 border-t-[3px] border-cyan-500 transition-all cursor-pointer rounded-t-sm" style={{ height: `${h}%` }} />
                     ))}
                  </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="p-4 bg-gold/5 border border-gold/10 rounded">
-                  <p className="text-xs text-gold/50 uppercase">Totale Omzet</p>
-                  <p className="text-2xl font-bold mt-1">€12.4M</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Totale Omzet</p>
+                  <p className="text-2xl font-black text-white">€12.4M</p>
                 </div>
-                <div className="p-4 bg-gold/5 border border-gold/10 rounded">
-                  <p className="text-xs text-gold/50 uppercase">AI Output</p>
-                  <p className="text-2xl font-bold mt-1">84.203 OPS</p>
+                <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">AI Output</p>
+                  <p className="text-2xl font-black text-cyan-400">84.203 <span className="text-xs text-zinc-500">OPS</span></p>
                 </div>
-                <div className="p-4 bg-gold/5 border border-gold/10 rounded">
-                  <p className="text-xs text-gold/50 uppercase">Risico Niveau</p>
-                  <p className="text-2xl font-bold mt-1 text-green-500">LAAG</p>
+                <div className="p-5 bg-zinc-950/50 border border-white/5 rounded-xl">
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Risico Niveau</p>
+                  <p className="text-2xl font-black text-emerald-400 tracking-widest">LAAG</p>
                 </div>
               </div>
             </div>
@@ -91,24 +96,24 @@ export default function EnterpriseOSPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-[#0a0a0a] border border-gold/20 p-6 rounded-lg shadow-[0_0_20px_rgba(239,68,68,0.05)]"
+              className="bg-black/40 border border-white/5 p-6 md:p-8 rounded-2xl backdrop-blur-md"
             >
-              <h2 className="text-xl font-bold uppercase flex items-center gap-2 mb-4">
-                <Lock className="w-5 h-5" /> Het Kantoor (Juridische Kluis)
+              <h2 className="text-sm font-black uppercase flex items-center gap-2 mb-6 border-b border-white/5 pb-4 tracking-widest">
+                <Lock className="w-4 h-4 text-cyan-500" /> Juridische Kluis
               </h2>
               <div className="space-y-3">
                 {['NDA_Alibaba_Supplier.pdf', 'Tax_Audit_Q3_2026.pdf', 'IP_Transfer_Agreement.pdf'].map((doc, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-black border border-gold/10 rounded hover:border-gold/40 cursor-pointer transition-colors group">
+                  <div key={i} className="flex items-center justify-between p-4 bg-zinc-950/50 border border-white/5 rounded-xl hover:border-cyan-500/30 cursor-pointer transition-colors group">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-4 h-4 text-gold/50 group-hover:text-gold" />
-                      <span className="text-sm">{doc}</span>
+                      <FileText className="w-4 h-4 text-cyan-500/50 group-hover:text-cyan-400" />
+                      <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors">{doc}</span>
                     </div>
-                    <Download className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Download className="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 py-2 bg-gold/10 border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest hover:bg-gold hover:text-black transition-colors">
-                + NIEUW JURIDISCH DOCUMENT
+              <button className="w-full mt-6 py-3.5 bg-black hover:bg-zinc-900 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                + NIEUW DOCUMENT
               </button>
             </motion.div>
 
@@ -117,23 +122,23 @@ export default function EnterpriseOSPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-[#0a0a0a] border border-gold/20 p-6 rounded-lg shadow-[0_0_20px_rgba(239,68,68,0.05)] relative overflow-hidden"
+              className="bg-black/40 border border-white/5 p-6 md:p-8 rounded-2xl relative overflow-hidden backdrop-blur-md group hover:border-white/10 transition-colors"
             >
-              <div className="absolute inset-0 bg-gold/5 animate-pulse" />
+              <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10">
-                <h2 className="text-xl font-bold uppercase flex items-center gap-2 mb-2">
-                  <Search className="w-5 h-5" /> Inlichtingen Motor
+                <h2 className="text-sm font-black uppercase flex items-center gap-2 mb-3 tracking-widest text-white border-b border-white/5 pb-4">
+                  <Search className="w-4 h-4 text-cyan-500" /> Inlichtingen Motor
                 </h2>
-                <p className="text-xs text-gold/70 mb-4">Genereer 10-pagina marktonderzoek PDFs via Swarm AI.</p>
+                <p className="text-[10px] text-zinc-400 mb-6 font-bold uppercase tracking-widest leading-relaxed">Genereer 10-pagina marktonderzoek PDFs via de Neural Swarm AI architectuur.</p>
                 
                 <input 
                   type="text" 
                   placeholder="Onderwerp (bijv. Vastgoed Dubai 2027)" 
-                  className="w-full bg-black border border-gold/30 rounded p-3 text-sm focus:outline-none focus:border-gold mb-3 text-gold placeholder:text-gold/30"
+                  className="w-full bg-zinc-950 border border-white/10 rounded-xl p-4 text-xs focus:outline-none focus:border-cyan-500/50 mb-4 text-white font-medium transition-colors"
                 />
                 
-                <button className="w-full py-3 bg-gold text-black font-black uppercase tracking-widest hover:bg-gold shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all">
-                  GENEREER DOSSIER [PDF]
+                <button className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.2)] rounded-xl transition-all flex items-center justify-center gap-2 text-xs">
+                  <Box className="w-4 h-4" /> GENEREER DOSSIER [PDF]
                 </button>
               </div>
             </motion.div>
@@ -144,4 +149,3 @@ export default function EnterpriseOSPage() {
     </Paywall>
   );
 }
-
