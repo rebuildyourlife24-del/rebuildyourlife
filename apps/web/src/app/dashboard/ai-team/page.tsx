@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Network, Terminal, Play, CheckCircle2, AlertTriangle, Activity, Edit2, Save, X } from 'lucide-react';
+import { Network, Terminal, Play, CheckCircle2, AlertTriangle, Activity, Edit2, Save, X, MessageSquare } from 'lucide-react';
 import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
-import { getAgents, delegateTask, updateAgent } from '@/actions/ai-team';
+import { getAgents, updateAgent } from '@/actions/ai-team';
+import { useCompletion } from '@ai-sdk/react';
 
 export default function AITeamPage() {
   const [agents, setAgents] = useState<any[]>([]);
@@ -13,13 +14,22 @@ export default function AITeamPage() {
   
   // Task state
   const [taskInput, setTaskInput] = useState('');
-  const [delegating, setDelegating] = useState(false);
-  const [statusMsg, setStatusMsg] = useState('');
   
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', role: '', department: '', systemPrompt: '' });
   const [saving, setSaving] = useState(false);
+
+  // Streaming AI hook
+  const { completion, complete, isLoading, stop, setCompletion } = useCompletion({
+    api: '/api/ai-swarm',
+    body: {
+      agentId: selectedAgent?.id
+    },
+    onError: (error) => {
+      console.error(error);
+    }
+  });
 
   useEffect(() => {
     fetchAgents();
@@ -35,27 +45,15 @@ export default function AITeamPage() {
   const handleSelectAgent = (agent: any) => {
     setSelectedAgent(agent);
     setIsEditing(false);
-    setStatusMsg('');
     setTaskInput('');
+    setCompletion(''); // clear previous stream
   };
 
   const handleDelegate = async () => {
     if (!taskInput.trim() || !selectedAgent) return;
-    setDelegating(true);
-    setStatusMsg('');
-    try {
-      const res = await delegateTask(selectedAgent.id, taskInput);
-      if (res.success) {
-        setStatusMsg('Taak uitgevoerd: ' + res.message.substring(0, 100) + '...');
-        setTaskInput('');
-      } else {
-        setStatusMsg('Fout: ' + res.message);
-      }
-    } catch(e) {
-      console.error(e);
-      setStatusMsg('Failed to dispatch task.');
-    }
-    setDelegating(false);
+    setCompletion(''); // clear previous completion
+    await complete(taskInput);
+    setTaskInput(''); // clear input box
   };
 
   const startEdit = () => {
@@ -87,7 +85,7 @@ export default function AITeamPage() {
         <NeuralSwarm theme="cyan" />
       </div>
       <div className="text-cyan-500 font-mono text-sm uppercase tracking-widest animate-pulse">
-        SYNCHRONIZING ORION TASKFORCE...
+        BEZIG MET LADEN...
       </div>
     </div>
   );
@@ -99,10 +97,10 @@ export default function AITeamPage() {
       <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-black tracking-widest uppercase flex items-center gap-4 text-white">
-            ORION CORE TASKFORCE <Network className="w-8 h-8 text-cyan-400" />
+            AI TEAM <Network className="w-8 h-8 text-cyan-400" />
           </h1>
           <p className="text-cyan-400/60 mt-2 uppercase text-xs font-bold tracking-widest">
-            Beheer en delegeer taken aan je leger van 500 autonome Llama-agenten.
+            Beheer en delegeer taken aan je leger van 500 autonome LLM-agenten via de Neural Swarm.
           </p>
         </div>
       </div>
@@ -112,7 +110,7 @@ export default function AITeamPage() {
         {/* Agent Roster */}
         <div className="lg:col-span-1 space-y-4 h-[70vh] overflow-y-auto pr-2 hide-scrollbar">
           <div className="sticky top-0 bg-[#020202] z-10 pb-4 border-b border-white/10 mb-4">
-             <h2 className="text-sm font-black uppercase tracking-widest text-white">Swarm Roster ({agents.length})</h2>
+             <h2 className="text-sm font-black uppercase tracking-widest text-white">Swarm Netwerk ({agents.length})</h2>
           </div>
           
           {agents.length === 0 ? (
@@ -131,7 +129,7 @@ export default function AITeamPage() {
                     <Terminal className="w-3 h-3 text-cyan-500" /> {agent.name}
                   </h3>
                   <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest font-bold ${agent.status === 'ACTIVE' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-500'}`}>
-                    {agent.status}
+                    {agent.status === 'ACTIVE' ? 'ACTIEF' : agent.status}
                   </span>
                 </div>
                 <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{agent.role}</p>
@@ -146,12 +144,12 @@ export default function AITeamPage() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-black/40 border border-cyan-500/20 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden"
+              className="bg-black/40 border border-cyan-500/20 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden flex flex-col h-[70vh]"
             >
               {/* Background accent */}
               <div className="absolute -top-32 -right-32 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none" />
 
-              <div className="flex justify-between items-start mb-6 border-b border-white/10 pb-6 relative z-10">
+              <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4 relative z-10 shrink-0">
                 <div>
                   {isEditing ? (
                      <input 
@@ -190,14 +188,14 @@ export default function AITeamPage() {
                   )}
                 </div>
                 <div className="flex gap-2">
-                  <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
+                  <Activity className={`w-5 h-5 ${isLoading ? 'text-cyan-400 animate-spin' : 'text-emerald-500 animate-pulse'}`} />
                 </div>
               </div>
 
-              <div className="space-y-6 relative z-10">
+              <div className="flex-1 overflow-y-auto relative z-10 pr-2 hide-scrollbar flex flex-col gap-6">
                 <div>
-                  <h3 className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 flex justify-between items-center">
-                    <span>Systeem Prompt / Core Directive</span>
+                  <h3 className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2">
+                    Systeem Prompt / Core Directive
                   </h3>
                   
                   {isEditing ? (
@@ -211,53 +209,59 @@ export default function AITeamPage() {
                        {selectedAgent.systemPrompt}
                      </div>
                   )}
+
+                  {/* Edit Controls */}
+                  {isEditing && (
+                    <div className="flex justify-end gap-3 pt-2">
+                       <button onClick={() => setIsEditing(false)} className="px-4 py-2 border border-white/10 text-xs font-bold uppercase tracking-widest rounded text-zinc-400 hover:bg-white/5">
+                          <X className="w-4 h-4" />
+                       </button>
+                       <button onClick={saveEdit} disabled={saving} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black uppercase tracking-widest rounded shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2">
+                          {saving ? 'Bezig met opslaan...' : 'Wijzigingen Opslaan'} <Save className="w-4 h-4" />
+                       </button>
+                    </div>
+                  )}
                 </div>
 
-                {/* Edit Controls */}
-                {isEditing && (
-                  <div className="flex justify-end gap-3 pt-2">
-                     <button onClick={() => setIsEditing(false)} className="px-4 py-2 border border-white/10 text-xs font-bold uppercase tracking-widest rounded text-zinc-400 hover:bg-white/5">
-                        <X className="w-4 h-4" />
-                     </button>
-                     <button onClick={saveEdit} disabled={saving} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black uppercase tracking-widest rounded shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2">
-                        {saving ? 'Saving...' : 'Save Configuration'} <Save className="w-4 h-4" />
-                     </button>
-                  </div>
-                )}
-
-                {/* Delegation Interface (only when not editing) */}
-                {!isEditing && (
-                  <div className="pt-6 border-t border-white/5">
-                    <h3 className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Terminal className="w-3 h-3 text-cyan-500" /> Directe Instructie
+                {/* AI Response Area */}
+                {!isEditing && (completion || isLoading) && (
+                  <div className="bg-cyan-950/20 border border-cyan-500/20 rounded-xl p-4 mb-4">
+                    <h3 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <MessageSquare className="w-3 h-3" /> Reactie van {selectedAgent.name}
                     </h3>
-                    <textarea
-                      value={taskInput}
-                      onChange={(e) => setTaskInput(e.target.value)}
-                      placeholder={`Geef een commando aan ${selectedAgent.name}...`}
-                      className="w-full h-24 bg-zinc-950 border border-white/10 hover:border-cyan-500/30 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-cyan-500/50 resize-none transition-colors"
-                    />
-                    
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="max-w-[70%]">
-                        {statusMsg && (
-                          <span className={`text-xs font-bold tracking-wider ${statusMsg.startsWith('Fout') ? 'text-cyan-400' : 'text-emerald-400'}`}>
-                            {statusMsg}
-                          </span>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={handleDelegate}
-                        disabled={delegating || !taskInput.trim()}
-                        className={`px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] flex items-center gap-2 shrink-0 ${delegating || !taskInput.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        {delegating ? 'EXECUTING...' : 'UITVOEREN'} <Play className="w-4 h-4" />
-                      </button>
+                    <div className="text-sm text-cyan-50 whitespace-pre-wrap font-mono leading-relaxed">
+                      {completion}
+                      {isLoading && <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse" />}
                     </div>
                   </div>
                 )}
               </div>
+
+              {/* Delegation Interface */}
+              {!isEditing && (
+                <div className="pt-4 border-t border-white/5 mt-4 shrink-0">
+                  <h3 className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <Terminal className="w-3 h-3 text-cyan-500" /> Directe Instructie
+                  </h3>
+                  <textarea
+                    value={taskInput}
+                    onChange={(e) => setTaskInput(e.target.value)}
+                    placeholder={`Geef een commando aan ${selectedAgent.name}...`}
+                    className="w-full h-20 bg-zinc-950 border border-white/10 hover:border-cyan-500/30 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-cyan-500/50 resize-none transition-colors"
+                  />
+                  
+                  <div className="flex items-center justify-end mt-4">
+                    <button
+                      onClick={handleDelegate}
+                      disabled={isLoading || !taskInput.trim()}
+                      className={`px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] flex items-center gap-2 shrink-0 ${isLoading || !taskInput.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {isLoading ? 'BEZIG MET VERWERKEN...' : 'INSTRUCTIE UITVOEREN'} <Play className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </motion.div>
           ) : (
             <div className="h-full flex flex-col items-center justify-center p-12 text-center bg-black/20 border border-white/5 rounded-2xl border-dashed">
