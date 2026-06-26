@@ -83,7 +83,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
       {/* Background FX */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,60,0.05)_0%,transparent_70%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)] pointer-events-none"></div>
 
       <Suspense fallback={<div className="text-white font-mono">Loading uplink...</div>}>
         <OnboardingContent />

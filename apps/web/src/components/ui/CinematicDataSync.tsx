@@ -57,7 +57,7 @@ export function CinematicDataSync({ onComplete }: CinematicDataSyncProps) {
     >
       {/* Background Atmosphere */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,51,0.1)_0%,rgba(0,0,0,0)_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.1)_0%,rgba(0,0,0,0)_60%)]" />
         
         {/* Render data streams when in phase 2 */}
         <div className="absolute inset-0 opacity-10 overflow-hidden flex flex-col justify-around pointer-events-none">

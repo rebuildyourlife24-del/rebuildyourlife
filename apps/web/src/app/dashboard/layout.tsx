@@ -373,7 +373,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className={`p-4 border-b bg-black/40 relative overflow-hidden group ${theme.border}`}>
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative">
-              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(255,0,51,0.1)] group-hover:shadow-[0_0_15px_rgba(255,0,51,0.4)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.02)] group-hover:shadow-[0_0_15px_rgba(255,255,255,0.08)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
+              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(6,182,212,0.1)] group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.02)] group-hover:shadow-[0_0_15px_rgba(255,255,255,0.08)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
                 <Terminal className={`w-4 h-4 ${theme.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
               </div>
             </div>

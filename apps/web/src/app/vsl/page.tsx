@@ -44,8 +44,8 @@ export default function VslPage() {
       
       {/* Scanline overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,60,0.015)_1px,transparent_1px)] bg-[size:100%_4px]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,0,60,0.07)_0%,transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.015)_1px,transparent_1px)] bg-[size:100%_4px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.07)_0%,transparent_60%)]"></div>
       </div>
 
       {/* NAVIGATION */}
@@ -88,7 +88,7 @@ export default function VslPage() {
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/90 p-8 text-center cursor-pointer" onClick={() => setIsPlaying(true)}>
               {/* Grid Background Effect */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,60,0.06)_0%,transparent_70%)] pointer-events-none"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.06)_0%,transparent_70%)] pointer-events-none"></div>
               
               <div className="w-24 h-24 rounded-full border border-[#d4af37] bg-[#d4af37]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                 <Play className="w-10 h-10 text-[#d4af37] ml-1.5" />
