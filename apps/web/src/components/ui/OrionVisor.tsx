@@ -3,14 +3,18 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, X, Zap, ChevronDown, MessageSquare } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function OrionVisor() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
+  const pathname = usePathname();
   const [logs, setLogs] = useState<{ id: number; sender: "ceo" | "orion"; text: string; time: string }[]>([
     { id: 1, sender: "orion", text: "GodBrain OS Visor initialized. Waiting for CEO input.", time: new Date().toLocaleTimeString() }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  if (pathname === '/') return null;
 
   // Auto-scroll to bottom
   useEffect(() => {

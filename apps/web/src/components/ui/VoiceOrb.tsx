@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Volume2, Settings2, SlidersHorizontal } from "lucide-react";
 import { OrionMusicPlayer } from "./OrionMusicPlayer";
+import { usePathname } from "next/navigation";
 
 export function VoiceOrb() {
   const [isListening, setIsListening] = useState(false);
@@ -11,6 +12,9 @@ export function VoiceOrb() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [hasPermissions, setHasPermissions] = useState<boolean | null>(null);
+  const pathname = usePathname();
+
+  if (pathname === '/') return null;
   
   // Acoustic Control State
   const [showAcoustics, setShowAcoustics] = useState(false);
