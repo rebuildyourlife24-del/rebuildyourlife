@@ -4,7 +4,7 @@ import { prisma } from '@rebuildyourlife/database';
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret_for_dev";
+const JWT_SECRET = process.env.JWT_SECRET! || "default_secret_for_dev";
 
 async function getAuthenticatedUserId(): Promise<string | null> {
   const token = (await cookies()).get("ryl_session")?.value;

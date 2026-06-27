@@ -3,7 +3,7 @@ import { TrafficService } from '@/lib/services/traffic.service';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET! ;
 
 async function getAuthenticatedUserId() {
   const cookieStore = await cookies();

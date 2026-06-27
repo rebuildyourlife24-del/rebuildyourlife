@@ -23,7 +23,7 @@ export function IntegrationsVault() {
     setLoading(true);
     const res = await getShopifyConnectionsAction();
     if (res.success) {
-      setConnections(res.data);
+      setConnections(res.data || []);
     }
     setLoading(false);
   };
@@ -35,7 +35,7 @@ export function IntegrationsVault() {
     
     const res = await connectShopifyStoreAction(shopUrl, accessToken);
     if (res.success) {
-      setMsg({ text: res.message, type: 'success' });
+      setMsg({ text: res.message || 'Success', type: 'success' });
       setShopUrl('');
       setAccessToken('');
       await fetchConnections();

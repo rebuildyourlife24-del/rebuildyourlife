@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import OpenAI from 'openai';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET! || 'secret';
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function getUserId() {

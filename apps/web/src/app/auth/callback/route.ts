@@ -5,7 +5,7 @@ import { prisma } from "@rebuildyourlife/database";
 import jwt from 'jsonwebtoken';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback";
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
 if (!JWT_SECRET) throw new Error('JWT_SECRET is missing');
 
 export const dynamic = 'force-dynamic';

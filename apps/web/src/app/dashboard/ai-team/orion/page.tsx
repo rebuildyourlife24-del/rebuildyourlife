@@ -44,7 +44,7 @@ export default function OrionChatPage() {
   async function loadConversations() {
     const res = await getConversationsAction("ORION");
     if (res.success && res.conversations) {
-      setConversations(res.conversations);
+      setConversations((res.conversations as any[]).map(c => ({ ...c, title: c.title || '' })));
       if (res.conversations.length > 0 && !activeConvId) {
         loadMessages(res.conversations[0].id);
       } else if (res.conversations.length === 0) {
@@ -62,6 +62,7 @@ export default function OrionChatPage() {
     if (res.success && res.messages) {
       setMessages(res.messages.map(m => ({
         ...m,
+        role: m.role as "user" | "assistant",
         createdAt: m.createdAt.toISOString()
       })));
     }
@@ -97,7 +98,7 @@ export default function OrionChatPage() {
         loadConversations();
       }
       if (res.message) {
-        setMessages((prev) => [...prev, res.message]);
+        setMessages((prev) => [...prev, res.message as unknown as Message]);
       }
     }
     setLoading(false);

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET! ;
 
 async function getAuthenticatedUser() {
   const token = (await cookies()).get("ryl_session")?.value;

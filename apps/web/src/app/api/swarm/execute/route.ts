@@ -4,7 +4,7 @@ import { prisma } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET! || 'secret';
 
 // To support cron jobs and manual triggers
 export async function POST(req: Request) {

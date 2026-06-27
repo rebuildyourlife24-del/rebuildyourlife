@@ -3,14 +3,14 @@ import { db } from '@/lib/db';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("ryl_session")?.value;
     let userId = null;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET! || 'secret') as any;
         userId = decoded.userId;
       } catch {}
     }

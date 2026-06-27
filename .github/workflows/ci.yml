@@ -43,7 +43,7 @@ jobs:
         run: npx turbo run build
 
       - name: Typecheck
-        run: npx tsc --noEmit --project tsconfig.json || echo "Root tsconfig skipped — checked per-app"
+        run: npx tsc --noEmit --project tsconfig.json || true
 
   security-scan:
     name: Security Audit

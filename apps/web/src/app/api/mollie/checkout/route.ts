@@ -6,7 +6,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import bcrypt from 'bcryptjs';
 
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET! ;
 
 const TIER_MAPPING: Record<string, { amount: string; description: string; tier: string }> = {
   tier_ecom_50: {

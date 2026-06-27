@@ -171,7 +171,7 @@ export async function getSessionAction() {
     const jwtToken = cookieStore.get('ryl_session')?.value;
     if (jwtToken) {
       try {
-        const JWT_SECRET = process.env.JWT_SECRET ;
+        const JWT_SECRET = process.env.JWT_SECRET! ;
         const decoded = jwt.verify(jwtToken, JWT_SECRET) as any;
         if (decoded.userId) {
           try {

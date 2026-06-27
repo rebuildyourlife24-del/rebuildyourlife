@@ -3,7 +3,7 @@ import { prisma } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET! ;
 
 async function getAuthenticatedUser() {
   const cookieStore = await cookies();

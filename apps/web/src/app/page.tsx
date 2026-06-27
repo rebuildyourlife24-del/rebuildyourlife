@@ -30,7 +30,7 @@ export default function MatrixLandingPage() {
         <div className="hidden lg:flex items-center gap-8">
           <Link href="#features" className="text-[10px] font-bold text-zinc-400 hover:text-cyan-400 uppercase tracking-widest transition-colors">Systeem</Link>
           <Link href="#pricing" className="text-[10px] font-bold text-zinc-400 hover:text-cyan-400 uppercase tracking-widest transition-colors">Toegang</Link>
-          <Link href="/admin" className="text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-widest transition-colors flex items-center gap-1">
+          <Link href="/admin" className="text-[10px] font-bold text-blue-500 hover:text-blue-400 uppercase tracking-widest transition-colors flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" />
             God Mode
           </Link>

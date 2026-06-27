@@ -79,7 +79,7 @@ Voer de taak direct uit. Geef ALLEEN het resultaat van je werk. Geef geen introd
     }
 
     // Log the task execution
-    await prisma.agentTask.create({
+    await (prisma as any).agentTask.create({
       data: {
         agentId: agent.id,
         sourceType: 'MANUAL_DELEGATION',

@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     let userId = null;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET! || 'secret') as any;
         userId = decoded.userId;
       } catch {}
     }
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     let userId = null;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET! || 'secret') as any;
         userId = decoded.userId;
       } catch {}
     }

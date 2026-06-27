@@ -10,7 +10,7 @@ import {
   simulateFranchiseOrderAction,
   getFranchiseOrdersAction
 } from "@/actions/franchise";
-import { Terminal, Shield, Plus, Trash2, Edit2, ShoppingBag, DollarSign, ExternalLink, Play, Check, Cpu } from "lucide-react";
+import { Terminal, Shield, Plus, Trash2, Edit2, ShoppingBag, DollarSign, ExternalLink, Play, Check, Cpu, AlertTriangle } from "lucide-react";
 
 interface Product {
   id: string;

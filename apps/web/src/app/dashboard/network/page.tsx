@@ -144,9 +144,9 @@ export default function NetworkCRMPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="bg-red-950/20 border border-red-900/50 p-6 backdrop-blur-md rounded-2xl shadow-[0_0_20px_rgba(220,38,38,0.1)]">
+          <Card className="bg-blue-950/20 border border-blue-900/50 p-6 backdrop-blur-md rounded-2xl shadow-[0_0_20px_rgba(59,130,246,0.1)]">
             <h2 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-500" /> 
+              <AlertCircle className="w-5 h-5 text-blue-500" /> 
               GODBRAIN REMINDERS ({reminders.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -156,14 +156,14 @@ export default function NetworkCRMPage() {
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
                 return (
-                  <div key={`reminder-${contact.id}`} className="bg-black/60 border border-red-500/20 p-4 rounded-xl flex flex-col justify-between">
+                  <div key={`reminder-${contact.id}`} className="bg-black/60 border border-blue-500/20 p-4 rounded-xl flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-start mb-2">
                         <span className="font-bold text-white uppercase tracking-widest text-sm">{contact.name}</span>
-                        {contact.isImportant && <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[9px]">VIP</Badge>}
+                        {contact.isImportant && <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-[9px]">VIP</Badge>}
                       </div>
                       <p className="text-xs text-zinc-400 font-medium">{contact.type} • {contact.relationship || 'Relatie'}</p>
-                      <p className="text-xs text-red-400 mt-2 font-bold flex items-center gap-1.5">
+                      <p className="text-xs text-blue-400 mt-2 font-bold flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" />
                         Al {diffDays} dagen niet gesproken
                       </p>
@@ -278,7 +278,7 @@ export default function NetworkCRMPage() {
         size="lg"
       >
         {serverError && (
-          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500">
+          <div className="mb-4 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-sm text-blue-500">
             {serverError}
           </div>
         )}

@@ -45,7 +45,7 @@ export default function SwarmChatPage() {
   async function loadConversations() {
     const res = await getConversationsAction("SWARM");
     if (res.success && res.conversations) {
-      setConversations(res.conversations);
+      setConversations((res.conversations as any[]).map(c => ({ ...c, title: c.title || '' })));
       if (res.conversations.length > 0 && !activeConvId) {
         loadMessages(res.conversations[0].id);
       } else if (res.conversations.length === 0) {
@@ -63,6 +63,7 @@ export default function SwarmChatPage() {
     if (res.success && res.messages) {
       setMessages(res.messages.map(m => ({
         ...m,
+        role: m.role as "user" | "assistant",
         createdAt: m.createdAt.toISOString()
       })));
     }
@@ -98,7 +99,7 @@ export default function SwarmChatPage() {
         loadConversations();
       }
       if (res.message) {
-        setMessages((prev) => [...prev, res.message]);
+        setMessages((prev) => [...prev, res.message as unknown as Message]);
       }
     }
     setLoading(false);
@@ -149,7 +150,7 @@ export default function SwarmChatPage() {
         {/* Background Visualizer */}
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none flex items-center justify-center">
           <div className="scale-150 transform">
-            <NeuralSwarm theme="purple" isSpeaking={loading} />
+            <NeuralSwarm theme="purple" />
           </div>
         </div>
         
@@ -170,7 +171,7 @@ export default function SwarmChatPage() {
                   const res = await fetch('/api/swarm/execute', { method: 'POST' });
                   const data = await res.json();
                   if(data.success) {
-                    setMessages(prev => [...prev, { role: 'assistant', content: 'Swarm asset gegenereerd. Check QC Terminal.' }]);
+                    setMessages(prev => [...prev, { id: `sys-${Date.now()}`, role: 'assistant', content: 'Swarm asset gegenereerd. Check QC Terminal.', createdAt: new Date().toISOString() }]);
                   } else {
                     setError('Swarm fout: ' + data.error);
                   }

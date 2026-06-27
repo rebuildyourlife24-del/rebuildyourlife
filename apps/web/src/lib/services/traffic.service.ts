@@ -28,6 +28,26 @@ export interface SimulatedPurchase {
 }
 
 
+const inMemoryPurchases = new Map<string, SimulatedPurchase[]>();
+const inMemoryCampaigns = new Map<string, SimulatedCampaign[]>();
+
+function generateViewsHistory(days: number): { date: string, views: number, impressions: number }[] {
+  const history = [];
+  let currentViews = 0;
+  let currentImpressions = 0;
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    currentViews += Math.floor(Math.random() * 1000) + 100;
+    currentImpressions = currentViews * 2 + Math.floor(Math.random() * 500);
+    history.push({
+      date: date.toISOString().split('T')[0],
+      views: currentViews,
+      impressions: currentImpressions
+    });
+  }
+  return history;
+}
 
 export class TrafficService {
   static async getUserCredits(userId: string): Promise<number> {
@@ -146,7 +166,7 @@ export class TrafficService {
     } catch (e) {
       console.warn("Database completePurchase failed, updating in-memory:", e);
       for (const [uid, list] of inMemoryPurchases.entries()) {
-        const idx = list.findIndex(p => p.id === purchaseId);
+        const idx = list.findIndex((p: SimulatedPurchase) => p.id === purchaseId);
         if (idx !== -1 && list[idx].status === "PENDING") {
           list[idx].status = "PAID";
           purchase = list[idx];
@@ -262,7 +282,7 @@ export class TrafficService {
           });
         } catch (e) {
           const userCampaigns = inMemoryCampaigns.get(userId) || [];
-          const idx = userCampaigns.findIndex(c => c.id === campaignId);
+          const idx = userCampaigns.findIndex((c: SimulatedCampaign) => c.id === campaignId);
           if (idx !== -1) {
             userCampaigns[idx].status = "ACTIVE";
             userCampaigns[idx].renderStatus = "COMPLETED";
@@ -283,7 +303,7 @@ export class TrafficService {
           });
         } catch (e) {
           const userCampaigns = inMemoryCampaigns.get(userId) || [];
-          const idx = userCampaigns.findIndex(c => c.id === campaignId);
+          const idx = userCampaigns.findIndex((c: SimulatedCampaign) => c.id === campaignId);
           if (idx !== -1) {
             userCampaigns[idx].renderProgress = progress;
             userCampaigns[idx].updatedAt = new Date();
@@ -294,7 +314,7 @@ export class TrafficService {
   }
 
   static async triggerViralBoost(userId: string, campaignId: string): Promise<SimulatedCampaign | null> {
-    const boostHistory = generateViewsHistory(10).map(item => ({
+    const boostHistory = generateViewsHistory(10).map((item: any) => ({
       ...item,
       views: Math.floor(item.views * 8.5),
       impressions: Math.floor(item.impressions * 12)
@@ -319,7 +339,7 @@ export class TrafficService {
       } as any;
     } catch (e) {
       const userCampaigns = inMemoryCampaigns.get(userId) || [];
-      const idx = userCampaigns.findIndex(c => c.id === campaignId);
+      const idx = userCampaigns.findIndex((c: SimulatedCampaign) => c.id === campaignId);
       if (idx !== -1) {
         userCampaigns[idx].status = "VIRAL";
         userCampaigns[idx].totalViews = finalViews;

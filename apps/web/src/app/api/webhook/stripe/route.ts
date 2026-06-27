@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       session.subscription as string
     );
     */
-
+    const subscription: any = { id: 'mock', customer: 'mock', items: { data: [{ price: { id: 'mock' } }] }, current_period_end: Date.now() / 1000 };
     if (!session?.metadata?.userId) {
       return new NextResponse('User ID is missing in metadata', { status: 400 });
     }
@@ -78,6 +78,7 @@ export async function POST(req: Request) {
       invoice.subscription as string
     );
     */
+    const subscription: any = { id: 'mock', customer: 'mock', items: { data: [{ price: { id: 'mock' } }] }, current_period_end: Date.now() / 1000 };
 
     await db.user.update({
       where: {

@@ -538,7 +538,7 @@ export default function TrafficPage() {
                     <Tooltip 
                       contentStyle={{ backgroundColor: 'rgba(9, 9, 11, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}
                       itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                      labelStyle={{ color: '#06b6d4', fontSize: '10px', textTransform: 'uppercase', tracking: 'widest', marginBottom: '4px' }}
+                      labelStyle={{ color: '#06b6d4', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}
                     />
                     <Area type="monotone" dataKey="views" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
                   </AreaChart>

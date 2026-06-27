@@ -121,7 +121,7 @@ function Monitor3Content({ data }: { data: any }) {
 function WarRoomCore() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [monitorParam, setMonitorParam] = useState(searchParams.get('m') || '1');
+  const [monitorParam, setMonitorParam] = useState(searchParams?.get('m') || '1');
   
   const [data, setData] = useState<any>(null);
   const [systemLoad, setSystemLoad] = useState(12);

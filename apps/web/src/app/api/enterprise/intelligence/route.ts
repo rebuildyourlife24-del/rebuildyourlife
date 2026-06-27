@@ -4,7 +4,7 @@ import { routeAIRequest } from '@/lib/ai-router';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET! || 'secret';
 
 export async function POST(req: Request) {
   try {

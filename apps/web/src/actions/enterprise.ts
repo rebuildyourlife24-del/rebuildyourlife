@@ -4,7 +4,7 @@ import { prisma as db } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET! || 'secret';
 
 export async function getDocuments() {
   const cookieStore = await cookies();
