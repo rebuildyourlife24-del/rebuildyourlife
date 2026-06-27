@@ -740,6 +740,8 @@ model ShopifyStore {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   products     ShopifyProduct[]
+  orders       ShopifyOrder[]
+  expenses     Expense[]
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, shopUrl])
@@ -754,6 +756,7 @@ model ShopifyProduct {
   description String?
   price       Float
   margin      Float?
+  inventory   Int          @default(0)
   status      String       @default("DRAFT")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -761,6 +764,39 @@ model ShopifyProduct {
 
   @@index([storeId])
   @@index([status])
+}
+
+model ShopifyOrder {
+  id              String       @id @default(uuid())
+  storeId         String
+  shopifyOrderId  String       @unique
+  totalPrice      Float
+  currency        String       @default("EUR")
+  status          String       @default("COMPLETED")
+  customerEmail   String?
+  orderedAt       DateTime
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  store           ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([orderedAt])
+}
+
+model Expense {
+  id          String       @id @default(uuid())
+  storeId     String
+  type        String       @default("AD_SPEND") // AD_SPEND, SOFTWARE, LOGISTICS
+  amount      Float
+  currency    String       @default("EUR")
+  date        DateTime
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([date])
 }
 
 model SocialMediaPost {

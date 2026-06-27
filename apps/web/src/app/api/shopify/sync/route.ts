@@ -10,12 +10,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Store ID required' }, { status: 400 });
     }
 
-    // Orion triggers the Swarm Agent
-    const result = await ShopifySwarmService.scanAndQueueProducts(storeId);
+    // 1. Orion triggers the Swarm Agent to scan products
+    const productScanResult = await ShopifySwarmService.scanAndQueueProducts(storeId);
+    
+    // 2. Sync all recent orders and calculate revenue
+    const orderSyncResult = await ShopifySwarmService.syncOrders(storeId);
 
     return NextResponse.json({
-      message: 'Swarm Agents deployed successfully.',
-      ...result
+      message: 'Shopify sync complete.',
+      products: productScanResult,
+      orders: orderSyncResult
     });
 
   } catch (error: any) {

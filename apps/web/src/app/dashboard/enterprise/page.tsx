@@ -139,6 +139,23 @@ export default function EnterpriseOSPage() {
                   <p className="text-2xl font-black text-emerald-400 tracking-widest">{data?.riskLevel || "LAAG"}</p>
                 </div>
               </div>
+
+              {/* Low Stock Alerts */}
+              {data?.lowStockAlerts && data.lowStockAlerts.length > 0 && (
+                <div className="mt-6 p-5 bg-black/40 border border-red-500/30 rounded-xl">
+                  <h3 className="text-xs font-black uppercase text-red-400 flex items-center gap-2 mb-3 tracking-widest">
+                    <ShieldAlert className="w-4 h-4" /> Kritieke Voorraadwaarschuwing (Shopify)
+                  </h3>
+                  <div className="space-y-2">
+                    {data.lowStockAlerts.map((item: any, i: number) => (
+                      <div key={i} className="flex justify-between items-center text-xs text-zinc-300">
+                        <span>{item.title}</span>
+                        <span className="text-red-400 font-bold">{item.inventory} left</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
 

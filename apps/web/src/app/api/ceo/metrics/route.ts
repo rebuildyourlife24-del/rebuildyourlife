@@ -20,10 +20,16 @@ export async function GET(req: Request) {
     }
 
     // Combine actual PNL from TradingBot with ShopifyStore revenue
-    const [tradingBot, shopifyStores, activityLogs] = await Promise.all([
+    const [tradingBot, shopifyStores, activityLogs, lowStockProducts] = await Promise.all([
       prisma.tradingBot.findUnique({ where: { userId } }),
       prisma.shopifyStore.findMany({ where: { userId } }),
-      prisma.systemActivityLog.count({ where: { userId } }) // Using system logs count as 'AI Ops'
+      prisma.systemActivityLog.count({ where: { userId } }), // Using system logs count as 'AI Ops'
+      prisma.shopifyProduct.findMany({
+        where: {
+          store: { userId },
+          inventory: { lt: 10 }
+        }
+      })
     ]);
 
     let totalRevenue = 0;
@@ -54,7 +60,11 @@ export async function GET(req: Request) {
         aiOps: activityLogs,
         riskLevel,
         documents,
-        cashflow: cashflow.length > 0 ? cashflow : null
+        cashflow: cashflow.length > 0 ? cashflow : null,
+        lowStockAlerts: lowStockProducts.map(p => ({
+          title: p.title,
+          inventory: p.inventory
+        }))
       }
     });
 

@@ -8,68 +8,46 @@ export async function GET() {
     // Pak de meest recente store uit de ShopifyStore tabel
     const store = await db.shopifyStore.findFirst({
       where: { userId: TEST_USER_ID },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        products: true,
+        orders: {
+          orderBy: { orderedAt: 'desc' }
+        }
+      }
     });
 
-    if (!store || !store.accessToken) {
+    if (!store) {
       return NextResponse.json({ error: 'Geen Shopify kassa gekoppeld aan de Godbrain.' }, { status: 404 });
     }
 
+    // Filter orders for today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const dateString = today.toISOString();
     
-    const url = `https://${store.shopUrl}/admin/api/2024-01/orders.json?status=any&created_at_min=${dateString}`;
-
-    const shopifyRes = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': store.accessToken,
-      },
-      next: { revalidate: 60 } // Cache voor 60 seconden
-    });
-
-    if (!shopifyRes.ok) {
-      const errorText = await shopifyRes.text();
-      console.warn("Shopify API Error (Bypassing with simulation):", errorText);
-      
-      // Breek in: als we geen toegang hebben, genereren we simulatie-data
-      // zodat de War Room nooit blokkeert.
-      return NextResponse.json({
-        success: true,
-        shop: store.shopUrl,
-        liveData: {
-          revenue: 12450.75,
-          orderCount: 48,
-          aov: 259.39,
-          currency: 'EUR',
-          lastSync: new Date().toISOString(),
-          simulated: true
-        }
-      });
-    }
-
-    const data = await shopifyRes.json();
-    const orders = data.orders || [];
-
-    let totalRevenue = 0;
-    orders.forEach((order: any) => {
-      totalRevenue += parseFloat(order.total_price);
-    });
-
-    const orderCount = orders.length;
-    const aov = orderCount > 0 ? (totalRevenue / orderCount).toFixed(2) : 0;
+    const todaysOrders = store.orders.filter(o => o.orderedAt >= today && o.status === 'COMPLETED');
+    const totalRevenueToday = todaysOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+    const orderCountToday = todaysOrders.length;
+    const aov = orderCountToday > 0 ? (totalRevenueToday / orderCountToday).toFixed(2) : 0;
+    
+    // Find low inventory products (threshold 10)
+    const lowInventoryProducts = store.products.filter(p => p.inventory < 10);
 
     return NextResponse.json({
       success: true,
       shop: store.shopUrl,
       liveData: {
-        revenue: totalRevenue,
-        orderCount: orderCount,
+        revenue: totalRevenueToday,
+        totalRevenueAllTime: store.totalRevenue,
+        orderCount: orderCountToday,
         aov: aov,
-        currency: orders.length > 0 ? orders[0].currency : 'EUR',
-        lastSync: new Date().toISOString()
+        currency: 'EUR',
+        lowInventory: lowInventoryProducts.map(p => ({
+          title: p.title,
+          inventory: p.inventory
+        })),
+        lastSync: new Date().toISOString(),
+        simulated: store.orders.length === 0 // If no actual data yet
       }
     });
 
