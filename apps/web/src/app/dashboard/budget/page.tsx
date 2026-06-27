@@ -7,6 +7,8 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { api, formatApiError } from '@/lib/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { Paywall } from '@/components/ui/Paywall';
+import { Sparkles, Landmark } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -260,6 +262,36 @@ export default function BudgetPage() {
                   ))}
                 </div>
               )}
+            </Card>
+
+            {/* LIVE BANK SYNC PAYWALL */}
+            <Card variant="glass" className="md:col-span-3 p-0 overflow-hidden mt-4">
+              <Paywall requiredTier="PREMIUM">
+                <div className="p-8 border-t-2 border-emerald-500/30 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/10 to-transparent pointer-events-none" />
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                        <Landmark className="w-6 h-6 text-emerald-400" />
+                        Live Bank Transactions (PSD2)
+                      </h3>
+                      <p className="text-sm text-textSecondary mt-2">
+                        Automatische synchronisatie met {'>'} 2.500 banken wereldwijd. Alle afschrijvingen worden direct via The Wealth Vault hierheen gestuurd.
+                      </p>
+                    </div>
+                    <Button 
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-black font-black uppercase tracking-widest text-xs flex items-center gap-2"
+                    >
+                      <Sparkles className="w-4 h-4" /> AI AUTO-CATEGORIZATION
+                    </Button>
+                  </div>
+                  
+                  <div className="bg-black/50 border border-white/5 rounded-xl p-8 text-center">
+                    <p className="text-textSecondary text-sm mb-4">Er zijn deze maand nog geen transacties toegewezen aan je budgetten.</p>
+                    <p className="text-emerald-400/50 text-xs font-mono">Verbind eerst een bank in The Wealth Vault en stel je abonnement in op Premium.</p>
+                  </div>
+                </div>
+              </Paywall>
             </Card>
           </div>
         </>

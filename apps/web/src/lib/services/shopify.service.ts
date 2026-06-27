@@ -16,52 +16,61 @@ export class ShopifySwarmService {
 
       if (!store) throw new Error("Store not found or Swarm lacks access.");
 
-      // 2. The Agent simulates scraping Shopify / AliExpress for trending products.
-      // (In production, this would hit the actual Shopify Admin API or a scraper API).
-      const discoveredProducts = [
-        {
-          shopifyId: `prod_${Date.now()}_1`,
-          title: "Viral Titanium Smart Ring",
-          description: "High margin wearable tech detected trending on TikTok.",
-          price: 149.99,
-          margin: 110.00
-        },
-        {
-          shopifyId: `prod_${Date.now()}_2`,
-          title: "Ergonomic CEO Desk Setup",
-          description: "Premium office equipment. Target audience: high-income earners.",
-          price: 899.00,
-          margin: 450.00
+      // 2. Fetch real products from Shopify Admin API
+      const shopifyApiUrl = `https://${store.shopUrl}/admin/api/2024-01/products.json`;
+      const response = await fetch(shopifyApiUrl, {
+        headers: {
+          'X-Shopify-Access-Token': store.accessToken,
+          'Content-Type': 'application/json'
         }
-      ];
+      });
 
-      // 3. Queue the products as DRAFT / PENDING_APPROVAL
-      const created = await Promise.all(discoveredProducts.map(prod => 
-        prisma.shopifyProduct.create({
-          data: {
+      if (!response.ok) {
+        throw new Error(`Shopify API responded with ${response.status}: ${await response.text()}`);
+      }
+
+      const data = await response.json();
+      const shopifyProducts = data.products || [];
+
+      // 3. Queue the products
+      let createdCount = 0;
+      for (const prod of shopifyProducts) {
+        const firstVariant = prod.variants && prod.variants.length > 0 ? prod.variants[0] : null;
+        const price = firstVariant ? parseFloat(firstVariant.price) : 0;
+        const inventory = firstVariant ? firstVariant.inventory_quantity : 0;
+        
+        await prisma.shopifyProduct.upsert({
+          where: { shopifyId: prod.id.toString() },
+          create: {
             storeId: store.id,
-            shopifyId: prod.shopifyId,
+            shopifyId: prod.id.toString(),
             title: prod.title,
-            description: prod.description,
-            price: prod.price,
-            margin: prod.margin,
-            status: "PENDING_APPROVAL" // CEO MUST APPROVE BEFORE GOING LIVE
+            description: prod.body_html || '',
+            price: price,
+            inventory: inventory,
+            status: "ACTIVE" // Direct import from Shopify
+          },
+          update: {
+            title: prod.title,
+            price: price,
+            inventory: inventory
           }
-        })
-      ));
+        });
+        createdCount++;
+      }
 
       // 4. Log the Agent's action in The Infinite Dossier
       await prisma.agentDossier.create({
         data: {
-          agentType: "SHOPIFY_SCRAPER",
-          action: "SCANNED_TRENDING_PRODUCTS",
+          agentType: "SYSTEM",
+          action: "SYNCED_SHOPIFY_PRODUCTS",
           target: store.shopUrl,
-          details: `Found ${created.length} high-margin products. Placed in War Room for CEO approval.`,
+          details: `Synced ${createdCount} products from live store.`,
           userId: store.userId
         }
       });
 
-      return { success: true, queuedProducts: created.length };
+      return { success: true, queuedProducts: createdCount };
     } catch (error: any) {
       // Log failure to Dossier
       await prisma.agentDossier.create({

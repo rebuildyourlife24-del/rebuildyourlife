@@ -2,6 +2,8 @@ import { db } from '@/lib/db';
 import { Lock, ShieldAlert, TrendingUp, Zap } from 'lucide-react';
 import Link from 'next/link';
 
+import { HermesScoutButton } from '@/components/radar/HermesScoutButton';
+
 export default async function OpportunitiesPage() {
   // Simuleer auth - we pakken de eerste gebruiker in de DB (of pas dit aan naar next-auth logic)
   const currentUser = await db.user.findFirst();
@@ -35,8 +37,7 @@ export default async function OpportunitiesPage() {
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
               Hermes Analytics Active
             </div>
-            <button className="flex items-center gap-2 px-6 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/50 hover:border-cyan-400 rounded-lg text-cyan-400 font-bold uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] group">
-              <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />Hermes Scout Inzetten</button>
+            <HermesScoutButton />
           </div>
         </div>
 

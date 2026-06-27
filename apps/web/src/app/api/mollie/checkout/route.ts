@@ -139,36 +139,8 @@ export async function POST(req: Request) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rebuildyourlife.eu";
 
     if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
-      // --- DEVELOPMENT / MOCK MODE ---
-      console.log(`[DEV] Mollie API Key is missing or default. Simulating checkout for ${user.email}`);
-
-      // Directly upgrade the user in the database in mock/dev mode
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          subscriptionTier: planConfig.tier,
-          subscriptionStatus: "ACTIVE",
-          onboardingCompleted: true,
-          mollieCustomerId: "cst_mock_omega_customer_12345",
-        }
-      });
-
-      // Send welcome notification
-      await prisma.notification.create({
-        data: {
-          userId: user.id,
-          title: `Welkom bij ${planConfig.tier === 'ECOM' ? 'Commerce Syndicate' : planConfig.tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'}!`,
-          message: `Je onboarding betaling is succesvol verwerkt. Je hebt nu toegang tot alle functionaliteiten.`,
-        },
-      });
-      
-      const mockSuccessUrl = new URL(successUrl);
-      mockSuccessUrl.searchParams.set('mollie_session_id', 'tr_mock_omega_mollie_12345');
-      mockSuccessUrl.searchParams.set('userId', user.id);
-      mockSuccessUrl.searchParams.set('tier', planConfig.tier);
-      mockSuccessUrl.searchParams.set('priceId', priceId);
-      
-      return NextResponse.json({ url: mockSuccessUrl.toString() });
+      console.error("[MOLLIE] CRITICAL ERROR: Mollie API key not configured on server.");
+      return NextResponse.json({ error: "Mollie API key is missing. Checkout aborted." }, { status: 500 });
     }
 
     // --- REAL MOLLIE CHECKOUT ---

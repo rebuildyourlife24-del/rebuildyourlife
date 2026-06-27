@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { api, formatApiError } from '@/lib/api';
+import { Activity } from 'lucide-react';
 
 interface HealthLog {
   id: string;
@@ -63,6 +64,7 @@ export default function HealthPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [serverError, setServerError] = useState('');
   const [form, setForm] = useState<DailyForm>({
     steps: '',
@@ -111,6 +113,18 @@ export default function HealthPage() {
       setServerError(formatApiError(err));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSyncWearable = async () => {
+    setSyncing(true);
+    try {
+      await api.post('/health/sync');
+      loadLogs();
+    } catch (err) {
+      console.error("Fout bij syncen wearable", err);
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -206,12 +220,18 @@ export default function HealthPage() {
             Je lichaam is je commandocentrum — voed het, beweeg het, rust het.
           </motion.p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          Log Vandaag
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleSyncWearable} loading={syncing} className="border-cyan-500/30 text-cyan-400 bg-cyan-950/20 hover:bg-cyan-900/40">
+            <Activity className="w-4 h-4 mr-2" />
+            Sync Wearable
+          </Button>
+          <Button onClick={() => setIsModalOpen(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="mr-2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Log Vandaag
+          </Button>
+        </div>
       </div>
 
       {/* Stat Cards */}

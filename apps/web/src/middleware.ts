@@ -34,21 +34,21 @@ export default async function middleware(request: NextRequest) {
     return rewriteRes;
   };
 
-  // 1. ENTERPRISE / CEO DOMAIN (enterprise-henksemler.ai)
-  if (cleanHostname === 'enterprise-henksemler.ai') {
-    if (pathname === '/') return createRewrite('/dashboard/trinity');
-    return response;
-  }
-
-  // 2. ADMIN / MANAGER DOMAIN (ai-henksemler.nl)
+  // 1. DASHBOARD DOMAIN (ai-henksemler.nl)
   if (cleanHostname === 'ai-henksemler.nl') {
-    if (pathname === '/') return createRewrite('/os');
+    if (pathname === '/') return createRewrite('/dashboard');
     return response;
   }
 
-  // 3. CLIENT DOMAIN (rebuildyourlife.eu)
+  // 2. AI ASSISTANT DOMAIN (ai.ai-henksemler.nl)
+  if (cleanHostname === 'ai.ai-henksemler.nl') {
+    if (pathname === '/') return createRewrite('/dashboard/ai-assistant');
+    return response;
+  }
+
+  // 3. FRONTEND PLATFORM DOMAIN (rebuildyourlife.eu)
   if (cleanHostname === 'rebuildyourlife.eu') {
-    // Geen blokkade meer voor /dashboard of /admin op het hoofddomein
+    // Normal routing to frontpage / app
     return response;
   }
 

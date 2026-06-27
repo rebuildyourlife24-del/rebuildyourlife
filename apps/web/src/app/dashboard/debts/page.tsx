@@ -283,6 +283,31 @@ export default function DebtsPage() {
             ))}
           </div>
         )}
+
+        {/* PSD2 AUTO-AFLOSSING PAYWALL */}
+        <div className="mt-8 border-t border-navyLight/50 pt-8 relative">
+          <Paywall requiredTier="PREMIUM">
+            <div className="bg-[#0a192f]/40 p-6 border border-emerald-500/30 rounded-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[50px] pointer-events-none" />
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-emerald-400" /> PSD2 Auto-Settlement Engine
+                  </h3>
+                  <p className="text-xs text-textSecondary mt-2">
+                    Koppel je wereldwijde bank via The Wealth Vault en laat de AI automatisch de optimale aflossingen doen op je incassodossiers. 
+                  </p>
+                </div>
+                <div className="bg-emerald-950/40 text-emerald-400 text-[10px] font-bold tracking-widest px-3 py-1 rounded-full border border-emerald-500/30">
+                  REQUIRES PREMIUM
+                </div>
+              </div>
+              <div className="text-center py-6 text-sm text-emerald-400/50 font-mono">
+                [SYSTEM WAITING FOR LIVE BANK SYNC AUTHORIZATION]
+              </div>
+            </div>
+          </Paywall>
+        </div>
       </div>
 
       {scenarios.length > 0 && (

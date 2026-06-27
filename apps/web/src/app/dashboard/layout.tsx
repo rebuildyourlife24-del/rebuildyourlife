@@ -134,6 +134,11 @@ const getGroupedNavItems = (user: any) => {
           icon: <Network size={16} />,
         },
         {
+          label: 'Network CRM',
+          href: '/dashboard/network',
+          icon: <Ghost size={16} />,
+        },
+        {
           label: 'Content Factory',
           href: '/dashboard/factory',
           icon: <Rocket size={16} />,

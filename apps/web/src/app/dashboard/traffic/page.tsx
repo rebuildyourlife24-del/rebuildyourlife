@@ -81,21 +81,9 @@ export default function TrafficPage() {
     fetchCredits();
     fetchCampaigns();
     
-    // Check URL parameters for simulated payment completion
-    const urlParams = new URLSearchParams(window.location.search);
-    const simulatePayment = urlParams.get('simulate-payment');
-    const tx = urlParams.get('tx');
-    const creds = urlParams.get('credits');
-
-    if (simulatePayment === 'true' && tx && creds) {
-      setSandboxTxId(tx);
-      setSandboxCredits(parseInt(creds));
-      setShowSandboxModal(true);
-      
-      // Clean up URL parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
+    fetchCredits();
+    fetchCampaigns();
+    
     // Polling active/rendering campaigns
     const interval = setInterval(() => {
       pollCampaigns();
@@ -611,39 +599,6 @@ export default function TrafficPage() {
                 {isBuying ? 'PROCESSING...' : '💳 RECHARGE VIA MOLLIE'}
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: MOLLIE SANDBOX SIMULATOR */}
-      {showSandboxModal && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-zinc-950 border border-cyan-500/30 rounded-2xl p-8 max-w-md w-full shadow-[0_0_30px_rgba(6,182,212,0.15)] space-y-6">
-            <div className="border-b border-white/10 pb-4 flex items-center gap-4">
-              <div className="w-3 h-3 bg-cyan-500 animate-ping rounded-full" />
-              <h3 className="text-sm font-black uppercase tracking-widest text-cyan-400">
-                MOLLIE GATEWAY (SANDBOX)
-              </h3>
-            </div>
-
-            <div className="space-y-5 text-sm font-medium text-zinc-300">
-              <div className="bg-black/50 p-5 rounded-xl border border-white/5 space-y-3">
-                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">TRANSACTION ID:</span> <span className="text-white text-xs">{sandboxTxId}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">CREDIT PACKAGE:</span> <span className="text-cyan-400 font-bold text-xs">{sandboxCredits} Credits</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">PAYMENT TOTAL:</span> <span className="text-white text-xs">€{(sandboxCredits/10).toFixed(2)}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">ENVIRONMENT:</span> <span className="text-emerald-400 text-[10px] uppercase font-bold tracking-widest">local_sandbox</span></div>
-              </div>
-
-              <p className="text-[11px] leading-relaxed text-zinc-400 text-center px-2">U heeft zojuist de Mollie gateway betaling afgerond in testmodus. Klik op de onderstaande knop om de credits direct bij te schrijven op uw Rebuild account.</p>
-            </div>
-
-            <button 
-              onClick={handleCompleteSandboxPayment}
-              disabled={isBuying}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest py-3.5 rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
-            >
-              {isBuying ? 'PROCESSING...' : '✅ CONFIRM & UPDATE SALDO'}
-            </button>
           </div>
         </div>
       )}

@@ -35,21 +35,9 @@ export async function GET(request: Request) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    // Hardcoded Godmode user
-    const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
-
-    let user = await db.user.findUnique({ where: { id: TEST_USER_ID }});
+    let user = await db.user.findFirst();
     if (!user) {
-      user = await db.user.create({
-        data: {
-          id: TEST_USER_ID,
-          email: "ceo@godmode.com",
-          firstName: "Supreme",
-          lastName: "Overseer",
-          passwordHash: "hashedpassword",
-          role: "USER"
-        }
-      });
+      return NextResponse.json({ error: 'System error: No active user found for assimilation.' }, { status: 400 });
     }
 
     // Clean URL

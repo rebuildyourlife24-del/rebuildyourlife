@@ -3,11 +3,14 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   try {
-    const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+    const user = await db.user.findFirst();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     
     // Pak de meest recente store uit de ShopifyStore tabel
     const store = await db.shopifyStore.findFirst({
-      where: { userId: TEST_USER_ID },
+      where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
       include: {
         products: true,
@@ -30,6 +33,10 @@ export async function GET() {
     const orderCountToday = todaysOrders.length;
     const aov = orderCountToday > 0 ? (totalRevenueToday / orderCountToday).toFixed(2) : 0;
     
+    // Winstmarge Calculator (EBITDA) - As per Roadmap Module 1
+    // In e-commerce, a standard baseline is 40% margin if not explicitly set per product
+    const estimatedProfitMargin = totalRevenueToday * 0.40;
+    
     // Find low inventory products (threshold 10)
     const lowInventoryProducts = store.products.filter(p => p.inventory < 10);
 
@@ -38,6 +45,7 @@ export async function GET() {
       shop: store.shopUrl,
       liveData: {
         revenue: totalRevenueToday,
+        profit: estimatedProfitMargin,
         totalRevenueAllTime: store.totalRevenue,
         orderCount: orderCountToday,
         aov: aov,

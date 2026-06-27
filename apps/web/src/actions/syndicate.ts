@@ -48,6 +48,8 @@ export async function addSyndicateTarget(campaignId: string, email: string, name
   return target;
 }
 
+import { Groq } from 'groq-sdk';
+
 // Lanceer de aanval (verstuur de e-mails via de Resend API)
 export async function launchSyndicateCampaign(campaignId: string) {
   const campaign = await db.syndicateCampaign.findUnique({
@@ -57,24 +59,54 @@ export async function launchSyndicateCampaign(campaignId: string) {
 
   if (!campaign) throw new Error("Campagne niet gevonden");
 
+  const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+  });
+
   let emailsSent = 0;
 
   for (const target of campaign.targets) {
     if (target.status === 'SENT') continue; // Al gemaild
 
-    const mailHtml = `
-      <h2>Bericht van The Syndicate Proxy</h2>
-      <p>Beste ${target.name},</p>
-      <p>Namens onze cliënt sommeren wij u vriendelijk doch dringend om de openstaande vordering van <strong>€${target.debtAmount?.toFixed(2) || 'n.n.b'}</strong> te heroverwegen of kwijt te schelden.</p>
-      <p>Bij het uitblijven van een schikking zullen wij verdere (fiscale en juridische) stappen ondernemen tegen ${target.company || 'uw organisatie'}.</p>
-      <p>Hoogachtend,<br/>Proxy Legal Services</p>
-    `;
+    // Generate highly personalized cold email via AI
+    let mailHtml = "";
+    try {
+      const prompt = `Schrijf een professionele maar dwingende (B2B) acquisitie of sommatie e-mail namens 'The Syndicate' aan ${target.name} van het bedrijf '${target.company || 'hun bedrijf'}'. 
+De e-mail gaat over de campagne: "${campaign.name}" (${campaign.description || 'Geen extra info'}).
+${target.debtAmount ? `Het betreft een financiële kwestie of openstaande post van €${target.debtAmount}.` : 'Het betreft een acquisitie/samenwerkingsvoorstel.'}
+De e-mail moet in het Nederlands zijn, formeel, kort (max 3 alinea's), direct, en eindigen met 'Hoogachtend, Proxy Legal Services & The Syndicate'.
+Geef ALLEEN de HTML code van de e-mail terug (zonder \`\`\`html tags, gewoon puur de code), gebruik <h2>, <p>, <strong> tags waar nuttig. Maak het strak.`;
+
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'llama3-70b-8192',
+        temperature: 0.5,
+      });
+
+      mailHtml = chatCompletion.choices[0]?.message?.content || "";
+      // Strip possible markdown blocks if AI decides to include them anyway
+      mailHtml = mailHtml.replace(/```html/g, "").replace(/```/g, "").trim();
+      
+      if (!mailHtml) throw new Error("AI returned empty email body");
+    } catch (aiErr) {
+      console.error("AI Email Generation failed, falling back to template:", aiErr);
+      // Fallback
+      mailHtml = `
+        <h2>Bericht van The Syndicate Proxy</h2>
+        <p>Beste ${target.name},</p>
+        <p>Namens onze cliënt sommeren wij u vriendelijk doch dringend om contact op te nemen inzake de campagne: ${campaign.name}.</p>
+        ${target.debtAmount ? `<p>Het gaat om een bedrag van <strong>€${target.debtAmount?.toFixed(2)}</strong>.</p>` : ''}
+        <p>Hoogachtend,<br/>Proxy Legal Services</p>
+      `;
+    }
 
     try {
-      // PROD-READY: Dit roept de échte Resend API aan als RESEND_API_KEY bestaat in .env
       const resendKey = process.env.RESEND_API_KEY;
       
       if (resendKey) {
+        // Gebruik het domein dat geverifieerd is in Resend, of de default testing mail van Resend
+        const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'Acquisitie <onboarding@resend.dev>';
+        
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -82,19 +114,17 @@ export async function launchSyndicateCampaign(campaignId: string) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            from: 'Proxy Legal <proxy@godmode.com>',
+            from: fromAddress,
             to: target.email,
-            subject: `Sommatie: Openstaande Kwestie ${target.company ? target.company : ''}`,
+            subject: `Confidential: ${campaign.name} - ${target.company || target.name}`,
             html: mailHtml
           })
         });
       } else {
-        // Fallback: Als er nog geen API key is, simuleren we succes (maar we updaten wél de productie-DB)
         console.log(`[SIMULATED PROD] E-mail verstuurd naar ${target.email}`);
         await new Promise(r => setTimeout(r, 1000));
       }
 
-      // Markeer de target als verzonden in de ECHTE database
       await db.syndicateTarget.update({
         where: { id: target.id },
         data: { 

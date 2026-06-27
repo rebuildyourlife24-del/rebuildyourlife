@@ -27,72 +27,24 @@ export interface SimulatedPurchase {
   createdAt: Date;
 }
 
-// In-memory fallback database for robustness when tables are not migrated
-const inMemoryCampaigns = new Map<string, SimulatedCampaign[]>();
-const inMemoryPurchases = new Map<string, SimulatedPurchase[]>();
-const inMemoryCredits = new Map<string, number>();
 
-// Helper to generate fake views history
-function generateViewsHistory(days = 7) {
-  const history = [];
-  const now = new Date();
-  let baseViews = 1200;
-  let baseImpressions = 5000;
-  
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(now.getDate() - i);
-    const dateStr = date.toISOString().split("T")[0];
-    
-    const multiplier = 1 + Math.random() * 0.4;
-    const views = Math.floor(baseViews * multiplier);
-    const impressions = Math.floor(baseImpressions * multiplier);
-    
-    history.push({
-      date: dateStr,
-      views,
-      impressions
-    });
-    
-    baseViews = views;
-    baseImpressions = impressions;
-  }
-  return history;
-}
 
 export class TrafficService {
-  // --- CREDITS ---
   static async getUserCredits(userId: string): Promise<number> {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { adCredits: true } as any
-      });
-      return (user as any)?.adCredits ?? 0;
-    } catch (error) {
-      console.warn("Database adCredits query failed, falling back to memory:", error);
-      if (!inMemoryCredits.has(userId)) {
-        inMemoryCredits.set(userId, 500); // Default starting credits for trial/demo
-      }
-      return inMemoryCredits.get(userId) || 0;
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { adCredits: true } as any
+    });
+    return (user as any)?.adCredits ?? 0;
   }
 
   static async addCredits(userId: string, credits: number): Promise<number> {
-    try {
-      const current = await this.getUserCredits(userId);
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: { adCredits: current + credits } as any
-      });
-      return (updatedUser as any).adCredits;
-    } catch (error) {
-      console.warn("Database adCredits update failed, using memory:", error);
-      const current = inMemoryCredits.get(userId) || 0;
-      const updated = current + credits;
-      inMemoryCredits.set(userId, updated);
-      return updated;
-    }
+    const current = await this.getUserCredits(userId);
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { adCredits: current + credits } as any
+    });
+    return (updatedUser as any).adCredits;
   }
 
   static async deductCredits(userId: string, credits: number): Promise<boolean> {
@@ -100,18 +52,11 @@ export class TrafficService {
     if (current < credits) {
       return false;
     }
-    try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { adCredits: current - credits } as any
-      });
-      return true;
-    } catch (error) {
-      console.warn("Database adCredits deduction failed, using memory:", error);
-      const updated = current - credits;
-      inMemoryCredits.set(userId, updated);
-      return true;
-    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: { adCredits: current - credits } as any
+    });
+    return true;
   }
 
   // --- MOLLIE AD-CREDITS CHECKOUT ---
@@ -129,26 +74,60 @@ export class TrafficService {
       createdAt: new Date()
     };
 
-    try {
-      await prisma.adCreditPurchase.create({
-        data: {
-          id: transactionId,
-          userId,
-          amount: parseFloat(eurAmount),
-          credits: creditAmount,
-          status: "PENDING"
-        }
-      });
-    } catch (e) {
-      console.warn("Could not save purchase in database, storing in-memory:", e);
-      const userPurchases = inMemoryPurchases.get(userId) || [];
-      userPurchases.push(purchase);
-      inMemoryPurchases.set(userId, userPurchases);
+    await prisma.adCreditPurchase.create({
+      data: {
+        id: transactionId,
+        userId,
+        amount: parseFloat(eurAmount),
+        credits: creditAmount,
+        status: "PENDING"
+      }
+    });
+
+    const mollieKey = process.env.MOLLIE_API_KEY;
+    if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
+      throw new Error("Mollie API key is missing. Checkout aborted.");
     }
 
-    // Return the simulated dashboard callback route
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rebuildyourlife.eu";
+    const paymentRequestBody = {
+      amount: {
+        currency: "EUR",
+        value: eurAmount,
+      },
+      description: `RebuildYourLife - ${creditAmount} Ad-Credits`,
+      redirectUrl: `${appUrl}/dashboard/traffic?payment=success&tx=${transactionId}`,
+      webhookUrl: `${appUrl}/api/mollie/webhook`,
+      metadata: {
+        userId: userId,
+        purchaseId: transactionId,
+        type: "AD_CREDITS"
+      },
+    };
+
+    const paymentResponse = await fetch("https://api.mollie.com/v2/payments", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${mollieKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentRequestBody),
+    });
+
+    const paymentData = await paymentResponse.json();
+
+    if (!paymentResponse.ok) {
+      console.error("Mollie checkout API error:", paymentData);
+      throw new Error(paymentData.detail || "Mollie payment creation failed");
+    }
+
+    const checkoutUrl = paymentData._links?.checkout?.href;
+    if (!checkoutUrl) {
+      throw new Error("No checkout URL returned from Mollie");
+    }
+
     return {
-      checkoutUrl: `/dashboard/traffic?simulate-payment=true&tx=${transactionId}&credits=${creditAmount}`,
+      checkoutUrl: checkoutUrl,
       purchaseId: transactionId
     };
   }

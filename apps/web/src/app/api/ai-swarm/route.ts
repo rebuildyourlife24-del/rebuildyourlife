@@ -37,7 +37,7 @@ Wees direct, bondig en resultaatgericht. Geef geen introducties zoals "Hier is h
       prompt: prompt,
       onFinish: async ({ text }) => {
         // Sla de actie op in de database nadat streaming klaar is
-        await prisma.agentTask.create({
+        await prisma.globalNeuralNetwork.create({
           data: {
             agentId: agent.id,
             sourceType: 'MANUAL_DELEGATION',
