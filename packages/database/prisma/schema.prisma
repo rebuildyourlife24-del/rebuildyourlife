@@ -49,20 +49,23 @@ model User {
   apiKeys                ApiKey[]
   auditLogs              AuditLog[]
   bankConnections        BankConnection[]
+  books                  Book[]
   budgets                Budget[]
   businessClients        BusinessClient[]
   creditorDossiers       CreditorDossier[]
   debts                  Debt[]
+  documents              Document[]
   emergencyRequests      EmergencyRequest[]
   franchises             Franchise[]
   goals                  Goal[]
   goalDossiers           GoalDossier[]
   godbrainAccount        GodbrainAccount?
+  habits                 Habit[]
   healthLogs             HealthLog[]
+  intelligenceTargets    IntelligenceTarget[]
   interceptionAlerts     InterceptionAlert[]         @relation("TargetedUser")
   justiceLedgers         JusticeLedger[]
   legalContacts          LegalContact[]
-  intelligenceTargets    IntelligenceTarget[]
   lifeAreas              LifeArea[]
   marketingConversions   MarketingConversion[]
   notifications          Notification[]
@@ -85,9 +88,6 @@ model User {
   treasuryVaults         TreasuryVault[]
   lessonProgress         UserLessonProgress[]
   walletTransactions     WalletTransaction[]
-  documents              Document[]
-  habits                 Habit[]
-  books                  Book[]
 
   @@index([email])
   @@index([role])
@@ -740,8 +740,6 @@ model ShopifyStore {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   products     ShopifyProduct[]
-  orders       ShopifyOrder[]
-  expenses     Expense[]
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, shopUrl])
@@ -756,7 +754,6 @@ model ShopifyProduct {
   description String?
   price       Float
   margin      Float?
-  inventory   Int          @default(0)
   status      String       @default("DRAFT")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -764,39 +761,6 @@ model ShopifyProduct {
 
   @@index([storeId])
   @@index([status])
-}
-
-model ShopifyOrder {
-  id              String       @id @default(uuid())
-  storeId         String
-  shopifyOrderId  String       @unique
-  totalPrice      Float
-  currency        String       @default("EUR")
-  status          String       @default("COMPLETED")
-  customerEmail   String?
-  orderedAt       DateTime
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  store           ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  @@index([storeId])
-  @@index([orderedAt])
-}
-
-model Expense {
-  id          String       @id @default(uuid())
-  storeId     String
-  type        String       @default("AD_SPEND") // AD_SPEND, SOFTWARE, LOGISTICS
-  amount      Float
-  currency    String       @default("EUR")
-  date        DateTime
-  description String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  @@index([storeId])
-  @@index([date])
 }
 
 model SocialMediaPost {
@@ -1584,14 +1548,14 @@ model AgentEvolutionLog {
 }
 
 model Document {
-  id          String   @id @default(uuid())
-  title       String
-  type        String   @default("INTELLIGENCE_REPORT") // of "CONTRACT"
-  content     String   @db.Text
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  title     String
+  type      String   @default("INTELLIGENCE_REPORT")
+  content   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -1606,40 +1570,38 @@ model Habit {
   color           String   @default("#06b6d4")
   glowColor       String   @default("rgba(6,182,212,0.5)")
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Book {
-  id          String   @id @default(uuid())
-  title       String
-  author      String
-  read        Boolean  @default(false)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  title     String
+  author    String
+  read      Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model IntelligenceTarget {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  type          String   // COMMERCE, TRADE, SOCIAL, RYL_DEV
-  target        String   // URL, keyword, niche
-  status        String   @default("ACTIVE")
+  type          String
+  target        String
+  status        String    @default("ACTIVE")
   lastScannedAt DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
   @@index([status])
 }
-
