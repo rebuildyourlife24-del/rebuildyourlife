@@ -26,7 +26,8 @@ import {
   FileText,
   RefreshCw
 } from 'lucide-react';
-import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
+import dynamic from 'next/dynamic';
+const NeuralSwarm = dynamic(() => import('@/components/ui/NeuralSwarm').then(mod => mod.NeuralSwarm), { ssr: false });
 import { getWarRoomStatsAction } from '@/actions/warRoomData';
 
 // Reusable components
