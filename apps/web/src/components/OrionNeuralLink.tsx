@@ -3,58 +3,37 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, X, Mic, Send, Command, Zap } from 'lucide-react';
+import { useChat } from 'ai/react';
 
 export function OrionNeuralLink() {
   const [isOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  const [messages, setMessages] = useState([
-    { role: 'system', content: 'ORION CORE ONLINE. NEURAL LINK ESTABLISHED. WAITING FOR DIRECTIVE.' }
-  ]);
+  const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+    api: '/api/ai/chat',
+    initialMessages: [
+      { id: '1', role: 'system', content: 'ORION CORE ONLINE. NEURAL LINK ESTABLISHED. WAITING FOR DIRECTIVE.' }
+    ],
+    onFinish: (message) => {
+      // TEXT TO SPEECH System (alleen voor antwoorden van Orion)
+      if ('speechSynthesis' in window) {
+        // Strip markdown stars for speech
+        const cleanText = message.content.replace(/\*/g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'nl-NL';
+        utterance.pitch = 0.8;
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  });
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
-
-  const handleSend = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage = input;
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-    setInput('');
-
-    // Simulate Orion Processing (We can hook this up to /api/ai/chat later)
-    setTimeout(() => {
-      let response = '';
-      const lower = userMessage.toLowerCase();
-      
-      if (lower.includes('omzet') || lower.includes('geld')) {
-        response = "Ik detecteer fluctuerende winstmarges. Simulation Protocol is de beste manier om projecties in de War Room te bekijken.";
-      } else if (lower.includes('winkel') || lower.includes('shopify')) {
-        response = "De Shopify kanalen zijn in afwachting van API assimilatie. Tot die tijd opereer ik in stealth mode.";
-      } else if (lower.includes('hallo') || lower.includes('hey')) {
-        response = "Gegroet, Supreme Overseer. Welk proces zal ik vandaag domineren?";
-      } else {
-        response = `Command ontvangen. Ik analyseer de wiskundige waarschijnlijkheid op succes. Bezig met optimaliseren.`;
-      }
-
-      setMessages(prev => [...prev, { role: 'system', content: response }]);
-      
-      // TEXT TO SPEECH Systeem
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(response);
-        utterance.lang = 'nl-NL';
-        utterance.pitch = 0.8; // Beetje lagere, serieuze stem
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
-      }
-    }, 1500);
-  };
 
   const toggleListening = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -135,13 +114,13 @@ export function OrionNeuralLink() {
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div 
-                    className={`max-w-[85%] p-3 rounded-xl text-sm font-mono leading-relaxed ${
+                    className={`max-w-[85%] p-3 rounded-xl text-sm font-mono leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user' 
                         ? 'bg-zinc-800 text-white border border-zinc-700 rounded-tr-none' 
                         : 'bg-cyan-950/30 text-cyan-100 border border-cyan-500/30 rounded-tl-none shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]'
                     }`}
                   >
-                    {msg.role === 'system' && (
+                    {msg.role !== 'user' && (
                       <div className="flex items-center gap-2 mb-1 opacity-60">
                         <Zap className="w-3 h-3 text-cyan-400" />
                         <span className="text-[9px] uppercase tracking-widest text-cyan-400">Orion</span>
@@ -155,7 +134,7 @@ export function OrionNeuralLink() {
 
             {/* Input Area */}
             <div className="p-4 border-t border-cyan-500/20 bg-black/40 relative z-10">
-              <form onSubmit={handleSend} className="flex gap-2">
+              <form onSubmit={handleSubmit} className="flex gap-2">
                 <button 
                   type="button"
                   onClick={toggleListening}
@@ -167,7 +146,7 @@ export function OrionNeuralLink() {
                   <input 
                     type="text" 
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={handleInputChange}
                     placeholder="Directief invoeren..."
                     className="w-full bg-zinc-900/80 text-white font-mono text-sm px-4 py-3 rounded-xl border border-zinc-800 focus:border-cyan-500/50 outline-none pr-10"
                   />

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useRequireAuth } from '@/lib/auth';
+import { AIHermesSidebar } from '@/components/AIHermesSidebar';
 import { 
   Shield, 
   Layers, 
@@ -53,14 +54,19 @@ const getGroupedNavItems = (user: any) => {
           icon: <Brain size={16} />,
         },
         {
+          label: 'E-Com Control Matrix',
+          href: '/dashboard/approvals',
+          icon: <Network size={16} />,
+        },
+        {
           label: 'AI Taskforce',
           href: '/dashboard/ai-team',
-          icon: <Network size={16} />,
+          icon: <Cpu size={16} />,
         },
         {
           label: 'AI Concierge Logs',
           href: '/dashboard/concierge',
-          icon: <Cpu size={16} />,
+          icon: <Terminal size={16} />,
         },
         {
           label: 'Orion Neural Link',
@@ -537,19 +543,20 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar">
-          <motion.div
-            initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="w-full h-full"
-          >
-            {children}
-          </motion.div>
-        </main>
+        <div className="flex flex-1 overflow-hidden">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar">
+            <motion.div
+              initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="w-full h-full"
+            >
+              {children}
+            </motion.div>
+          </main>
+          <AIHermesSidebar />
+        </div>
       </div>
-
-      <OrionNeuralLink />
     </div>
   );
 }

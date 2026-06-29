@@ -22,12 +22,12 @@ import {
   Tv,
   DollarSign,
   Heart,
+  AlertTriangle,
+  Server,
   Layers,
   FileText,
   RefreshCw
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
-const NeuralSwarm = dynamic(() => import('@/components/ui/NeuralSwarm').then(mod => mod.NeuralSwarm), { ssr: false });
 import { getWarRoomStatsAction } from '@/actions/warRoomData';
 
 // Reusable components
@@ -220,14 +220,11 @@ function WarRoomCore() {
                 </div>
                 <div className="text-[9px] bg-cyan-400/20 text-cyan-400 px-2 py-1 rounded">GESYNCHRONISEERD</div>
              </div>
-            <div className="flex-1 relative p-4 flex flex-col items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none opacity-50 scale-125">
-                   <NeuralSwarm theme="cyan" />
-                </div>
-               <div className="relative z-10 w-full mt-auto">
-                  {!isReady ? <RefreshCw className="w-6 h-6 animate-spin text-zinc-700 mx-auto mb-4" /> : <Monitor2Content data={data} />}
-               </div>
-            </div>
+              <div className="flex-1 relative p-4 flex flex-col items-center justify-center overflow-hidden">
+                 <div className="relative z-10 w-full mt-auto">
+                    {!isReady ? <RefreshCw className="w-6 h-6 animate-spin text-zinc-700 mx-auto mb-4" /> : <Monitor2Content data={data} />}
+                 </div>
+              </div>
          </motion.div>
 
          {/* MONITOR 3: Security & Threats */}
