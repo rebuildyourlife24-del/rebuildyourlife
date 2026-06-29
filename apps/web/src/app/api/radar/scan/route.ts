@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Groq } from 'groq-sdk';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
+    const groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+
     const user = await db.user.findFirst();
     if (!user) {
       return NextResponse.json({ error: "No user found" }, { status: 401 });

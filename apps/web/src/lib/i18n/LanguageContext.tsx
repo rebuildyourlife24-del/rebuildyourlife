@@ -57,9 +57,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return text;
   };
 
-  if (!mounted) {
-    return <div className="min-h-screen bg-black" />; // Prevent hydration mismatch
-  }
+
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

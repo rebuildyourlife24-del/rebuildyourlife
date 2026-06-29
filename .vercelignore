@@ -1,0 +1,10 @@
+node_modules
+.next
+.turbo
+.git
+out
+build
+*.zip
+*.rar
+*.tar.gz
+*.log

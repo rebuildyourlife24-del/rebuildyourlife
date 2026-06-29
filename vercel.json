@@ -7,7 +7,7 @@
   "crons": [
     {
       "path": "/api/hermes/learn",
-      "schedule": "0 */2 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
