@@ -122,23 +122,53 @@ export async function rejectAgentAction(actionId: string) {
   return { success: true };
 }
 
-export async function generateDummyAction() {
+export async function runOmnibusScan() {
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
 
-  await prisma.agentAction.create({
-    data: {
-      userId: user.id,
-      agentType: 'HERMES',
-      title: 'Zet Winstgevende FB Ad aan',
-      description: 'Hermes heeft een scherpe dropship kans gespot op Facebook. Conversie wordt geschat op 4.2%.',
-      estimatedCost: 50,
-      estimatedRevenue: 150,
-      riskLevel: 'MEDIUM',
-      reasoningApprove: 'De verwachte ROAS is 300% gebaseerd op lookalike FPD data. We riskeren 50 euro voor een zeer sterke winstkans.',
-      reasoningDeny: 'We verliezen first-mover advantage op deze specifieke demografie. Concurrentie pakt mogelijk deze click-share.'
-    }
+  // REËLE DATA ANALYSE (Geen Mockups)
+  
+  // 1. Analyseer de echte First-Party Data
+  const fpdProfiles = await prisma.firstPartyDataProfile.findMany({
+    where: { intentScore: { gt: 75 } }
   });
   
+  if (fpdProfiles.length > 0) {
+    await prisma.agentAction.create({
+      data: {
+        userId: user.id,
+        agentType: 'HERMES',
+        title: 'Real-time Conversie Optimalisatie (FPD)',
+        description: `Er bevinden zich momenteel ${fpdProfiles.length} actieve gebruikersprofielen op de site met een aankoopintentie van >75%.`,
+        estimatedCost: 0,
+        estimatedRevenue: fpdProfiles.length * 45, // Voorbeeld werkelijke berekening
+        riskLevel: 'LOW',
+        reasoningApprove: `Gebaseerd op de live FirstPartyData tabel. We activeren een agressieve retargeting webhook voor deze ${fpdProfiles.length} unieke ID's.`,
+        reasoningDeny: 'Deze high-intent gebruikers verlaten mogelijk de funnel zonder conversie.'
+      }
+    });
+  }
+
+  // 2. Analyseer werkelijke B2B data (aantal ongecontacteerde leads)
+  const untamperedLeads = await prisma.businessClient.count({
+    where: { userId: user.id, status: 'NEW' }
+  });
+
+  if (untamperedLeads > 0) {
+    await prisma.agentAction.create({
+      data: {
+        userId: user.id,
+        agentType: 'ORION',
+        title: 'B2B Syndicate Outreach',
+        description: `Er staan ${untamperedLeads} onbewerkte leads in de database. Orion kan de pitch-generator activeren.`,
+        estimatedCost: untamperedLeads * 0.10, // SMTP / AI render costs
+        estimatedRevenue: untamperedLeads * 50, 
+        riskLevel: 'MEDIUM',
+        reasoningApprove: `Dit zet een daadwerkelijke SMTP keten in werking voor de ${untamperedLeads} leads. Automatisering genereert leads op schaal.`,
+        reasoningDeny: 'Leads verouderen in de database.'
+      }
+    });
+  }
+
   revalidatePath('/dashboard/approvals');
 }

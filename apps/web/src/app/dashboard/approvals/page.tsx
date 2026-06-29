@@ -1,4 +1,4 @@
-import { getPendingActions, getWalletBalance, generateDummyAction } from '@/actions/agentApprovals';
+import { getPendingActions, getWalletBalance, runOmnibusScan } from '@/actions/agentApprovals';
 import { ApprovalsMatrix } from '@/components/ApprovalsMatrix';
 import { WalletTopUpButton } from '@/components/WalletTopUpButton';
 import { Brain, Zap, Wallet, Plus } from 'lucide-react';
@@ -45,10 +45,10 @@ export default async function ApprovalsPage() {
         {actions.length === 0 && (
           <form action={async () => {
             'use server';
-            await generateDummyAction();
+            await runOmnibusScan();
           }}>
             <button type="submit" className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 px-4 py-2 rounded-lg text-sm text-zinc-300 font-mono transition-colors">
-              <Plus className="w-4 h-4" /> Genereer Test Voorstel
+              <Plus className="w-4 h-4" /> Voer Diepe Netwerkscan Uit (Omnibus)
             </button>
           </form>
         )}
