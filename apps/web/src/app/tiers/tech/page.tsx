@@ -93,9 +93,36 @@ export default function TierTechPage() {
               <div className="text-[#d4af37] font-black text-6xl md:text-7xl tracking-tighter mb-2">€99<span className="text-2xl text-zinc-500">/mnd</span></div>
               <div className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-12">Bouw software, bezit de infrastructuur</div>
 
-              <Link href="/onboarding" className="block w-full bg-[#d4af37] text-black font-black uppercase tracking-[0.2em] text-center py-6 text-xl hover:bg-white transition-colors">
+              <button 
+                onClick={async () => {
+                  try {
+                    const btn = document.getElementById('tech-btn');
+                    if (btn) btn.innerText = 'Laden...';
+                    const res = await fetch('/api/mollie/checkout', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        priceId: 'tier_tech_99',
+                        successUrl: `${window.location.origin}/onboarding?session_id=success`,
+                        cancelUrl: `${window.location.origin}/tiers/tech`,
+                      })
+                    });
+                    const data = await res.json();
+                    if (data.url) {
+                      window.location.href = data.url;
+                    } else {
+                      alert('Fout bij laden kassa: ' + (data.error || 'Onbekende fout'));
+                      if (btn) btn.innerText = 'Start Executie';
+                    }
+                  } catch (err) {
+                    alert('Fout bij laden kassa');
+                  }
+                }}
+                id="tech-btn"
+                className="block w-full bg-[#d4af37] text-black font-black uppercase tracking-[0.2em] text-center py-6 text-xl hover:bg-white transition-colors"
+              >
                 Start Executie
-              </Link>
+              </button>
             </div>
           </motion.div>
         </div>
