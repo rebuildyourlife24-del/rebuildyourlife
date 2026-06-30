@@ -58,7 +58,7 @@ export default function EnterpriseOSPage() {
       <div className="min-h-[85vh] p-6 text-white font-sans selection:bg-cyan-500/30 selection:text-white relative z-10">
         
         {/* Background glow */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
         {/* Header */}
         <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-8">

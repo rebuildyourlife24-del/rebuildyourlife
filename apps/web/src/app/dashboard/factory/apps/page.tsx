@@ -195,8 +195,8 @@ export default function AppFactoryPage() {
     <div className="min-h-screen bg-black text-white p-6 md:p-10 font-sans selection:bg-cyan-500/30 overflow-hidden relative">
       
       {/* Abstract Cyberpunk Background Lights */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-700/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-cyan-600/10 rounded-full hidden blur-[] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-700/10 rounded-full hidden blur-[] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         

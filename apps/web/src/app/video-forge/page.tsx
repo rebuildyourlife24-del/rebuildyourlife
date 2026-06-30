@@ -42,7 +42,7 @@ export default function VideoForge() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 font-sans flex flex-col items-center justify-start pt-24 px-6 relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 rounded-full hidden blur-[] pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}

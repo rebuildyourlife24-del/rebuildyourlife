@@ -165,7 +165,7 @@ export default function AIAssistantPage() {
     <div className="max-w-7xl mx-auto h-[85vh] bg-zinc-950/50 border border-white/5 rounded-2xl shadow-[0_0_50px_rgba(6,182,212,0.1)] flex flex-col md:flex-row overflow-hidden font-sans text-white backdrop-blur-xl relative">
       
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none"></div>
 
       {/* LEFT SIDEBAR: AGENT CHOOSE & CONVERSATIONS */}
       <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-white/10 bg-black/40 flex flex-col justify-between shrink-0 h-1/3 md:h-full z-10">

@@ -204,7 +204,7 @@ export default function SalesAutomationsPage() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-12 font-sans relative">
       
       {/* Glow overlay */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full hidden blur-[] pointer-events-none" />
 
       {/* HEADER */}
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">

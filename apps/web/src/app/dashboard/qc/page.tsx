@@ -51,7 +51,7 @@ export default function QualityControlTerminal() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 font-sans flex flex-col items-center justify-center overflow-hidden">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none" />
 
       <div className="mb-8 text-center relative z-10">
         <div className="flex items-center justify-center gap-3 mb-4">

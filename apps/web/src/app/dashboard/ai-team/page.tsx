@@ -147,7 +147,7 @@ export default function AITeamPage() {
               className="bg-black/40 border border-cyan-500/20 rounded-2xl p-6 md:p-8 backdrop-blur-xl relative overflow-hidden flex flex-col h-[70vh]"
             >
               {/* Background accent */}
-              <div className="absolute -top-32 -right-32 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-cyan-500/5 rounded-full hidden blur-[] pointer-events-none" />
 
               <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4 relative z-10 shrink-0">
                 <div>

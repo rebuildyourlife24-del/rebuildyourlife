@@ -239,7 +239,7 @@ export default function TradingDashboard() {
     <div className="space-y-8 pb-20 max-w-7xl mx-auto px-4 select-none relative z-10 font-sans min-h-[85vh]">
       
       {/* Background glow */}
-      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
       {/* -------------------- HEADER: FUTURE BLUE STYLE -------------------- */}
       <div className="bg-black/40 border border-white/5 rounded-2xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)] backdrop-blur-xl">

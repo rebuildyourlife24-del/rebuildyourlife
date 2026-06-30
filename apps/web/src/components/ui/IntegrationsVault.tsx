@@ -57,7 +57,7 @@ export function IntegrationsVault() {
 
   return (
     <Card className="bg-[#050505] border border-cyan-900/30 p-6 md:p-8 rounded-[2rem] relative overflow-hidden group mb-8">
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-900/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-900/10 rounded-full hidden blur-[] pointer-events-none"></div>
       
       <div className="flex items-center gap-3 mb-6 relative z-10">
         <div className="w-10 h-10 bg-cyan-950 border border-cyan-800 flex items-center justify-center rounded-xl">

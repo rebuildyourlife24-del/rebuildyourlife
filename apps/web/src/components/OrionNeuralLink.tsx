@@ -85,7 +85,7 @@ export function OrionNeuralLink() {
             className="w-[380px] h-[500px] mb-6 bg-black/60 backdrop-blur-3xl border border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.15)] rounded-2xl flex flex-col overflow-hidden relative"
           >
             {/* Ambient Background Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-cyan-500/20 blur-[50px] pointer-events-none"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-cyan-500/20 hidden blur-[] pointer-events-none"></div>
 
             {/* Header */}
             <div className="flex justify-between items-center p-4 border-b border-cyan-500/20 bg-black/40 relative z-10">

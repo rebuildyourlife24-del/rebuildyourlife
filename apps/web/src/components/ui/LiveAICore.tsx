@@ -77,7 +77,7 @@ export function LiveAICore({ state = 'idle' }: { state?: 'idle' | 'listening' | 
   return (
     <div className="w-full h-[250px] relative overflow-hidden bg-black/40 border-b border-cyan-500/20 shadow-[inset_0_0_50px_rgba(6,182,212,0.05)]">
       {/* Background Ambient Glow */}
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150px] h-[150px] blur-[60px] rounded-full transition-all duration-700 ${
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150px] h-[150px] hidden blur-[] rounded-full transition-all duration-700 ${
         state === 'thinking' ? 'bg-amber-500/30' : state === 'listening' ? 'bg-blue-500/30' : 'bg-cyan-500/20'
       }`}></div>
 

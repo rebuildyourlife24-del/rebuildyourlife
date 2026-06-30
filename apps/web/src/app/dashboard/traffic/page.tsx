@@ -257,7 +257,7 @@ export default function TrafficPage() {
     <div className="max-w-7xl mx-auto font-sans text-white min-h-[85vh] space-y-8 pb-12 select-none relative z-10">
       
       {/* Background glow */}
-      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
       {/* Top Banner / Future Blue Header */}
       <div className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(6,182,212,0.1)]">

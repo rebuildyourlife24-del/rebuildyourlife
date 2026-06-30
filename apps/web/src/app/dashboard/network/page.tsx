@@ -119,7 +119,7 @@ export default function NetworkCRMPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto font-sans min-h-[85vh] relative z-10 pb-12">
       {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/40 border border-indigo-900/30 rounded-2xl p-8 backdrop-blur-xl shadow-[0_0_30px_rgba(99,102,241,0.05)]">

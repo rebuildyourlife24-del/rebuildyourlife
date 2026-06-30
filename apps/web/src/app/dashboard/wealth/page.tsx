@@ -109,7 +109,7 @@ export default function WealthVaultPage({ searchParams }: { searchParams: { ref?
       className="space-y-8 max-w-7xl mx-auto pb-20 font-sans select-none relative z-10"
     >
       {/* Background glow */}
-      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
       {/* Header */}
       <motion.div variants={itemVariants} className="bg-black/40 border border-white/5 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_50px_rgba(16,185,129,0.05)]">

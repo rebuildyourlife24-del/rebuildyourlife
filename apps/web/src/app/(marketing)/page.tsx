@@ -24,7 +24,7 @@ export default function MarketingPage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
         <div className="absolute inset-0 z-0 flex items-center justify-center">
-          <div className="w-[800px] h-[800px] bg-[#d4a853] rounded-full blur-[150px] opacity-20 animate-pulse"></div>
+          <div className="w-[800px] h-[800px] bg-[#d4a853] rounded-full hidden blur-[] opacity-20 animate-pulse"></div>
         </div>
         
         <motion.div 
@@ -93,7 +93,7 @@ export default function MarketingPage() {
       <section className="py-32 px-4 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[#d4a853] to-transparent opacity-50"></div>
-          <div className="absolute w-96 h-96 bg-[#d4a853] rounded-full blur-[200px] opacity-10"></div>
+          <div className="absolute w-96 h-96 bg-[#d4a853] rounded-full hidden blur-[] opacity-10"></div>
         </div>
         <motion.div 
           initial="hidden"

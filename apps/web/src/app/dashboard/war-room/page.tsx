@@ -159,7 +159,7 @@ function WarRoomCore() {
   return (
     <div className="min-h-screen bg-[#020202] text-white p-2 md:p-6 font-mono overflow-hidden relative selection:bg-cyan-500/30 selection:text-white pb-20 md:pb-6">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-30 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none" />
 
       {/* HEADER COMMAND BAR */}
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10">

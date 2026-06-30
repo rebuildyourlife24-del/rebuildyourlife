@@ -151,7 +151,7 @@ export default function AutonomousFactoryPage() {
       
       {/* Premium Header */}
       <div className="bg-zinc-950/50 border border-white/5 rounded-2xl p-8 mb-10 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-600/10 hidden blur-[] rounded-full pointer-events-none"></div>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div>
             <div className="flex items-center gap-3 mb-4">

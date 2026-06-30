@@ -288,7 +288,7 @@ export default function DebtsPage() {
         <div className="mt-8 border-t border-navyLight/50 pt-8 relative">
           <Paywall requiredTier="PREMIUM">
             <div className="bg-[#0a192f]/40 p-6 border border-emerald-500/30 rounded-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[50px] pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 hidden blur-[] pointer-events-none" />
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">

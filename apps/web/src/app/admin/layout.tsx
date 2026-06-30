@@ -80,7 +80,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto bg-navy relative">
-          <div className="absolute top-0 left-0 w-full h-[500px] bg-danger/5 blur-[120px] rounded-full mix-blend-screen pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-[500px] bg-danger/5 hidden blur-[] rounded-full mix-blend-screen pointer-events-none" />
           <div className="p-8 relative z-10">
             {children}
           </div>

@@ -80,7 +80,7 @@ export default function SwarmDashboard() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto font-sans min-h-[85vh] relative z-10 pb-12 select-none">
       {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-900/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-900/10 hidden blur-[] rounded-full pointer-events-none -z-10"></div>
 
       <header className="bg-black/40 border border-cyan-900/30 rounded-2xl p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[0_0_30px_rgba(6,182,212,0.05)]">
         <div>

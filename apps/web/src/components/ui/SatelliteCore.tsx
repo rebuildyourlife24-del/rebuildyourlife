@@ -89,7 +89,7 @@ export function SatelliteCore({ theme = 'blue' }: SatelliteCoreProps) {
   return (
     <div className={`relative w-full h-[550px] bg-[#020617] rounded-3xl border ${borderColorClass} ${shadowClass} overflow-hidden flex flex-col group transition-all duration-500`}>
       {/* Background glow overlay */}
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] ${punishmentProtocol ? 'bg-gold/10' : 'bg-cyan-500/10'} blur-[100px] pointer-events-none rounded-full transition-colors duration-1000`}></div>
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] ${punishmentProtocol ? 'bg-gold/10' : 'bg-cyan-500/10'} hidden blur-[] pointer-events-none rounded-full transition-colors duration-1000`}></div>
 
       {/* 3D Canvas rendering the Satellite Core */}
       <div className="flex-1 relative z-10">
