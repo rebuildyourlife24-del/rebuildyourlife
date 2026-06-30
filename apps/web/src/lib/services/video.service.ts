@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
+import { CloudVideoService } from "./cloud-video.service";
 
 export interface VideoConfig {
   provider: "openai" | "elevenlabs" | "google-free";
@@ -155,174 +156,19 @@ export class VideoGeneratorService {
       console.log(`[VideoGenerator]: ${msg}`);
     };
 
-    // Prepare directories
-    const publicDir = path.join(process.cwd(), "public");
-    const renderedDir = path.join(publicDir, "rendered");
-    const tempDir = path.join(publicDir, "temp");
-
-    if (!fs.existsSync(renderedDir)) fs.mkdirSync(renderedDir, { recursive: true });
-    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-
-    const outputFilename = `rendered_${Date.now()}.mp4`;
-    const outputPath = path.join(renderedDir, outputFilename);
-
-    let audioPath = "";
-    let stockVideoPath = "";
-
     try {
-      pushLog("Stap 1: Stockclip voorbereiden...");
-      stockVideoPath = await this.getStockClip(config.style, tempDir);
-      pushLog("Stockclip gereed.");
-
-      pushLog("Stap 2: Spraak-synthese genereren...");
-      audioPath = await this.generateAudio(config.script, config, tempDir);
-      pushLog("Spraak-audio gegenereerd.");
-
-      pushLog("Stap 3: Video-rendering via FFmpeg starten...");
-
-      // Dynamic filter complex for hyperrealism
-      const isHyper = config.hyperrealistic !== false;
-      const grainStrength = config.grainStrength !== undefined ? config.grainStrength : (isHyper ? 8 : 0);
-      const vignetteAngle = config.vignetteStrength !== undefined ? config.vignetteStrength : (isHyper ? 0.12 : 0.0);
-      const useCameraShake = config.cameraShake !== false && isHyper;
-      const useLightBloom = config.lightBloom !== false && isHyper;
-      const useChromaticAberration = config.chromaticAberration !== false && isHyper;
-      const useRoomReverb = config.roomReverb !== false && isHyper;
-      const useAmbientHiss = config.ambientHiss !== false && isHyper;
-
-      // Video filters setup
-      const filterComplexParts: string[] = [];
-      let lastVideoNode = "[0:v]";
-
-      if (useCameraShake) {
-        filterComplexParts.push(`${lastVideoNode}crop=w=iw-8:h=ih-8:x='4+2*sin(2*t)*cos(0.5*t)':y='4+2*cos(1.2*t)*sin(0.7*t)'[shaken]`);
-        lastVideoNode = "[shaken]";
-      }
-
-      if (useLightBloom) {
-        filterComplexParts.push(`${lastVideoNode}split[orig][glow]`);
-        filterComplexParts.push(`[glow]boxblur=15:3[blurred]`);
-        filterComplexParts.push(`[orig][blurred]blend=all_mode='screen':all_opacity=0.2[bloomed]`);
-        lastVideoNode = "[bloomed]";
-      }
-
-      if (useChromaticAberration) {
-        filterComplexParts.push(`${lastVideoNode}split=3[y][u][v]`);
-        filterComplexParts.push(`[y]extractplanes=y[yp]`);
-        filterComplexParts.push(`[u]extractplanes=u,scale=w=1.004*iw:h=1.004*ih,crop=w=iw/1.004:h=ih/1.004[up]`);
-        filterComplexParts.push(`[v]extractplanes=v,scale=w=0.996*iw:h=0.996*ih,crop=w=iw/0.996:h=ih/0.996[vp]`);
-        filterComplexParts.push(`[yp][up][vp]mergeplanes=0x000102:yuv420p[colored]`);
-        lastVideoNode = "[colored]";
-      }
-
-      // Final video filters (lens correction, grain, vignette, film flicker, color grading)
-      let finalVideoFilters = "";
-      if (isHyper) {
-        finalVideoFilters += "lenscorrection=k1=0.02:k2=0.01,";
-      }
-      finalVideoFilters += `noise=alls=${grainStrength}:allf=t+u`;
-      if (vignetteAngle > 0) {
-        finalVideoFilters += `,vignette=angle=${vignetteAngle}`;
-      }
-      if (isHyper) {
-        finalVideoFilters += `,eq=brightness='0.003*sin(2*3.14159*15*t)':saturation=1.15:contrast=1.05`;
-      } else {
-        finalVideoFilters += ",eq=saturation=1.12:contrast=1.03";
-      }
+      pushLog("Stap 1: Signaal sturen naar GitHub Cloud GPU...");
+      await CloudVideoService.triggerCloudRender(config);
+      pushLog("Cloud render job succesvol gestart op GitHub Actions!");
+      pushLog("De video wordt gegenereerd en zal binnenkort in Supabase verschijnen.");
       
-      filterComplexParts.push(`${lastVideoNode}${finalVideoFilters}[v_out]`);
-
-      // Audio filters setup
-      // Base voice EQ: boost low-end for proximity warmth and high-end for crisp presence
-      let audioChain = "[1:a]equalizer=f=100:g=3:width_type=h:w=100,equalizer=f=3000:g=2:width_type=h:w=500";
-      if (useRoomReverb) {
-        audioChain += ",aecho=0.8:0.25:25:0.15";
-      }
-      filterComplexParts.push(`${audioChain}[voice]`);
-
-      if (useAmbientHiss) {
-        filterComplexParts.push("anoisesrc=c=pink:r=44100:a=0.002[hiss]");
-        filterComplexParts.push("[voice][hiss]amix=inputs=2:duration=shortest:dropout_transition=0[a_out]");
-      } else {
-        filterComplexParts.push("[voice]anull[a_out]");
-      }
-
-      const filterComplexString = filterComplexParts.join(";");
-
-      // Execute FFmpeg
-      await new Promise<void>((resolve, reject) => {
-        const ffmpeg = spawn("ffmpeg", [
-          "-y",
-          "-i", stockVideoPath,
-          "-i", audioPath,
-          "-filter_complex", filterComplexString,
-          "-map", "[v_out]",
-          "-map", "[a_out]",
-          "-c:v", "libx264",
-          "-preset", "veryfast",
-          "-crf", "22",
-          "-pix_fmt", "yuv420p",
-          "-c:a", "aac",
-          "-shortest",
-          outputPath
-        ]);
-
-        ffmpeg.stdout.on("data", (data) => {
-          pushLog(data.toString());
-        });
-
-        ffmpeg.stderr.on("data", (data) => {
-          pushLog(data.toString());
-        });
-
-        ffmpeg.on("close", (code) => {
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`FFmpeg exited with code ${code}`));
-          }
-        });
-
-        ffmpeg.on("error", (err: any) => {
-          if (err.code === "ENOENT") {
-            reject(new Error("FFmpeg binary not found on this system path. Please install FFmpeg."));
-          } else {
-            reject(err);
-          }
-        });
-      });
-
-      pushLog("Stap 4: Rendering succesvol afgerond.");
       return {
-        videoUrl: `/rendered/${outputFilename}`,
+        videoUrl: "PENDING_CLOUD_RENDER", // Or a temporary placeholder URL
         logs
       };
-
     } catch (err: any) {
-      pushLog(`Fout opgetreden: ${err.message}`);
-
-      // Fallback: copy stock video directly if audio was created, as a working video draft
-      if (fs.existsSync(stockVideoPath) && audioPath) {
-        pushLog("FALLBACK: FFmpeg kon niet renderen. Een preview-concept van de stockclip wordt gecreëerd.");
-        const fallbackFilename = `draft_${Date.now()}.mp4`;
-        const fallbackOutputPath = path.join(renderedDir, fallbackFilename);
-        fs.copyFileSync(stockVideoPath, fallbackOutputPath);
-        return {
-          videoUrl: `/rendered/${fallbackFilename}`,
-          logs
-        };
-      }
-
+      pushLog(`Fout bij starten van cloud render: ${err.message}`);
       throw err;
-    } finally {
-      // Clean up temporary audio files
-      if (audioPath && fs.existsSync(audioPath)) {
-        try {
-          fs.unlinkSync(audioPath);
-        } catch (e) {
-          console.error("Cleanup error:", e);
-        }
-      }
     }
   }
 }
