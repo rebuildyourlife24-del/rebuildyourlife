@@ -50,31 +50,32 @@ Voer de taak direct uit. Geef ALLEEN het resultaat van je werk. Geef geen introd
 
     let responseText = "";
 
-    // LOCAL OLLAMA INFERENCE (Llama)
     try {
-      // Trying local Ollama default port 11434
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama3', // Default to a popular Llama model, can be configured via env var
+      const groqKey = process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_1;
+      
+      if (groqKey) {
+        const { createGroq } = await import('@ai-sdk/groq');
+        const { generateText } = await import('ai');
+        const groq = createGroq({ apiKey: groqKey });
+        
+        const result = await generateText({
+          model: groq('llama3-8b-8192'),
           prompt: prompt,
-          stream: false
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        responseText = data.response;
+        });
+        
+        responseText = result.text;
       } else {
-        throw new Error(`Ollama API responded with status ${response.status}`);
+        // Fallback als er geen API key is
+        return { 
+          success: false, 
+          message: `SYSTEM ERROR: Geen GROQ_API_KEY gevonden in de Vercel environment. Configureer de API key om de AI Swarm in de cloud te activeren.` 
+        };
       }
-    } catch (localErr: any) {
-      console.warn("Local Llama connection failed:", localErr.message);
-      // Fallback response if local AI is unreachable
+    } catch (apiErr: any) {
+      console.warn("Cloud AI connection failed:", apiErr.message);
       return { 
         success: false, 
-        message: `SYSTEM ERROR: Kan niet verbinden met de lokale Llama AI (Ollama). Zorg ervoor dat je local AI op localhost:11434 draait. Foutmelding: ${localErr.message}` 
+        message: `SYSTEM ERROR: Kan niet verbinden met de Cloud AI (Groq). Foutmelding: ${apiErr.message}` 
       };
     }
 

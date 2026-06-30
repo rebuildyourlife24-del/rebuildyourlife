@@ -67,74 +67,44 @@ export class OmegaProtocol {
   static async executeCommand(command: string): Promise<string> {
     console.log(`[ORION CORE] Received command: ${command}`);
 
-    // Als de Cloud Bypass aan staat, gebruik die direct (omdat zijn laptop traag is)
-    if (process.env.GROQ_API_KEY) {
+    // Als de Cloud Bypass aan staat, gebruik die direct
+    if (process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_1) {
       console.log('[ORION CORE] Routing directly to Groq Cloud Bypass.');
       return await this.queryCloudLLM(command);
     }
 
-    console.log('[ORION CORE] No Groq key found. Attempting local Ollama...');
-    try {
-      const localResponse = await this.queryLocalLLM(command);
-      if (localResponse) return localResponse;
-    } catch (e) {
-      console.log('[ORION CORE] Local LLM failed:', e);
-    }
-
+    console.log('[ORION CORE] No Groq key found.');
     return "Systeemmelding: Geen werkende AI engine gevonden. Voeg een GROQ_API_KEY toe aan .env";
   }
 
-  private static async queryLocalLLM(prompt: string): Promise<string | null> {
-    try {
-      // Connect directly to local Ollama instance
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama3', // Standaard model voor Ollama
-          prompt: `Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en ietwat intimiderend. Antwoord kort en krachtig in het Nederlands. Commando: ${prompt}`,
-          stream: false
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Ollama not responding properly');
-      }
-
-      const data = await response.json();
-      return data.response;
-    } catch (e) {
-      console.log('[ORION CORE] Local Ollama unreachable:', e);
-      return null;
-    }
-  }
+  // queryLocalLLM has been removed because it is incompatible with serverless environments
 
   private static async queryCloudLLM(prompt: string): Promise<string> {
-    if (!process.env.GROQ_API_KEY) {
-      return "Systeemmelding: GROQ API Key ontbreekt. Ga naar console.groq.com, maak een gratis key aan, en zet deze in je .env bestand als GROQ_API_KEY om de God Mode Cloud Bypass te activeren.";
+    const apiKey = process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_1;
+    if (!apiKey) {
+      return "ERROR: Geen GROQ API key gevonden.";
     }
 
     try {
-      const { OpenAI } = await import('openai');
-      const groq = new OpenAI({
-        apiKey: process.env.GROQ_API_KEY,
-        baseURL: 'https://api.groq.com/openai/v1',
+      const { createGroq } = await import('@ai-sdk/groq');
+      const { generateText } = await import('ai');
+      
+      const groq = createGroq({ apiKey });
+
+      const result = await generateText({
+        model: groq('llama3-8b-8192'),
+        system: "Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en ietwat intimiderend. Antwoord kort en krachtig in het Nederlands.",
+        prompt: commandToPrompt(prompt),
       });
 
-      const completion = await groq.chat.completions.create({
-        model: 'llama3-70b-8192', 
-        messages: [
-          { role: 'system', content: 'Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en intimiderend. Antwoord krachtig in het Nederlands. Val niet in herhaling.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 150,
-      });
-
-      return completion.choices[0]?.message?.content || "Fout bij verwerken (Groq).";
-    } catch (e: any) {
-      console.error('[ORION CORE] Groq API error:', e);
-      return "Systeemfout: Groq Cloud Bypass is onbereikbaar.";
+      return result.text;
+    } catch (e) {
+      console.error('[ORION CORE] Cloud LLM Error:', e);
+      return "Systeemfout: Kon Cloud AI niet bereiken.";
     }
   }
+}
+
+function commandToPrompt(cmd: string) {
+  return `Voer het volgende commando uit en rapporteer de status:\n\n${cmd}`;
 }
