@@ -13,10 +13,15 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     const cookieStore = await cookies();
     cookieStore.set('dev_bypass', 'true', { path: '/' });
     
+    // Genereer een ryl_session token zodat alle admin/dashboard APIs werken
+    const bypassUserId = 'dev-local-admin-id';
+    const jwtToken = jwt.sign({ userId: bypassUserId, role: 'SUPER_ADMIN' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
+    cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
+    
     return { 
       success: true, 
       user: { 
-        id: 'dev-local-admin-id', 
+        id: bypassUserId, 
         email: email || 'hsemler50@gmail.com', 
         firstName: 'Hendrik', 
         lastName: 'Semler', 
@@ -77,11 +82,20 @@ export async function loginAction(email: string, password: string, rememberMe?: 
         where: { id: user.id },
         data: { lastLoginAt: new Date() }
       });
+      
+      const cookieStore = await cookies();
+      const jwtToken = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
+      cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
 
       return { success: true, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, subscriptionTier: user.subscriptionTier } };
     } catch (dbErr) {
       console.warn("[AUTH] Prisma database sync failed during login, proceeding with Supabase data:", dbErr);
+      
       // Fallback: login anyway if Supabase auth succeeded, even if Prisma fails
+      const cookieStore = await cookies();
+      const jwtToken = jwt.sign({ userId: data.user.id, role: 'USER' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
+      cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
+      
       return { success: true, user: { id: data.user.id, email: data.user.email || '', firstName: data.user.user_metadata?.first_name || '', lastName: data.user.user_metadata?.last_name || '', role: 'USER' } };
     }
   } catch (err) {

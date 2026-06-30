@@ -1025,6 +1025,9 @@ model MarketingConversion {
 model AIConciergeLog {
   id              String   @id @default(uuid())
   userId          String
+  actionType      String?
+  query           String?
+  response        String?
   decisionType    String
   rationale       String
   previousVtlb    Float?

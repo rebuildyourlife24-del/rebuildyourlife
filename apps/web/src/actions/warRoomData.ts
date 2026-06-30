@@ -1,21 +1,18 @@
 "use server";
 
 import { prisma } from "@rebuildyourlife/database";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-
-
-const JWT_SECRET = process.env.JWT_SECRET! ;
+import { getSessionAction } from "@/app/actions/auth";
 
 async function getAuthenticatedUserId(): Promise<string | null> {
-  const token = (await cookies()).get("ryl_session")?.value;
-  if (!token) return null;
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    return decoded.userId;
-  } catch {
-    return null;
+    const session = await getSessionAction();
+    if (session.success && session.user) {
+      return session.user.id;
+    }
+  } catch (err) {
+    console.error("[warRoomData] Auth check failed", err);
   }
+  return null;
 }
 
 export async function getWarRoomStatsAction() {
