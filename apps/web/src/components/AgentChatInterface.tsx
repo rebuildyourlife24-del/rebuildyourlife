@@ -157,7 +157,9 @@ export function AgentChatInterface({
         if (result.error === "SENTINEL_BLOCK") {
           setSentinelSafe(false);
         }
-        setError(typeof result.message === "string" ? result.message : "Fout bij verzenden van bericht.");
+        const errorText = typeof result.message === "string" ? result.message : 
+                          (typeof result.error === "string" ? result.error : "Fout bij verzenden van bericht.");
+        setError(errorText);
         setMessages(prev => prev.filter(m => !m.id.startsWith("temp-")));
       }
     } catch (err: any) {
