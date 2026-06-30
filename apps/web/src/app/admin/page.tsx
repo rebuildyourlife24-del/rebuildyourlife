@@ -15,7 +15,9 @@ import {
   Terminal, 
   Layers,
   RefreshCw,
-  FolderLock
+  FolderLock,
+  Check,
+  X
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -31,6 +33,7 @@ export default function CommandCenterPage() {
   const [stats, setStats] = useState({ totalUsers: 0, activeFranchises: 0, platformCutsRevenue: 0 });
   const [users, setUsers] = useState<any[]>([]);
   const [franchises, setFranchises] = useState<any[]>([]);
+  const [agentActions, setAgentActions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -52,16 +55,19 @@ export default function CommandCenterPage() {
       const statsRes = await api.get<{ totalUsers: number; activeFranchises: number; platformCutsRevenue: number }>('/admin/stats');
       const usersRes = await api.get<any[]>('/admin/users');
       const franchisesRes = await api.get<any[]>('/admin/franchises');
+      const actionsRes = await api.get<any[]>('/admin/actions');
 
       if (statsRes.data) setStats(statsRes.data);
       if (usersRes.data) setUsers(usersRes.data);
       if (franchisesRes.data) setFranchises(franchisesRes.data);
+      if (actionsRes.data) setAgentActions(actionsRes.data);
 
       setTerminalOutput(prev => [
         ...prev,
         `[OK] LIVE STATS SYNCED: Users: ${statsRes.data?.totalUsers || 0}, Active Franchises: ${statsRes.data?.activeFranchises || 0}`,
         `[OK] SYNCED ${usersRes.data?.length || 0} USER NODES`,
         `[OK] SYNCED ${franchisesRes.data?.length || 0} FRANCHISE NODES`,
+        `[OK] SYNCED ${actionsRes.data?.length || 0} AGENT ACTIONS`,
         `[SYSTEM_cyan] ONLINE AND AWAITING COMMAND.`
       ]);
     } catch (err: any) {
@@ -104,6 +110,18 @@ export default function CommandCenterPage() {
       if (statsRes.data) setStats(statsRes.data);
     } catch (err: any) {
       setTerminalOutput(prev => [...prev, `[FAIL] FRANCHISE STATUS TOGGLE FAILED: ${err.message}`]);
+    }
+  };
+
+  const handleActionDecision = async (actionId: string, decision: 'APPROVED' | 'DENIED') => {
+    try {
+      setTerminalOutput(prev => [...prev, `[SEND] DECISION action:${actionId} -> ${decision}`]);
+      await api.patch(`/admin/actions/${actionId}`, { status: decision });
+      setTerminalOutput(prev => [...prev, `[OK] ACTION ${actionId} SET TO ${decision}. Executing payload...`]);
+      
+      setAgentActions(prevActions => prevActions.map(a => a.id === actionId ? { ...a, status: decision } : a));
+    } catch (err: any) {
+      setTerminalOutput(prev => [...prev, `[FAIL] ACTION DECISION FAILED: ${err.message}`]);
     }
   };
 
@@ -403,6 +421,83 @@ export default function CommandCenterPage() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* CONTROL MATRIX (SWARM APPROVALS) */}
+          <div className="bg-black border border-gold/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(239,68,68,0.1)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.05)_0%,transparent_70%)] pointer-events-none -z-10" />
+            
+            <div className="flex items-center justify-between pb-4 border-b border-gold/30 mb-6">
+              <h2 className="text-lg font-black text-white flex items-center gap-2 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+                <Target className="w-5 h-5 text-gold" /> Control Matrix (Swarm Approvals)
+              </h2>
+              <span className="text-xs bg-red-950/50 text-gold border border-red-500/30 px-3 py-1 rounded uppercase font-bold animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                {agentActions.filter(a => a.status === 'PENDING').length} Actions Pending
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {loading ? (
+                <div className="py-8 text-center text-zinc-500 animate-pulse font-bold text-xs uppercase tracking-widest">Intercepting AI signals...</div>
+              ) : agentActions.length === 0 ? (
+                <div className="py-8 text-center text-zinc-600 font-bold text-xs uppercase tracking-widest">No autonomous actions recorded.</div>
+              ) : (
+                agentActions.map(action => (
+                  <div key={action.id} className={`p-4 rounded-xl border transition-all duration-300 ${action.status === 'PENDING' ? 'bg-[#110505] border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'bg-black border-gold/20 opacity-60'}`}>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-3">
+                          <span className={`text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase ${
+                            action.status === 'PENDING' ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 
+                            action.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' :
+                            action.status === 'COMPLETED' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' :
+                            'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                          }`}>
+                            {action.status}
+                          </span>
+                          <span className="text-white font-bold tracking-widest uppercase text-sm">
+                            {action.title}
+                          </span>
+                          <span className="text-[9px] text-zinc-500 font-mono">
+                            ID: {action.id.substring(0, 8)}
+                          </span>
+                        </div>
+                        
+                        <p className="text-xs text-zinc-400 font-medium">
+                          {action.description}
+                        </p>
+                        
+                        <div className="bg-black/50 border border-white/5 p-2 rounded text-[10px] font-mono text-cyan-500/70 overflow-x-auto">
+                          {action.payload}
+                        </div>
+                      </div>
+
+                      {action.status === 'PENDING' && (
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            onClick={() => handleActionDecision(action.id, 'APPROVED')}
+                            className="bg-red-950/30 hover:bg-red-900 border border-red-500/50 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)] transition-all duration-300"
+                          >
+                            <Check className="w-4 h-4 mr-2" />
+                            EXECUTE
+                          </Button>
+                          <Button 
+                            onClick={() => handleActionDecision(action.id, 'DENIED')}
+                            variant="outline" 
+                            className="border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-500"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            DENY
+                          </Button>
+                        </div>
+                      )}
+                      
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

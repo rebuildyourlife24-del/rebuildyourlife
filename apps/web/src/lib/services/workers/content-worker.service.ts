@@ -1,4 +1,4 @@
-import { HermesService } from '../hermes.service';
+import { HermesExecutionService } from '../hermes.service';
 
 export class ContentWorker {
   static async generateProductListing(productUrl: string, targetLanguage: string) {

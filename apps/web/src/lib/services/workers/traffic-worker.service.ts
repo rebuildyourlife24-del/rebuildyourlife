@@ -1,4 +1,4 @@
-import { HermesService } from '../hermes.service';
+import { HermesExecutionService } from '../hermes.service';
 
 export class TrafficWorker {
   static async deployCampaign(productId: string, budget: number, regions: string[]) {

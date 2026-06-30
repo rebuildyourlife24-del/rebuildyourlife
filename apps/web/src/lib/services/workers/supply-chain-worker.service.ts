@@ -1,4 +1,4 @@
-import { HermesService } from '../hermes.service';
+import { HermesExecutionService } from '../hermes.service';
 
 export class SupplyChainWorker {
   static async fulfillOrder(orderId: string, productData: any, customerAddress: any) {

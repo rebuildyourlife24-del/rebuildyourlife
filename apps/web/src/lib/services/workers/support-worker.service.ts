@@ -1,4 +1,4 @@
-import { HermesService } from '../hermes.service';
+import { HermesExecutionService } from '../hermes.service';
 
 export class SupportWorker {
   static async handleTicket(ticketId: string, customerMessage: string, language: string) {
