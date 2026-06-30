@@ -5,6 +5,10 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { Sentinel } from "../../lib/orion/sentinel-scanner";
 import { routeAIRequest } from "../../lib/ai-router";
+import { execSync } from "child_process";
+import path from "path";
+
+const workspaceRoot = process.cwd();
 
 
 const JWT_SECRET = process.env.JWT_SECRET ;
@@ -174,6 +178,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
 
     // 1. WRITE_FILE execution disabled in prod
     // 2. EXECUTE_COMMAND execution
+    let match;
     while ((match = execRegex.exec(aiResponse)) !== null) {
       const command = match[1]?.trim();
       try {
