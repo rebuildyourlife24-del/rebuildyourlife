@@ -1,5 +1,9 @@
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { createGroq } from '@ai-sdk/groq';
+
+const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY || 'mock_key',
+});
 
 export class AiTranslationService {
   /**
@@ -37,7 +41,7 @@ export class AiTranslationService {
       // Dit is de AI hook. Zodra een Japanse bezoeker op de site komt, 
       // vertaalt dit model in milliseconden de content.
       const { text } = await generateText({
-        model: openai('gpt-4o-mini'),
+        model: groq('llama3-70b-8192'),
         prompt: prompt,
       });
 
