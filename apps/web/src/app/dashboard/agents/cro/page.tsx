@@ -13,7 +13,10 @@ export default function CROPage() {
       suggestedPrompts={[
         { label: "Funnel Analyse", text: "Mijn check-out drop-off is 70%. Wat zijn de meest voorkomende redenen en hoe fix ik dit?" },
         { label: "A/B Test Ideeën", text: "Geef me 3 ideeën voor A/B testen op mijn hero sectie om meer clicks op de CTA te krijgen." },
-        { label: "Landing Page Review", text: "Welke psychologische triggers ontbreken er op een standaard SaaS salespagina?" }
+        { label: "Landing Page Review", text: "Welke psychologische triggers ontbreken er op een standaard SaaS salespagina?" },
+        { label: "Productpagina (PDP)", text: "Hoe richt ik de ideale e-commerce productpagina in voor een high-ticket item?" },
+        { label: "Trust Bouwen", text: "Hoe verhoog ik het vertrouwen op mijn website zonder simpele fake reviews te gebruiken?" },
+        { label: "Speed Optimalisatie", text: "Welke impact heeft page load speed op mijn conversie en wat zijn quick wins?" }
       ]}
       themeColor="text-fuchsia-400"
     />

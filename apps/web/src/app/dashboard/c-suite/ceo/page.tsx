@@ -13,7 +13,10 @@ export default function CEOPage() {
       suggestedPrompts={[
         { label: "Analyseer Business Model", text: "Bekijk mijn huidige diensten. Hoe kan ik dit model schaalbaarder maken zonder mijn eigen uren te vergroten?" },
         { label: "Nieuwe Markten", text: "Welke nieuwe software of dienst niches groeien momenteel het hardst waar we kunnen instappen?" },
-        { label: "Kwartaal Strategie", text: "Help me een strategisch plan opstellen voor het komende kwartaal om 20% groei te realiseren." }
+        { label: "Kwartaal Strategie", text: "Help me een strategisch plan opstellen voor het komende kwartaal om 20% groei te realiseren." },
+        { label: "Risico Analyse", text: "Wat zijn momenteel de grootste bedrijfsrisico's in mijn branche en hoe dekken we die af?" },
+        { label: "Overnames & Exit", text: "Welke stappen moet ik zetten om mijn bedrijf over 3 jaar verkoopklaar te maken (Exit-strategie)?" },
+        { label: "Team Expansie", text: "Op welk moment moet ik een manager of extra personeel aannemen om de dagelijkse brandjes te blussen?" }
       ]}
       themeColor="text-indigo-400"
     />
