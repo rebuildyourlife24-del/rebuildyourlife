@@ -86,25 +86,8 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     };
   }
 
-  // Check subscription tier
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { subscriptionTier: true, role: true, email: true },
-  });
-
-  const hasPremiumAccess = ['PREMIUM', 'ENTERPRISE', 'ADMIN', 'SUPREME_OVERSEER'].includes(
-    user?.role || user?.subscriptionTier || ''
-  );
-
-  const isGodMode = user?.email === 'hsemler50@gmail.com' || user?.role === 'ADMIN';
-
-  if (!hasPremiumAccess && !isGodMode) {
-    return {
-      success: false,
-      error: "PAYWALL",
-      message: "De AI Team is beschikbaar vanaf het Operator abonnement (€14,95/mnd).",
-    };
-  }
+  // AI Toegang is voor iedereen, afhankelijk van hun tier veranderen alleen hun platform fees.
+  // We blokkeren de toegang tot de AI Agents niet.
 
   try {
     // Haal of maak een gesprek aan
