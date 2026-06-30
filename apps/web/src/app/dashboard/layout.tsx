@@ -34,183 +34,47 @@ import {
 const getGroupedNavItems = (user: any) => {
   return [
     {
-      id: 'sovereign',
-      label: 'Sovereign Core',
+      id: 'core',
+      label: 'Main Systems',
       items: [
-        {
-          label: 'The Core (Centrale)',
-          href: '/dashboard',
-          icon: <Terminal size={16} />,
-        },
-        {
-          label: 'War Room (Cockpit)',
-          href: '/dashboard/war-room',
-          icon: <Skull size={16} />,
-          isAdminOnly: true,
-        },
-        {
-          label: 'AI Assistant (Hermes/Orion)',
-          href: '/dashboard/ai-assistant',
-          icon: <Brain size={16} />,
-        },
-        {
-          label: 'E-Com Control Matrix',
-          href: '/dashboard/approvals',
-          icon: <Network size={16} />,
-        },
-        {
-          label: 'AI Taskforce',
-          href: '/dashboard/ai-team',
-          icon: <Cpu size={16} />,
-        },
-        {
-          label: 'AI Concierge Logs',
-          href: '/dashboard/concierge',
-          icon: <Terminal size={16} />,
-        },
-        {
-          label: 'Orion Neural Link',
-          href: '/dashboard/orion-demo',
-          icon: <Layers size={16} />,
-        }
+        { label: 'Dashboard', href: '/dashboard', icon: <Terminal size={16} /> },
+        { label: 'AI Assistant', href: '/dashboard/ai-assistant', icon: <Brain size={16} /> },
+        { label: 'War Room (Admin)', href: '/dashboard/war-room', icon: <Skull size={16} />, isAdminOnly: true },
+        { label: 'AI Taskforce', href: '/dashboard/ai-team', icon: <Cpu size={16} /> }
       ]
     },
     {
-      id: 'capital',
-      label: 'Capital & Wealth',
+      id: 'wealth',
+      label: 'Wealth & Assets',
       items: [
-        {
-          label: 'Capital Reconstruction',
-          href: '/dashboard/wealth',
-          icon: <Briefcase size={16} />,
-        },
-        {
-          label: 'Alpha Trading Floor',
-          href: '/dashboard/trading',
-          icon: <Activity size={16} />,
-          isAdminOnly: true,
-        },
-        {
-          label: 'Budget Tracker',
-          href: '/dashboard/budget',
-          icon: <Layers size={16} />,
-        },
-        {
-          label: 'Debts Control',
-          href: '/dashboard/debts',
-          icon: <Shield size={16} />,
-        },
-        {
-          label: 'Land Assets',
-          href: '/dashboard/land-assets',
-          icon: <Map size={16} />,
-        }
+        { label: 'Financial Overview', href: '/dashboard/wealth', icon: <Briefcase size={16} /> },
+        { label: 'Trading Floor', href: '/dashboard/trading', icon: <Activity size={16} />, isAdminOnly: true },
+        { label: 'Debts & Budget', href: '/dashboard/debts', icon: <Shield size={16} /> }
       ]
     },
     {
-      id: 'syndicate',
-      label: 'Syndicate & Traffic',
+      id: 'business',
+      label: 'Business & Network',
       items: [
-        {
-          label: 'PR Traffic Factory',
-          href: '/dashboard/traffic',
-          icon: <Tv size={16} />,
-        },
-        {
-          label: 'Syndicate Feed',
-          href: '/dashboard/syndicate',
-          icon: <Ghost size={16} />,
-          isAdminOnly: true,
-        },
-        {
-          label: 'Enterprise Network',
-          href: '/dashboard/enterprise',
-          icon: <LayoutDashboard size={16} />,
-          isAdminOnly: true,
-        },
-        {
-          label: 'Franchise Factory',
-          href: '/dashboard/franchises',
-          icon: <Shield size={16} />,
-          isAdminOnly: true,
-        },
-        {
-          label: 'Social Integration',
-          href: '/dashboard/social',
-          icon: <Network size={16} />,
-        },
-        {
-          label: 'Network CRM',
-          href: '/dashboard/network',
-          icon: <Ghost size={16} />,
-        },
-        {
-          label: 'Content Factory',
-          href: '/dashboard/factory',
-          icon: <Rocket size={16} />,
-        },
-        {
-          label: 'App Factory (SaaS Flip)',
-          href: '/dashboard/factory/apps',
-          icon: <Cpu size={16} />,
-        }
+        { label: 'Enterprise Hub', href: '/dashboard/enterprise', icon: <LayoutDashboard size={16} />, isAdminOnly: true },
+        { label: 'E-Com Control', href: '/dashboard/approvals', icon: <Network size={16} /> },
+        { label: 'Traffic & Content', href: '/dashboard/traffic', icon: <Tv size={16} /> }
       ]
     },
     {
-      id: 'vitality',
-      label: 'Vitality & Mindset',
+      id: 'personal',
+      label: 'Personal Growth',
       items: [
-        {
-          label: 'Biological Optimisation',
-          href: '/dashboard/health',
-          icon: <Heart size={16} />,
-        },
-        {
-          label: 'Cognitive Reprogramming',
-          href: '/dashboard/life-balance',
-          icon: <Map size={16} />,
-        },
-        {
-          label: 'Rebuild Programs',
-          href: '/dashboard/programs',
-          icon: <Layers size={16} />,
-        },
-        {
-          label: 'Personal Goals',
-          href: '/dashboard/goals',
-          icon: <Rocket size={16} />,
-        },
-        {
-          label: 'Daily Tasks',
-          href: '/dashboard/tasks',
-          icon: <Activity size={16} />,
-        }
+        { label: 'Health & Vitality', href: '/dashboard/health', icon: <Heart size={16} /> },
+        { label: 'Goals & Tasks', href: '/dashboard/goals', icon: <Rocket size={16} /> },
+        { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> }
       ]
     },
     {
       id: 'system',
-      label: 'System & Support',
+      label: 'System',
       items: [
-        {
-          label: 'RYL Academy',
-          href: '/dashboard/academy',
-          icon: <GraduationCap size={16} />,
-        },
-        {
-          label: 'System Settings',
-          href: '/dashboard/settings',
-          icon: <Settings size={16} />,
-        },
-        {
-          label: 'Quality Control',
-          href: '/dashboard/qc',
-          icon: <Shield size={16} />,
-        },
-        {
-          label: 'Help & Support',
-          href: '/dashboard/help',
-          icon: <Settings size={16} />,
-        }
+        { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
       ]
     }
   ];
