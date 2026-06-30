@@ -28,52 +28,39 @@ import {
   Tv,
   ChevronDown,
   ChevronRight,
-  Brain
+  Brain,
+  Search
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
   return [
     {
-      id: 'core',
-      label: 'Main Systems',
+      id: 'boardroom',
+      label: 'The Boardroom',
       items: [
-        { label: 'Dashboard', href: '/dashboard', icon: <Terminal size={16} /> },
-        { label: 'AI Assistant', href: '/dashboard/ai-assistant', icon: <Brain size={16} /> },
-        { label: 'War Room (Admin)', href: '/dashboard/war-room', icon: <Skull size={16} />, isAdminOnly: true },
-        { label: 'AI Taskforce', href: '/dashboard/ai-team', icon: <Cpu size={16} /> }
+        { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
+        { label: 'CEO (Growth)', href: '/dashboard/c-suite/ceo', icon: <Brain size={16} /> },
+        { label: 'CFO (Profit)', href: '/dashboard/c-suite/cfo', icon: <Briefcase size={16} /> },
+        { label: 'CMO (Acquisition)', href: '/dashboard/c-suite/cmo', icon: <Activity size={16} /> },
+        { label: 'COO (Systems)', href: '/dashboard/c-suite/coo', icon: <Network size={16} /> }
       ]
     },
     {
-      id: 'wealth',
-      label: 'Wealth & Assets',
+      id: 'agents',
+      label: 'Revenue Agents',
       items: [
-        { label: 'Financial Overview', href: '/dashboard/wealth', icon: <Briefcase size={16} /> },
-        { label: 'Trading Floor', href: '/dashboard/trading', icon: <Activity size={16} />, isAdminOnly: true },
-        { label: 'Debts & Budget', href: '/dashboard/debts', icon: <Shield size={16} /> }
-      ]
-    },
-    {
-      id: 'business',
-      label: 'Business & Network',
-      items: [
-        { label: 'Enterprise Hub', href: '/dashboard/enterprise', icon: <LayoutDashboard size={16} />, isAdminOnly: true },
-        { label: 'E-Com Control', href: '/dashboard/approvals', icon: <Network size={16} /> },
-        { label: 'Traffic & Content', href: '/dashboard/traffic', icon: <Tv size={16} /> }
-      ]
-    },
-    {
-      id: 'personal',
-      label: 'Personal Growth',
-      items: [
-        { label: 'Health & Vitality', href: '/dashboard/health', icon: <Heart size={16} /> },
-        { label: 'Goals & Tasks', href: '/dashboard/goals', icon: <Rocket size={16} /> },
-        { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> }
+        { label: 'SEO & Traffic', href: '/dashboard/agents/seo', icon: <Search size={16} /> },
+        { label: 'CRO & Funnel', href: '/dashboard/agents/cro', icon: <Map size={16} /> },
+        { label: 'Copy & Content', href: '/dashboard/agents/copywriter', icon: <Terminal size={16} /> },
+        { label: 'Ads & Media', href: '/dashboard/agents/ads', icon: <Tv size={16} /> },
+        { label: 'Data & Analytics', href: '/dashboard/agents/data', icon: <Activity size={16} /> }
       ]
     },
     {
       id: 'system',
       label: 'System',
       items: [
+        { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
         { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
       ]
     }
