@@ -3,7 +3,10 @@
 import { prisma } from '@rebuildyourlife/database';
 import { getCurrentUser } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
-
+import { AdsExtremeService } from '../lib/services/ads.service.extreme';
+import { CompetitorExtremeService } from '../lib/services/competitor.service.extreme';
+import { SupplierExtremeService } from '../lib/services/supplier.service.extreme';
+import { SupportExtremeService } from '../lib/services/support.service.extreme';
 export async function getPendingActions() {
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -121,11 +124,6 @@ export async function rejectAgentAction(actionId: string) {
   revalidatePath('/dashboard/approvals');
   return { success: true };
 }
-
-import { AdsExtremeService } from '../lib/services/ads.service.extreme';
-import { CompetitorExtremeService } from '../lib/services/competitor.service.extreme';
-import { SupplierExtremeService } from '../lib/services/supplier.service.extreme';
-import { SupportExtremeService } from '../lib/services/support.service.extreme';
 
 export async function runOmnibusScan() {
   const user = await getCurrentUser();
