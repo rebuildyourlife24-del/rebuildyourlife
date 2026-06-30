@@ -224,6 +224,24 @@ export async function getSessionAction() {
         dbUser = await prisma.user.findUnique({ where: { email: supabaseUser.email } });
       }
 
+      if (!dbUser && supabaseUser.email) {
+        // User exists in Supabase but NOT in Prisma. Sync them now to prevent Foreign Key errors!
+        try {
+          dbUser = await prisma.user.create({
+            data: {
+              id: supabaseUser.id,
+              email: supabaseUser.email,
+              passwordHash: '', // Managed by Supabase
+              firstName: supabaseUser.user_metadata?.first_name || '',
+              lastName: supabaseUser.user_metadata?.last_name || '',
+              role: supabaseUser.email === 'hsemler50@gmail.com' ? 'SUPER_ADMIN' : 'USER',
+            }
+          });
+        } catch (syncErr) {
+          console.error("[AUTH] Failed to auto-sync Supabase user to Prisma:", syncErr);
+        }
+      }
+
       if (dbUser) {
         return { success: true, user: { id: dbUser.id, email: dbUser.email, firstName: dbUser.firstName, lastName: dbUser.lastName, role: dbUser.role, subscriptionTier: dbUser.subscriptionTier } };
       }
@@ -231,12 +249,12 @@ export async function getSessionAction() {
       console.warn("[AUTH] Prisma user lookup failed:", dbErr);
     }
 
-    // Supabase user bestaat maar Prisma is down — geef toch de Supabase data terug
+    // Supabase user bestaat maar Prisma is down of sync faalde — geef toch de Supabase data terug
     return { 
       success: true, 
       user: { 
         id: supabaseUser.id, 
-        email: supabaseUser.email, 
+        email: supabaseUser.email || '', 
         firstName: supabaseUser.user_metadata?.first_name || '', 
         lastName: supabaseUser.user_metadata?.last_name || '', 
         role: supabaseUser.email === 'hsemler50@gmail.com' ? 'SUPER_ADMIN' : 'USER' 
