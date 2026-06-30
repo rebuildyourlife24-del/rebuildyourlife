@@ -1,0 +1,52 @@
+name: Render Video Engine
+
+on:
+  workflow_dispatch:
+    inputs:
+      scriptText:
+        description: 'Text to speak'
+        required: true
+        type: string
+      style:
+        description: 'Video style'
+        required: true
+        type: string
+      supabaseUrl:
+        description: 'Supabase URL'
+        required: true
+        type: string
+      supabaseKey:
+        description: 'Supabase Key'
+        required: true
+        type: string
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install FFmpeg & Python
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg python3-pip
+          
+      - name: Install Edge-TTS (Free High-Quality Neural Voices)
+        run: pip3 install edge-tts --break-system-packages
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Render Script
+        env:
+          SCRIPT_TEXT: ${{ github.event.inputs.scriptText }}
+          VIDEO_STYLE: ${{ github.event.inputs.style }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ github.event.inputs.supabaseUrl }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.inputs.supabaseKey }}
+        run: npx tsx apps/web/scripts/render-cloud.ts
