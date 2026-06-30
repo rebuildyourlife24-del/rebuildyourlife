@@ -21,6 +21,19 @@ export default async function middleware(request: NextRequest) {
   response.headers.set('x-tenant-domain', cleanHostname);
 
   // ══════════════════════════════════════════════════════════════
+  // GEO-IP & GLOBAL EXPANSION ROUTING
+  // ══════════════════════════════════════════════════════════════
+  const country = request.geo?.country || request.headers.get('x-vercel-ip-country') || 'NL';
+  response.headers.set('x-user-country', country);
+
+  // Simple currency assignment based on country
+  let currency = 'EUR';
+  if (['US', 'CA', 'AU'].includes(country)) currency = 'USD';
+  if (country === 'GB') currency = 'GBP';
+  if (country === 'JP') currency = 'JPY';
+  response.headers.set('x-user-currency', currency);
+
+  // ══════════════════════════════════════════════════════════════
   // DOMAIN ROUTING LOGIC
   // ══════════════════════════════════════════════════════════════
 

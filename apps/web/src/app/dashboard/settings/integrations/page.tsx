@@ -55,6 +55,13 @@ export default async function SettingsIntegrationsPage() {
                 description="Wachtwoord om Hermes e-mails te laten afhandelen."
                 existingIntegration={integrations.find(i => i.provider === 'IMAP_SUPPORT')}
              />
+             <div className="border-t border-white/10" />
+             <SettingsIntegrationsClient 
+                provider="STRIPE_API" 
+                title="Stripe Global Payments" 
+                description="Token voor wereldwijde afrekentransacties (Creditcard/Apple Pay)."
+                existingIntegration={integrations.find(i => i.provider === 'STRIPE_API')}
+             />
           </div>
         </div>
       </div>
