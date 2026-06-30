@@ -1,4 +1,8 @@
 import { db } from '../db';
+import { TrafficWorker } from '../services/workers/traffic-worker.service';
+import { SupplyChainWorker } from '../services/workers/supply-chain-worker.service';
+import { SupportWorker } from '../services/workers/support-worker.service';
+import { ContentWorker } from '../services/workers/content-worker.service';
 
 /**
  * Sovereign OS Action Executor
@@ -109,6 +113,41 @@ export async function executePendingActions() {
 
           const deployResult = await deployCodeToGithub((payload as any).files, (payload as any).commitMessage);
           resultData = deployResult;
+          break;
+
+        case 'SWARM_TRAFFIC':
+          console.log(`[EXECUTOR] Swarm Traffic Worker initiating...`);
+          resultData = await TrafficWorker.deployCampaign(
+            (payload as any).productId,
+            (payload as any).budget || 100,
+            (payload as any).regions || ['NL', 'BE']
+          );
+          break;
+
+        case 'SWARM_SUPPLY':
+          console.log(`[EXECUTOR] Swarm Supply Chain Worker initiating...`);
+          resultData = await SupplyChainWorker.fulfillOrder(
+            (payload as any).orderId,
+            (payload as any).productData,
+            (payload as any).customerAddress
+          );
+          break;
+
+        case 'SWARM_SUPPORT':
+          console.log(`[EXECUTOR] Swarm Support Worker initiating...`);
+          resultData = await SupportWorker.handleTicket(
+            (payload as any).ticketId,
+            (payload as any).customerMessage,
+            (payload as any).language || 'NL'
+          );
+          break;
+
+        case 'SWARM_CONTENT':
+          console.log(`[EXECUTOR] Swarm Content Worker initiating...`);
+          resultData = await ContentWorker.generateProductListing(
+            (payload as any).productUrl,
+            (payload as any).targetLanguage || 'NL'
+          );
           break;
 
         default:

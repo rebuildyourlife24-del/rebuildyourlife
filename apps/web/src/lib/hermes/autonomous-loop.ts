@@ -30,6 +30,10 @@ Beschikbare acties om in de queue te zetten:
 - SYSTEM_CONFIG (payload: { "key": string, "value": string })
 - OPPORTUNITY (payload: { "title": string, "niche": string, "summary": string, "goodROI": number, "betterROI": number, "bestROI": number })
 - DEPLOY_CODE (payload: { "commitMessage": string, "files": [{ "path": "apps/web/src/...", "content": "..." }] })
+- SWARM_TRAFFIC (payload: { "productId": string, "budget": number, "regions": string[] })
+- SWARM_SUPPLY (payload: { "orderId": string, "productData": any, "customerAddress": any })
+- SWARM_SUPPORT (payload: { "ticketId": string, "customerMessage": string, "language": string })
+- SWARM_CONTENT (payload: { "productUrl": string, "targetLanguage": string })
 
 Kies maximaal 1 actie per keer en formatteer deze EXACt als volgt (zonder markdown code blocks eromheen):
 NIEUWE_ACTIE: <ACTIE_NAAM> | <JSON_PAYLOAD>
