@@ -67,7 +67,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-black px-4 py-12 relative selection:bg-gold-500 selection:text-black">
       
       {/* Subtle gold glow behind card */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold-500/5 blur-[120px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(212,168,83,0.05)_0%,transparent_70%)] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 15 }}
