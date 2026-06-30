@@ -1,6 +1,5 @@
 import { getIntegrations } from '@/actions/integrations';
 import { SettingsIntegrationsClient } from './SettingsIntegrationsClient';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default async function SettingsIntegrationsPage() {
   const integrations = await getIntegrations();
@@ -15,49 +14,49 @@ export default async function SettingsIntegrationsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-black/50 border-white/10 backdrop-blur-md">
-          <CardHeader>
-            <CardTitle className="text-white">Autonome Marketing</CardTitle>
-            <CardDescription>Meta Ads en TikTok API koppelingen.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-black/50 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-white">Autonome Marketing</h3>
+            <p className="text-sm text-gray-400">Meta Ads en TikTok API koppelingen.</p>
+          </div>
+          <div className="space-y-6">
              <SettingsIntegrationsClient 
                 provider="META_ADS" 
                 title="Meta (Facebook) Ads" 
                 description="Token nodig om budgetten te scalen op ROAS"
                 existingIntegration={integrations.find(i => i.provider === 'META_ADS')}
              />
-             <div className="my-6 border-t border-white/10" />
+             <div className="border-t border-white/10" />
              <SettingsIntegrationsClient 
                 provider="TIKTOK_ADS" 
                 title="TikTok Marketing" 
                 description="Token nodig om deepfakes autonoom live te zetten"
                 existingIntegration={integrations.find(i => i.provider === 'TIKTOK_ADS')}
              />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-black/50 border-white/10 backdrop-blur-md">
-          <CardHeader>
-            <CardTitle className="text-white">Supply Chain & Operaties</CardTitle>
-            <CardDescription>Leveranciers en Klantenservice koppelingen.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-black/50 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-white">Supply Chain & Operaties</h3>
+            <p className="text-sm text-gray-400">Leveranciers en Klantenservice koppelingen.</p>
+          </div>
+          <div className="space-y-6">
              <SettingsIntegrationsClient 
                 provider="CJ_DROPSHIPPING" 
                 title="CJ Dropshipping API" 
                 description="Zodat Hermes autonoom bestellingen kan omleiden bij vertraging."
                 existingIntegration={integrations.find(i => i.provider === 'CJ_DROPSHIPPING')}
              />
-             <div className="my-6 border-t border-white/10" />
+             <div className="border-t border-white/10" />
              <SettingsIntegrationsClient 
                 provider="IMAP_SUPPORT" 
                 title="Gmail / IMAP Support" 
                 description="Wachtwoord om Hermes e-mails te laten afhandelen."
                 existingIntegration={integrations.find(i => i.provider === 'IMAP_SUPPORT')}
              />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

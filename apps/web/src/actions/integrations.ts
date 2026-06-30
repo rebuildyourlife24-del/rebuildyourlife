@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUser } from './auth';
+import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@rebuildyourlife/database';
 import { revalidatePath } from 'next/cache';
 

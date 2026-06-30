@@ -2,9 +2,6 @@
 
 import { useState } from 'react';
 import { saveIntegration } from '@/actions/integrations';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { CheckCircle2, Loader2, Key } from 'lucide-react';
 
 interface SettingsIntegrationsClientProps {
@@ -45,20 +42,20 @@ export function SettingsIntegrationsClient({ provider, title, description, exist
       <p className="text-sm text-gray-400">{description}</p>
       
       <div className="flex items-center gap-2">
-        <Input 
+        <input 
           type="password"
           placeholder={saved ? "•••••••••••••••• (Actief)" : "Plak hier je API Key..."} 
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-cyan-500"
+          className="flex h-10 w-full rounded-md px-3 py-2 text-sm bg-black/40 border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />
-        <Button 
+        <button 
           onClick={handleSave} 
           disabled={loading || (!apiKey && !saved)}
-          className={saved && !apiKey ? "bg-white/10 text-white hover:bg-white/20" : "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"}
+          className={`inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed ${saved && !apiKey ? "bg-white/10 text-white hover:bg-white/20" : "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"}`}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (saved && !apiKey ? 'Update' : 'Koppel')}
-        </Button>
+        </button>
       </div>
     </div>
   );
