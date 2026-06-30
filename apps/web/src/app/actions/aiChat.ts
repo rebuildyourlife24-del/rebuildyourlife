@@ -226,9 +226,9 @@ export async function sendAIMessageAction(agentType: string, message: string, co
         createdAt: savedMessage.createdAt.toISOString(),
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("sendAIMessageAction error:", error);
-    return { success: false, error: "Er is een fout opgetreden bij het verwerken van je bericht." };
+    return { success: false, error: `Systeem Error: ${error.message || error.toString()}` };
   }
 }
 
