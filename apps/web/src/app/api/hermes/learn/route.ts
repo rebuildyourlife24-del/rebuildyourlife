@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { executeHermesAutonomousCycle } from '@/lib/hermes/autonomous-loop';
 
+export const maxDuration = 300; // Allow 5 mins for AI to think
+
 // ══════════════════════════════════════════════════════════════
 // HERMES 2.0 LEARNING ENGINE (Cron/Trigger endpoint)
 // ══════════════════════════════════════════════════════════════

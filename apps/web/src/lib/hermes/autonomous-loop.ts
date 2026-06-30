@@ -97,6 +97,7 @@ export async function executeHermesAutonomousCycle() {
           
           await db.agentAction.create({
             data: {
+              userId: adminUser.id,
               agentType: 'HERMES_2.0',
               title: 'TELEGRAM_ALERT',
               description: 'Connection Alerting Protocol - Orion is off-grid',
@@ -187,8 +188,11 @@ export async function executeHermesAutonomousCycle() {
         const actionTitle = actionMatch[1].trim();
         const payloadRaw = actionMatch[2].trim();
         
+        const mainUser = await db.user.findFirst({ orderBy: { createdAt: 'asc' } });
+        
         await db.agentAction.create({
           data: {
+            userId: mainUser ? mainUser.id : 'unknown',
             agentType: 'HERMES_2.0',
             title: actionTitle,
             description: 'Autonoom gegenereerd door de Hermes Zelfreflectie Cyclus.',
