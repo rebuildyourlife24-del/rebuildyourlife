@@ -70,6 +70,15 @@ export async function checkFeatureAccessAction(feature: FeatureName): Promise<{
     return { hasAccess: false, userTier: 'NONE', requiredTier: FEATURE_ACCESS[feature][0] };
   }
 
+  // Master override for admins and elite tiers
+  if (['SUPER_ADMIN', 'SUPREME_OVERSEER'].includes(user.role) || user.subscriptionTier === 'ELITE') {
+    return {
+      hasAccess: true,
+      userTier: user.subscriptionTier,
+      requiredTier: FEATURE_ACCESS[feature][0],
+    };
+  }
+
   const allowedTiers = FEATURE_ACCESS[feature] as readonly string[];
   const hasAccess = allowedTiers.includes(user.subscriptionTier) ||
     allowedTiers.includes(user.role);
@@ -89,21 +98,25 @@ export async function getUserFeaturesAction(): Promise<{
 }> {
   const user = await getCurrentUser();
 
+  const features = {} as Record<FeatureName, boolean>;
+
   if (!user) {
-    // Standaard FREE features
-    const features = {} as Record<FeatureName, boolean>;
     for (const feature of Object.keys(FEATURE_ACCESS) as FeatureName[]) {
       features[feature] = (FEATURE_ACCESS[feature] as readonly string[]).includes('FREE');
     }
-    return { features, tier: 'FREE', role: 'USER' };
+    return { features, tier: 'NONE', role: 'GUEST' };
   }
 
-  const features = {} as Record<FeatureName, boolean>;
+  const isMaster = ['SUPER_ADMIN', 'SUPREME_OVERSEER'].includes(user.role) || user.subscriptionTier === 'ELITE';
+
   for (const feature of Object.keys(FEATURE_ACCESS) as FeatureName[]) {
     const allowedTiers = FEATURE_ACCESS[feature] as readonly string[];
-    features[feature] = allowedTiers.includes(user.subscriptionTier) ||
-      allowedTiers.includes(user.role);
+    features[feature] = isMaster || allowedTiers.includes(user.subscriptionTier) || allowedTiers.includes(user.role);
   }
 
-  return { features, tier: user.subscriptionTier, role: user.role };
+  return {
+    features,
+    tier: user.subscriptionTier,
+    role: user.role,
+  };
 }
