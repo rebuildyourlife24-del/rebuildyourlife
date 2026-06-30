@@ -42,7 +42,7 @@ export class B2BLeadScraperService {
    */
   private static async scrapeEmailFromWebsite(websiteUrl: string): Promise<string | undefined> {
     try {
-      let formattedUrl = websiteUrl.trim();
+      let formattedUrl = websiteUrl?.trim();
       if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
         formattedUrl = `https://${formattedUrl}`;
       }
@@ -67,7 +67,7 @@ export class B2BLeadScraperService {
       const mailtoRegex = /href=["']mailto:([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})["']/i;
       const mailtoMatch = html.match(mailtoRegex);
       if (mailtoMatch && mailtoMatch[1]) {
-        return mailtoMatch[1].trim();
+        return mailtoMatch[1]?.trim();
       }
 
       // Look for plain email addresses
@@ -88,7 +88,7 @@ export class B2BLeadScraperService {
           );
         });
         if (filtered.length > 0) {
-          return filtered[0].trim();
+          return filtered[0]?.trim();
         }
       }
       return undefined;

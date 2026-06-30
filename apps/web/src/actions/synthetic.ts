@@ -9,7 +9,7 @@ import { revalidatePath } from 'next/cache';
  * Robust JSON cleaner and parser
  */
 function cleanAndParseJSON(raw: string) {
-  let cleaned = raw.trim();
+  let cleaned = raw?.trim();
   // Strip Markdown code block wraps if present
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```[a-zA-Z]*\n/, '').replace(/\n```$/, '');
@@ -19,7 +19,7 @@ function cleanAndParseJSON(raw: string) {
   if (startIdx !== -1 && endIdx !== -1) {
     cleaned = cleaned.substring(startIdx, endIdx + 1);
   }
-  return JSON.parse(cleaned.trim());
+  return JSON.parse(cleaned?.trim());
 }
 
 /**

@@ -50,7 +50,7 @@ export default function AITeamPage() {
   };
 
   const handleDelegate = async () => {
-    if (!taskInput.trim() || !selectedAgent) return;
+    if (!taskInput?.trim() || !selectedAgent) return;
     setCompletion(''); // clear previous completion
     await complete(taskInput);
     setTaskInput(''); // clear input box
@@ -253,8 +253,8 @@ export default function AITeamPage() {
                   <div className="flex items-center justify-end mt-4">
                     <button
                       onClick={handleDelegate}
-                      disabled={isLoading || !taskInput.trim()}
-                      className={`px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] flex items-center gap-2 shrink-0 ${isLoading || !taskInput.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isLoading || !taskInput?.trim()}
+                      className={`px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] flex items-center gap-2 shrink-0 ${isLoading || !taskInput?.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {isLoading ? 'BEZIG MET VERWERKEN...' : 'INSTRUCTIE UITVOEREN'} <Play className="w-4 h-4" />
                     </button>

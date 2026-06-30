@@ -47,7 +47,7 @@ export default function SwarmDashboard() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    if (!newTitle?.trim()) return;
     try {
       await createSocialPost(newTitle, newPlatform, parseInt(newBudget) || 1000);
       setNewTitle('');

@@ -132,7 +132,7 @@ export default function SalesAutomationsPage() {
   // DM Send Message Action
   const handleSendDmMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!dmInput.trim() || dmLoading) return;
+    if (!dmInput?.trim() || dmLoading) return;
 
     const text = dmInput;
     setDmInput('');
@@ -156,7 +156,7 @@ export default function SalesAutomationsPage() {
 
   // Voice Send Message Action
   const handleSendVoiceMessage = async (text: string) => {
-    if (!text.trim() || voiceLoading) return;
+    if (!text?.trim() || voiceLoading) return;
 
     setVoiceMessages(prev => [...prev, { role: 'user', content: text }]);
     setVoiceLoading(true);

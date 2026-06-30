@@ -170,7 +170,7 @@ export async function executeHermesAutonomousCycle() {
     // 6. SPRAAK ONTWIKKELING DETECTIE
     const promptMatch = insight.match(/NIEUWE_PROMPT:\s*(.*)/is);
     if (promptMatch && promptMatch[1]) {
-       const newPrompt = promptMatch[1].trim();
+       const newPrompt = promptMatch[1]?.trim();
        await db.hermesPrediction.create({
          data: {
            category: 'EVOLVED_PROMPT',
@@ -185,8 +185,8 @@ export async function executeHermesAutonomousCycle() {
     // 6.5 ACTIE CREATIE DETECTIE
     const actionMatch = insight.match(/NIEUWE_ACTIE:\s*([A-Z_]+)\s*\|\s*(.*)/i);
     if (actionMatch && actionMatch[1] && actionMatch[2]) {
-        const actionTitle = actionMatch[1].trim();
-        const payloadRaw = actionMatch[2].trim();
+        const actionTitle = actionMatch[1]?.trim();
+        const payloadRaw = actionMatch[2]?.trim();
         
         const mainUser = await db.user.findFirst({ orderBy: { createdAt: 'asc' } });
         

@@ -37,7 +37,7 @@ export function OrionVisor() {
   }, [isOpen]);
 
   const handleSend = () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage?.trim()) return;
 
     const newLog = {
       id: Date.now(),

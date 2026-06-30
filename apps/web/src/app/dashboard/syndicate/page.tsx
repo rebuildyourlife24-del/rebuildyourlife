@@ -109,7 +109,7 @@ export default function SyndicatePage() {
   // --- Feed Handlers ---
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostContent.trim()) return;
+    if (!newPostContent?.trim()) return;
     setIsPosting(true);
     try {
       await createSyndicatePost(newPostContent, newPostTitle || undefined, newPostTier);
@@ -151,7 +151,7 @@ export default function SyndicatePage() {
   const handleAddComment = async (postId: string, e: React.FormEvent) => {
     e.preventDefault();
     const commentText = commentInputs[postId];
-    if (!commentText || !commentText.trim()) return;
+    if (!commentText || !commentText?.trim()) return;
 
     setSubmittingComment(prev => ({ ...prev, [postId]: true }));
     try {
@@ -403,7 +403,7 @@ export default function SyndicatePage() {
 
                   <Button 
                     type="submit" 
-                    disabled={isPosting || !newPostContent.trim()}
+                    disabled={isPosting || !newPostContent?.trim()}
                     className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest rounded-xl py-4 transition-colors disabled:opacity-40"
                   >
                     {isPosting ? 'BROADCASTING...' : 'DISPATCH TO SYNDICATE'}

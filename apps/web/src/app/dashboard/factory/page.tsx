@@ -114,8 +114,8 @@ export default function AutonomousFactoryPage() {
       const locationMatch = lead.notes?.match(/Location:\s*([^\n,]+)/);
       const categoryMatch = lead.notes?.match(/Category:\s*([^\n,]+)/);
       
-      const customLocation = locationMatch ? locationMatch[1].trim() : "jouw regio";
-      const customCategory = categoryMatch ? categoryMatch[1].trim() : "bedrijf";
+      const customLocation = locationMatch ? locationMatch[1]?.trim() : "jouw regio";
+      const customCategory = categoryMatch ? categoryMatch[1]?.trim() : "bedrijf";
 
       const personalizedSubject = pitchSubject
         .replace(/{COMPANY}/g, lead.company || lead.name)
@@ -299,7 +299,7 @@ export default function AutonomousFactoryPage() {
 
                 <button
                   onClick={handleScrapeLeads}
-                  disabled={isScraping || !scraperLocation.trim()}
+                  disabled={isScraping || !scraperLocation?.trim()}
                   className="w-full bg-cyan-950/50 text-cyan-400 border border-cyan-500/50 rounded-xl py-4 font-bold text-sm uppercase tracking-widest hover:bg-cyan-900/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-3"
                 >
                   {isScraping ? (

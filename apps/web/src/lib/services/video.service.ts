@@ -93,7 +93,7 @@ export class VideoGeneratorService {
       const chunks: Buffer[] = [];
 
       for (let i = 0; i < sentences.length; i++) {
-        const text = sentences[i].trim();
+        const text = sentences[i]?.trim();
         if (!text) continue;
 
         // Skip chunks longer than 200 chars or split them further

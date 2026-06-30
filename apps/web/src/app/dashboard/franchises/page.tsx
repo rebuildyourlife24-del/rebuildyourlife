@@ -131,7 +131,7 @@ export default function FranchiseManager() {
     const res = await createFranchiseAction({
       name: newName,
       subdomain: subdomainSlug,
-      customDomain: storeUrl.trim(),
+      customDomain: storeUrl?.trim(),
       theme: connectionType,
       title: newName,
       description: connectionType === "SHOPIFY" ? "Shopify Integration Active" : "Self-Hosted Link Active"

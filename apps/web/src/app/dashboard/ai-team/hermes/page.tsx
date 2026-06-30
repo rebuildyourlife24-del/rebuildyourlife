@@ -71,9 +71,9 @@ export default function HermesChatPage() {
 
   async function handleSendMessage(e?: React.FormEvent) {
     e?.preventDefault();
-    if (!inputValue.trim() || loading) return;
+    if (!inputValue?.trim() || loading) return;
 
-    const userMessageContent = inputValue.trim();
+    const userMessageContent = inputValue?.trim();
     setInputValue("");
     setError(null);
 
@@ -231,7 +231,7 @@ export default function HermesChatPage() {
               />
               <button
                 type="submit"
-                disabled={!inputValue.trim() || loading}
+                disabled={!inputValue?.trim() || loading}
                 className="absolute right-2 p-2 bg-cyan-500/10 text-cyan-400 rounded-lg hover:bg-cyan-500/20 disabled:opacity-50 transition-all"
               >
                 <Send className="w-5 h-5" />

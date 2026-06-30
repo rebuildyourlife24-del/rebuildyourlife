@@ -129,7 +129,7 @@ export class B2BPitchService {
           data: {
             status: "CONTACTED",
             lastContactAt: new Date(),
-            notes: updatedNotes.trim()
+            notes: updatedNotes?.trim()
           }
         });
       }

@@ -71,9 +71,9 @@ export default function GrowthClient({ initialHabits, initialBooks }: { initialH
 
   const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newBookTitle.trim()) return;
+    if (!newBookTitle?.trim()) return;
     
-    await createBook(newBookTitle.trim(), newBookAuthor.trim() || 'Onbekend');
+    await createBook(newBookTitle?.trim(), newBookAuthor?.trim() || 'Onbekend');
     window.location.reload();
   };
 

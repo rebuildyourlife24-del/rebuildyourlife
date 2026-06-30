@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 
     // E. Resolve or create user by email from request body if still not resolved
     if (!userId && email) {
-      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedEmail = email?.trim().toLowerCase();
       let dbUser = await prisma.user.findUnique({
         where: { email: normalizedEmail }
       });

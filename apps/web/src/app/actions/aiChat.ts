@@ -175,7 +175,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     // 1. WRITE_FILE execution disabled in prod
     // 2. EXECUTE_COMMAND execution
     while ((match = execRegex.exec(aiResponse)) !== null) {
-      const command = match[1].trim();
+      const command = match[1]?.trim();
       try {
         const stdout = execSync(command, { 
           cwd: workspaceRoot,

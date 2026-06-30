@@ -119,7 +119,7 @@ export default function SyntheticDashboardPage() {
 
   // Generate Brand layout from Vibe Prompt
   const handleGenerateVibe = async () => {
-    if (!vibePrompt.trim()) return;
+    if (!vibePrompt?.trim()) return;
     setIsGenerating(true);
     
     // Add local terminal status

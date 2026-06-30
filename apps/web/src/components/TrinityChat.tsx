@@ -27,7 +27,7 @@ export function TrinityChat() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input?.trim() || isLoading) return;
 
     const userText = input;
     setInput('');
@@ -170,7 +170,7 @@ export function TrinityChat() {
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading}
+            disabled={!input?.trim() || isLoading}
             className="bg-cyan-600 hover:bg-cyan-500 text-black px-6 rounded-xl font-bold flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-5 h-5" />

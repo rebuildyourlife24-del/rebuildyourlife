@@ -72,9 +72,9 @@ export default function SwarmChatPage() {
 
   async function handleSendMessage(e?: React.FormEvent) {
     e?.preventDefault();
-    if (!inputValue.trim() || loading) return;
+    if (!inputValue?.trim() || loading) return;
 
-    const userMessageContent = inputValue.trim();
+    const userMessageContent = inputValue?.trim();
     setInputValue("");
     setError(null);
 
@@ -262,7 +262,7 @@ export default function SwarmChatPage() {
               />
               <button
                 type="submit"
-                disabled={!inputValue.trim() || loading}
+                disabled={!inputValue?.trim() || loading}
                 className="absolute right-2 p-2 bg-fuchsia-500/10 text-fuchsia-400 rounded-lg hover:bg-fuchsia-500/20 disabled:opacity-50 transition-all shadow-[0_0_10px_rgba(217,70,239,0.2)]"
               >
                 <Send className="w-5 h-5" />

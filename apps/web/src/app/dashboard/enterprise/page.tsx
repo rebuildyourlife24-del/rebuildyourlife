@@ -39,10 +39,10 @@ export default function EnterpriseOSPage() {
   }, []);
 
   const handleAddTarget = async () => {
-    if (!subject.trim() || generating) return;
+    if (!subject?.trim() || generating) return;
     setGenerating(true);
     try {
-      const res = await addIntelligenceTarget(subject.trim(), targetType);
+      const res = await addIntelligenceTarget(subject?.trim(), targetType);
       if (res.success) {
         setTargets([res.target, ...targets]);
         setSubject('');

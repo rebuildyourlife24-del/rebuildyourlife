@@ -154,7 +154,7 @@ export function OrionNeuralLink() {
                 </div>
                 <button 
                   type="submit"
-                  disabled={!input.trim()}
+                  disabled={!input?.trim()}
                   className="p-3 bg-cyan-950 text-cyan-400 rounded-xl border border-cyan-900 hover:bg-cyan-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />

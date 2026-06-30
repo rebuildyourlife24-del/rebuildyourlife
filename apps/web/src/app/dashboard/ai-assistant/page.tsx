@@ -98,7 +98,7 @@ export default function AIAssistantPage() {
 
   const handleSendMessage = async (customMessage?: string) => {
     const textToSend = customMessage || inputValue;
-    if (!textToSend.trim() || loading) return;
+    if (!textToSend?.trim() || loading) return;
 
     setError(null);
     setLoading(true);
@@ -373,7 +373,7 @@ export default function AIAssistantPage() {
           />
           <button
             onClick={() => handleSendMessage()}
-            disabled={loading || !inputValue.trim()}
+            disabled={loading || !inputValue?.trim()}
             className="bg-white text-black hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-bold uppercase tracking-widest px-8 flex items-center gap-3 transition-colors"
           >
             Verstuur
