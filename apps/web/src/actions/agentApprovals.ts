@@ -122,6 +122,11 @@ export async function rejectAgentAction(actionId: string) {
   return { success: true };
 }
 
+import { AdsExtremeService } from '../lib/services/ads.service.extreme';
+import { CompetitorExtremeService } from '../lib/services/competitor.service.extreme';
+import { SupplierExtremeService } from '../lib/services/supplier.service.extreme';
+import { SupportExtremeService } from '../lib/services/support.service.extreme';
+
 export async function runOmnibusScan() {
   const user = await getCurrentUser();
   if (!user) throw new Error('Not authenticated');
@@ -169,6 +174,14 @@ export async function runOmnibusScan() {
       }
     });
   }
+
+  // 3. EXTREME GOD-MODE INTEGRATIONS
+  // Deze worden alleen gedraaid (en genereren acties) als de klant daadwerkelijk 
+  // API-keys in de `/dashboard/settings/integrations` UI heeft geplakt!
+  await AdsExtremeService.runExtremeMarketingProtocol(user.id);
+  await CompetitorExtremeService.runAdLibraryEspionage(user.id);
+  await SupplierExtremeService.runDynamicRoutingAndNegotiation(user.id);
+  await SupportExtremeService.runAutonomousResolutionCenter(user.id);
 
   revalidatePath('/dashboard/approvals');
 }
