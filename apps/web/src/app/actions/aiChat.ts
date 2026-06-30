@@ -11,15 +11,15 @@ import path from "path";
 const workspaceRoot = process.cwd();
 
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+import { getSessionAction } from "./auth";
 
 async function getAuthenticatedUserId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("ryl_session")?.value;
-  if (!token) return null;
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    return decoded.userId;
+    const session = await getSessionAction();
+    if (session.success && session.user) {
+      return session.user.id;
+    }
+    return null;
   } catch {
     return null;
   }
