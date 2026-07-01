@@ -138,6 +138,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     system: false,
   });
 
+  const [activeProject, setActiveProject] = useState("holding");
+  const [showProjectSwitcher, setShowProjectSwitcher] = useState(false);
+
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -375,6 +378,62 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               <span className={theme.color}>R_Y_L_CORE</span>
               <span className="text-zinc-600">/</span>
               <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'CORE'}</span>
+            </div>
+
+            {/* Project Switcher */}
+            <div className="relative ml-4">
+              <button 
+                onClick={() => setShowProjectSwitcher(!showProjectSwitcher)}
+                className={`flex items-center gap-2 px-3 py-1.5 bg-black/60 border rounded-md transition-colors ${showProjectSwitcher ? theme.borderStrong : theme.border}`}
+              >
+                <div className={`w-2 h-2 rounded-full ${activeProject === 'holding' ? 'bg-[#d4af37]' : 'bg-emerald-500'} animate-pulse`}></div>
+                <span className="text-xs font-bold uppercase text-white tracking-wider">
+                  {activeProject === 'holding' ? 'Holding (God-Mode)' : 'E-Com Alpha'}
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-500" />
+              </button>
+              
+              <AnimatePresence>
+                {showProjectSwitcher && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full left-0 mt-2 w-64 bg-[#0a0a0a] border border-white/10 shadow-2xl rounded-xl overflow-hidden z-50"
+                  >
+                    <div className="p-3 border-b border-white/10">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Jouw Portfolio</span>
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <button 
+                        onClick={() => { setActiveProject('holding'); setShowProjectSwitcher(false); }}
+                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === 'holding' ? 'bg-[#d4af37]/10 border border-[#d4af37]/30' : 'hover:bg-white/5 border border-transparent'}`}
+                      >
+                        <Network className={`w-4 h-4 ${activeProject === 'holding' ? 'text-[#d4af37]' : 'text-zinc-400'}`} />
+                        <div>
+                          <p className={`text-xs font-bold uppercase ${activeProject === 'holding' ? 'text-[#d4af37]' : 'text-zinc-300'}`}>Holding View</p>
+                          <p className="text-[10px] text-zinc-500">Alle projecten geaggregeerd</p>
+                        </div>
+                      </button>
+                      <button 
+                        onClick={() => { setActiveProject('ecom'); setShowProjectSwitcher(false); }}
+                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === 'ecom' ? 'bg-emerald-500/10 border border-emerald-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+                      >
+                        <Briefcase className={`w-4 h-4 ${activeProject === 'ecom' ? 'text-emerald-500' : 'text-zinc-400'}`} />
+                        <div>
+                          <p className={`text-xs font-bold uppercase ${activeProject === 'ecom' ? 'text-emerald-500' : 'text-zinc-300'}`}>E-Com Alpha</p>
+                          <p className="text-[10px] text-zinc-500">ecom.rebuildyourlife.eu</p>
+                        </div>
+                      </button>
+                    </div>
+                    <div className="p-2 border-t border-white/10 bg-black/50">
+                      <button className="w-full text-left text-xs font-mono text-zinc-400 hover:text-white transition-colors p-2 flex items-center gap-2">
+                        + Subdomein Toevoegen
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

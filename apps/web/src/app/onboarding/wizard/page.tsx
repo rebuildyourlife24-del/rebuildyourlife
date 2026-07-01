@@ -43,6 +43,7 @@ export default function OnboardingWizard() {
     { id: "saas", name: "SaaS & Software", icon: <Database className="w-5 h-5" /> },
     { id: "agency", name: "Service Agency (SMMA)", icon: <Briefcase className="w-5 h-5" /> },
     { id: "crypto", name: "Crypto & Trading", icon: <TrendingUp className="w-5 h-5" /> },
+    { id: "holding", name: "OMNIPRESENT HOLDING (10+ Projects)", icon: <Target className="w-5 h-5" /> },
   ];
 
   return (
