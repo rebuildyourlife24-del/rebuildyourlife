@@ -404,6 +404,19 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'CORE'}</span>
             </div>
 
+            {/* Direct Connection to AI Agency */}
+            {isAdmin && (
+              <a 
+                href="https://ai-henksemler.nl/agency/ceo" 
+                className="ml-4 flex items-center gap-2 px-3 py-1.5 bg-blue-900/20 border border-blue-500/30 rounded-md hover:bg-blue-900/40 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Terminal className="w-4 h-4 text-blue-400" />
+                <span className="text-xs font-bold uppercase text-blue-400 tracking-wider">AI Agency Control Room</span>
+              </a>
+            )}
+
             {/* Project Switcher */}
             <div className="relative ml-4">
               <button 

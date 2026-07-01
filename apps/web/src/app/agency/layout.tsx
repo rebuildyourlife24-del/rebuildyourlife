@@ -15,9 +15,13 @@ export default function AgencyLayout({ children }: { children: React.ReactNode }
               Agency Portal
             </span>
           </div>
-          <div>
-            <a href="https://rebuildyourlife.eu/dashboard" className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg text-sm text-white/80 transition-colors">
-              Naar RebuildYourLife (SaaS)
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://rebuildyourlife.eu/dashboard" 
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-900/20 border border-emerald-500/30 hover:bg-emerald-900/40 rounded-lg text-sm text-emerald-400 font-bold transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>Main SaaS Platform</span>
             </a>
           </div>
         </nav>
