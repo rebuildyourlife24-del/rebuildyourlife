@@ -1,2 +1,0 @@
-@echo off
-ffmpeg -loop 1 -t 4 -i scratch\video_build\frame1.png -loop 1 -t 4 -i scratch\video_build\frame2.png -loop 1 -t 4 -i scratch\video_build\frame3.png -filter_complex "[0:v]format=yuv420p[v0]; [1:v]format=yuv420p[v1]; [2:v]format=yuv420p[v2]; [v0][v1]xfade=transition=fade:duration=1:offset=3[v01]; [v01][v2]xfade=transition=fade:duration=1:offset=6[outv]" -map "[outv]" -c:v libx264 -pix_fmt yuv420p -r 30 apps\web\public\panorama_intro.mp4 -y
