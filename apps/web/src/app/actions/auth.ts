@@ -15,6 +15,26 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     
     // Genereer een ryl_session token zodat alle admin/dashboard APIs werken
     const bypassUserId = 'dev-local-admin-id';
+    
+    // Zorg ervoor dat de dev user ook echt in Prisma bestaat om foreign key errors (zoals bij AI chat) te voorkomen!
+    try {
+      await prisma.user.upsert({
+        where: { id: bypassUserId },
+        update: { email: email || 'hsemler50@gmail.com', role: 'SUPER_ADMIN' },
+        create: {
+          id: bypassUserId,
+          email: email || 'hsemler50@gmail.com',
+          passwordHash: '',
+          firstName: 'Hendrik',
+          lastName: 'Semler',
+          role: 'SUPER_ADMIN',
+          subscriptionTier: 'ELITE'
+        }
+      });
+    } catch (e) {
+      console.warn("Dev bypass upsert failed", e);
+    }
+
     const jwtToken = jwt.sign({ userId: bypassUserId, role: 'SUPER_ADMIN' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
     cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
     
@@ -167,10 +187,31 @@ export async function getSessionAction() {
     // MASTER BYPASS: Werkt altijd, overal — lokaal EN productie.
     // Zodra de dev_bypass cookie is gezet (door loginAction), ben je binnen.
     if (cookieStore.get('dev_bypass')?.value === 'true') {
+      const bypassUserId = 'dev-local-admin-id';
+      
+      // Auto-sync dev admin user in DB to prevent foreign key errors for AI chat
+      try {
+        await prisma.user.upsert({
+          where: { id: bypassUserId },
+          update: {}, // Niets updaten als hij er al in staat
+          create: {
+            id: bypassUserId,
+            email: 'hsemler50@gmail.com',
+            passwordHash: '',
+            firstName: 'Hendrik',
+            lastName: 'Semler',
+            role: 'SUPER_ADMIN',
+            subscriptionTier: 'ELITE'
+          }
+        });
+      } catch (e) {
+        // Negeren
+      }
+
       return { 
         success: true, 
         user: { 
-          id: 'dev-local-admin-id', 
+          id: bypassUserId, 
           email: 'hsemler50@gmail.com', 
           firstName: 'Hendrik', 
           lastName: 'Semler', 
