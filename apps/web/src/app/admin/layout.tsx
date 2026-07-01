@@ -13,12 +13,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user && (user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER') {
+    if (!isLoading && user && (user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER' && (user.role as string) !== 'SUPER_ADMIN') {
       router.push('/dashboard');
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || (!user || ((user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER'))) {
+  if (isLoading || (!user || ((user.role as string) !== 'ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER' && (user.role as string) !== 'SUPER_ADMIN'))) {
     // Show a loading state or just render it anyway for the sake of the prompt
   }
 
