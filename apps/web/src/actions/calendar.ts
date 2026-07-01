@@ -37,6 +37,8 @@ export async function getTimelineData(userId: string) {
   }
 }
 
+import { executeAgentAction } from './shopify-execution';
+
 export async function reviewAgentAction(actionId: string, approved: boolean) {
   try {
     const status = approved ? 'APPROVED' : 'DENIED';
@@ -49,13 +51,22 @@ export async function reviewAgentAction(actionId: string, approved: boolean) {
       }
     });
 
+    // If approved, immediately fire the Execution Engine in the background
+    if (approved) {
+      // Note: we don't await this so it doesn't block the UI response,
+      // it runs autonomously in the background!
+      executeAgentAction(actionId).catch(err => {
+        console.error("Async execution failed:", err);
+      });
+    }
+
     // Create a notification for the system/user that it was handled
     const action = await prisma.agentAction.findUnique({ where: { id: actionId } });
     if (action) {
       await prisma.notification.create({
         data: {
           userId: action.userId,
-          title: `AI Actie ${approved ? 'Goedgekeurd' : 'Afgewezen'}`,
+          title: `AI Actie ${approved ? 'Goedgekeurd & Uitgevoerd' : 'Afgewezen'}`,
           message: `De taak "${action.title}" is succesvol verwerkt.`,
           isRead: false
         }
