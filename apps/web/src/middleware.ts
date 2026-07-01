@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
 
   // Bepaal of we op het exclusieve ai-henksemler.nl domein zitten
-  const isAiHenksemler = hostname.includes('ai-henksemler.nl') || hostname.includes('localhost:3000');
+  const isAiHenksemler = hostname.includes('ai-henksemler.nl') || hostname.includes('localhost') || hostname.includes('192.168');
 
   // Enforce Domain Access voor /ceo en /klanten
   if ((url.pathname.startsWith('/ceo') || url.pathname.startsWith('/klanten')) && !isAiHenksemler) {

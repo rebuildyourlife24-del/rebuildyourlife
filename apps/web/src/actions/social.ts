@@ -3,6 +3,8 @@
 import { db } from '@/lib/db';
 import { prisma } from '@rebuildyourlife/database';
 import { revalidatePath } from 'next/cache';
+import { MetaMarketingAPI } from '@/lib/meta-api';
+import { TikTokMarketingAPI } from '@/lib/tiktok-api';
 
 // Haal social media posts op
 export async function getSocialPosts() {
@@ -124,10 +126,38 @@ export async function launchAdCampaign(userId: string, campaignName: string, pla
     revalidatePath('/klanten');
     revalidatePath('/dashboard/social');
     
-    // Optioneel: Hier roepen we de Facebook/TikTok Graph API aan om de ad écht te publishen.
-    // await publishToMeta(campaignName, totalBudget);
+    // 6. Roep de daadwerkelijke API aan afhankelijk van het platform
+    let apiResult = null;
+    const platformUpper = platform.toUpperCase();
+
+    if (platformUpper === 'META' || platformUpper === 'FACEBOOK' || platformUpper === 'INSTAGRAM') {
+      console.log(`[SOCIAL ACTION] Pushing to Meta API...`);
+      apiResult = await MetaMarketingAPI.publishCampaign({
+        campaignName: campaignName,
+        budget: totalBudget,
+        adText: `Automatisch gegenereerde advertentie door RYL AI voor ${campaignName}`
+      });
+    } else if (platformUpper === 'TIKTOK') {
+      console.log(`[SOCIAL ACTION] Pushing to TikTok API...`);
+      apiResult = await TikTokMarketingAPI.publishCampaign({
+        campaignName: campaignName,
+        budget: totalBudget,
+        adText: `TikTok Ad door RYL AI: ${campaignName}`
+      });
+    } else if (platformUpper === 'SNAPCHAT') {
+      console.log(`[SOCIAL ACTION] Simulating Snapchat API (Not yet implemented)`);
+      apiResult = { success: true, simulated: true, campaignId: 'sim_snap_' + Date.now() };
+    }
     
-    return { success: true, ...result };
+    // Update campaign status based on API result
+    if (apiResult?.success) {
+      await prisma.adCampaign.update({
+        where: { id: result.campaign.id },
+        data: { status: apiResult.simulated ? 'ACTIVE_SIMULATED' : 'ACTIVE_LIVE' }
+      });
+    }
+    
+    return { success: true, apiResult, ...result };
   } catch (error: any) {
     console.error('Failed to launch Ad Campaign:', error);
     return { success: false, error: error.message };

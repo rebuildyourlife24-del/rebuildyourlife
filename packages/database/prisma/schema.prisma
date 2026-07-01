@@ -1803,3 +1803,32 @@ model AdCampaign {
   @@index([platform])
   @@index([status])
 }
+
+model AgentSharedMemory {
+  id            String   @id @default(uuid())
+  sourceAgent   String   // e.g. "CMO", "CEO", "SEO"
+  targetAgent   String?  // Optional, if meant for a specific agent
+  content       String   // The insight or data to share
+  importance    Float    @default(0.5) // 0.0 to 1.0
+  tags          String?  // Comma separated tags
+  status        String   @default("UNREAD") // UNREAD, READ, PROCESSED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([sourceAgent])
+  @@index([targetAgent])
+  @@index([status])
+}
+
+model KnowledgeGraphNode {
+  id          String   @id @default(uuid())
+  entityType  String   // e.g. "PRODUCT", "AD_CREATIVE", "COMPETITOR"
+  entityId    String?  // External reference ID
+  properties  String   // JSON payload of properties
+  connections String?  // JSON array of connected node IDs and relationship types
+  confidence  Float    @default(1.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([entityType])
+}
