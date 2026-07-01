@@ -31,7 +31,7 @@ export default function LoginPage() {
       
       if (result.success) {
         setUser(result.user as any);
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       } else {
         setError(result.error || 'Inloggen mislukt. Controleer je gegevens.');
       }

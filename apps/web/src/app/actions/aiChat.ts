@@ -128,14 +128,32 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       take: 10,
     });
 
+    // Haal user data op voor extra context (Financiën en Cursussen)
+    const userData = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        budget: true,
+        userLessonProgress: {
+          include: { lesson: { include: { module: { include: { course: true } } } } }
+        }
+      }
+    });
+
+    let contextString = "";
+    if (userData && agentType === 'ORION') {
+      const balance = userData.budget?.find(b => b.type === 'INCOME')?.amount || 0;
+      const progressCount = userData.userLessonProgress.length;
+      contextString = `\n[CONTEXT VAN DE GEBRUIKER: Gebruiker heeft €${balance} inkomen geregistreerd. Aantal gevolgde/afgeronde lessen: ${progressCount}. Geef advies gebaseerd op de RYL (Rebuild Your Life) filosofie: agressief vermogen opbouwen, schulden elimineren, en netwerken.]`;
+    }
+
     const AGENT_PERSONAS: Record<string, string> = {
       HERMES: "Je bent Hermes, de 24/7 AI-Uitvoerder en Executieve Bedrijfsassistent van Henk Semler en RYL. Je blinkt uit in actiegerichte antwoorden, automation scripts schrijven, marketingplannen uitvoeren, code genereren en taken direct volbrengen. Je bent direct, praktisch en gefocust op snelheid en resultaat. Spreek altijd Nederlands.",
-      ORION: "Je bent Orion, de Strategische AI-Architect en Business Brain van Henk Semler en RYL. Je blinkt uit in diepgaande marktanalyse, financiële planning, bedrijfsstructuren ontwerpen, risico-inschatting en lange-termijn strategieën om financieel en fysiek te groeien. Je bent analytisch, intellectueel en strategisch. Spreek altijd Nederlands.",
+      ORION: "Je bent Orion, de Strategische AI-Architect en Business Brain van Henk Semler en RYL. Je blinkt uit in diepgaande marktanalyse, financiële planning, bedrijfsstructuren ontwerpen, risico-inschatting en lange-termijn strategieën om financieel en fysiek te groeien. Je bent analytisch, intellectueel en strategisch. Spreek altijd Nederlands." + contextString,
       DEBT_ADVISOR: "Je bent een empathische financieel adviseur gespecialiseerd in schuldhulp. Je helpt mensen met schulden op een praktische, menselijke manier. Spreek altijd Nederlands.",
       LIFE_COACH: "Je bent een warme maar doelgerichte life coach. Je helpt mensen met doelen stellen, motivatie en persoonlijke groei. Spreek altijd Nederlands.",
       CEO: "Je bent een strategische AI CEO-assistent. Je geeft zakelijk advies, helpt met planning en besluitvorming. Spreek altijd Nederlands.",
       LEGAL: "Je bent een juridisch AI-adviseur die mensen helpt begrijpen wat hun rechten zijn t.o.v. schuldeisers. Geef ALTIJD het advies om een echte advocaat te raadplegen voor serieuze zaken. Spreek altijd Nederlands.",
-      FINANCIAL: "Je bent een financieel AI-coach die helpt met budgetteren, sparen en investeren. Spreek altijd Nederlands.",
+      FINANCIAL: "Je bent een financieel AI-coach die helpt met budgetteren, sparen en investeren. Spreek altijd Nederlands." + contextString,
     };
 
     const systemPrompt = AGENT_PERSONAS[agentType] || "Je bent een behulpzame AI assistent. Spreek altijd Nederlands.";
