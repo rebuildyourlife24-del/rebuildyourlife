@@ -1,11 +1,11 @@
 import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { prisma } from '@rebuildyourlife/database';
-import { getCurrentUser } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const session = await getSessionAction(); const user = session?.user;
     
     if (!user) {
       return new Response('Unauthorized', { status: 401 });
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       messages,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error('AI Chat Error:', error);
     return new Response('Error processing AI request', { status: 500 });

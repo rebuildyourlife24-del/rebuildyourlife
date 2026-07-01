@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Lock, ShoppingCart, Key, CheckCircle2, AlertTriangle, RefreshCw } from 'lucide-react';
-import { getShopifyConnectionsAction, connectShopifyStoreAction, removeShopifyConnectionAction } from '@/actions/integrations';
+// import { getShopifyConnectionsAction, connectShopifyStoreAction, removeShopifyConnectionAction } from '@/actions/integrations';
 
 export function IntegrationsVault() {
   const [connections, setConnections] = useState<any[]>([]);

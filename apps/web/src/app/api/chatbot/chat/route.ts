@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 import { NextResponse } from 'next/server';
-import { db } from '@rebuildyourlife/database'; // Aanname van de db import in deze monorepo
+import prisma from '@/lib/prisma'; // Aanname van de db import in deze monorepo
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     // In een echte productie-omgeving halen we hier de configuratie (prompt) op uit de database
-    // const module = await db.userBusinessModule.findUnique({ where: { id: botId } });
+    // const module = await prisma.userBusinessModule.findUnique({ where: { id: botId } });
     // const config = JSON.parse(module.config);
     // const systemPrompt = config.prompt;
 
@@ -27,12 +27,12 @@ export async function POST(req: Request) {
 
     // Gebruik de AI SDK om een streaming response te genereren via Groq (Llama 3) voor extreme snelheid
     const result = await streamText({
-      model: groq('llama3-70b-8192'),
+      model: groq('llama3-70b-8192') as any,
       system: systemPrompt,
       messages,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error('[CHATBOT_API_ERROR]', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

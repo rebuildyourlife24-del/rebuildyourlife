@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 import { OrionIntelligenceService } from '@/lib/services/orion.service';
 import { HermesExecutionService } from '@/lib/services/hermes.service';
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const session = await getSessionAction(); const user = session?.user;
     if (!user) return new NextResponse('Unauthorized', { status: 401 });
 
     const body = await req.json();

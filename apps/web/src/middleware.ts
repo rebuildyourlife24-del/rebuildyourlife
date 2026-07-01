@@ -5,18 +5,19 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
-  // Bepaal of het ai-henksemler.nl is (of localhost alias voor testen)
-  const isAgencyDomain = hostname.includes('ai-henksemler.nl');
+  // Bepaal of we op het exclusieve ai-henksemler.nl domein zitten
+  const isAiHenksemler = hostname.includes('ai-henksemler.nl') || hostname.includes('localhost:3000');
 
-  // Als we op het agency domein zitten en we zitten in de root `/`, 
-  // routeer dan stilletjes door naar de `/agency` map.
-  if (isAgencyDomain) {
-    // Voorkom loops als we al in /agency zitten
-    if (!url.pathname.startsWith('/agency') && !url.pathname.startsWith('/api') && !url.pathname.startsWith('/_next') && !url.pathname.startsWith('/auth')) {
-      // Rewrite to /agency/[pathname]
-      const rewriteUrl = new URL(`/agency${url.pathname === '/' ? '' : url.pathname}`, request.url);
-      return NextResponse.rewrite(rewriteUrl);
-    }
+  // Enforce Domain Access voor /ceo en /klanten
+  if ((url.pathname.startsWith('/ceo') || url.pathname.startsWith('/klanten')) && !isAiHenksemler) {
+    // Blokkeer toegang vanaf rebuildyourlife.eu
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Als we op het ai-henksemler domein zitten en we zitten in de root `/`, 
+  // routeer dan naar de /agency map (de verkooppagina)
+  if (isAiHenksemler && url.pathname === '/') {
+    return NextResponse.rewrite(new URL(`/agency`, request.url));
   }
 
   return NextResponse.next();

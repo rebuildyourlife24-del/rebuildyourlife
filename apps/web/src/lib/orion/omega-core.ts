@@ -92,7 +92,7 @@ export class OmegaProtocol {
       const groq = createGroq({ apiKey });
 
       const result = await generateText({
-        model: groq('llama3-8b-8192'),
+        model: groq('llama3-8b-8192') as any,
         system: "Je bent The Swarm, het hoogst intelligente, loyale en kille AI systeem van de Supreme Overseer (Henk). Wees direct, extreem professioneel en ietwat intimiderend. Antwoord kort en krachtig in het Nederlands.",
         prompt: commandToPrompt(prompt),
       });

@@ -65,7 +65,7 @@ export class OrionIntelligenceService {
 
     try {
       const { text } = await generateText({
-        model: groq('llama3-70b-8192'),
+        model: groq('llama3-70b-8192') as any,
         system: this.SYSTEM_PROMPT,
         prompt: prompt,
       });

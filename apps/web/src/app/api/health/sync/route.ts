@@ -8,32 +8,25 @@ export async function POST(req: Request) {
     const cookieStore = await cookies();
     const token = cookieStore.get("ryl_session")?.value;
     let userId = null;
+    
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET! || 'secret') as any;
         userId = decoded.userId;
       } catch {}
     }
-    
-    // Fallback for dev environment
-    if (!userId) {
-      const fallbackUser = await db.user.findFirst();
-      if (fallbackUser) userId = fallbackUser.id;
-    }
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Gesimuleerde Oura Ring / Apple Health Sync API Response
-    const mockSyncData = {
-      steps: Math.floor(Math.random() * 5000) + 5000,
-      sleepScore: (Math.random() * 3 + 6).toFixed(1), // 6.0 to 9.0
-      weightKg: 78.5,
-      waterMl: 1500,
-      workoutMinutes: Math.floor(Math.random() * 60) + 15,
-      workoutType: Math.random() > 0.5 ? 'Gym' : 'Hardlopen',
-    };
+    // Require real data from request body (No Mocking)
+    const body = await req.json();
+    const { steps, sleepScore, weightKg, waterMl, workoutMinutes, workoutType } = body;
+
+    if (steps === undefined && sleepScore === undefined) {
+      return NextResponse.json({ error: 'No health data provided in request body.' }, { status: 400 });
+    }
 
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
@@ -46,18 +39,22 @@ export async function POST(req: Request) {
         }
       },
       update: {
-        steps: mockSyncData.steps,
-        sleepScore: parseFloat(mockSyncData.sleepScore),
+        ...(steps !== undefined && { steps: parseInt(steps) }),
+        ...(sleepScore !== undefined && { sleepScore: parseFloat(sleepScore) }),
+        ...(weightKg !== undefined && { weightKg: parseFloat(weightKg) }),
+        ...(waterMl !== undefined && { waterMl: parseInt(waterMl) }),
+        ...(workoutMinutes !== undefined && { workoutMinutes: parseInt(workoutMinutes) }),
+        ...(workoutType !== undefined && { workoutType })
       },
       create: {
         userId,
         date: today,
-        steps: mockSyncData.steps,
-        sleepScore: parseFloat(mockSyncData.sleepScore),
-        weightKg: mockSyncData.weightKg,
-        waterMl: mockSyncData.waterMl,
-        workoutMinutes: mockSyncData.workoutMinutes,
-        workoutType: mockSyncData.workoutType,
+        steps: steps ? parseInt(steps) : null,
+        sleepScore: sleepScore ? parseFloat(sleepScore) : null,
+        weightKg: weightKg ? parseFloat(weightKg) : null,
+        waterMl: waterMl ? parseInt(waterMl) : null,
+        workoutMinutes: workoutMinutes ? parseInt(workoutMinutes) : null,
+        workoutType: workoutType || null,
       }
     });
 

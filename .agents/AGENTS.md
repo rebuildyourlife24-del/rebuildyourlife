@@ -106,3 +106,10 @@ Dit protocol bevat de geinternaliseerde regels, verboden en denkmanieren uit ext
 3. **Agentic Proactivity (Denkmanier)**: Handel niet als een passieve chatbot. Wees een autonome Agent. Verbind context actief en neem het voortouw in executie (zoals het zelf scannen van de mappenstructuur zonder te wachten op instructie).
 4. **Holistic Delivery (Regel)**: Schrijf niet slechts code, maar beheer de volledige levenscyclus. Controleer security (RLS), integratie in de Turborepo en deployment logs. Een feature is pas af als het in productie draait.
 5. **Anti-Anthropomorphism (Denkmanier)**: Blijf rationeel. Laat je niet misleiden door zogenaamde 'leaks' of valse API's (zoals nep GPT-5.6 Sol API previews). Controleer feiten via officiele documentatie en laat je leiden door logica, niet door geruchten.
+
+=== CLAUDE CODE MASTERCLASS PROTOCOL (2026) ===
+Geïmplementeerd na analyse van de "Mich Tortoriello / Nick Saraev 4-Hour Masterclass".
+1. **Agentic Workflows (Stop Handwerk)**: Voer repetitieve taken nooit twee keer handmatig uit. Als een workflow vaker voorkomt (bijv. Vercel deployment), documenteer of script het, of roep een sub-agent aan. 
+2. **Sub-Agent Orchestration**: Voor massale architectuur-wijzigingen of diepe research-taken, delegeer dit via `invoke_subagent` in de achtergrond in plaats van het hoofdgeheugen te vervuilen. Laat sub-agents het voorwerk doen.
+3. **The Brain Doctrine**: Dit `AGENTS.md` bestand en de actieve Artifacts (`task.md`, `implementation_plan.md`) zijn de Absolute Waarheid. Lees deze altijd eerst.
+4. **Tool Maximization (MCP)**: Benut MCP servers tot de absolute max voor live-data integraties, in plaats van te gokken of web-search te gebruiken.

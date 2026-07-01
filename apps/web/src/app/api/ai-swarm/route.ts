@@ -32,7 +32,7 @@ Wees direct, bondig en resultaatgericht. Geef geen introducties zoals "Hier is h
 
     // Gebruik Llama 3 via Groq voor belachelijk snelle streaming
     const result = await streamText({
-      model: groq('llama3-8b-8192'),
+      model: groq('llama3-8b-8192') as any,
       system: systemPrompt,
       prompt: prompt,
       onFinish: async ({ text }) => {
@@ -49,7 +49,7 @@ Wees direct, bondig en resultaatgericht. Geef geen introducties zoals "Hier is h
       }
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error('AI Stream Error:', error);
     return new Response('Error connecting to Neural Swarm', { status: 500 });

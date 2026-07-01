@@ -59,7 +59,7 @@ Voer de taak direct uit. Geef ALLEEN het resultaat van je werk. Geef geen introd
         const groq = createGroq({ apiKey: groqKey });
         
         const result = await generateText({
-          model: groq('llama3-8b-8192'),
+          model: groq('llama3-8b-8192') as any,
           prompt: prompt,
         });
         

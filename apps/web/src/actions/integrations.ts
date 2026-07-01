@@ -1,11 +1,11 @@
 "use server";
 
-import { getCurrentUser } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 import { prisma } from '@rebuildyourlife/database';
 import { revalidatePath } from 'next/cache';
 
 export async function saveIntegration(provider: string, apiKey: string, apiSecret?: string) {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Niet geauthenticeerd');
 
   await prisma.apiIntegration.upsert({
@@ -34,7 +34,7 @@ export async function saveIntegration(provider: string, apiKey: string, apiSecre
 }
 
 export async function getIntegrations() {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Niet geauthenticeerd');
 
   const integrations = await prisma.apiIntegration.findMany({

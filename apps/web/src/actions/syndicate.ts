@@ -121,8 +121,8 @@ Geef ALLEEN de HTML code van de e-mail terug (zonder \`\`\`html tags, gewoon puu
           })
         });
       } else {
-        console.log(`[SIMULATED PROD] E-mail verstuurd naar ${target.email}`);
-        await new Promise(r => setTimeout(r, 1000));
+        console.error(`[CRITICAL] Geen RESEND_API_KEY ingesteld. E-mail naar ${target.email} kan niet worden verstuurd.`);
+        throw new Error("Missing RESEND_API_KEY");
       }
 
       await db.syndicateTarget.update({
@@ -313,55 +313,6 @@ export async function addSyndicateComment(postId: string, content: string) {
   }
 }
 
-// Seeder
-export async function seedSyndicatePostsIfEmpty() {
-  try {
-    const count = await db.syndicatePost.count();
-    if (count > 0) return;
-
-    const user = await db.user.findFirst();
-    if (!user) return;
-
-    const mockPosts = [
-      {
-        title: "SECURE COMMUNICATION ESTABLISHED",
-        content: "Welcome to The Syndicate network. This feed is encrypted. All messages here are private to syndicate members and will not leak outside. Use this channel to coordinate land claims, corporate espionage, and proxy mail operations.",
-        tier: 1,
-      },
-      {
-        title: "ALGO-TRADING BOT APEX TRIGGERED",
-        content: "Apex Aggressive mode has been triggered on the SOL/USDT pair. Expect high volatility. Make sure you have at least 50% liquidity parked in your Treasury Vault to cover potential margin requirements. Do not panic-sell.",
-        tier: 2,
-      },
-      {
-        title: "LAND ACQUISITION OPPORTUNITY: PERCEEL 89",
-        content: "We have scan locked an abandoned warehouse property in Rotterdam Port. The tax lien cost is €12,500. Expected valuation after AI-notary deed resolution is €240,000. Seeking co-investor at Tier 3 level.",
-        tier: 3,
-      },
-      {
-        title: "CONFIDENTIAL ESPIONAGE: PROJECT STARDUST",
-        content: "Leaked database schemas from our main e-commerce competitor have been compiled. Faction cut is 25% on all resale profits. Download hash: AES-256-f83a992. Access restricted to Tier 4 (Supreme Overseers) only.",
-        tier: 4,
-      }
-    ];
-
-    for (const p of mockPosts) {
-      await db.syndicatePost.create({
-        data: {
-          title: p.title,
-          content: p.content,
-          tier: p.tier,
-          authorId: user.id
-        }
-      });
-    }
-    console.log("Mock syndicate posts seeded successfully!");
-    return true;
-  } catch (error) {
-    console.error("Failed to seed mock syndicate posts:", error);
-    return false;
-  }
-}
 
 export async function getCurrentUser() {
   try {

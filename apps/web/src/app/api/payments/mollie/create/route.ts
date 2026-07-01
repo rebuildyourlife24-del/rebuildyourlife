@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createMollieClient } from '@mollie/api-client';
-import { getCurrentUser } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 
 const mollieClient = createMollieClient({ 
   apiKey: process.env.MOLLIE_API_KEY || 'test_dummy_key_if_missing' 
@@ -8,7 +8,7 @@ const mollieClient = createMollieClient({
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
+    const session = await getSessionAction(); const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

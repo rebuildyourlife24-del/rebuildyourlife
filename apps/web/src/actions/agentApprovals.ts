@@ -1,14 +1,14 @@
 'use server';
 
 import { prisma } from '@rebuildyourlife/database';
-import { getCurrentUser } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 import { revalidatePath } from 'next/cache';
 import { AdsExtremeService } from '../lib/services/ads.service.extreme';
 import { CompetitorExtremeService } from '../lib/services/competitor.service.extreme';
 import { SupplierExtremeService } from '../lib/services/supplier.service.extreme';
 import { SupportExtremeService } from '../lib/services/support.service.extreme';
 export async function getPendingActions() {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
   const actions = await prisma.agentAction.findMany({
@@ -25,7 +25,7 @@ export async function getPendingActions() {
 }
 
 export async function getWalletBalance() {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
   const wallet = await prisma.userWallet.findUnique({
@@ -43,7 +43,7 @@ export async function getWalletBalance() {
 }
 
 export async function approveAgentAction(actionId: string) {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
   const action = await prisma.agentAction.findUnique({
@@ -101,7 +101,7 @@ export async function approveAgentAction(actionId: string) {
 }
 
 export async function rejectAgentAction(actionId: string) {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
   const action = await prisma.agentAction.findUnique({
@@ -126,7 +126,7 @@ export async function rejectAgentAction(actionId: string) {
 }
 
 export async function runOmnibusScan() {
-  const user = await getCurrentUser();
+  const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
   // REËLE DATA ANALYSE (Geen Mockups)

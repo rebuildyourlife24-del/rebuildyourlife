@@ -41,7 +41,7 @@ export class AiTranslationService {
       // Dit is de AI hook. Zodra een Japanse bezoeker op de site komt, 
       // vertaalt dit model in milliseconden de content.
       const { text } = await generateText({
-        model: groq('llama3-70b-8192'),
+        model: groq('llama3-70b-8192') as any,
         prompt: prompt,
       });
 
