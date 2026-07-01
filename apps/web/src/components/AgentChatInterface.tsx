@@ -71,7 +71,7 @@ export function AgentChatInterface({
   }, [agentId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
 
   const loadConversations = async () => {
@@ -259,7 +259,7 @@ export function AgentChatInterface({
         </AnimatePresence>
 
         {/* Chat Messages Area (Full Width, Centered Content) */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 custom-scrollbar scroll-smooth">
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 custom-scrollbar">
           <div className="max-w-4xl mx-auto flex flex-col gap-8 min-h-full pb-32">
             
             {/* Empty State / Quick Start */}
