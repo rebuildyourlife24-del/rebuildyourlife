@@ -90,7 +90,7 @@ export default function SeoAuditModule() {
                 />
                 <path
                   className={report.score > 70 ? "text-emerald-500" : report.score > 40 ? "text-yellow-500" : "text-red-500"}
-                  strokeDasharray={\`\${report.score}, 100\`}
+                  strokeDasharray={`${report.score}, 100`}
                   strokeWidth="3"
                   strokeLinecap="round"
                   stroke="currentColor"

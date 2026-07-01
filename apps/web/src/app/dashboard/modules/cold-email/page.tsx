@@ -59,11 +59,11 @@ export default function ColdEmailModule() {
         <button 
           onClick={handleStartCampaign}
           disabled={status !== "IDLE"}
-          className={\`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-lg \${
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-lg ${
             status === "IDLE" 
               ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20 text-white" 
               : "bg-slate-800 text-slate-500 cursor-wait"
-          }\`}
+          }`}
         >
           {status === "IDLE" ? <Play size={20} /> : <Search size={20} className="animate-spin" />}
           {status === "IDLE" ? "Start Campagne" : "Bezig met Scrapen..."}

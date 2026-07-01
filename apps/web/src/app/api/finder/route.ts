@@ -28,9 +28,9 @@ export async function POST(req: Request) {
           description: z.string()
         })).describe('Een concreet 3-stappenplan om dit model direct toe te passen en te verkopen in deze branche.')
       }),
-      prompt: \`Analyseer de volgende branche/niche: "\${niche}". 
+      prompt: `Analyseer de volgende branche/niche: "${niche}". 
       Identificeer de inefficiënties en pijnpunten. Selecteer het meest winstgevende, geautomatiseerde B2B of B2C verdienmodel dat direct via een SaaS-platform kan worden aangeboden om deze pijnpunten op te lossen.
-      Focus op keiharde waarheid en feiten, vermijd abstracte theorieën. Geef een direct toepasbaar actieplan.\`,
+      Focus op keiharde waarheid en feiten, vermijd abstracte theorieën. Geef een direct toepasbaar actieplan.`,
     });
 
     return NextResponse.json(result.object);

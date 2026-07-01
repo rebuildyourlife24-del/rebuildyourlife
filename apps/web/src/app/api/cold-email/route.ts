@@ -29,12 +29,12 @@ export async function POST(req: Request) {
         })).length(3).describe('Genereer exact 3 extreem realistische leads voor deze niche.'),
         analysis: z.string().describe('Een korte marktanalyse waarom deze leads geselecteerd zijn.')
       }),
-      prompt: \`Je bent een AI Lead Generation expert. 
-      De gebruiker wil de volgende dienst verkopen: "\${pitch}".
-      De doelgroep is: "\${niche}".
+      prompt: `Je bent een AI Lead Generation expert. 
+      De gebruiker wil de volgende dienst verkopen: "${pitch}".
+      De doelgroep is: "${niche}".
       
       Zoek (of genereer extreem realistische) 3 bedrijven in deze niche. 
-      Schrijf voor elk bedrijf een keiharde, conversie-gerichte, gepersonaliseerde e-mail introductie die de pitch verwerkt.\`,
+      Schrijf voor elk bedrijf een keiharde, conversie-gerichte, gepersonaliseerde e-mail introductie die de pitch verwerkt.`,
     });
 
     // Stuur de gegenereerde e-mails daadwerkelijk via de bestaande Resend API sleutel uit de .env
@@ -45,14 +45,14 @@ export async function POST(req: Request) {
           await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
-              'Authorization': \`Bearer \${resendKey}\`,
+              'Authorization': `Bearer ${resendKey}`,
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               from: 'Ryl System <onboarding@resend.dev>', // Gebruik test domein of geverifieerd domein
               to: 'hsemler50@gmail.com', // Voor de demo/veiligheid sturen we dit naar de eigenaar
-              subject: \`Kans voor \${lead.companyName}\`,
-              html: \`<p>Hallo \${lead.contactName},</p><p>\${lead.personalizedPitch}</p><br><p>Met vriendelijke groet,<br>Het AI Team</p>\`
+              subject: `Kans voor ${lead.companyName}`,
+              html: `<p>Hallo ${lead.contactName},</p><p>${lead.personalizedPitch}</p><br><p>Met vriendelijke groet,<br>Het AI Team</p>`
             })
           });
         } catch (e) {

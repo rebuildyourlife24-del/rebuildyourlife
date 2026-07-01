@@ -57,9 +57,9 @@ export default function BusinessModelFinder() {
           <button 
             onClick={handleSearch}
             disabled={status === "SEARCHING" || !niche}
-            className={\`absolute right-2 top-2 bottom-2 px-6 rounded-xl font-bold flex items-center gap-2 transition-all \${
+            className={`absolute right-2 top-2 bottom-2 px-6 rounded-xl font-bold flex items-center gap-2 transition-all ${
               status === "SEARCHING" ? "bg-slate-800 text-slate-400" : "bg-purple-600 hover:bg-purple-500 text-white"
-            }\`}
+            }`}
           >
             {status === "SEARCHING" ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
             {status === "SEARCHING" ? "Zoeken..." : "Analyseer"}

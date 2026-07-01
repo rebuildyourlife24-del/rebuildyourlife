@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      throw new Error(\`Failed to fetch URL: \${response.statusText}\`);
+      throw new Error(`Failed to fetch URL: ${response.statusText}`);
     }
 
     const html = await response.text();
@@ -44,13 +44,13 @@ export async function POST(req: Request) {
         criticalIssues: z.array(z.string()).describe('Lijst van kritieke, technische SEO-fouten in de HTML (ontbrekende title, geen h1, grote images, etc.)'),
         opportunities: z.array(z.string()).describe('Lijst van kansen om de SEO direct te verbeteren.')
       }),
-      prompt: \`Je bent een Senior Technical SEO Expert. Analyseer de volgende ruwe HTML van de website: \${url}.
+      prompt: `Je bent een Senior Technical SEO Expert. Analyseer de volgende ruwe HTML van de website: ${url}.
       
       HTML CONTENT:
-      \${trimmedHtml}
+      ${trimmedHtml}
       
       Genereer een eerlijk, feitelijk en streng SEO-rapport op basis van de aanwezige HTML structuur. 
-      Let specifiek op: meta tags, title tags, heading structuur (H1, H2), image alt-tags, en mobiele responsiveness indicatoren.\`,
+      Let specifiek op: meta tags, title tags, heading structuur (H1, H2), image alt-tags, en mobiele responsiveness indicatoren.`,
     });
 
     return NextResponse.json(result.object);
