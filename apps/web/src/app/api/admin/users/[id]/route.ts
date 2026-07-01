@@ -12,18 +12,27 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const { id } = params;
     const body = await req.json();
 
-    if (body.status === undefined) {
-      return NextResponse.json({ error: 'Status is vereist' }, { status: 400 });
-    }
+    const allowedUpdates = ['subscriptionTier', 'role', 'clearanceLevel'];
+    const updateData: any = {};
 
-    const updatedAction = await prisma.agentAction.update({
-      where: { id },
-      data: { status: body.status },
+    allowedUpdates.forEach(key => {
+      if (body[key] !== undefined) {
+        updateData[key] = body[key];
+      }
     });
 
-    return NextResponse.json(updatedAction);
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'Geen geldige velden om te updaten' }, { status: 400 });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updatedUser);
   } catch (error: any) {
-    console.error("Admin action update error:", error);
+    console.error("Admin user update error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

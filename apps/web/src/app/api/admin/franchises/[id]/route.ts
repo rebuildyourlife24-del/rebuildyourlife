@@ -16,14 +16,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       return NextResponse.json({ error: 'Status is vereist' }, { status: 400 });
     }
 
-    const updatedAction = await prisma.agentAction.update({
+    const updatedFranchise = await prisma.franchise.update({
       where: { id },
       data: { status: body.status },
     });
 
-    return NextResponse.json(updatedAction);
+    return NextResponse.json(updatedFranchise);
   } catch (error: any) {
-    console.error("Admin action update error:", error);
+    console.error("Admin franchise update error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

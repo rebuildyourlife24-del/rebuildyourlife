@@ -93,6 +93,7 @@ model User {
   apiIntegrations        ApiIntegration[]
   projects               Project[]
   quizResults            UserQuizResult[]
+  businessModules        UserBusinessModule[]
 
   @@index([email])
   @@index([role])
@@ -1761,4 +1762,21 @@ model UserQuizResult {
 
   @@index([userId])
   @@index([quizId])
+}
+
+model UserBusinessModule {
+  id          String   @id @default(uuid())
+  userId      String
+  moduleType  String
+  status      String   @default("ACTIVE")
+  config      String?
+  revenue     Float    @default(0)
+  profit      Float    @default(0)
+  activatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleType])
+  @@index([userId])
+  @@index([moduleType])
 }
