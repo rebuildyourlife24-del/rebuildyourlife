@@ -148,10 +148,20 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function load() {
       const res = await getUserProjectsAction();
-      if (res.success) setUserProjects(res.projects);
+      if (res.success && res.projects) {
+        setUserProjects(res.projects);
+      }
     }
     load();
   }, []);
+
+  useEffect(() => {
+    // Scroll to top of main container on route change
+    const mainContainer = document.getElementById('main-scroll-container');
+    if (mainContainer) {
+      mainContainer.scrollTo(0, 0);
+    }
+  }, [pathname]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
@@ -471,12 +481,13 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <main className="flex-1 overflow-hidden relative bg-black">
+          <main id="main-scroll-container" className="flex-1 overflow-y-auto relative bg-black" style={{ scrollBehavior: 'smooth' }}>
             <motion.div
+              key={pathname}
               initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="w-full h-full"
+              className="w-full min-h-full"
             >
               {children}
             </motion.div>
