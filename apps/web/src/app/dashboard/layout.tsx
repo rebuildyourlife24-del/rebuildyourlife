@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useRequireAuth } from '@/lib/auth';
 import { AIHermesSidebar } from '@/components/AIHermesSidebar';
+import { getUserProjectsAction } from '@/app/actions/projects';
 import { 
   Shield, 
   Layers, 
@@ -138,8 +139,17 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     system: false,
   });
 
-  const [activeProject, setActiveProject] = useState("holding");
+  const [activeProject, setActiveProject] = useState<any>("holding");
   const [showProjectSwitcher, setShowProjectSwitcher] = useState(false);
+  const [userProjects, setUserProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const res = await getUserProjectsAction();
+      if (res.success) setUserProjects(res.projects);
+    }
+    load();
+  }, []);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
@@ -388,7 +398,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               >
                 <div className={`w-2 h-2 rounded-full ${activeProject === 'holding' ? 'bg-[#d4af37]' : 'bg-emerald-500'} animate-pulse`}></div>
                 <span className="text-xs font-bold uppercase text-white tracking-wider">
-                  {activeProject === 'holding' ? 'Holding (God-Mode)' : 'E-Com Alpha'}
+                  {activeProject === 'holding' ? 'Holding (God-Mode)' : (userProjects.find(p => p.id === activeProject)?.name || 'E-Com Alpha')}
                 </span>
                 <ChevronDown className="w-3 h-3 text-zinc-500" />
               </button>
@@ -415,16 +425,20 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                           <p className="text-[10px] text-zinc-500">Alle projecten geaggregeerd</p>
                         </div>
                       </button>
-                      <button 
-                        onClick={() => { setActiveProject('ecom'); setShowProjectSwitcher(false); }}
-                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === 'ecom' ? 'bg-emerald-500/10 border border-emerald-500/30' : 'hover:bg-white/5 border border-transparent'}`}
-                      >
-                        <Briefcase className={`w-4 h-4 ${activeProject === 'ecom' ? 'text-emerald-500' : 'text-zinc-400'}`} />
-                        <div>
-                          <p className={`text-xs font-bold uppercase ${activeProject === 'ecom' ? 'text-emerald-500' : 'text-zinc-300'}`}>E-Com Alpha</p>
-                          <p className="text-[10px] text-zinc-500">ecom.rebuildyourlife.eu</p>
-                        </div>
-                      </button>
+                      
+                      {userProjects.map((proj) => (
+                        <button 
+                          key={proj.id}
+                          onClick={() => { setActiveProject(proj.id); setShowProjectSwitcher(false); }}
+                          className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === proj.id ? 'bg-emerald-500/10 border border-emerald-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+                        >
+                          <Briefcase className={`w-4 h-4 ${activeProject === proj.id ? 'text-emerald-500' : 'text-zinc-400'}`} />
+                          <div>
+                            <p className={`text-xs font-bold uppercase ${activeProject === proj.id ? 'text-emerald-500' : 'text-zinc-300'}`}>{proj.name}</p>
+                            <p className="text-[10px] text-zinc-500">{proj.domainUrl || `${proj.industry} Project`}</p>
+                          </div>
+                        </button>
+                      ))}
                     </div>
                     <div className="p-2 border-t border-white/10 bg-black/50">
                       <button className="w-full text-left text-xs font-mono text-zinc-400 hover:text-white transition-colors p-2 flex items-center gap-2">

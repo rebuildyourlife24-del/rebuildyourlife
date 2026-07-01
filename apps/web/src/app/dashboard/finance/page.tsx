@@ -1,20 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Wallet, ArrowUpRight, ArrowDownRight, CreditCard, Download, AlertTriangle, ShieldCheck, Layers } from "lucide-react";
-
-const mockHoldingData = [
-  { name: "Week 1", ecom: 4000, saas: 1200, agency: 3000 },
-  { name: "Week 2", ecom: 5000, saas: 1500, agency: 3000 },
-  { name: "Week 3", ecom: 3800, saas: 2100, agency: 4500 },
-  { name: "Week 4", ecom: 8200, saas: 2800, agency: 4500 },
-  { name: "Week 5", ecom: 10500, saas: 3600, agency: 6000 },
-  { name: "Week 6", ecom: 12000, saas: 4500, agency: 6000 },
-];
+import { Wallet, ArrowUpRight, ArrowDownRight, CreditCard, Download, AlertTriangle, ShieldCheck, Layers, Loader2 } from "lucide-react";
+import { getHoldingRevenueAction } from "../actions/finance";
 
 export default function FinanceDashboard() {
-  const [bankConnected, setBankConnected] = useState(false);
+  const [bankConnected, setBankConnected] = useState(false); // In a real scenario, this comes from user session/db
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      const res = await getHoldingRevenueAction();
+      if (res.success) {
+        setChartData(res.data);
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  const handleConnectMollie = () => {
+    // Redirect to the real Mollie OAuth endpoint
+    window.location.href = "/api/mollie/connect";
+  };
+
+  // Calculate real KPIs from DB data
+  const totalOmzet = chartData.reduce((acc, curr) => acc + curr.ecom + curr.saas + curr.agency, 0);
+  const totalEcom = chartData.reduce((acc, curr) => acc + curr.ecom, 0);
+  const totalAgency = chartData.reduce((acc, curr) => acc + curr.agency, 0);
+
+  if (loading) {
+    return (
+      <div className="flex-1 p-8 flex items-center justify-center bg-[#0a0a0a]">
+        <Loader2 className="w-12 h-12 text-[#d4af37] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 p-8 overflow-y-auto bg-[#0a0a0a]">
@@ -32,14 +55,14 @@ export default function FinanceDashboard() {
             <Download className="w-4 h-4" /> Export P&L
           </button>
           <button 
-            onClick={() => setBankConnected(true)}
+            onClick={handleConnectMollie}
             className={`px-6 py-3 font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-colors ${
               bankConnected 
                 ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30' 
                 : 'bg-[#d4af37] text-black hover:bg-white border border-transparent'
             }`}
           >
-            {bankConnected ? <><ShieldCheck className="w-4 h-4" /> Banken Gekoppeld (3)</> : <><CreditCard className="w-4 h-4" /> Koppel Banken (Stripe)</>}
+            {bankConnected ? <><ShieldCheck className="w-4 h-4" /> Banken Gekoppeld (3)</> : <><CreditCard className="w-4 h-4" /> Koppel Banken (Stripe/Mollie)</>}
           </button>
         </div>
       </div>
@@ -51,17 +74,17 @@ export default function FinanceDashboard() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Wallet className="w-24 h-24 text-[#d4af37]" />
           </div>
-          <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-2">Holding Omzet (30d)</p>
-          <h2 className="text-4xl font-black text-[#d4af37] font-mono mb-2">€ 75.600<span className="text-xl text-[#d4af37]/50">.00</span></h2>
+          <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-2">Holding Omzet (42d)</p>
+          <h2 className="text-4xl font-black text-[#d4af37] font-mono mb-2">€ {totalOmzet.toLocaleString('nl-NL')}<span className="text-xl text-[#d4af37]/50">.00</span></h2>
           <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm">
-            <ArrowUpRight className="w-4 h-4" /> +18.4% Portfolio Groei
+            <ArrowUpRight className="w-4 h-4" /> Live Database Koppeling
           </div>
         </div>
 
         {/* E-Com Performance */}
         <div className="bg-[#111] border border-emerald-500/10 p-6 relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-2">Top Performer: E-Com Alpha</p>
-          <h2 className="text-4xl font-black text-white font-mono mb-2">€ 43.500<span className="text-xl text-zinc-600">.00</span></h2>
+          <h2 className="text-4xl font-black text-white font-mono mb-2">€ {totalEcom.toLocaleString('nl-NL')}<span className="text-xl text-zinc-600">.00</span></h2>
           <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm">
             Winstmarge: 68%
           </div>
@@ -70,7 +93,7 @@ export default function FinanceDashboard() {
         {/* Agency Performance */}
         <div className="bg-[#111] border border-blue-500/10 p-6 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mb-2">Stabiele Cashflow: Agency</p>
-          <h2 className="text-4xl font-black text-white font-mono mb-2">€ 27.000<span className="text-xl text-zinc-600">.00</span></h2>
+          <h2 className="text-4xl font-black text-white font-mono mb-2">€ {totalAgency.toLocaleString('nl-NL')}<span className="text-xl text-zinc-600">.00</span></h2>
           <div className="flex items-center gap-2 text-blue-500 font-bold text-sm">
             Winstmarge: 82% (High Ticket)
           </div>
@@ -88,7 +111,7 @@ export default function FinanceDashboard() {
           
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockHoldingData}>
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                 <XAxis dataKey="name" stroke="#444" tick={{fill: '#666', fontSize: 12}} />
                 <YAxis stroke="#444" tick={{fill: '#666', fontSize: 12}} />
@@ -112,29 +135,29 @@ export default function FinanceDashboard() {
           </h3>
           
           <div className="flex-1 space-y-4">
-            <div className="bg-black/50 p-4 border-l-2 border-emerald-500">
-              <p className="text-sm text-zinc-300">
-                Winstmarge is met 2.1% gestegen. De geautomatiseerde upsell flows via de COO-agent leveren direct ROI op.
-              </p>
-            </div>
-            <div className="bg-black/50 p-4 border-l-2 border-[#d4af37]">
-              <p className="text-sm text-zinc-300">
-                Ad spend is lichtelijk aan de hoge kant (CAC = €24). Overweeg de CMO-agent in te zetten om ad-creatives te optimaliseren.
-              </p>
-            </div>
-            
-            {!bankConnected && (
-              <div className="bg-rose-500/10 p-4 border border-rose-500/30 mt-auto">
-                <p className="text-sm text-rose-500 font-bold mb-2 uppercase tracking-wide text-xs">Actie Vereist</p>
-                <p className="text-sm text-rose-400/80 mb-3">Koppel je zakelijke bankrekening om live cashflow interceptie te activeren.</p>
-                <button 
-                  onClick={() => setBankConnected(true)}
-                  className="w-full bg-rose-500 text-white font-bold py-2 text-xs uppercase tracking-widest hover:bg-rose-600 transition-colors"
-                >
-                  Nu Koppelen
-                </button>
+            {totalOmzet === 0 ? (
+              <div className="bg-rose-500/10 p-4 border border-rose-500/30">
+                <p className="text-sm text-rose-500 font-bold mb-2 uppercase tracking-wide text-xs">0 Omzet Gedetecteerd</p>
+                <p className="text-sm text-rose-400/80 mb-3">Er is nog geen data in de live database voor de afgelopen 42 dagen. Koppel een bank of simuleer data.</p>
+              </div>
+            ) : (
+              <div className="bg-black/50 p-4 border-l-2 border-[#d4af37]">
+                <p className="text-sm text-zinc-300">
+                  De live PostgreSQL database koppeling is succesvol. Totale geaggregeerde portefeuille-waarde is €{totalOmzet.toLocaleString('nl-NL')}.
+                </p>
               </div>
             )}
+            
+            <div className="bg-rose-500/10 p-4 border border-rose-500/30 mt-auto">
+              <p className="text-sm text-rose-500 font-bold mb-2 uppercase tracking-wide text-xs">Actie Vereist</p>
+              <p className="text-sm text-rose-400/80 mb-3">Koppel je zakelijke bankrekening om live cashflow interceptie via Mollie OAuth te activeren.</p>
+              <button 
+                onClick={handleConnectMollie}
+                className="w-full bg-rose-500 text-white font-bold py-2 text-xs uppercase tracking-widest hover:bg-rose-600 transition-colors"
+              >
+                Nu Koppelen (Mollie)
+              </button>
+            </div>
           </div>
         </div>
 
