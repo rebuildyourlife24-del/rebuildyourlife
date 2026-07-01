@@ -15,6 +15,11 @@ export default function AgencyLayout({ children }: { children: React.ReactNode }
               Agency Portal
             </span>
           </div>
+          <div>
+            <a href="https://rebuildyourlife.eu/dashboard" className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg text-sm text-white/80 transition-colors">
+              Naar RebuildYourLife (SaaS)
+            </a>
+          </div>
         </nav>
 
         {/* Page Content */}

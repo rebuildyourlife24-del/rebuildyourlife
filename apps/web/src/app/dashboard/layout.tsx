@@ -63,6 +63,7 @@ const getGroupedNavItems = (user: any) => {
       id: 'system',
       label: 'System',
       items: [
+        { label: 'Agency (White-label)', href: 'https://ai-henksemler.nl/auth/login', icon: <Globe size={16} /> },
         { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> },
         { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
         { label: 'Orion AI Coach', href: '/dashboard/ai-assistant', icon: <Terminal size={16} /> },
