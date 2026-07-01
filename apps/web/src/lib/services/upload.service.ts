@@ -26,3 +26,25 @@ export async function uploadToSupabase(filePath: string, filename: string): Prom
 
   return publicData.publicUrl;
 }
+
+export async function uploadBase64ImageToSupabase(base64Data: string, filename: string, bucket: string = 'syndicate'): Promise<string> {
+  const base64DataStr = base64Data.replace(/^data:image\/\w+;base64,/, "");
+  const fileBuffer = Buffer.from(base64DataStr, 'base64');
+  
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .upload(filename, fileBuffer, {
+      contentType: 'image/jpeg',
+      upsert: true
+    });
+
+  if (error) {
+    throw new Error(`Supabase upload failed: ${error.message}`);
+  }
+
+  const { data: publicData } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(filename);
+
+  return publicData.publicUrl;
+}

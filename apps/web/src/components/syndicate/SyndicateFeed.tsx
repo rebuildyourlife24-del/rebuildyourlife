@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MessageSquare, Heart, Share2, Send, Flame } from 'lucide-react';
+import { MessageSquare, Heart, Share2, Send, Flame, Image as ImageIcon } from 'lucide-react';
 
 interface Comment {
   id: string;
@@ -19,6 +19,7 @@ interface Comment {
 interface Post {
   id: string;
   content: string;
+  imageUrl?: string | null;
   createdAt: string;
   author: {
     id: string;
@@ -38,6 +39,7 @@ interface SyndicateFeedProps {
 export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostContent, setNewPostContent] = useState('');
+  const [selectedImageBase64, setSelectedImageBase64] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
 
@@ -57,19 +59,30 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
     }
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImageBase64(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostContent.trim()) return;
+    if (!newPostContent.trim() && !selectedImageBase64) return;
     setSubmitting(true);
     try {
       const res = await fetch('/api/syndicate/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newPostContent }),
+        body: JSON.stringify({ content: newPostContent || ' ', imageBase64: selectedImageBase64 }),
       });
       const data = await res.json();
       if (data.success) {
         setNewPostContent('');
+        setSelectedImageBase64(null);
         setPosts([data.post, ...posts]);
       }
     } catch (e) {
@@ -154,16 +167,28 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
             placeholder="Deel een win, vraag of update met The Syndicate..."
             className="w-full bg-black/40 border border-cyan-900/30 rounded-lg p-4 text-sm text-cyan-100 placeholder:text-cyan-800 focus:outline-none focus:border-cyan-500/50 resize-none min-h-[100px] mb-3"
           />
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] uppercase font-black tracking-widest text-cyan-600 flex items-center gap-1">
-              <Flame className="w-3 h-3" /> +10 XP per Post
-            </span>
-            <button 
+          {selectedImageBase64 && (
+            <div className="mb-4 relative inline-block">
+              <img src={selectedImageBase64} alt="Preview" className="h-32 object-contain rounded border border-cyan-900/50" />
+              <button type="button" onClick={() => setSelectedImageBase64(null)} className="absolute -top-2 -right-2 bg-red-500/80 text-white rounded-full p-1 hover:bg-red-500 transition-colors">
+                <Flame className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <div className="flex items-center justify-between pt-3 border-t border-cyan-900/30">
+            <div className="flex gap-2 text-cyan-600">
+              <label className="p-2 hover:bg-cyan-900/20 rounded-lg cursor-pointer transition-colors">
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
+                <ImageIcon className="w-4 h-4" />
+                <span className="text-xs font-bold ml-2">Foto</span>
+              </label>
+            </div>
+            <button
               type="submit"
-              disabled={submitting || !newPostContent.trim()}
-              className="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-400 border border-cyan-500/30 px-6 py-2 rounded-lg text-xs uppercase font-black tracking-widest transition-colors flex items-center gap-2 disabled:opacity-50"
+              disabled={(!newPostContent.trim() && !selectedImageBase64) || submitting}
+              className="bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-[10px] px-6 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              <Send className="w-4 h-4" /> Plaatsen
+              {submitting ? 'Verzenden...' : 'Posten'} <Send className="w-3 h-3" />
             </button>
           </div>
         </form>
@@ -174,10 +199,10 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
         {posts.map(post => {
           const hasLiked = post.likes.some(l => l.userId === currentUserId);
           return (
-            <div key={post.id} className="bg-black/30 border border-cyan-900/30 rounded-xl p-5 hover:border-cyan-800/50 transition-colors">
+            <div key={post.id} className="bg-cyan-950/20 border border-cyan-900/40 rounded-xl p-6 shadow-[0_0_20px_rgba(6,182,212,0.05)] backdrop-blur-sm group">
               {/* Header */}
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-cyan-900/40 border border-cyan-500/30 flex items-center justify-center font-black text-cyan-400">
+                <div className="w-10 h-10 rounded bg-cyan-900/40 border border-cyan-500/30 flex items-center justify-center font-black text-cyan-300">
                   {post.author.firstName?.[0] || 'A'}
                 </div>
                 <div>
@@ -199,6 +224,13 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
               <p className="text-cyan-100/90 text-sm whitespace-pre-wrap leading-relaxed mb-6 font-mono">
                 {post.content}
               </p>
+
+              {/* Post Image (if any) */}
+              {post.imageUrl && (
+                <div className="mb-6">
+                  <img src={post.imageUrl} alt="Post attachment" className="max-h-96 w-auto object-contain rounded-lg border border-cyan-900/30 shadow-lg" />
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex items-center gap-6 border-t border-cyan-900/20 pt-4 mb-4">

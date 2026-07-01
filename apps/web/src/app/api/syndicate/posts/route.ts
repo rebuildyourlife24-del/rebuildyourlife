@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@rebuildyourlife/database';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { uploadBase64ImageToSupabase } from '@/lib/services/upload.service';
 
 const JWT_SECRET = process.env.JWT_SECRET! || 'secret';
 
@@ -59,34 +60,53 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { content } = body;
+    const { content, imageBase64 } = await request.json();
 
-    if (!content || content.trim().length === 0) {
+    if (!content) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
+    }
+
+    let finalImageUrl = null;
+    if (imageBase64) {
+      try {
+        const filename = `syndicate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+        finalImageUrl = await uploadBase64ImageToSupabase(imageBase64, filename, 'syndicate');
+      } catch (uploadError: any) {
+        console.error("Image upload failed:", uploadError);
+        // Continue creating post even if image fails, or return error? Let's just log and continue without image
+      }
     }
 
     const post = await prisma.syndicatePost.create({
       data: {
-        authorId: user.id,
-        content: content.trim(),
+        content,
+        imageUrl: finalImageUrl,
+        authorId: user.id
       },
       include: {
         author: {
           select: { id: true, firstName: true, lastName: true, role: true, experiencePoints: true, avatarUrl: true }
         },
-        likes: true,
-        comments: true,
+        likes: {
+          select: { userId: true }
+        },
+        comments: {
+          include: {
+            author: {
+              select: { id: true, firstName: true, lastName: true, role: true, experiencePoints: true, avatarUrl: true }
+            }
+          }
+        }
       }
     });
 
-    // Optioneel: Geef de gebruiker 10 XP voor het maken van een post (max 1x per dag bv, we houden het simpel nu)
+    // Reward active behavior
     await prisma.user.update({
       where: { id: user.id },
       data: { experiencePoints: { increment: 10 } }
     });
 
-    return NextResponse.json({ success: true, post, xpAwarded: 10 });
+    return NextResponse.json({ success: true, post });
   } catch (error: any) {
     console.error('Error creating post:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
