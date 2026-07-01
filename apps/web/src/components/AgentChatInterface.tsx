@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { 
   Send, Sparkles, MessageSquare, AlertCircle, Zap, TrendingUp, Globe, Briefcase, Plus, Menu
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   getConversationsAction, 
   getConversationMessagesAction, 
