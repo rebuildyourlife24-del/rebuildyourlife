@@ -39,6 +39,7 @@ const getGroupedNavItems = (user: any) => {
       label: 'The Boardroom',
       items: [
         { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
+        { label: 'Treasury & Finance', href: '/dashboard/finance', icon: <Briefcase size={16} /> },
         { label: 'CEO (Growth)', href: '/dashboard/c-suite/ceo', icon: <Brain size={16} /> },
         { label: 'CFO (Profit)', href: '/dashboard/c-suite/cfo', icon: <Briefcase size={16} /> },
         { label: 'CMO (Acquisition)', href: '/dashboard/c-suite/cmo', icon: <Activity size={16} /> },
@@ -395,7 +396,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar">
+          <main className="flex-1 overflow-hidden relative bg-black">
             <motion.div
               initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}

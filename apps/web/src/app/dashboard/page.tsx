@@ -27,7 +27,7 @@ export default function DashboardPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-12 max-w-[1400px] mx-auto pb-20 font-sans"
+      className="space-y-12 max-w-[1400px] mx-auto pb-20 font-sans h-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-8 custom-scrollbar"
     >
       {/* Header Widget */}
       <motion.div variants={itemVariants}>
