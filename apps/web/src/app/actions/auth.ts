@@ -48,7 +48,7 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     return { 
       success: true, 
       user: { 
-        id: bypassUserId, 
+        id: realUserId, 
         email: email || 'hsemler50@gmail.com', 
         firstName: 'Hendrik', 
         lastName: 'Semler', 
