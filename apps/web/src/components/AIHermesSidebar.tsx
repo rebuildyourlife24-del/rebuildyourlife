@@ -1,145 +1,137 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { LiveAICore } from './ui/LiveAICore';
-import { useChat } from '@ai-sdk/react';
-import { Mic, Send, Zap, Command } from 'lucide-react';
+import { BrainCircuit, Activity, Network, Shield, Cpu } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function AIHermesSidebar() {
   const [aiState, setAiState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
-  const scrollRef = useRef<HTMLDivElement>(null);
-  
-  const { messages, input, handleInputChange, handleSubmit, setInput, isLoading } = useChat({
-    api: '/api/ai/chat',
-    initialMessages: [
-      { id: '1', role: 'system', content: 'HERMES CORE ONLINE. WAITING FOR DIRECTIVE.' }
-    ],
-    onFinish: (message) => {
-      setAiState('speaking');
-      if ('speechSynthesis' in window) {
-        const cleanText = message.content.replace(/\*/g, '');
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = 'nl-NL';
-        utterance.pitch = 0.8;
-        utterance.rate = 0.95;
-        utterance.onend = () => setAiState('idle');
-        window.speechSynthesis.speak(utterance);
-      } else {
-        setTimeout(() => setAiState('idle'), 2000);
-      }
-    }
-  });
+  const [metrics, setMetrics] = useState({ cpu: 12, memory: 45, latency: 42 });
 
+  // Simulate dynamic metrics for the Neural Core
   useEffect(() => {
-    if (isLoading && aiState !== 'listening') {
-      setAiState('thinking');
-    }
-  }, [isLoading, aiState]);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const toggleListening = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Spraakherkenning wordt niet ondersteund in deze browser.');
-      return;
-    }
-
-    if (aiState === 'listening') {
-      setAiState('idle');
-      return;
-    }
-
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'nl-NL';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => setAiState('listening');
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-    };
-
-    recognition.onerror = () => setAiState('idle');
-    recognition.onend = () => {
-      if (aiState === 'listening') setAiState('idle');
-    };
-
-    recognition.start();
-  };
+    const interval = setInterval(() => {
+      setMetrics({
+        cpu: Math.floor(Math.random() * 20) + 10,
+        memory: Math.floor(Math.random() * 10) + 40,
+        latency: Math.floor(Math.random() * 50) + 20,
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="w-80 lg:w-96 h-full border-l border-zinc-800 bg-[#020202] flex flex-col shrink-0 relative z-20">
-      {/* 3D Core at the top */}
+    <div className="w-80 lg:w-[400px] h-full border-l border-white/5 bg-[#020202] flex flex-col shrink-0 relative z-20 shadow-[-20px_0_50px_rgba(0,0,0,0.5)]">
+      
+      {/* 3D Glowing Neural Brain */}
       <LiveAICore state={aiState} />
 
-      {/* Chat Area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[85%] p-3 rounded-xl text-sm font-mono leading-relaxed whitespace-pre-wrap ${
-                msg.role === 'user' 
-                  ? 'bg-zinc-800 text-white border border-zinc-700 rounded-tr-none' 
-                  : 'bg-cyan-950/30 text-cyan-100 border border-cyan-500/30 rounded-tl-none shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]'
-              }`}
-            >
-              {msg.role !== 'user' && (
-                <div className="flex items-center gap-2 mb-1 opacity-60">
-                  <Zap className="w-3 h-3 text-cyan-400" />
-                  <span className="text-[9px] uppercase tracking-widest text-cyan-400">Hermes</span>
-                </div>
-              )}
-              {msg.content}
+      {/* Sovereign Neural Core Dashboard */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        
+        {/* Core Identity */}
+        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+          <div className="flex items-center gap-3">
+            <BrainCircuit className="w-6 h-6 text-cyan-500" />
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-widest text-white">Sovereign Core</h3>
+              <p className="text-[10px] font-mono text-zinc-500">NVIDIA Audio2Face Ready</p>
             </div>
           </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-             <div className="bg-cyan-950/30 text-cyan-100 border border-cyan-500/30 p-3 rounded-xl rounded-tl-none shadow-[inset_0_0_15px_rgba(34,211,238,0.1)] flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce"></div>
-                <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-             </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+            <span className="text-[9px] uppercase font-bold text-cyan-500 tracking-widest">Online</span>
           </div>
-        )}
+        </div>
+
+        {/* Neural Labor Metrics */}
+        <div className="space-y-5">
+          <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            Labor Metrics
+          </h4>
+          
+          <div className="space-y-4">
+            {/* CPU Load */}
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
+                <span className="text-zinc-400">Cognitive Load</span>
+                <span className="text-white">{metrics.cpu}%</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-1">
+                <motion.div 
+                  className="h-1 rounded-full bg-cyan-500" 
+                  animate={{ width: `${metrics.cpu}%` }} 
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+
+            {/* Memory Allocation */}
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
+                <span className="text-zinc-400">Context Memory</span>
+                <span className="text-white">{metrics.memory}%</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-1">
+                <motion.div 
+                  className="h-1 rounded-full bg-blue-500" 
+                  animate={{ width: `${metrics.memory}%` }} 
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+
+            {/* Router Latency */}
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1.5 font-mono">
+                <span className="text-zinc-400">Router Latency</span>
+                <span className="text-white">{metrics.latency}ms</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-1">
+                <motion.div 
+                  className="h-1 rounded-full bg-amber-500" 
+                  animate={{ width: `${Math.min(100, metrics.latency)}%` }} 
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Nodes */}
+        <div className="space-y-4 pt-4 border-t border-white/5">
+           <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+            <Network className="w-4 h-4" />
+            Active Nodes
+          </h4>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+              <span className="text-[9px] uppercase tracking-widest text-zinc-500">Node Alpha</span>
+              <span className="text-xs font-mono text-white">Cerebras-70B</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1"></div>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+              <span className="text-[9px] uppercase tracking-widest text-zinc-500">Node Beta</span>
+              <span className="text-xs font-mono text-white">Groq-Versatile</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 border-t border-cyan-500/20 bg-black/40">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <button 
-            type="button"
-            onClick={toggleListening}
-            className={`p-3 rounded-xl border flex items-center justify-center transition-all ${aiState === 'listening' ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.4)] animate-pulse' : 'bg-zinc-900 text-cyan-400 border-zinc-800 hover:border-cyan-500/50'}`}
-          >
-            <Mic className="w-5 h-5" />
-          </button>
-          <div className="flex-1 relative">
-            <input 
-              type="text" 
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Directief invoeren..."
-              className="w-full bg-zinc-900/80 text-white font-mono text-sm px-4 py-3 rounded-xl border border-zinc-800 focus:border-cyan-500/50 outline-none pr-10"
-            />
-            <Command className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-          </div>
-          <button 
-            type="submit"
-            disabled={!input?.trim()}
-            className="p-3 bg-cyan-950 text-cyan-400 rounded-xl border border-cyan-900 hover:bg-cyan-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Send className="w-5 h-5" />
-          </button>
-        </form>
+      {/* Security Overlay Footer */}
+      <div className="p-4 border-t border-white/5 bg-black/60 backdrop-blur-md flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Shield className="w-4 h-4 text-zinc-500" />
+          <span className="text-[9px] font-mono uppercase text-zinc-500 tracking-widest">Sentinel Secured</span>
+        </div>
+        <Cpu className="w-4 h-4 text-zinc-600" />
       </div>
+
     </div>
   );
 }
