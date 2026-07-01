@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { AuthProvider } from "@/lib/auth";
 import { VoiceOrb } from "@/components/ui/VoiceOrb";
 import { OrionVisor } from "@/components/ui/OrionVisor";
 import { AppHeader } from "@/components/ui/AppHeader";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"], display: 'swap' });
-
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
@@ -51,7 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" className="dark">
-      <body className={`${inter.className} min-h-screen bg-navy text-textPrimary antialiased selection:bg-gold/30 selection:text-goldLight`}>
+      <body className="min-h-screen bg-navy text-textPrimary antialiased selection:bg-gold/30 selection:text-goldLight">
         {/* Deep Space Ice Glass Background Elements */}
         <div className="fixed inset-0 -z-50 overflow-hidden bg-navy pointer-events-none">
           {/* Subtle slow drift Starfield */}

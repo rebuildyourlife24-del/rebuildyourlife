@@ -55,6 +55,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Access denied. Premium tier required.' }, { status: 403 });
     }
 
+    const existingProgress = await prisma.userLessonProgress.findUnique({
+      where: {
+        userId_lessonId: { userId: user.id, lessonId: lessonId }
+      }
+    });
+
+    const isFirstTimeCompletion = completed === true && (!existingProgress || !existingProgress.completed);
+
     const progress = await prisma.userLessonProgress.upsert({
       where: {
         userId_lessonId: {
@@ -74,7 +82,14 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({ success: true, progress });
+    if (isFirstTimeCompletion) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { experiencePoints: { increment: 50 } }
+      });
+    }
+
+    return NextResponse.json({ success: true, progress, xpAwarded: isFirstTimeCompletion ? 50 : 0 });
   } catch (error: any) {
     console.error('Error saving progress:', error);
     return NextResponse.json({ error: 'Internal Server Error: ' + error.message }, { status: 500 });

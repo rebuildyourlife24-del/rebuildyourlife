@@ -30,7 +30,8 @@ import {
   ChevronDown,
   ChevronRight,
   Brain,
-  Search
+  Search,
+  Globe
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -62,6 +63,7 @@ const getGroupedNavItems = (user: any) => {
       id: 'system',
       label: 'System',
       items: [
+        { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> },
         { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
         { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
       ]

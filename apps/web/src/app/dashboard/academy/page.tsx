@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
-import { BookOpen, PlayCircle, CheckCircle2, Lock } from 'lucide-react';
+import { BookOpen, PlayCircle, CheckCircle2, Lock, BrainCircuit } from 'lucide-react';
 import { prisma } from '@rebuildyourlife/database';
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
@@ -61,6 +61,25 @@ export default async function AcademyPage() {
           <p className="text-cyan-500 uppercase tracking-widest text-xs font-bold flex items-center gap-2">
             <BookOpen className="w-4 h-4" /> Training & Kennis Overdracht
           </p>
+        </div>
+      </div>
+
+      {/* Gamification Status Bar */}
+      <div className="mb-8 flex flex-col sm:flex-row items-center justify-between p-4 lg:p-6 rounded-lg border border-indigo-900/40 bg-indigo-950/20 shadow-[0_0_20px_rgba(79,70,229,0.1)] gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded bg-indigo-900/60 border border-indigo-500/50 flex flex-shrink-0 items-center justify-center">
+             <BrainCircuit className="w-6 h-6 text-indigo-400" />
+          </div>
+          <div>
+            <h2 className="text-white font-bold text-sm lg:text-lg tracking-widest uppercase">
+              {user.experiencePoints >= 1000 ? 'E-Com Alpha' : user.experiencePoints >= 500 ? 'Advanced Operator' : user.experiencePoints >= 200 ? 'Initiate' : 'Rookie'}
+            </h2>
+            <p className="text-indigo-400 text-[10px] uppercase font-black tracking-widest mt-1">Actuele Status</p>
+          </div>
+        </div>
+        <div className="sm:text-right flex flex-col items-center sm:items-end">
+          <div className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">{user.experiencePoints || 0} XP</div>
+          <p className="text-amber-500/70 text-[10px] uppercase font-black tracking-widest mt-1">Experience Points</p>
         </div>
       </div>
 

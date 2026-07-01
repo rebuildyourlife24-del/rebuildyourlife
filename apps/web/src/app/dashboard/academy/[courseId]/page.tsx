@@ -40,6 +40,20 @@ export default async function CoursePage({ params }: PageProps) {
           lessons: {
             orderBy: { order: 'asc' },
             include: {
+              resources: true,
+              quizzes: {
+                include: {
+                  questions: {
+                    orderBy: { order: 'asc' },
+                    include: {
+                      answers: true
+                    }
+                  },
+                  results: {
+                    where: { userId: user.id }
+                  }
+                }
+              },
               userProgress: {
                 where: { userId: user.id }
               }
@@ -78,6 +92,28 @@ export default async function CoursePage({ params }: PageProps) {
         videoUrl: lesson.videoUrl,
         duration: lesson.duration,
         order: lesson.order,
+        resources: lesson.resources.map(r => ({
+          id: r.id,
+          title: r.title,
+          description: r.description,
+          url: r.url,
+          type: r.type
+        })),
+        quizzes: lesson.quizzes.map(q => ({
+          id: q.id,
+          title: q.title,
+          description: q.description,
+          passingScore: q.passingScore,
+          questions: q.questions.map(question => ({
+            id: question.id,
+            question: question.question,
+            answers: question.answers.map(a => ({
+              id: a.id,
+              answer: a.answer
+            }))
+          })),
+          userPassed: q.results.some(r => r.passed)
+        })),
         userProgress: lesson.userProgress.map(p => ({
           completed: p.completed
         }))
