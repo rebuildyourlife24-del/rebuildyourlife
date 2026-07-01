@@ -14,28 +14,35 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     cookieStore.set('dev_bypass', 'true', { path: '/' });
     
     // Genereer een ryl_session token zodat alle admin/dashboard APIs werken
-    const bypassUserId = 'dev-local-admin-id';
+    let realUserId = 'dev-local-admin-id';
     
     // Zorg ervoor dat de dev user ook echt in Prisma bestaat om foreign key errors (zoals bij AI chat) te voorkomen!
     try {
-      await prisma.user.upsert({
-        where: { id: bypassUserId },
-        update: { email: email || 'hsemler50@gmail.com', role: 'SUPER_ADMIN' },
-        create: {
-          id: bypassUserId,
-          email: email || 'hsemler50@gmail.com',
-          passwordHash: '',
-          firstName: 'Hendrik',
-          lastName: 'Semler',
-          role: 'SUPER_ADMIN',
-          subscriptionTier: 'ELITE'
+      let existingUser = await prisma.user.findUnique({ where: { email: 'hsemler50@gmail.com' } });
+      if (existingUser) {
+        realUserId = existingUser.id;
+        // Zorg ervoor dat de rol SUPER_ADMIN is
+        if (existingUser.role !== 'SUPER_ADMIN') {
+           await prisma.user.update({ where: { id: realUserId }, data: { role: 'SUPER_ADMIN', subscriptionTier: 'ELITE' } });
         }
-      });
+      } else {
+        await prisma.user.create({
+          data: {
+            id: realUserId,
+            email: 'hsemler50@gmail.com',
+            passwordHash: '',
+            firstName: 'Hendrik',
+            lastName: 'Semler',
+            role: 'SUPER_ADMIN',
+            subscriptionTier: 'ELITE'
+          }
+        });
+      }
     } catch (e) {
-      console.warn("Dev bypass upsert failed", e);
+      console.warn("Dev bypass fetch/create failed in loginAction", e);
     }
 
-    const jwtToken = jwt.sign({ userId: bypassUserId, role: 'SUPER_ADMIN' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
+    const jwtToken = jwt.sign({ userId: realUserId, role: 'SUPER_ADMIN' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
     cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
     
     return { 
@@ -187,31 +194,36 @@ export async function getSessionAction() {
     // MASTER BYPASS: Werkt altijd, overal — lokaal EN productie.
     // Zodra de dev_bypass cookie is gezet (door loginAction), ben je binnen.
     if (cookieStore.get('dev_bypass')?.value === 'true') {
-      const bypassUserId = 'dev-local-admin-id';
+      const email = 'hsemler50@gmail.com';
+      let realUserId = 'dev-local-admin-id';
       
       // Auto-sync dev admin user in DB to prevent foreign key errors for AI chat
       try {
-        await prisma.user.upsert({
-          where: { id: bypassUserId },
-          update: {}, // Niets updaten als hij er al in staat
-          create: {
-            id: bypassUserId,
-            email: 'hsemler50@gmail.com',
-            passwordHash: '',
-            firstName: 'Hendrik',
-            lastName: 'Semler',
-            role: 'SUPER_ADMIN',
-            subscriptionTier: 'ELITE'
-          }
-        });
+        let existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+          realUserId = existingUser.id;
+        } else {
+          // Creëer hem als hij echt niet bestaat
+          await prisma.user.create({
+            data: {
+              id: realUserId,
+              email: email,
+              passwordHash: '',
+              firstName: 'Hendrik',
+              lastName: 'Semler',
+              role: 'SUPER_ADMIN',
+              subscriptionTier: 'ELITE'
+            }
+          });
+        }
       } catch (e) {
-        // Negeren
+        console.warn("Dev bypass fetch/create failed, fallback to dev-local-admin-id", e);
       }
 
       return { 
         success: true, 
         user: { 
-          id: bypassUserId, 
+          id: realUserId, 
           email: 'hsemler50@gmail.com', 
           firstName: 'Hendrik', 
           lastName: 'Semler', 
