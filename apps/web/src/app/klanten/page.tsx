@@ -48,6 +48,13 @@ export default async function ClientPortal() {
     take: 3
   }).catch(() => []);
 
+  // Fetch Wallet Balance
+  const wallet = await prisma.userWallet?.findUnique({
+    where: { userId: user.id }
+  }).catch(() => null);
+  
+  const fiatBalance = wallet?.fiatBalance || 0;
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Premium Header */}
@@ -96,6 +103,37 @@ export default async function ClientPortal() {
             <p className="text-blue-200 text-sm font-medium">Geboekte Afspraken</p>
             <p className="text-4xl font-black text-white mt-2">{appointmentsCount}</p>
             <p className="text-blue-200 text-xs font-bold mt-2">Agenda Synchronisatie</p>
+          </div>
+        </div>
+
+        {/* Wallet & Ad-Spend Module */}
+        <div className="bg-white rounded-2xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">Jouw RYL Ad-Tegoed</p>
+              <p className="text-4xl font-black text-slate-900 mt-1">€{fiatBalance.toFixed(2)}</p>
+              <p className="text-xs text-slate-500 mt-1">Direct inzetbaar voor Meta & TikTok advertenties</p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <form action="/api/payments/mollie/create" method="POST" className="flex items-center gap-2">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">€</span>
+                <input 
+                  type="number" 
+                  name="amount" 
+                  defaultValue="100" 
+                  min="10"
+                  className="pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 w-32 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <button type="submit" className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transition transform hover:scale-105 flex items-center gap-2">
+                Waardeer op
+              </button>
+            </form>
           </div>
         </div>
 

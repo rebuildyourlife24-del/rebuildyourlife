@@ -34,10 +34,15 @@ export class SwarmOrchestrator {
       return null;
     }
 
+    // Fetch a user to attach the action to
+    const user = await prisma.user.findFirst();
+    if (!user) throw new Error("No user found for swarm action");
+
     // Stap 4: Plaats in de "Review Queue" van de CEO
     console.log(`[SWARM] Agent 4 (Commander) plaatst ad in CEO queue.`);
     const reviewId = await prisma.agentAction.create({
       data: {
+        userId: user.id,
         agentType: 'SWARM_ORCHESTRATOR',
         title: 'Launch Social Ad',
         description: 'Auto-generated ad based on trending topics',

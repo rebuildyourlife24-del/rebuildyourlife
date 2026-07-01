@@ -13,7 +13,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount } = await req.json();
+    let amount;
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await req.json();
+      amount = body.amount;
+    } else {
+      const formData = await req.formData();
+      amount = formData.get('amount');
+    }
 
     if (!amount || amount < 10) {
       return NextResponse.json({ error: 'Minimum deposit is €10' }, { status: 400 });
@@ -36,8 +44,12 @@ export async function POST(req: Request) {
       },
     });
 
-    // Return checkout URL to redirect the user
-    return NextResponse.json({ checkoutUrl: payment.getCheckoutUrl() });
+    // Return checkout URL or redirect if requested via form
+    if (contentType.includes('application/json')) {
+      return NextResponse.json({ checkoutUrl: payment.getCheckoutUrl() });
+    } else {
+      return NextResponse.redirect(payment.getCheckoutUrl(), 303);
+    }
 
   } catch (error: any) {
     console.error('Mollie Payment Error:', error);

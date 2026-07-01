@@ -1,6 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { prisma } from '@rebuildyourlife/database';
 import { revalidatePath } from 'next/cache';
 
 // Haal social media posts op
@@ -63,4 +64,74 @@ export async function createSocialPost(title: string, platform: string, budget: 
     throw new Error('Failed to create post');
   }
 }
+
+// Lanceer een betaalde Ad Campagne via Agency Reseller Model
+export async function launchAdCampaign(userId: string, campaignName: string, platform: string, totalBudget: number) {
+  try {
+    // Start een veilige database transactie
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Haal de wallet op
+      const wallet = await tx.userWallet.findUnique({
+        where: { userId }
+      });
+
+      if (!wallet || wallet.fiatBalance < totalBudget) {
+        throw new Error('Onvoldoende RYL Ad-Tegoed. Waardeer je wallet op.');
+      }
+
+      // 2. Trek het budget af van de wallet
+      const updatedWallet = await tx.userWallet.update({
+        where: { id: wallet.id },
+        data: { fiatBalance: { decrement: totalBudget } }
+      });
+
+      // 3. Log de afschrijving
+      const transaction = await tx.platformCreditTransaction.create({
+        data: {
+          walletId: wallet.id,
+          amount: -totalBudget,
+          type: 'AD_SPEND',
+          description: `Budget voor ${platform} campagne: ${campaignName}`,
+          status: 'COMPLETED'
+        }
+      });
+
+      // 4. Maak de campagne aan
+      const campaign = await tx.adCampaign.create({
+        data: {
+          userId,
+          campaignName,
+          platform,
+          totalBudget,
+          walletTxId: transaction.id,
+          status: 'ACTIVE'
+        }
+      });
+
+      // 5. Memory log voor de AI
+      await tx.aIMemory.create({
+        data: {
+          userId,
+          agentType: 'MARKETING',
+          memoryType: 'AD_LAUNCH',
+          content: `Gebruiker heeft de campagne "${campaignName}" op ${platform} gelanceerd met een budget van €${totalBudget}. Restant saldo: €${updatedWallet.fiatBalance}.`
+        }
+      });
+
+      return { campaign, remainingBalance: updatedWallet.fiatBalance };
+    });
+
+    revalidatePath('/klanten');
+    revalidatePath('/dashboard/social');
+    
+    // Optioneel: Hier roepen we de Facebook/TikTok Graph API aan om de ad écht te publishen.
+    // await publishToMeta(campaignName, totalBudget);
+    
+    return { success: true, ...result };
+  } catch (error: any) {
+    console.error('Failed to launch Ad Campaign:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 

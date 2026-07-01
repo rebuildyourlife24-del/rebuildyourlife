@@ -81,8 +81,11 @@ Format the response EXACTLY as a valid JSON object with the following keys:
 
     const userPrompt = `Write a script about: ${topic}.`;
 
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("Missing OPENAI_API_KEY. System refused to use a mock or dummy key.");
+
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || "dummy_key",
+      apiKey,
     });
 
     const response = await openai.chat.completions.create({
