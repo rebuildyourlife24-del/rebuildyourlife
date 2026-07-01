@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Wallet, ArrowUpRight, ArrowDownRight, CreditCard, Download, AlertTriangle, ShieldCheck, Layers, Loader2 } from "lucide-react";
-import { getHoldingRevenueAction } from "../actions/finance";
+import { getHoldingRevenueAction } from "@/app/actions/finance";
 
 export default function FinanceDashboard() {
   const [bankConnected, setBankConnected] = useState(false); // In a real scenario, this comes from user session/db
