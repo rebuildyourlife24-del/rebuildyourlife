@@ -42,6 +42,13 @@ model User {
   franchises     Franchise[]
   tradingBot     TradingBot?
   opportunities  Opportunity[] @relation("AssignedOpportunities")
+  
+  // Ambassador Netwerk Relaties
+  ambassadorNode     AmbassadorNetwork? @relation("AmbassadorNode")
+  ambassadorChildren AmbassadorNetwork[] @relation("AmbassadorParent")
+  
+  subAgreements      CommissionAgreement[] @relation("AgreementSub")
+  parentAgreements   CommissionAgreement[] @relation("AgreementParent")
 }
 
 // Actie 1: Bank Koppeling (PSD2) Portaal
@@ -322,4 +329,65 @@ model AiSharedMemory {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("ai_shared_memory")
+}
+
+// ============================================================================
+// VERDIENMODEL 10: AMBASSADEUR / SYNDICATE NETWERK (THE ELITE CLOSERS)
+// ============================================================================
+
+model AmbassadorNetwork {
+  id             String      @id @default(cuid())
+  userId         String      @unique // De ambassadeur zelf
+  user           User        @relation("AmbassadorNode", fields: [userId], references: [id], onDelete: Cascade)
+  
+  parentUserId   String?     // De ambassadeur die déze ambassadeur heeft binnengehaald
+  parentUser     User?       @relation("AmbassadorParent", fields: [parentUserId], references: [id])
+  
+  referralCode   String      @unique // Bijv: "HENK-ELITE-99"
+  totalEarnings  Float       @default(0.0) // Totaal verdiend aan commissies
+  
+  status         String      @default("ACTIVE") // ACTIVE, BANNED
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // De verdeelsleutels
+  commissionAgreements CommissionAgreement[] @relation("SubSellerAgreements")
+  parentAgreements     CommissionAgreement[] @relation("ParentSellerAgreements")
+}
+
+model CommissionAgreement {
+  id             String      @id @default(cuid())
+  
+  parentUserId   String
+  parentUser     User        @relation("AgreementParent", fields: [parentUserId], references: [id])
+  
+  subUserId      String
+  subUser        User        @relation("AgreementSub", fields: [subUserId], references: [id])
+  
+  parentSplitPercentage Float @default(40.0) // Bijv 40% van de €500
+  subSplitPercentage    Float @default(60.0) // Bijv 60% van de €500
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  AmbassadorNetwork AmbassadorNetwork? @relation("SubSellerAgreements", fields: [subUserId], references: [userId], map: "sub_agreement_network")
+  AmbassadorParent  AmbassadorNetwork? @relation("ParentSellerAgreements", fields: [parentUserId], references: [userId], map: "parent_agreement_network")
+}
+
+// ============================================================================
+// THE INTELLIGENCE VAULT (YOUTUBE DATA SCRAPING & ANALYSIS)
+// ============================================================================
+
+model ExtractedIntelligence {
+  id             String   @id @default(cuid())
+  sourceChannel  String   @default("@AlaaCode")
+  videoTitle     String
+  videoUrl       String
+  
+  extractedTools String[] // Bijv: ["Framer Motion", "TailwindCSS", "Next.js 14"]
+  coreConcept    String   @db.Text // De samenvatting van de techniek
+  
+  status         String   @default("ANALYZED") // ANALYZED, IMPLEMENTED
+  createdAt      DateTime @default(now())
 }

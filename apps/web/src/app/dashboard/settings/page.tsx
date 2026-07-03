@@ -15,12 +15,15 @@ import {
   Download, 
   AlertTriangle, 
   CheckCircle2, 
-  FileText
+  FileText,
+  MonitorPlay
 } from 'lucide-react';
 import { IntegrationsVault } from '@/components/ui/IntegrationsVault';
+import { useCinematicTheme } from '@/lib/contexts/ThemeContext';
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
+  const { activeTheme, setActiveTheme } = useCinematicTheme();
   
   // Profile Form
   const [firstName, setFirstName] = useState('');
@@ -323,6 +326,50 @@ Rebuild Your Life.
                 </Button>
               </div>
             </form>
+          </Card>
+
+          {/* Cinematic Engine Card */}
+          <Card className="bg-[#050505] border border-zinc-850 p-6 md:p-8 rounded-[2rem] relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-white/20 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-zinc-950 border border-zinc-855 flex items-center justify-center rounded-xl">
+                <MonitorPlay className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold tracking-tight uppercase">Cinematic Engine</h2>
+                <p className="text-xs text-zinc-500 font-mono">3D WEBGL ENVIRONMENT THEME</p>
+              </div>
+            </div>
+            
+            <p className="text-sm text-zinc-400 mb-6 font-light">
+              Kies het visuele thema voor jouw fullscreen OS ervaring. Deze wijziging wordt direct globaal doorgevoerd.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button 
+                onClick={() => setActiveTheme('scifi')} 
+                className={`p-4 rounded-xl border text-left transition-all ${activeTheme === 'scifi' ? 'border-cyan-400 bg-cyan-950/20' : 'border-zinc-800 hover:border-zinc-600 bg-black'}`}
+              >
+                <div className="text-cyan-400 font-bold uppercase tracking-wider mb-1">Sci-Fi</div>
+                <div className="text-[10px] text-zinc-500 font-mono">Volumetric Lights & Stars</div>
+              </button>
+              
+              <button 
+                onClick={() => setActiveTheme('cyberpunk')} 
+                className={`p-4 rounded-xl border text-left transition-all ${activeTheme === 'cyberpunk' ? 'border-fuchsia-400 bg-fuchsia-950/20' : 'border-zinc-800 hover:border-zinc-600 bg-black'}`}
+              >
+                <div className="text-fuchsia-400 font-bold uppercase tracking-wider mb-1">Cyberpunk</div>
+                <div className="text-[10px] text-zinc-500 font-mono">Neon Grid & Data Streams</div>
+              </button>
+              
+              <button 
+                onClick={() => setActiveTheme('dark')} 
+                className={`p-4 rounded-xl border text-left transition-all ${activeTheme === 'dark' ? 'border-[#C8A96B] bg-[#C8A96B]/10' : 'border-zinc-800 hover:border-zinc-600 bg-black'}`}
+              >
+                <div className="text-[#C8A96B] font-bold uppercase tracking-wider mb-1">Thriller</div>
+                <div className="text-[10px] text-zinc-500 font-mono">Deep Shadows & Gold</div>
+              </button>
+            </div>
           </Card>
 
         </div>

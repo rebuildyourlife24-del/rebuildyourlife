@@ -4,13 +4,17 @@ import { AuthProvider } from "@/lib/auth";
 import { VoiceOrb } from "@/components/ui/VoiceOrb";
 import { OrionVisor } from "@/components/ui/OrionVisor";
 import { AppHeader } from "@/components/ui/AppHeader";
+import { ThemeProvider } from "@/lib/contexts/ThemeContext";
+import { LightweightCinematicBackground } from "@/components/3d/LightweightCinematicBackground";
+import { SoundscapeEngine } from "@/components/audio/SoundscapeEngine";
 import "./globals.css";
+
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
 
 export const viewport: Viewport = {
-  themeColor: '#02040a',
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -47,17 +51,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" className="dark">
-      <body className="min-h-screen bg-navy text-textPrimary antialiased selection:bg-gold/30 selection:text-goldLight">
-        {/* Deep Space Ice Glass Background Elements */}
-        <div className="fixed inset-0 -z-50 overflow-hidden bg-navy pointer-events-none">
-          {/* Subtle slow drift Starfield */}
-          <div className="absolute inset-0 space-stars opacity-[0.6]" style={{ animation: 'stars 200s linear infinite' }} />
-          <div className="absolute inset-0 space-stars opacity-[0.3]" style={{ transform: 'scale(1.5)', animation: 'stars 350s linear infinite reverse' }} />
+      <body className="min-h-screen bg-transparent text-textPrimary antialiased selection:bg-cyan-500/30 selection:text-white">
+        <ThemeProvider>
+          <LightweightCinematicBackground />
+          <SoundscapeEngine />
           
-          {/* No background blobs - maintaining pure intense black background */}
-        </div>
-        
-        <LanguageProvider>
+          <LanguageProvider>
           <AuthProvider>
             <AppHeader />
             {children}
@@ -65,6 +64,7 @@ export default function RootLayout({
             <VoiceOrb />
           </AuthProvider>
         </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

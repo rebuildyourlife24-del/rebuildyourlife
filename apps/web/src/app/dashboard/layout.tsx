@@ -174,50 +174,49 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
-  // THEME CONFIGURATION - THE MILLIONAIRE AESTHETIC
-  // Admin gets Navy Matrix. User gets Platinum/Monochrome Brutalism (Quiet Luxury)
+  // THEME CONFIGURATION - THE 2026 CYBER AESTHETIC
+  // Admin gets Neon Cyan/Purple. User gets Deep Blue Neon.
   const theme = {
-    color: isAdmin ? 'text-blue-500' : 'text-zinc-100',
-    hoverColor: isAdmin ? 'group-hover:text-blue-500' : 'group-hover:text-white',
-    bgActive: isAdmin ? 'bg-blue-500/10' : 'bg-white/5',
-    border: isAdmin ? 'border-blue-900/20' : 'border-white/[0.04]',
-    borderStrong: isAdmin ? 'border-blue-900/50' : 'border-white/10',
-    borderHover: isAdmin ? 'group-hover:border-blue-500' : 'group-hover:border-white/20',
-    shadow: isAdmin ? 'shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.03)]',
-    pulseBg: isAdmin ? 'bg-blue-900' : 'bg-zinc-800',
-    pulseActive: isAdmin ? 'bg-blue-500' : 'bg-white',
-    gridLines: isAdmin ? 'rgba(59,130,246,0.03)' : 'rgba(255,255,255,0.015)',
-    orbTop: isAdmin ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.03)',
-    orbBottom: isAdmin ? 'rgba(30,58,138,0.08)' : 'rgba(255,255,255,0.01)',
-    iconBg: isAdmin ? 'bg-blue-950/50 border-blue-500/30' : 'bg-[#050505] border-white/10',
-    title: isAdmin ? 'The Architect' : 'Builder',
+    color: isAdmin ? 'text-neonCyan' : 'text-neonBlue',
+    hoverColor: isAdmin ? 'group-hover:text-neonCyan' : 'group-hover:text-neonBlue',
+    bgActive: isAdmin ? 'bg-neonCyanDim' : 'bg-neonBlueDim',
+    border: isAdmin ? 'border-neonCyan/20' : 'border-neonBlue/10',
+    borderStrong: isAdmin ? 'border-neonCyan/50' : 'border-neonBlue/30',
+    borderHover: isAdmin ? 'group-hover:border-neonCyan' : 'group-hover:border-neonBlue',
+    shadow: isAdmin ? 'shadow-[0_0_20px_rgba(6,182,212,0.3)]' : 'shadow-[0_0_15px_rgba(59,130,246,0.2)]',
+    pulseBg: isAdmin ? 'bg-neonCyan/20' : 'bg-neonBlue/20',
+    pulseActive: isAdmin ? 'bg-neonCyan' : 'bg-neonBlue',
+    gridLines: isAdmin ? 'rgba(6,182,212,0.05)' : 'rgba(59,130,246,0.03)',
+    orbTop: isAdmin ? 'rgba(6,182,212,0.15)' : 'rgba(59,130,246,0.1)',
+    orbBottom: isAdmin ? 'rgba(139,92,246,0.1)' : 'rgba(59,130,246,0.05)',
+    iconBg: isAdmin ? 'bg-[#020202] border-neonCyan/30' : 'bg-[#020202] border-neonBlue/20',
+    title: isAdmin ? 'System Override' : 'Operator',
   };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-[#020202]">
         <div className="flex flex-col items-center gap-4">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-emerald-500/20 border-t-cyan-500' : 'border-white/10 border-t-white'}`}
+            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-neonCyan/20 border-t-neonCyan' : 'border-neonBlue/20 border-t-neonBlue'}`}
           />
-          <p className={`text-sm font-mono tracking-widest uppercase ${theme.color} opacity-70`}>Initializing Connection...</p>
+          <p className={`text-sm font-mono tracking-widest uppercase neon-text opacity-70`}>Initializing Neuromatrix...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex min-h-screen bg-black text-zinc-300 ${isAdmin ? 'selection:bg-emerald-500/30' : 'selection:bg-white/20'} font-sans overflow-hidden`}>
+    <div className={`flex min-h-screen bg-[#020202] text-zinc-300 ${isAdmin ? 'selection:bg-neonCyan/30' : 'selection:bg-neonBlue/20'} font-sans overflow-hidden`}>
       
       {/* 110000X Cinematic Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black"></div>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(0,0,0,1) 60%)` }}></div>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(0,0,0,0) 60%)` }}></div>
-        <div className="absolute inset-0 bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]" style={{ backgroundImage: `linear-gradient(${theme.gridLines} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLines} 1px, transparent 1px)` }}></div>
-        <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none cyber-grid">
+        <div className="absolute inset-0 bg-[#020202]/90"></div>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(2,2,2,0.9) 60%)` }}></div>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(2,2,2,0) 60%)` }}></div>
+        <div className="absolute inset-0 bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]" style={{ backgroundImage: `linear-gradient(${theme.gridLines} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLines} 1px, transparent 1px)` }}></div>
       </div>
 
       <AnimatePresence>

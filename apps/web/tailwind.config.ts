@@ -9,27 +9,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#0a192f", // Marineblauw (diep blauw)
-        navyLight: "#112240", // Lichter marineblauw
-        gold: "#d4af37", // Goud voor accenten
-        goldLight: "#f3e5ab", // Lichter goud
-        surface: "rgba(10, 25, 47, 0.8)", // Marineblauw glass
-        surfaceLight: "rgba(17, 34, 64, 0.9)", // Lichter marineblauw glass
-        textPrimary: "#ffffff", // Wit voor contrast
-        textSecondary: "#8892b0", // Lichtblauw/grijs
-        success: "#10b981", // Emerald green
-        warning: "#f59e0b", // Amber
-        danger: "#ef4444" // Rood
+        background: "#020202",
+        surface: "rgba(10, 10, 15, 0.7)",
+        surfaceLight: "rgba(20, 20, 25, 0.8)",
+        neonCyan: "#06b6d4",
+        neonCyanDim: "rgba(6, 182, 212, 0.2)",
+        neonBlue: "#3b82f6",
+        neonBlueDim: "rgba(59, 130, 246, 0.2)",
+        neonPurple: "#8b5cf6",
+        neonPurpleDim: "rgba(139, 92, 246, 0.2)",
+        textPrimary: "#ffffff",
+        textSecondary: "#9ca3af",
+        success: "#10b981",
+        warning: "#f59e0b",
+        danger: "#ef4444"
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #0a192f22 0deg, #112240 180deg, #0a192f22 360deg)',
+        'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #06b6d422 0deg, #3b82f622 180deg, #06b6d422 360deg)',
       },
       animation: {
         'aurora': 'aurora 15s ease infinite',
         'float': 'float 6s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'stars-move': 'stars 100s linear infinite',
+        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+        'grid-scroll': 'gridScroll 20s linear infinite',
       },
       keyframes: {
         aurora: {
@@ -40,9 +43,13 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
-        stars: {
+        pulseGlow: {
+          '0%, 100%': { opacity: '1', filter: 'brightness(1)' },
+          '50%': { opacity: '0.8', filter: 'brightness(1.5)' },
+        },
+        gridScroll: {
           '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(40px)' },
         }
       }
     },
