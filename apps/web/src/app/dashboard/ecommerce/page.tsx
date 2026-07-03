@@ -80,7 +80,7 @@ export default async function EcommercePage() {
               </div>
             </div>
           ))
-        }
+        )}
       </div>
 
       {/* Digital Products Section */}

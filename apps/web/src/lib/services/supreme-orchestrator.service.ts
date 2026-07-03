@@ -56,7 +56,7 @@ export class SupremeOrchestratorService {
         // STAP 3: COMMERCE & SHOPIFY (The Arsenal)
         for (const store of user.shopifyStores) {
           // Haal alle ongefulfilde orders op en push ze door
-          const unfulfilled = await ShopifyService.getUnfulfilledOrders(store.id);
+          const unfulfilled = await ShopifySwarmService.getUnfulfilledOrders(store.id);
           console.log(`[SUPREME ORCHESTRATOR] Commerce Sync: Found ${unfulfilled.length} orders for store ${store.shopUrl}`);
         }
 
@@ -64,7 +64,7 @@ export class SupremeOrchestratorService {
         // Als de gebruiker social accounts heeft gekoppeld, voer de outreach uit.
         const trafficApi = user.apiIntegrations.find(api => api.provider === 'INSTAGRAM' || api.provider === 'LINKEDIN');
         if (trafficApi) {
-           await TrafficExtremeService.optimizeTrafficSources(user.id);
+           await TrafficService.optimizeTrafficSources(user.id);
            console.log(`[SUPREME ORCHESTRATOR] Syndicate Sync: Traffic sources optimized.`);
         }
 
