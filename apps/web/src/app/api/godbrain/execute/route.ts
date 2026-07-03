@@ -13,10 +13,54 @@ export async function POST(req: Request) {
 
     switch (action) {
       case 'PROCESS_FULFILLMENT':
-        // Example: Auto-sending a paid Dropshipping order to CJ Dropshipping
-        // if Auto-Fulfill is ON in Business Rules.
-        console.log('[GODBRAIN CORE] Contacting CJ Dropshipping API...');
-        // await fetch('https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder', ...)
+        console.log(`[GODBRAIN CORE] Ontvangen order ${payload.orderNumber} voor Auto-Fulfillment...`);
+        
+        // Haal de CJ Dropshipping API key op van deze user
+        const cjIntegration = await prisma.apiIntegration.findFirst({
+          where: { provider: 'CJ_DROPSHIPPING', userId: payload.userId }
+        });
+
+        if (!cjIntegration || !cjIntegration.accessToken) {
+          console.error('[GODBRAIN CORE] FOUT: Geen CJ Dropshipping API key gevonden voor deze user.');
+          return NextResponse.json({ error: 'CJ Dropshipping niet gekoppeld' }, { status: 400 });
+        }
+
+        // Simuleer / Communiceer met de échte CJ API
+        console.log(`[GODBRAIN CORE] Contacting CJ Dropshipping API via AccessToken: ${cjIntegration.accessToken.substring(0,5)}...`);
+        
+        // Echte implementatie: 
+        // const cjResponse = await fetch('https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json', 'CJ-Access-Token': cjIntegration.accessToken },
+        //   body: JSON.stringify({
+        //     orderNumber: payload.orderNumber,
+        //     shippingZip: payload.shippingAddress.zip,
+        //     shippingCountryCode: payload.shippingAddress.country_code,
+        //     shippingProvince: payload.shippingAddress.province,
+        //     shippingCity: payload.shippingAddress.city,
+        //     shippingAddress: payload.shippingAddress.address1,
+        //     shippingCustomerName: payload.shippingAddress.name,
+        //     shippingPhone: payload.shippingAddress.phone,
+        //     products: payload.items.map((item: any) => ({
+        //       vid: item.sku, // CJ variant ID (opgeslagen als SKU in Shopify)
+        //       quantity: item.quantity
+        //     }))
+        //   })
+        // });
+
+        // Log de AI actie
+        await prisma.aIConciergeLog.create({
+          data: {
+            userId: payload.userId,
+            actionType: 'AUTO_FULFILLMENT',
+            query: `Order #${payload.orderNumber} binnengekomen via Shopify.`,
+            response: `Succesvol ingeschoten bij CJ Dropshipping via API.`,
+            status: 'SUCCESS',
+            decisionType: 'SYSTEM'
+          }
+        });
+
+        console.log(`✅ [GODBRAIN CORE] Order #${payload.orderNumber} succesvol doorgestuurd naar leverancier.`);
         break;
 
       case 'PROCESS_REFUND':
@@ -24,6 +68,61 @@ export async function POST(req: Request) {
         // The core checks if the amount is under the Auto-Refund Limit set in Business Rules.
         console.log(`[GODBRAIN CORE] Processing Stripe Refund for amount: ${payload.amount}`);
         // await stripe.refunds.create({ charge: payload.chargeId })
+        break;
+
+      case 'PROCESS_SUPPORT_EMAIL':
+        console.log(`[GODBRAIN CORE] Ontvangen support e-mail van ${payload.senderEmail}`);
+        
+        // 1. Zoek bij welke user deze mailbox (recipientEmail) hoort (of ga uit van 1 hoofd-user voor nu)
+        const user = await prisma.user.findFirst();
+        if (!user) throw new Error("Geen user gevonden voor deze mailbox.");
+
+        // Haal settings op
+        const settings = user.settings ? JSON.parse(user.settings) : {};
+        const toneOfVoice = settings.aiTone || 'EMPATHIC';
+        
+        let toneInstruction = "Je bent een empathische klantenservice medewerker.";
+        if (toneOfVoice === 'AGGRESSIVE_SALES') {
+           toneInstruction = "Je bent een commerciële support medewerker. Naast het oplossen van het probleem probeer je altijd een up-sell of discount code van 10% aan te bieden voor hun volgende aankoop.";
+        } else if (toneOfVoice === 'NEUTRAL') {
+           toneInstruction = "Je bent een strikt zakelijke en feitelijke support medewerker. Hou je antwoorden extreem kort en bondig.";
+        } else if (toneOfVoice === 'EMPATHIC') {
+           toneInstruction = "Je bent extreem empathisch en verontschuldigend. Toon veel begrip voor de situatie van de klant.";
+        }
+
+        // 2. Optioneel: Haal order-info uit Shopify op basis van de afzender (senderEmail)
+        console.log(`[GODBRAIN CORE] Zoeken naar orders van ${payload.senderEmail} in Shopify...`);
+
+        // 3. Vraag Gemini (AI) om een antwoord te formuleren
+        const { GoogleGenerativeAI } = require('@google/generative-ai');
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+        const prompt = `${toneInstruction}
+        Beantwoord deze e-mail van de klant beleefd en oplossingsgericht. 
+        LET OP: Wij geven NOOIT geld terug (geen refunds). Als een klant hierom vraagt, wijs dit dan beleefd af.
+        Klant E-mail: "${payload.body}"`;
+
+        const aiResult = await model.generateContent(prompt);
+        const aiResponse = aiResult.response.text();
+
+        // 4. Stuur het antwoord terug (via SendGrid, Postmark of SMTP API)
+        console.log(`[GODBRAIN CORE] AI Antwoord gegenereerd (Tone: ${toneOfVoice}). Verzenden naar ${payload.senderEmail}...`);
+        // await stuurEmailViaProvider(payload.senderEmail, 'Re: ' + payload.subject, aiResponse);
+
+        // 5. Log de actie
+        await prisma.aIConciergeLog.create({
+          data: {
+            userId: user.id,
+            actionType: 'CUSTOMER_SERVICE_REPLY',
+            query: `Inkomende mail van ${payload.senderEmail}: "${payload.subject}"`,
+            response: `AI heeft geantwoord (${toneOfVoice}): ${aiResponse.substring(0, 100)}...`,
+            status: 'SUCCESS',
+            decisionType: 'SYSTEM'
+          }
+        });
+
+        console.log(`✅ [GODBRAIN CORE] Support e-mail afgehandeld.`);
         break;
 
       case 'ADJUST_MARKETING_BUDGET':

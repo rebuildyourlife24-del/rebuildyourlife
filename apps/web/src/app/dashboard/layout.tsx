@@ -31,7 +31,13 @@ import {
   ChevronRight,
   Brain,
   Search,
-  Globe
+  Globe,
+  ShoppingCart,
+  Users,
+  CreditCard,
+  Building,
+  MessageSquare,
+  ActivitySquare
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -41,11 +47,30 @@ const getGroupedNavItems = (user: any) => {
       label: 'The Boardroom',
       items: [
         { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
-        { label: 'Treasury & Finance', href: '/dashboard/finance', icon: <Briefcase size={16} /> },
         { label: 'CEO (Growth)', href: '/dashboard/c-suite/ceo', icon: <Brain size={16} /> },
         { label: 'CFO (Profit)', href: '/dashboard/c-suite/cfo', icon: <Briefcase size={16} /> },
         { label: 'CMO (Acquisition)', href: '/dashboard/c-suite/cmo', icon: <Activity size={16} /> },
         { label: 'COO (Systems)', href: '/dashboard/c-suite/coo', icon: <Network size={16} /> }
+      ]
+    },
+    {
+      id: 'finance',
+      label: 'Finance & Admin',
+      items: [
+        { label: 'Treasury Vault', href: '/dashboard/finance', icon: <Briefcase size={16} /> },
+        { label: 'Bank & Transacties', href: '/dashboard/finance/banking', icon: <CreditCard size={16} /> },
+        { label: 'Schulden & Budget', href: '/dashboard/finance/debts', icon: <Layers size={16} /> },
+        { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> }
+      ]
+    },
+    {
+      id: 'revenue',
+      label: 'Verdienmodellen',
+      items: [
+        { label: 'E-Commerce / Dropship', href: '/dashboard/ecommerce', icon: <ShoppingCart size={16} /> },
+        { label: 'Social & Marketing', href: '/dashboard/social', icon: <MessageSquare size={16} /> },
+        { label: 'SaaS & Enterprise', href: '/dashboard/enterprise', icon: <Building size={16} /> },
+        { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> }
       ]
     },
     {
@@ -55,18 +80,16 @@ const getGroupedNavItems = (user: any) => {
         { label: 'SEO & Traffic', href: '/dashboard/agents/seo', icon: <Search size={16} /> },
         { label: 'CRO & Funnel', href: '/dashboard/agents/cro', icon: <Map size={16} /> },
         { label: 'Copy & Content', href: '/dashboard/agents/copywriter', icon: <Terminal size={16} /> },
-        { label: 'Ads & Media', href: '/dashboard/agents/ads', icon: <Tv size={16} /> },
-        { label: 'Data & Analytics', href: '/dashboard/agents/data', icon: <Activity size={16} /> }
+        { label: 'Ads & Media', href: '/dashboard/agents/ads', icon: <Tv size={16} /> }
       ]
     },
     {
       id: 'system',
-      label: 'System',
+      label: 'System & Life',
       items: [
-        { label: 'Agency (White-label)', href: 'https://ai-henksemler.nl/auth/login', icon: <Globe size={16} /> },
-        { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> },
+        { label: 'Vitaliteit & Doelen', href: '/dashboard/vitality', icon: <Heart size={16} /> },
         { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
-        { label: 'Orion AI Coach', href: '/dashboard/ai-assistant', icon: <Terminal size={16} /> },
+        { label: 'Orion AI Coach', href: '/dashboard/ai-assistant', icon: <Brain size={16} /> },
         { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
       ]
     }

@@ -97,10 +97,14 @@ export function useRequireAuth(): AuthContextValue {
   const auth = useAuth();
 
   useEffect(() => {
-    if (!auth.isLoading && !auth.isAuthenticated) {
-      window.location.href = '/auth/login';
+    if (!auth.isLoading) {
+      if (!auth.isAuthenticated) {
+        window.location.href = '/auth/login';
+      } else if (auth.user?.subscriptionTier === 'NONE' || auth.user?.subscriptionTier === 'FREE') {
+        window.location.href = '/agency';
+      }
     }
-  }, [auth.isLoading, auth.isAuthenticated]);
+  }, [auth.isLoading, auth.isAuthenticated, auth.user]);
 
   return auth;
 }

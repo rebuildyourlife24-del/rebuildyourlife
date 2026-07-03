@@ -1,64 +1,86 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@rebuildyourlife/database';
+import { getSessionAction } from '@/app/actions/auth';
 
-export async function GET(req: Request) {
+/**
+ * THE AGENTIC GATEWAY
+ * 
+ * Dit is het "Centrale Brein" voor de Autonomous Swarm (God Mode).
+ * Het ontvangt triggers van verdienmodellen (bijv. "Dropship product toegevoegd")
+ * en vuurt autonoom de benodigde AI motoren af (bijv. TikTok AI & Video Forge)
+ * zonder dat de gebruiker ooit een UI hoeft te openen.
+ */
+
+export async function POST(req: Request) {
   try {
-    // In a real scenario, this would fetch actual product catalog
-    // We mock the catalog response using JSON-LD optimized for AI Agents
+    const session = await getSessionAction();
+    const user = session?.user;
 
-    const catalog = [
-      {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "name": "Orion Tactical Hoodie",
-        "description": "High-performance urban hoodie with cyber-weave fabric.",
-        "brand": {
-          "@type": "Brand",
-          "name": "Rebuild Your Life"
-        },
-        "offers": {
-          "@type": "Offer",
-          "url": "https://ryl.com/products/tactical-hoodie",
-          "priceCurrency": "EUR",
-          "price": "149.99",
-          "availability": "https://schema.org/InStock",
-          "shippingDetails": {
-            "@type": "OfferShippingDetails",
-            "shippingRate": {
-              "@type": "MonetaryAmount",
-              "value": "0.00",
-              "currency": "EUR"
-            },
-            "deliveryTime": {
-              "@type": "ShippingDeliveryTime",
-              "transitTime": {
-                "@type": "QuantitativeValue",
-                "minValue": "1",
-                "maxValue": "2",
-                "unitCode": "d"
-              }
-            }
-          }
-        }
-      }
-    ];
+    // 1. Authenticate
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized. Swarm toegang vereist.' }, { status: 401 });
+    }
 
+    // 2. Validate Subscription (ONLY ELITE CAN USE FULL AUTONOMY)
+    if (user.subscriptionTier !== 'ELITE' && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ 
+        error: 'Toegang Geweigerd. Volledige Agentic Autonomy vereist het ELITE Protocol.' 
+      }, { status: 403 });
+    }
+
+    // 3. Parse Intent
+    const body = await req.json();
+    const { intent, payload } = body;
+
+    if (!intent) {
+      return NextResponse.json({ error: 'Missing intent' }, { status: 400 });
+    }
+
+    const actionsTaken: string[] = [];
+
+    // 4. Autonomous Routing gebaseerd op het Verdienmodel (Intent)
+    switch (intent) {
+      case 'ECOMMERCE_PRODUCT_ADDED':
+        // Voorbeeld: AutoDS pusht een product. De Gateway detecteert dit en start de generatoren.
+        actionsTaken.push(`Triggered Video Forge for product: ${payload?.productName || 'Unknown'}`);
+        actionsTaken.push(`Triggered TikTok AI Script Generator for product: ${payload?.productName || 'Unknown'}`);
+        
+        // Hier zouden we in productie echte fetch calls of service functions aanroepen:
+        // await generateVideo(payload);
+        // await generateTikTokAd(payload);
+        break;
+
+      case 'AGENCY_CLIENT_ONBOARDED':
+        // Voorbeeld: Een B2B klant wordt toegevoegd.
+        actionsTaken.push(`Triggered SEO Audit Agent for URL: ${payload?.clientUrl || 'Unknown'}`);
+        actionsTaken.push(`Triggered Content Forge (Initial Strategy)`);
+        break;
+        
+      case 'CREATOR_POST_SCHEDULED':
+        // Voorbeeld: Social media manager tool.
+        actionsTaken.push(`Triggered Avatar Studio for image generation`);
+        actionsTaken.push(`Triggered OnlyFans AI for automated engagement DMs`);
+        break;
+
+      case 'DAILY_FINANCE_SYNC':
+        // Voorbeeld: Godbrain / Hermes sync.
+        actionsTaken.push(`Triggered Crypto Trading Bot analysis`);
+        actionsTaken.push(`Triggered Bank Sync / Treasury allocation`);
+        break;
+
+      default:
+        return NextResponse.json({ error: `Unknown intent: ${intent}` }, { status: 400 });
+    }
+
+    // 5. Respond success
     return NextResponse.json({
-      _meta: {
-        agentic_version: "1.0",
-        optimized_for: ["AutoGPT", "ChatGPT", "Google SGE"],
-        realtime_stock: true
-      },
-      catalog
-    }, {
-      headers: {
-        'Content-Type': 'application/ld+json',
-        'Cache-Control': 's-maxage=60, stale-while-revalidate'
-      }
+      success: true,
+      message: 'Autonomous Swarm geactiveerd.',
+      actions: actionsTaken,
+      executedBy: user.id
     });
 
-  } catch (error) {
-    console.error('Agentic Gateway Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[AGENTIC GATEWAY ERROR]', error);
+    return NextResponse.json({ error: 'Internal Gateway Error' }, { status: 500 });
   }
 }

@@ -7,19 +7,19 @@ const mollieClient = createMollieClient({ apiKey: env.MOLLIE_API_KEY });
 
 export class PaymentService {
   static async createCheckoutSession(userId: string, plan: string) {
-    const validPlans = ["PREMIUM", "ENTERPRISE"];
+    const validPlans = ["REGULAR", "ELITE"];
     if (!validPlans.includes(plan)) {
       throw new AppError("Invalid plan selected", 400, "INVALID_PLAN");
     }
 
-    const amount = plan === "PREMIUM" ? "14.95" : "49.95";
+    const amount = plan === "REGULAR" ? "50.00" : "2000.00";
 
     const payment = await mollieClient.payments.create({
       amount: {
         value: amount,
         currency: "EUR",
       },
-      description: `RebuildYourLife ${plan} Subscription`,
+      description: `Sovereign Grid ${plan} Toegang`,
       redirectUrl: `${env.FRONTEND_URL}/dashboard`,
       webhookUrl: `${env.API_URL}/api/v1/payments/webhook`,
       metadata: {
@@ -73,8 +73,8 @@ export class PaymentService {
           select: { subscriptionTier: true, createdAt: true },
         });
 
-        if (user && user.subscriptionTier !== "FREE") {
-          const amount = user.subscriptionTier === "PREMIUM" ? 14.95 : 49.95;
+        if (user && user.subscriptionTier !== "NONE") {
+          const amount = user.subscriptionTier === "REGULAR" ? 50.00 : 2000.00;
           const newTx = await prisma.walletTransaction.create({
             data: {
               userId,
@@ -82,7 +82,7 @@ export class PaymentService {
               type: "SUBSCRIPTION",
               executedBy: "SYSTEM",
               status: "COMPLETED",
-              description: `${user.subscriptionTier === "PREMIUM" ? "Premium" : "Enterprise"} Plan Lidmaatschap - Actieve Periode`,
+              description: `${user.subscriptionTier === "REGULAR" ? "Regular" : "Elite"} Plan Lidmaatschap`,
               createdAt: user.createdAt,
             },
           });
@@ -105,17 +105,17 @@ export class PaymentService {
         {
           id: "simulated-inv-1",
           invoiceNr: "RYL-B2D9E14A",
-          amount: 14.95,
+          amount: 50.00,
           status: "COMPLETED",
-          description: "Premium Plan Lidmaatschap - Lopende Maand",
+          description: "Regular Plan Lidmaatschap - Lopende Maand",
           createdAt: new Date("2026-06-01T12:00:00Z").toISOString(),
         },
         {
           id: "simulated-inv-2",
           invoiceNr: "RYL-8C3D129F",
-          amount: 14.95,
+          amount: 50.00,
           status: "COMPLETED",
-          description: "Premium Plan Lidmaatschap - Vorige Maand",
+          description: "Regular Plan Lidmaatschap - Vorige Maand",
           createdAt: new Date("2026-05-01T12:00:00Z").toISOString(),
         }
       ];

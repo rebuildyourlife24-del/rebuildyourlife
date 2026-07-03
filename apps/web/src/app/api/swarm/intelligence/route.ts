@@ -45,7 +45,7 @@ export async function POST(req: Request) {
           }
         } else {
           // Fallback for TRADE, SOCIAL, RYL_DEV
-          rawData = `[MOCK RAW DATA] Trends detected for keyword/target: ${target.target}. High engagement in recent 24h.`;
+          throw new Error(`Data extraction for target type ${target.type} is not yet implemented. Strict policy: No mock data allowed.`);
         }
       } catch (e: any) {
         rawData = `Extraction failed: ${e.message}`;

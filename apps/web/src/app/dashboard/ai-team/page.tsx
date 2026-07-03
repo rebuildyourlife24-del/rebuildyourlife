@@ -6,8 +6,14 @@ import { Network, Terminal, Play, CheckCircle2, AlertTriangle, Activity, Edit2, 
 import { NeuralSwarm } from '@/components/ui/NeuralSwarm';
 import { getAgents, updateAgent } from '@/actions/ai-team';
 import { useCompletion } from '@ai-sdk/react';
+import { useRequireAuth } from '@/lib/auth';
+import { ShieldAlert } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function AITeamPage() {
+  const auth = useRequireAuth();
+  const router = useRouter();
+  
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
@@ -32,8 +38,12 @@ export default function AITeamPage() {
   });
 
   useEffect(() => {
-    fetchAgents();
-  }, []);
+    if (auth.isAuthenticated && (auth.user?.subscriptionTier === 'ELITE' || auth.user?.role === 'SUPER_ADMIN')) {
+      fetchAgents();
+    } else {
+      setLoading(false);
+    }
+  }, [auth.isAuthenticated, auth.user]);
 
   const fetchAgents = async () => {
     const data = await getAgents();
@@ -89,6 +99,24 @@ export default function AITeamPage() {
       </div>
     </div>
   );
+
+  if (auth.user?.subscriptionTier !== 'ELITE' && auth.user?.role !== 'SUPER_ADMIN') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] p-8 text-center bg-black text-white">
+        <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />
+        <h1 className="text-3xl font-bold mb-4">Classified Clearance Required</h1>
+        <p className="text-gray-400 max-w-md mb-8">
+          Jouw huidige clearance level staat de toegang tot de AI Boardroom niet toe. Upgrade naar het <strong>Elite Protocol</strong> om je eigen AI Swarm te ontgrendelen.
+        </p>
+        <button 
+          onClick={() => router.push('/agency')}
+          className="px-6 py-3 bg-red-900/50 hover:bg-red-800/80 text-red-200 border border-red-500/50 rounded-lg transition-colors font-medium"
+        >
+          Upgrade Clearance Level
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[85vh] p-6 text-white font-sans selection:bg-cyan-500/30 selection:text-white">

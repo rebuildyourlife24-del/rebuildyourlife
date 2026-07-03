@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { prisma } from "@rebuildyourlife/database";
 import { env } from "../config/env.js";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./email.service.js";
 import {
   AppError,
   ConflictError,
@@ -88,6 +90,14 @@ export async function register(
       lastName: input.lastName,
     },
   });
+
+  // Generate Email Verification Token (JWT for statelessness)
+  const verifyToken = jwt.sign(
+    { userId: user.id },
+    env.JWT_SECRET as string,
+    { expiresIn: "24h" }
+  );
+  await sendVerificationEmail(user.email, verifyToken);
 
   const jwtPayload: JwtPayload = {
     userId: user.id,
@@ -254,22 +264,64 @@ export async function logout(refreshTokenValue: string) {
   }
 }
 
-export async function verifyEmail(_token: string) {
-  // Stub: email verification via token.
-  // In productie: decodeer verificationToken, zoek user, update isEmailVerified = true.
-  throw new AppError(
-    "E-mailverificatie is nog niet geïmplementeerd.",
-    501,
-    "NOT_IMPLEMENTED",
-  );
+export async function verifyEmail(token: string) {
+  let decoded: any;
+  try {
+    decoded = jwt.verify(token, env.JWT_SECRET as string);
+  } catch (err) {
+    throw new AppError("Ongeldig of verlopen verificatietoken.", 400, "INVALID_TOKEN");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+  if (!user) throw new AppError("Gebruiker niet gevonden.", 404, "USER_NOT_FOUND");
+  if (user.isEmailVerified) return;
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { isEmailVerified: true },
+  });
 }
 
-export async function resetPassword(_email: string) {
-  // Stub: password reset flow.
-  // In productie: genereer resettoken, stuur via SMTP, valideer, update wachtwoord.
-  throw new AppError(
-    "Wachtwoord resetten is nog niet geïmplementeerd.",
-    501,
-    "NOT_IMPLEMENTED",
-  );
+export async function resetPassword(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
+
+  // Always return success to prevent email enumeration
+  if (!user) return;
+
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  await prisma.passwordResetToken.create({
+    data: {
+      userId: user.id,
+      token,
+      expiresAt,
+    },
+  });
+
+  await sendPasswordResetEmail(user.email, token);
+}
+
+export async function confirmPasswordReset(token: string, newPassword: string) {
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { token },
+  });
+
+  if (!resetToken || resetToken.expiresAt < new Date() || resetToken.usedAt) {
+    throw new AppError("Ongeldige of verlopen resetlink.", 400, "INVALID_TOKEN");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: resetToken.userId },
+      data: { passwordHash },
+    }),
+    prisma.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { usedAt: new Date() },
+    }),
+  ]);
 }

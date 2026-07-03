@@ -19,7 +19,7 @@ model User {
   isEmailVerified        Boolean                     @default(false)
   mfaEnabled             Boolean                     @default(false)
   mfaSecret              String?
-  subscriptionTier       String                      @default("FREE")
+  subscriptionTier       String                      @default("NONE")
   clearanceLevel         Int                         @default(1)
   experiencePoints       Int                         @default(0)
   profileType            String                      @default("PERSONAL")
@@ -96,10 +96,9 @@ model User {
   businessModules        UserBusinessModule[]
   adCampaigns            AdCampaign[]
   // Universal OS Relations
-  entitySchemas          EntitySchema[]          @relation("UserEntitySchemas")
-  entityInstances        EntityInstance[]        @relation("UserEntityInstances")
-  businessModels         BusinessModel[]         @relation("UserBusinessModels")
-
+  entitySchemas          EntitySchema[]              @relation("UserEntitySchemas")
+  entityInstances        EntityInstance[]            @relation("UserEntityInstances")
+  businessModels         BusinessModel[]             @relation("UserBusinessModels")
 
   @@index([email])
   @@index([role])
@@ -1129,7 +1128,7 @@ model Course {
   title       String
   description String
   thumbnail   String?
-  tierAccess  String   @default("FREE")
+  tierAccess  String   @default("REGULAR")
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1810,16 +1809,16 @@ model AdCampaign {
 }
 
 model AgentSharedMemory {
-  id            String   @id @default(uuid())
-  sourceAgent   String   // e.g. "CMO", "CEO", "SEO"
-  targetAgent   String?  // Optional, if meant for a specific agent
-  content       String   // The insight or data to share
-  importance    Float    @default(0.5) // 0.0 to 1.0
-  tags          String?  // Comma separated tags
-  status        String   @default("UNREAD") // UNREAD, READ, PROCESSED
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id          String   @id @default(uuid())
+  sourceAgent String // e.g. "CMO", "CEO", "SEO"
+  targetAgent String? // Optional, if meant for a specific agent
+  content     String // The insight or data to share
+  importance  Float    @default(0.5) // 0.0 to 1.0
+  tags        String? // Comma separated tags
+  status      String   @default("UNREAD") // UNREAD, READ, PROCESSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   @@index([sourceAgent])
   @@index([targetAgent])
   @@index([status])
@@ -1827,10 +1826,10 @@ model AgentSharedMemory {
 
 model KnowledgeGraphNode {
   id          String   @id @default(uuid())
-  entityType  String   // e.g. "PRODUCT", "AD_CREATIVE", "COMPETITOR"
-  entityId    String?  // External reference ID
-  properties  String   // JSON payload of properties
-  connections String?  // JSON array of connected node IDs and relationship types
+  entityType  String // e.g. "PRODUCT", "AD_CREATIVE", "COMPETITOR"
+  entityId    String? // External reference ID
+  properties  String // JSON payload of properties
+  connections String? // JSON array of connected node IDs and relationship types
   confidence  Float    @default(1.0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1843,28 +1842,30 @@ model KnowledgeGraphNode {
 // =======================================================
 
 model EntitySchema {
-  id          String   @id @default(uuid())
+  id          String           @id @default(uuid())
   userId      String
   name        String
   description String?
-  fields      Json     // Schema blueprint
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation("UserEntitySchemas", fields: [userId], references: [id], onDelete: Cascade)
+  fields      Json // Schema blueprint
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation("UserEntitySchemas", fields: [userId], references: [id], onDelete: Cascade)
   instances   EntityInstance[]
+
   @@unique([userId, name])
 }
 
 model EntityInstance {
-  id          String       @id @default(uuid())
-  schemaId    String
-  userId      String
-  data        Json         // Actual dynamic data
-  status      String       @default("ACTIVE")
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  schema      EntitySchema @relation(fields: [schemaId], references: [id], onDelete: Cascade)
-  user        User         @relation("UserEntityInstances", fields: [userId], references: [id], onDelete: Cascade)
+  id        String       @id @default(uuid())
+  schemaId  String
+  userId    String
+  data      Json // Actual dynamic data
+  status    String       @default("ACTIVE")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  schema    EntitySchema @relation(fields: [schemaId], references: [id], onDelete: Cascade)
+  user      User         @relation("UserEntityInstances", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([schemaId])
   @@index([userId])
 }
@@ -1874,19 +1875,19 @@ model EntityInstance {
 // =======================================================
 
 model BusinessModel {
-  id              String   @id @default(uuid())
+  id              String                  @id @default(uuid())
   userId          String
-  name            String   // e.g. "SaaS Tier 1", "E-book One-Off", "Consulting Hourly"
-  type            String   // SUBSCRIPTION, ONE_TIME, USAGE_BASED, COMMISSION, ROYALTY, MARKETPLACE
-  pricingStrategy String   // FLAT_RATE, TIERED, PER_UNIT, REVENUE_SHARE
-  currency        String   @default("EUR")
-  basePrice       Float    @default(0)
-  billingCycle    String?  // MONTHLY, YEARLY, WEEKLY (if subscription)
-  commissionRate  Float?   // Percentage (if affiliate/marketplace)
-  metadata        Json?    // Specific limits or rules
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation("UserBusinessModels", fields: [userId], references: [id], onDelete: Cascade)
+  name            String // e.g. "SaaS Tier 1", "E-book One-Off", "Consulting Hourly"
+  type            String // SUBSCRIPTION, ONE_TIME, USAGE_BASED, COMMISSION, ROYALTY, MARKETPLACE
+  pricingStrategy String // FLAT_RATE, TIERED, PER_UNIT, REVENUE_SHARE
+  currency        String                  @default("EUR")
+  basePrice       Float                   @default(0)
+  billingCycle    String? // MONTHLY, YEARLY, WEEKLY (if subscription)
+  commissionRate  Float? // Percentage (if affiliate/marketplace)
+  metadata        Json? // Specific limits or rules
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  user            User                    @relation("UserBusinessModels", fields: [userId], references: [id], onDelete: Cascade)
   transactions    UniversalTransaction[]
   subscriptions   UniversalSubscription[]
 }
@@ -1894,28 +1895,28 @@ model BusinessModel {
 model UniversalTransaction {
   id              String        @id @default(uuid())
   modelId         String
-  userId          String?       // The owner of the business model
-  customerId      String?       // The buyer (can be mapped to a User ID or EntityInstance ID)
+  userId          String? // The owner of the business model
+  customerId      String? // The buyer (can be mapped to a User ID or EntityInstance ID)
   amount          Float
   currency        String        @default("EUR")
   status          String        @default("PENDING") // PENDING, PAID, REFUNDED, FAILED
-  paymentProvider String?       // STRIPE, MOLLIE, PAYPAL, CRYPTO
+  paymentProvider String? // STRIPE, MOLLIE, PAYPAL, CRYPTO
   providerTxId    String?
-  metadata        Json?         // E.g., which EntityInstance was bought
+  metadata        Json? // E.g., which EntityInstance was bought
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   model           BusinessModel @relation(fields: [modelId], references: [id])
 }
 
 model UniversalSubscription {
-  id              String        @id @default(uuid())
-  modelId         String
-  userId          String?
-  customerId      String?
-  status          String        @default("ACTIVE") // ACTIVE, CANCELED, PAST_DUE
-  currentPeriodEnd DateTime
-  cancelAtPeriodEnd Boolean     @default(false)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  model           BusinessModel @relation(fields: [modelId], references: [id])
+  id                String        @id @default(uuid())
+  modelId           String
+  userId            String?
+  customerId        String?
+  status            String        @default("ACTIVE") // ACTIVE, CANCELED, PAST_DUE
+  currentPeriodEnd  DateTime
+  cancelAtPeriodEnd Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  model             BusinessModel @relation(fields: [modelId], references: [id])
 }

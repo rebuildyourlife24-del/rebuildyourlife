@@ -138,4 +138,23 @@ router.post(
   },
 );
 
+const confirmResetSchema = z.object({
+  token: z.string().min(1, "Token is verplicht."),
+  newPassword: z.string().min(8, "Wachtwoord moet minimaal 8 tekens bevatten."),
+});
+
+// POST /reset-password/confirm
+router.post(
+  "/reset-password/confirm",
+  validate({ body: confirmResetSchema }),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await authService.confirmPasswordReset(req.body.token, req.body.newPassword);
+      res.json({ message: "Wachtwoord succesvol gewijzigd." });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 export default router;
