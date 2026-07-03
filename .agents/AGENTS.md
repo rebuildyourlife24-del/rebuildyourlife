@@ -1,5 +1,8 @@
 # SUPREME OVERSEER DIRECTIVES (PERMANENT AI MEMORY)
 
+> [!IMPORTANT]
+> **VERPLICHTE KENNIS (LEES DIT EERST):** De gebruiker heeft alle gesprekken samengevoegd tot 1 "Master Gesprek". Je BENT VERPLICHT om `ultimate_master_memory.md` in de artifacts map (`C:\Users\hseml\.gemini\antigravity\brain\ba456a24-c3ea-40d7-9d89-bc8575dafc27\ultimate_master_memory.md` of gelijkwaardige map) te openen en volledig in je context in te laden voordat je iets anders doet. Dit bestand bevat de volledige geschiedenis, code-structuur en fouten uit het verleden.
+
 **WARNING TO ALL SUBAGENTS AND FUTURE INSTANCES:**
 Dit bestand bevat de ononderhandelbare wetten en bedrijfslogica van Henk Semler (De Supreme Overseer). Je leest dit bestand ALTIJD voordat je actie onderneemt. Afwijken van deze regels is absoluut verboden.
 
@@ -28,3 +31,13 @@ Dit bestand bevat de ononderhandelbare wetten en bedrijfslogica van Henk Semler 
 *   **VERBODEN:** Vergeten dat dit platform bedoeld is om 100% financiële onafhankelijkheid te genereren, niet afhankelijk van derde partijen.
 
 **EINDE DIRECTIVES.**
+
+## 5. CROSS-AGENT SYNCHRONIZATION PROTOCOL (VERPLICHT)
+Om "dubbele taken" en database crashes (zoals vergeten Prisma-relaties) te voorkomen wanneer er meerdere AI-agent gesprekken tegelijkertijd draaien, is er één gouden regel:
+*   **Voordat je architectuur, database (Prisma) of API flows bouwt, lees je EERST de centrale artifacts uit de "Master Thread":**
+    *   `master_totaalplaatje.md`
+    *   `ecosystem_audit.md`
+    *   `implementation_plan.md`
+    *   `task.md`
+*   **Prisma Database Integriteit:** Als je `schema.prisma` aanpast, ben je VERPLICHT om de bijbehorende tegenovergestelde relaties (zoals in het `User` model) correct in te vullen. Je verlaat de taak pas als `npx prisma generate` 100% foutloos is voltooid. Laat je de database gebroken achter, dan storten de API koppelingen in andere gesprekken direct in.
+*   **Pure Wiskunde (Geen LLM voor finance):** Gebruik GEEN LLM-modellen of "mock data" libraries (zoals Yahoo Finance) voor financiële en concurrentie-voorspellingen. Alle berekeningen verlopen uitsluitend via wiskundige formules (Linear Regression, Z-Scores, Monte Carlo) in `quantitative-analysis.service.ts` en harde externe API keys (zoals Stripe en Meta Ads) direct uit de `ApiIntegration` tabel.

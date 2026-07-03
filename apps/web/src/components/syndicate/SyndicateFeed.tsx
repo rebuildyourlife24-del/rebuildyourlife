@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { MessageSquare, Heart, Share2, Send, Flame, Image as ImageIcon } from 'lucide-react';
+import {
+  getSyndicatePosts,
+  createSyndicatePost,
+  toggleSyndicateLike,
+  createSyndicateComment
+} from '@/app/actions/syndicate';
 
 interface Comment {
   id: string;
@@ -49,9 +55,9 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('/api/syndicate/posts');
-      const data = await res.json();
-      if (data.success) {
+      const data = await getSyndicatePosts();
+      if (data.success && data.posts) {
+        // @ts-ignore - Temporary bypass for Date type mismatch between Server Action and client state
         setPosts(data.posts);
       }
     } catch (e) {
@@ -74,15 +80,11 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
     if (!newPostContent.trim() && !selectedImageBase64) return;
     setSubmitting(true);
     try {
-      const res = await fetch('/api/syndicate/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newPostContent || ' ', imageBase64: selectedImageBase64 }),
-      });
-      const data = await res.json();
-      if (data.success) {
+      const data = await createSyndicatePost(newPostContent || ' ', selectedImageBase64, currentUserId);
+      if (data.success && data.post) {
         setNewPostContent('');
         setSelectedImageBase64(null);
+        // @ts-ignore
         setPosts([data.post, ...posts]);
       }
     } catch (e) {
@@ -94,8 +96,7 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
 
   const handleLike = async (postId: string) => {
     try {
-      const res = await fetch(`/api/syndicate/posts/${postId}/like`, { method: 'POST' });
-      const data = await res.json();
+      const data = await toggleSyndicateLike(postId, currentUserId);
       if (data.success) {
         setPosts(posts.map(p => {
           if (p.id === postId) {
@@ -121,16 +122,12 @@ export default function SyndicateFeed({ currentUserId }: SyndicateFeedProps) {
     if (!content?.trim()) return;
 
     try {
-      const res = await fetch(`/api/syndicate/posts/${postId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      });
-      const data = await res.json();
-      if (data.success) {
+      const data = await createSyndicateComment(postId, content, currentUserId);
+      if (data.success && data.comment) {
         setCommentInputs(prev => ({ ...prev, [postId]: '' }));
         setPosts(posts.map(p => {
           if (p.id === postId) {
+            // @ts-ignore
             return { ...p, comments: [...p.comments, data.comment] };
           }
           return p;

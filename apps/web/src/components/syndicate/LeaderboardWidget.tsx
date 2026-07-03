@@ -17,18 +17,20 @@ export default function LeaderboardWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/syndicate/leaderboard')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
+    async function loadLeaderboard() {
+      try {
+        const { getTopSyndicateUsers } = await import('@/app/actions/syndicate');
+        const data = await getTopSyndicateUsers();
+        if (data.success && data.leaderboard) {
           setUsers(data.leaderboard);
         }
+      } catch (error) {
+        console.error(error);
+      } finally {
         setLoading(false);
-      })
-      .catch(e => {
-        console.error(e);
-        setLoading(false);
-      });
+      }
+    }
+    loadLeaderboard();
   }, []);
 
   const getRankColor = (index: number) => {

@@ -19,6 +19,16 @@ export async function POST(req: Request) {
       return new Response('Agent not found', { status: 404 });
     }
 
+    // RAG: Haal Corporate Memory (Enterprise Documents) op
+    const corporateMemory = await prisma.enterpriseDocument.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const memoryContext = corporateMemory.length > 0 
+      ? `\n\n--- ENTERPRISE DATA ROOM (JOUW KENNISBANK) ---\n${corporateMemory.map(doc => `[${doc.title}]: ${doc.content}`).join('\n\n')}\n------------------------------------------\nGebruik bovenstaande bedrijfsregels en data in je antwoorden.`
+      : '';
+
     const systemPrompt = `
 Je bent een autonome agent werkzaam binnen The Sovereign Grid (Rebuild Your Life).
 Identiteit: ${agent.name}
@@ -28,6 +38,7 @@ Kern Richtlijn: ${agent.systemPrompt}
 
 Je spreekt altijd Nederlands en je spreekt de gebruiker aan met "Creator" of "Baas". 
 Wees direct, bondig en resultaatgericht. Geef geen introducties zoals "Hier is het antwoord:"
+${memoryContext}
 `;
 
     // Gebruik Llama 3 via Groq voor belachelijk snelle streaming

@@ -37,7 +37,11 @@ import {
   CreditCard,
   Building,
   MessageSquare,
-  ActivitySquare
+  ActivitySquare,
+  MousePointerClick,
+  Mail,
+  LifeBuoy,
+  Target
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -71,6 +75,16 @@ const getGroupedNavItems = (user: any) => {
         { label: 'Social & Marketing', href: '/dashboard/social', icon: <MessageSquare size={16} /> },
         { label: 'SaaS & Enterprise', href: '/dashboard/enterprise', icon: <Building size={16} /> },
         { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> }
+      ]
+    },
+    {
+      id: 'sovereign',
+      label: 'Sovereign OS',
+      items: [
+        { label: 'Funnel Builder', href: '/dashboard/funnels', icon: <MousePointerClick size={16} /> },
+        { label: 'E-mail Marketing', href: '/dashboard/marketing/email', icon: <Mail size={16} /> },
+        { label: 'Helpdesk', href: '/dashboard/support', icon: <LifeBuoy size={16} /> },
+        { label: 'Ad-Manager', href: '/dashboard/marketing/ads', icon: <Target size={16} /> }
       ]
     },
     {

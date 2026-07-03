@@ -1,13 +1,12 @@
 {
-  "buildCommand": "npx turbo run build --filter=@rebuildyourlife/web",
-  "outputDirectory": "apps/web/.next",
-  "ignoreCommand": "exit 1",
-  "framework": "nextjs",
-  "regions": ["iad1"],
   "crons": [
     {
-      "path": "/api/hermes/learn",
-      "schedule": "0 0 * * *"
+      "path": "/api/cron/oracle",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/treasury",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

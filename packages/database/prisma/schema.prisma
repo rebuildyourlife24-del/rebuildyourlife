@@ -95,6 +95,10 @@ model User {
   quizResults            UserQuizResult[]
   businessModules        UserBusinessModule[]
   adCampaigns            AdCampaign[]
+  funnels                Funnel[]
+  subscribers            Subscriber[]
+  emailCampaigns         EmailCampaign[]
+  helpdeskTickets        HelpdeskTicket[]
   // Universal OS Relations
   entitySchemas          EntitySchema[]              @relation("UserEntitySchemas")
   entityInstances        EntityInstance[]            @relation("UserEntityInstances")
@@ -678,6 +682,7 @@ model SocialCampaign {
   createdAt    DateTime                  @default(now())
   updatedAt    DateTime                  @updatedAt
   platform     SocialPlatformIntegration @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  adSets       AdSet[]
 
   @@index([platformId])
   @@index([status])
@@ -1922,3 +1927,153 @@ model UniversalSubscription {
   updatedAt         DateTime      @updatedAt
   model             BusinessModel @relation(fields: [modelId], references: [id])
 }
+
+// =======================================================
+// PROJECT SOVEREIGN: PILLAR 1 & 2
+// Funnels, Checkouts & Native Email Marketing
+// =======================================================
+
+model Funnel {
+  id          String       @id @default(uuid())
+  userId      String
+  name        String
+  domain      String?      @unique
+  status      String       @default("DRAFT") // DRAFT, PUBLISHED
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  pages       FunnelPage[]
+  checkouts   CheckoutSession[]
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model FunnelPage {
+  id        String   @id @default(uuid())
+  funnelId  String
+  slug      String
+  html      String   @db.Text
+  css       String?  @db.Text
+  isAboTest Boolean  @default(false)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  funnel    Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@unique([funnelId, slug])
+}
+
+model CheckoutSession {
+  id              String   @id @default(uuid())
+  funnelId        String
+  customerId      String?
+  amount          Float
+  status          String   @default("OPEN") // OPEN, COMPLETED, ABANDONED
+  paymentProvider String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  funnel          Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@index([funnelId])
+}
+
+model Subscriber {
+  id        String          @id @default(uuid())
+  userId    String
+  email     String
+  firstName String?
+  lastName  String?
+  status    String          @default("SUBSCRIBED") // SUBSCRIBED, UNSUBSCRIBED, BOUNCED
+  tags      String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email])
+}
+
+model EmailCampaign {
+  id           String   @id @default(uuid())
+  userId       String
+  name         String
+  subject      String
+  htmlContent  String   @db.Text
+  status       String   @default("DRAFT") // DRAFT, SCHEDULED, SENT
+  scheduledFor DateTime?
+  sentCount    Int      @default(0)
+  openCount    Int      @default(0)
+  clickCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// =======================================================
+// PROJECT SOVEREIGN: PILLAR 3 & 4
+// Helpdesk & Native Ad Manager
+// =======================================================
+
+model HelpdeskTicket {
+  id          String   @id @default(uuid())
+  userId      String
+  customerName String
+  customerEmail String
+  subject     String
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  assignedTo  String?  // 'ORION', 'HERMES', or UUID of a User
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  messages    TicketMessage[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  sender    String   // 'CUSTOMER', 'AGENT', 'AI'
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  ticket    HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+}
+
+model AdSet {
+  id           String   @id @default(uuid())
+  campaignId   String
+  name         String
+  targetAudience String?
+  dailyBudget  Float    @default(0)
+  status       String   @default("ACTIVE") // ACTIVE, PAUSED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  campaign     SocialCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  creatives    AdCreative[]
+
+  @@index([campaignId])
+}
+
+model AdCreative {
+  id           String   @id @default(uuid())
+  adSetId      String
+  headline     String
+  body         String   @db.Text
+  mediaUrl     String?
+  status       String   @default("ACTIVE")
+  impressions  Int      @default(0)
+  clicks       Int      @default(0)
+  spend        Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  adSet        AdSet    @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+
+  @@index([adSetId])
+}
+
+

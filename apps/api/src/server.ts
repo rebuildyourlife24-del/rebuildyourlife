@@ -12,7 +12,7 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: ['https://rebuildyourlife.eu', 'https://henksemler.io', 'https://henksemler.nl', 'http://localhost:3000', 'http://localhost:3001'],
+  origin: ['https://rebuildyourlife.eu', 'https://ai-henksemler.nl', 'http://localhost:3000', 'http://localhost:3001'],
   credentials: true
 }));
 app.use(compression());
