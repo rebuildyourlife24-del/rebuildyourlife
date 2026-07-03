@@ -1,11 +1,53 @@
-"use client";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { AgentChatInterface } from "@/components/AgentChatInterface";
 import { Brain } from "lucide-react";
 
-export default function CEOPage() {
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
+
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ryl_session")?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+export default async function CEOPage() {
+  const userId = await getAuthenticatedUser();
+  let contextData = "Geen bedrijfsdoelen of systeem logs gevonden.";
+
+  if (userId) {
+    // Haal actieve bedrijfsdoelen op
+    const goals = await prisma.goal.findMany({
+      where: { userId, status: { not: 'COMPLETED' } },
+      take: 5
+    });
+
+    // Haal systeem errors of waarschuwingen op (COO / System overview)
+    const systemLogs = await prisma.systemHealthLog.findMany({
+      where: { status: { not: 'HEALTHY' } },
+      orderBy: { createdAt: 'desc' },
+      take: 3
+    });
+
+    contextData = `
+    Huidige Actieve Doelen:
+    ${goals.length > 0 ? goals.map(g => `- ${g.title} (Status: ${g.status}, Progress: ${g.progress}%)`).join('\n') : 'Geen actieve doelen.'}
+    
+    Recente Systeem Waarschuwingen:
+    ${systemLogs.length > 0 ? systemLogs.map(l => `- ${l.component}: ${l.status} (${l.errorLog || 'Geen details'})`).join('\n') : 'Alle systemen functioneren optimaal.'}
+    `;
+  }
+
   return (
     <AgentChatInterface
-      agentId="ORION"
+      agentId="CEO"
       agentName="CEO Agent"
       agentRole="Growth & Strategy"
       agentDescription="Sparringpartner voor de grote lijnen, schaalbaarheid en bedrijfsstructuur."
@@ -19,6 +61,7 @@ export default function CEOPage() {
         { label: "Team Expansie", text: "Op welk moment moet ik een manager of extra personeel aannemen om de dagelijkse brandjes te blussen?" }
       ]}
       themeColor="text-indigo-400"
+      contextData={contextData}
     />
   );
 }

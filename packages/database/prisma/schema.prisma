@@ -581,6 +581,8 @@ model AgentAction {
   id               String    @id @default(uuid())
   userId           String
   agentType        String
+  actionType       String?
+  resultData       Json?
   title            String
   description      String
   status           String    @default("PENDING")

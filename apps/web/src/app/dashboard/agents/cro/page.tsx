@@ -24,6 +24,17 @@ export default async function CROPage() {
   const user = await getAuthenticatedUser();
   if (!user) redirect("/auth/login");
 
+    const recentActions = await prisma.agentAction.findMany({
+      where: { userId: user.id, agentType: 'CRO' },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    });
+
+    const contextData = `
+    RECENTE CRO ACTIES:
+    ${recentActions.length > 0 ? recentActions.map(a => `- ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente CRO acties in de database.'}
+    `;
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[calc(100vh-6rem)]">
       {/* Links: The Vision Scanner (Takes 1 column) */}
@@ -32,15 +43,24 @@ export default async function CROPage() {
         
         {/* Additional CRO metrics could go here in the future */}
         <div className="bg-slate-900 border border-white/10 rounded-2xl p-6">
-          <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4">Laatste A/B Testen</h4>
-          <p className="text-sm text-slate-500">Geen actieve testen gevonden in Shopify.</p>
+          <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4">Recente CRO Acties</h4>
+          <ul className="text-sm text-slate-400 space-y-2">
+            {recentActions.length === 0 && <li>Geen CRO acties in database.</li>}
+            {recentActions.map(action => (
+              <li key={action.id} className="border-b border-white/5 pb-2 last:border-0">
+                <span className="text-white">{action.actionType}</span> ({action.status})<br/>
+                <span className="text-xs text-slate-500 truncate block mt-1">{action.resultData}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
       {/* Rechts: De Chat Interface (Takes 2 columns) */}
       <div className="xl:col-span-2 h-full">
         <AgentChatInterface
-          agentId="HERMES"
+          agentId="CRO"
+          contextData={contextData}
           agentName="CRO Agent"
           agentRole="Conversion Rate Optimizer"
           agentDescription="Geobsedeerd door het verhogen van het percentage bezoekers dat koper wordt (A/B testen, funnels, webdesign feedback)."

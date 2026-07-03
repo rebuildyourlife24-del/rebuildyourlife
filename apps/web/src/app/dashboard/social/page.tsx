@@ -1,11 +1,17 @@
 import { prisma } from '@rebuildyourlife/database';
 import { MessageSquare, BarChart, Tv, Smartphone } from 'lucide-react';
+import ContentPlanner from './ContentPlanner';
 
 export default async function SocialPage() {
   const platforms = await prisma.socialPlatformIntegration.findMany({
     include: {
       campaigns: true
     }
+  });
+
+  const posts = await prisma.socialMediaPost.findMany({
+    orderBy: { publishAt: 'desc' },
+    take: 20
   });
 
   return (
@@ -93,6 +99,15 @@ export default async function SocialPage() {
           ))
         )}
       </div>
+
+      {/* Organic Content Planner */}
+      <ContentPlanner initialPosts={posts.map(p => ({
+        id: p.id,
+        platform: p.platform,
+        content: p.content,
+        status: p.status,
+        publishAt: p.publishAt.toISOString(),
+      }))} />
     </div>
   );
 }

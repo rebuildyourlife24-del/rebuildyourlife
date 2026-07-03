@@ -1,11 +1,43 @@
-"use client";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { AgentChatInterface } from "@/components/AgentChatInterface";
 import { Activity } from "lucide-react";
 
-export default function CMOPage() {
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
+
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ryl_session")?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+export default async function CMOPage() {
+  const userId = await getAuthenticatedUser();
+  let contextData = "Geen marketing campagnes gevonden.";
+
+  if (userId) {
+    // Haal actieve advertentiecampagnes op
+    const campaigns = await prisma.socialCampaign.findMany({
+      where: { userId, status: 'ACTIVE' },
+      take: 5
+    });
+
+    contextData = `
+    ACTIEVE MARKETING CAMPAGNES:
+    ${campaigns.length > 0 ? campaigns.map(c => `- ${c.platform} | Doel: ${c.goal} | Budget: €${c.budget} | Besteed: €${c.spend}`).join('\n') : 'Er draaien momenteel geen actieve marketing campagnes.'}
+    `;
+  }
+
   return (
     <AgentChatInterface
-      agentId="HERMES"
+      agentId="CMO"
       agentName="CMO Agent"
       agentRole="Marketing & Acquisition"
       agentDescription="Verantwoordelijk voor de gehele marketingstrategie en conversie."
@@ -19,6 +51,7 @@ export default function CMOPage() {
         { label: "Concurrentie Analyse", text: "Hoe ontleed ik de marketingfunnel van mijn grootste concurrent en pak ik hun blinde vlekken aan?" }
       ]}
       themeColor="text-rose-400"
+      contextData={contextData}
     />
   );
 }

@@ -1,11 +1,44 @@
-"use client";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { AgentChatInterface } from "@/components/AgentChatInterface";
 import { Network } from "lucide-react";
 
-export default function COOPage() {
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
+
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ryl_session")?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+export default async function COOPage() {
+  const userId = await getAuthenticatedUser();
+  let contextData = "Geen operationele data gevonden.";
+
+  if (userId) {
+    // Haal recente agent acties op (operaties)
+    const recentActions = await prisma.agentAction.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
+
+    contextData = `
+    RECENTE OPERATIONELE ACTIES (AUTOMATISERING):
+    ${recentActions.length > 0 ? recentActions.map(a => `- ${a.agentType}: ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente automatiseringsacties gedetecteerd.'}
+    `;
+  }
+
   return (
     <AgentChatInterface
-      agentId="HERMES"
+      agentId="COO"
       agentName="COO Agent"
       agentRole="Systems & Operations"
       agentDescription="Optimaliseert interne processen en koppelt tools aan elkaar om tijd te besparen."
@@ -19,6 +52,7 @@ export default function COOPage() {
         { label: "Knelpunten Detecteren", text: "Waar liggen volgens jou de grootste operationele knelpunten bij een bedrijf dat snel van 10k naar 50k p/m schaalt?" }
       ]}
       themeColor="text-amber-400"
+      contextData={contextData}
     />
   );
 }

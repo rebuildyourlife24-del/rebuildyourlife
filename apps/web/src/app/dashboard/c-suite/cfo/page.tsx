@@ -1,11 +1,54 @@
-"use client";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { AgentChatInterface } from "@/components/AgentChatInterface";
 import { Briefcase } from "lucide-react";
 
-export default function CFOPage() {
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
+
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ryl_session")?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+export default async function CFOPage() {
+  const userId = await getAuthenticatedUser();
+  let contextData = "Geen financiële data gevonden.";
+
+  if (userId) {
+    // Haal financiële snapshots op
+    const revenueStats = await prisma.revenueSnapshot.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 1
+    });
+
+    // Haal Treasury Vaults op (spaarrekeningen/reserves)
+    const vaults = await prisma.treasuryVault.findMany({
+      where: { userId }
+    });
+
+    const recentSnapshot = revenueStats[0];
+
+    contextData = `
+    LAATSTE FINANCIELE SNAPSHOT:
+    ${recentSnapshot ? `Omzet: €${recentSnapshot.revenue}, Winst: €${recentSnapshot.profit}, ROAS: ${recentSnapshot.roas}x` : 'Geen omzetdata beschikbaar.'}
+    
+    TREASURY VAULTS (RESERVES):
+    ${vaults.length > 0 ? vaults.map(v => `- ${v.name}: €${v.balance}`).join('\n') : 'Geen actieve vaults/reserves.'}
+    `;
+  }
+
   return (
     <AgentChatInterface
-      agentId="ORION"
+      agentId="CFO"
       agentName="CFO Agent"
       agentRole="Profit & Capital"
       agentDescription="Focus op marges, kostenreductie en cashflow optimalisatie."
@@ -19,6 +62,7 @@ export default function CFOPage() {
         { label: "Bedrijfsvorm (BV)", text: "Vanaf welke winst is het fiscaal aantrekkelijk om over te stappen van een eenmanszaak naar een BV structuur?" }
       ]}
       themeColor="text-emerald-400"
+      contextData={contextData}
     />
   );
 }

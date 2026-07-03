@@ -1,11 +1,43 @@
-"use client";
+import { prisma } from '@rebuildyourlife/database';
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { AgentChatInterface } from "@/components/AgentChatInterface";
 import { Terminal } from "lucide-react";
 
-export default function CopywriterPage() {
+const JWT_SECRET = process.env.JWT_SECRET! || "fallback";
+
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ryl_session")?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+export default async function CopywriterPage() {
+  const userId = await getAuthenticatedUser();
+  let contextData = "Geen copywriting acties gevonden.";
+
+  if (userId) {
+    const recentActions = await prisma.agentAction.findMany({
+      where: { userId, agentType: 'COPYWRITER' },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
+
+    contextData = `
+    RECENTE COPYWRITING ACTIES:
+    ${recentActions.length > 0 ? recentActions.map(a => `- ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente copy acties in de database.'}
+    `;
+  }
+
   return (
     <AgentChatInterface
-      agentId="HERMES"
+      agentId="COPYWRITER"
       agentName="Copywriter Agent"
       agentRole="Sales & Content Wordsmith"
       agentDescription="Schrijft verkoopteksten, advertentie-copy, en e-mail funnels die converteren."
@@ -19,6 +51,7 @@ export default function CopywriterPage() {
         { label: "Overtuigen", text: "Wat is de 'PAS' (Problem-Agitate-Solve) formule en hoe pas ik die toe op mijn landingspagina?" }
       ]}
       themeColor="text-orange-400"
+      contextData={contextData}
     />
   );
 }

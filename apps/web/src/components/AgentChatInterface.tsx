@@ -13,13 +13,14 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 
 interface AgentChatInterfaceProps {
-  agentId: "HERMES" | "ORION"; 
+  agentId: "HERMES" | "ORION" | "CEO" | "CFO" | "CMO" | "COO"; 
   agentName: string;
   agentRole: string;
   agentDescription: string;
   icon: React.ReactNode;
   suggestedPrompts: { label: string; text: string }[];
   themeColor: string; 
+  contextData?: string;
 }
 
 interface Conversation {
@@ -135,7 +136,8 @@ export function AgentChatInterface({
     if (!customMessage) setInputValue("");
 
     try {
-      const roleInstruction = `[SYSTEM: You are acting as ${agentName}, the ${agentRole}. Limit your responses to your domain of expertise: ${agentDescription}] `;
+      const roleInstruction = `[SYSTEM: You are acting as ${agentName}, the ${agentRole}. Limit your responses to your domain of expertise: ${agentDescription}]
+      ${contextData ? `[LIVE DATABASE CONTEXT: ${contextData}]` : ''} `;
       const messageWithRole = roleInstruction + textToSend;
 
       const result = await sendAIMessageAction(agentId, messageWithRole, activeConvId || undefined);

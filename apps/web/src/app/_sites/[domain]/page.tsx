@@ -78,9 +78,9 @@ export default async function SitePage({ params }: SitePageProps) {
           </div>
           
           <div className="hidden md:flex items-center gap-8 text-sm font-bold tracking-widest text-zinc-400 uppercase">
-            <a href="#" className="hover:text-white transition-colors">Collectie</a>
-            <a href="#" className="hover:text-white transition-colors">Over Ons</a>
-            <a href="#" className="hover:text-white transition-colors">Support</a>
+            <a href="/coming-soon" className="hover:text-white transition-colors">Collectie</a>
+            <a href="/coming-soon" className="hover:text-white transition-colors">Over Ons</a>
+            <a href="/coming-soon" className="hover:text-white transition-colors">Support</a>
           </div>
 
           <div className="flex items-center gap-6">
@@ -202,16 +202,16 @@ export default async function SitePage({ params }: SitePageProps) {
           <div>
             <h4 className="font-bold uppercase tracking-widest mb-6 text-sm text-zinc-300">Klantenservice</h4>
             <ul className="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" className="hover:text-white transition-colors">Verzending & Retour</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/coming-soon" className="hover:text-white transition-colors">Verzending & Retour</a></li>
+              <li><a href="/coming-soon" className="hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="/coming-soon" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold uppercase tracking-widest mb-6 text-sm text-zinc-300">Juridisch</h4>
             <ul className="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" className="hover:text-white transition-colors">Privacybeleid</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Algemene Voorwaarden</a></li>
+              <li><a href="/coming-soon" className="hover:text-white transition-colors">Privacybeleid</a></li>
+              <li><a href="/coming-soon" className="hover:text-white transition-colors">Algemene Voorwaarden</a></li>
             </ul>
           </div>
         </div>
