@@ -193,6 +193,12 @@ Rebuild Your Life.
           >
             System Integrations
           </Link>
+          <Link 
+            href="/dashboard/settings/business-rules" 
+            className="rounded-lg bg-emerald-900/30 px-4 py-2 text-xs font-mono font-bold uppercase text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/50 transition-colors border border-emerald-900/50"
+          >
+            Business Rules
+          </Link>
         </div>
       </div>
 
