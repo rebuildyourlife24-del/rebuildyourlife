@@ -38,6 +38,8 @@ model User {
   stripeSubscriptionId   String?                     @unique
   lastActiveAt           DateTime?                   @default(now())
   lastPingSentAt         DateTime?
+  telegramChatId         String?                     @unique
+  telegramConnectToken   String?                     @unique
   mollieAccessToken      String?
   mollieOrganizationId   String?
   mollieRefreshToken     String?

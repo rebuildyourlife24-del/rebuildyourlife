@@ -45,7 +45,8 @@ import {
   Monitor,
   Send,
   Newspaper,
-  Bot
+  Bot,
+  Link2
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -116,12 +117,12 @@ const getGroupedNavItems = (user: any) => {
     },
     {
       id: 'system',
-      label: 'System & Life',
+      label: 'System & Admin',
       items: [
-        { label: 'Vitaliteit & Doelen', href: '/dashboard/vitality', icon: <Heart size={16} /> },
-        { label: 'RYL Academy', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
-        { label: 'Orion AI Coach', href: '/dashboard/ai-assistant', icon: <Brain size={16} /> },
-        { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
+        { label: 'Integrations (Telegram)', href: '/dashboard/settings/telegram', icon: <Link2 size={16} /> },
+        { label: 'Databases', href: '/dashboard/databases', icon: <Database size={16} /> },
+        { label: 'Security & Access', href: '/dashboard/security', icon: <Shield size={16} /> },
+        { label: 'Platform Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
       ]
     }
   ];
