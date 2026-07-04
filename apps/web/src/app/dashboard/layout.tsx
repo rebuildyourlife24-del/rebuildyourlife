@@ -69,7 +69,8 @@ const getGroupedNavItems = (user: any) => {
         { label: 'Treasury Vault', href: '/dashboard/finance', icon: <Briefcase size={16} /> },
         { label: 'Bank & Transacties', href: '/dashboard/finance/banking', icon: <CreditCard size={16} /> },
         { label: 'Schulden & Budget', href: '/dashboard/finance/debts', icon: <Layers size={16} /> },
-        { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> }
+        { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> },
+        { label: 'Mijn Abonnement', href: '/dashboard/billing', icon: <Shield size={16} /> }
       ]
     },
     {
