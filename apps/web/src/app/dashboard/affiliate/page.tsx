@@ -1,10 +1,17 @@
 import { prisma } from '@rebuildyourlife/database';
 import { Network, Link as LinkIcon, DollarSign, Users, ExternalLink, Activity } from 'lucide-react';
+import { getSessionAction } from '@/app/actions/auth';
+import { createAffiliateProfileAction } from '@/app/actions/affiliate';
+import { redirect } from 'next/navigation';
 
 export default async function AffiliateDashboardPage() {
-  // In production, get user from session. Mocking ID for now or using first user.
-  // We'll just fetch all for demonstration if no user is provided, or pick the first active affiliate.
-  const affiliate = await prisma.affiliateProfile.findFirst({
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) {
+    redirect('/login');
+  }
+
+  const affiliate = await prisma.affiliateProfile.findUnique({
+    where: { userId: session.user.id },
     include: {
       user: true,
       clicks: { orderBy: { clickedAt: 'desc' }, take: 10 },
@@ -31,9 +38,11 @@ export default async function AffiliateDashboardPage() {
           <Network className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-white uppercase tracking-widest">Word een Partner</h3>
           <p className="text-zinc-500 mt-2 mb-6">Je hebt nog geen affiliate account. Genereer je unieke code en start met bouwen.</p>
-          <button className="bg-purple-600 hover:bg-purple-500 text-white font-bold uppercase tracking-widest px-8 py-3 rounded-lg transition-colors">
-            Genereer Partner Link
-          </button>
+          <form action={createAffiliateProfileAction}>
+            <button type="submit" className="bg-purple-600 hover:bg-purple-500 text-white font-bold uppercase tracking-widest px-8 py-3 rounded-lg transition-colors">
+              Genereer Partner Link
+            </button>
+          </form>
         </div>
       ) : (
         <>

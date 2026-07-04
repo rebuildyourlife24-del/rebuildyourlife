@@ -2,15 +2,19 @@
 
 import { prisma } from '@rebuildyourlife/database';
 import { revalidatePath } from 'next/cache';
-
-// Using a hardcoded ID for now since we are simulating auth in the actions
-const DEMO_USER_ID = "dummy-user-id";
+import { getSessionAction } from './auth';
 
 export async function createCRMClientAction(data: { name: string, email: string, phone: string, company: string }) {
   try {
+    const session = await getSessionAction();
+    if (!session?.success || !session?.user?.id) {
+      throw new Error("Niet ingelogd");
+    }
+    const userId = session.user.id;
+
     const client = await prisma.businessClient.create({
       data: {
-        userId: DEMO_USER_ID,
+        userId,
         name: data.name,
         email: data.email || null,
         phone: data.phone || null,
@@ -29,12 +33,18 @@ export async function createCRMClientAction(data: { name: string, email: string,
 
 export async function createCRMInvoiceAction(data: { clientId: string, amount: number, description: string }) {
   try {
-    const invoiceCount = await prisma.businessInvoice.count({ where: { userId: DEMO_USER_ID } });
+    const session = await getSessionAction();
+    if (!session?.success || !session?.user?.id) {
+      throw new Error("Niet ingelogd");
+    }
+    const userId = session.user.id;
+
+    const invoiceCount = await prisma.businessInvoice.count({ where: { userId } });
     const invoiceNr = `INV-${new Date().getFullYear()}-${(invoiceCount + 1).toString().padStart(4, '0')}`;
 
     const invoice = await prisma.businessInvoice.create({
       data: {
-        userId: DEMO_USER_ID,
+        userId,
         clientId: data.clientId,
         invoiceNr,
         description: data.description,

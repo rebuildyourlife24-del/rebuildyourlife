@@ -1,9 +1,19 @@
 import { prisma } from '@rebuildyourlife/database';
 import { Users } from 'lucide-react';
 import CRMClientList from './CRMClientList';
+import { getSessionAction } from '@/app/actions/auth';
+import { redirect } from 'next/navigation';
 
 export default async function CRMPage() {
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) {
+    redirect('/login');
+  }
+
   const clients = await prisma.businessClient.findMany({
+    where: {
+      userId: session.user.id
+    },
     include: {
       invoices: {
         orderBy: { createdAt: 'desc' }
@@ -19,7 +29,7 @@ export default async function CRMPage() {
           <Users className="w-8 h-8 text-cyan-500" />
           CRM & Facturatie
         </h1>
-        <p className="text-zinc-400 font-mono text-sm">Beheer je B2B klanten, leads en facturen. Gekoppeld aan de database.</p>
+        <p className="text-zinc-400 font-mono text-sm">Beheer je B2B klanten, leads en facturen. Gekoppeld aan je account.</p>
       </div>
 
       <CRMClientList initialClients={clients} />
