@@ -60,30 +60,34 @@ const getGroupedNavItems = (user: any) => {
     },
     {
       id: 'finance',
-      label: 'Finance & Admin',
+      label: 'Zakelijk & Finance',
       items: [
         { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> },
-        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> },
-        { label: 'Mijn Abonnement', href: '/dashboard/billing', icon: <Shield size={16} /> }
+        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> }
       ]
     },
     {
-      id: 'machines',
-      label: 'AI Machines',
+      id: 'agents',
+      label: 'AI Agents (Autonoom)',
       items: [
-        { label: 'E-Commerce Agent (Shopify)', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> },
-        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Activity size={16} /> },
-        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
+        { label: 'Shopify E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <Bot size={16} /> }
+      ]
+    },
+    {
+      id: 'tools',
+      label: 'AI Tools (Marketing)',
+      items: [
+        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Search size={16} /> },
+        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Mail size={16} /> },
         { label: 'Viral Video Scripts', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> }
       ]
     },
     {
       id: 'system',
-      label: 'System & Admin',
+      label: 'Systeem & Admin',
       items: [
-        { label: 'API Integraties', href: '/dashboard/settings', icon: <Settings size={16} /> },
-        { label: 'Telegram Notificaties', href: '/dashboard/settings/telegram', icon: <Link2 size={16} /> },
-        { label: 'Helpdesk', href: '/dashboard/support', icon: <LifeBuoy size={16} /> }
+        { label: 'Instellingen & Billing', href: '/dashboard/settings', icon: <Settings size={16} /> },
+        { label: 'Helpdesk & Support', href: '/dashboard/support', icon: <LifeBuoy size={16} /> }
       ]
     }
   ];
@@ -152,12 +156,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    sovereign: true,
-    capital: true,
-    syndicate: false,
-    vitality: false,
+    boardroom: true,
+    finance: true,
+    agents: true,
+    tools: true,
     system: false,
-    machines: true,
   });
 
   const [activeProject, setActiveProject] = useState<any>("holding");
