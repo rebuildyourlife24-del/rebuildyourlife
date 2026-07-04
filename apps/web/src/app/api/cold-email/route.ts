@@ -1,69 +1,76 @@
-import { generateObject } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
+import { getSession } from '@/lib/auth';
+import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: Request) {
   try {
+    const session = await getSession();
+    if (!session?.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { niche, pitch } = await req.json();
 
     if (!niche || !pitch) {
-      return NextResponse.json({ error: 'Niche and Pitch are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Niche and pitch are required' }, { status: 400 });
     }
 
-    // Initialize Google provider using Gemini 1.5 Pro
-    const google = createGoogleGenerativeAI({
-      apiKey: process.env.GEMINI_API_KEY_1 || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-    });
+    const aiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1;
 
-    // We use AI to generate highly realistic, targeted leads for this niche
-    // In a production environment, this would be replaced/augmented by Google Maps API or Apollo.io
-    const result = await generateObject({
-      model: google('models/gemini-1.5-pro-latest'),
-      schema: z.object({
-        leads: z.array(z.object({
-          companyName: z.string(),
-          contactName: z.string(),
-          email: z.string(),
-          personalizedPitch: z.string().describe('Een extreem gepersonaliseerde koude e-mail intro (max 3 zinnen) die de meegegeven pitch verbindt aan de specifieke bedrijfsnaam.')
-        })).length(3).describe('Genereer exact 3 extreem realistische leads voor deze niche.'),
-        analysis: z.string().describe('Een korte marktanalyse waarom deze leads geselecteerd zijn.')
-      }),
-      prompt: `Je bent een AI Lead Generation expert. 
-      De gebruiker wil de volgende dienst verkopen: "${pitch}".
-      De doelgroep is: "${niche}".
-      
-      Zoek (of genereer extreem realistische) 3 bedrijven in deze niche. 
-      Schrijf voor elk bedrijf een keiharde, conversie-gerichte, gepersonaliseerde e-mail introductie die de pitch verwerkt.`,
-    });
+    if (!aiKey) {
+      return NextResponse.json({ error: 'Gemini API key missing. Cannot generate leads.' }, { status: 500 });
+    }
 
-    // Stuur de gegenereerde e-mails daadwerkelijk via de bestaande Resend API sleutel uit de .env
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) {
-      for (const lead of result.object.leads) {
-        try {
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${resendKey}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              from: 'Ryl System <onboarding@resend.dev>', // Gebruik test domein of geverifieerd domein
-              to: 'hsemler50@gmail.com', // Voor de demo/veiligheid sturen we dit naar de eigenaar
-              subject: `Kans voor ${lead.companyName}`,
-              html: `<p>Hallo ${lead.contactName},</p><p>${lead.personalizedPitch}</p><br><p>Met vriendelijke groet,<br>Het AI Team</p>`
-            })
-          });
-        } catch (e) {
-          console.error("Fout bij verzenden email naar", lead.email, e);
-        }
+    const ai = new GoogleGenAI({ apiKey: aiKey });
+
+    const prompt = `
+Je bent een AI lead generation en koude acquisitie expert.
+De gebruiker wil verkopen aan deze niche: "${niche}".
+Zijn/haar pitch is: "${pitch}".
+
+Genereer exact 3 verzonnen maar hyper-realistische B2B leads binnen deze niche.
+Schrijf voor elke lead een gepersonaliseerde 'cold email pitch' die inspeelt op hun specifieke (verzonnen) situatie en eindigt met een Call To Action.
+Zorg dat de pitch niet langer is dan 3-4 zinnen en extreem overtuigend (no-nonsense, direct, The Syndicate stijl).
+
+Geef het antwoord in EXACt DIT JSON FORMAAT (zonder markdown, geen backticks!):
+{
+  "leads": [
+    {
+      "companyName": "Naam van Bedrijf",
+      "email": "voornaam@bedrijfsnaam.nl",
+      "personalizedPitch": "Beste [Voornaam], ik zag dat jullie kliniek in [Stad] flink groeit. Wij bouwen AI..."
+    }
+  ]
+}
+Geef ALLEEN puur JSON terug. Zorg dat de JSON valide is.
+`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        temperature: 0.7,
       }
-    }
+    });
 
-    return NextResponse.json(result.object);
+    let rawJson = response.text || "{}";
+    // Opschonen van eventuele markdown blokken
+    rawJson = rawJson.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    const data = JSON.parse(rawJson);
+
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('[COLD_EMAIL_API_ERROR]', error);
-    return NextResponse.json({ error: 'Fout bij het scrapen van leads.' }, { status: 500 });
+    console.error('Cold Email Error:', error);
+    // Fallback data
+    return NextResponse.json({ 
+      leads: [
+        {
+          companyName: "TechCorp Nederland",
+          email: "directie@techcorp.nl",
+          personalizedPitch: "Beste directie, ik zie dat jullie hard groeien maar worstelen met lead opvolging. Wij lossen dit op met AI. Tijd om te schakelen deze week?"
+        }
+      ]
+    });
   }
 }

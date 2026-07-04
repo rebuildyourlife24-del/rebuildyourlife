@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import OpenAI from 'openai';
+import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: Request) {
   try {
@@ -15,11 +15,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ error: 'OpenAI API key missing. Cannot generate website.' }, { status: 500 });
+    const aiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1;
+
+    if (!aiKey) {
+      return NextResponse.json({ error: 'Gemini API key missing. Cannot generate website.' }, { status: 500 });
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const ai = new GoogleGenAI({ apiKey: aiKey });
 
     const prompt = `
 Je bent een expert CRO (Conversion Rate Optimization) webdesigner. 
@@ -34,15 +36,17 @@ Vereisten:
 4. Output MOET puur en alleen de volledige werkende HTML code zijn. Geen markdown blokken (\`\`\`html), geen introductie, enkel de code.
 `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        temperature: 0.7,
+      }
     });
 
-    let htmlContent = response.choices[0].message?.content || "";
+    let htmlContent = response.text || "";
     
-    // Opschonen van eventuele markdown blokken als de AI die toch toevoegt
+    // Opschonen van eventuele markdown blokken
     htmlContent = htmlContent.replace(/```html\n?/g, '').replace(/```/g, '');
 
     return NextResponse.json({ success: true, html: htmlContent });

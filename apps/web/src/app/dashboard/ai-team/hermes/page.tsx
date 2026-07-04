@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Zap, Send, Terminal, AlertCircle, RefreshCw } from "lucide-react";
+import { Zap, Send, Terminal, AlertCircle, RefreshCw, Menu, X, Plus, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   getConversationsAction, 
@@ -30,6 +30,7 @@ export default function HermesChatPage() {
   const [loading, setLoading] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +58,7 @@ export default function HermesChatPage() {
   async function loadMessages(convId: string) {
     setLoadingMessages(true);
     setActiveConvId(convId);
+    setIsHistoryOpen(false); // Close history on mobile when a chat is selected
     setError(null);
     const res = await getConversationMessagesAction(convId);
     if (res.success && res.messages) {
@@ -107,8 +109,8 @@ export default function HermesChatPage() {
   return (
     <div className="flex h-screen bg-black text-white font-sans overflow-hidden">
       
-      {/* Sidebar - Conversations */}
-      <div className="w-80 border-r border-cyan-500/10 bg-black/50 backdrop-blur-md hidden md:flex flex-col">
+      {/* Sidebar - Conversations (Desktop) */}
+      <div className="w-80 border-r border-cyan-500/10 bg-black/50 backdrop-blur-md hidden md:flex flex-col z-20">
         <div className="p-6 border-b border-cyan-500/10">
           <div className="flex items-center gap-3 text-cyan-400 mb-2">
             <Zap className="w-6 h-6" />
@@ -119,10 +121,10 @@ export default function HermesChatPage() {
 
         <div className="p-4 border-b border-cyan-500/10">
           <button
-            onClick={() => { setActiveConvId(null); setMessages([]); }}
-            className="w-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest transition-all"
+            onClick={() => { setActiveConvId(null); setMessages([]); setIsHistoryOpen(false); }}
+            className="w-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest transition-all flex justify-center items-center gap-2"
           >
-            + Nieuw Protocol
+            <Plus className="w-4 h-4" /> Nieuw Protocol
           </button>
         </div>
 
@@ -131,18 +133,68 @@ export default function HermesChatPage() {
             <button
               key={conv.id}
               onClick={() => loadMessages(conv.id)}
-              className={`w-full text-left p-3 rounded-lg text-xs transition-colors ${
+              className={`w-full text-left p-3 rounded-xl text-xs transition-colors flex items-center gap-3 ${
                 activeConvId === conv.id 
-                  ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" 
+                  ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-inner" 
                   : "text-zinc-400 hover:bg-white/5 border border-transparent"
               }`}
             >
-              <div className="font-bold truncate">{conv.title || "Nieuw Gesprek"}</div>
-              <div className="text-[9px] mt-1 opacity-50 uppercase">{new Date(conv.updatedAt).toLocaleDateString()}</div>
+              <MessageSquare className={`w-4 h-4 shrink-0 ${activeConvId === conv.id ? 'text-cyan-400' : ''}`} />
+              <div className="flex-1 min-w-0">
+                <div className="font-bold truncate">{conv.title || "Nieuw Gesprek"}</div>
+                <div className="text-[9px] mt-1 opacity-50 uppercase">{new Date(conv.updatedAt).toLocaleDateString()}</div>
+              </div>
             </button>
           ))}
         </div>
       </div>
+
+      {/* Mobile History Drawer */}
+      <AnimatePresence>
+        {isHistoryOpen && (
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="absolute left-0 top-0 bottom-0 w-72 bg-black/90 backdrop-blur-3xl border-r border-cyan-500/20 z-50 p-4 flex flex-col shadow-2xl md:hidden"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <span className="text-xs font-black uppercase tracking-widest text-cyan-400">Sessie Logboek</span>
+              <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-zinc-400 hover:text-white rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="mb-4">
+              <button
+                onClick={() => { setActiveConvId(null); setMessages([]); setIsHistoryOpen(false); }}
+                className="w-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest transition-all flex justify-center items-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> Nieuw Protocol
+              </button>
+            </div>
+            <div className="space-y-1 overflow-y-auto custom-scrollbar flex-1">
+              {conversations.length === 0 ? (
+                <div className="text-center py-4 text-[10px] text-zinc-600 uppercase font-bold tracking-widest">Geen actieve sessies</div>
+              ) : (
+                conversations.map((conv) => (
+                  <div
+                    key={conv.id}
+                    onClick={() => loadMessages(conv.id)}
+                    className={`p-3.5 rounded-xl text-sm cursor-pointer font-medium transition-all flex items-center gap-3 truncate ${
+                      activeConvId === conv.id 
+                        ? "bg-cyan-900/40 text-cyan-400 shadow-inner border border-cyan-500/20" 
+                        : "bg-transparent text-zinc-500 hover:bg-zinc-900/40 hover:text-zinc-300"
+                    }`}
+                  >
+                    <MessageSquare className={`w-4 h-4 shrink-0 ${activeConvId === conv.id ? 'text-cyan-400' : ''}`} />
+                    <span className="truncate">{conv.title || "Nieuw Gesprek"}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col relative bg-zinc-950/50">
@@ -150,10 +202,18 @@ export default function HermesChatPage() {
         <div className="absolute top-0 left-0 w-full h-full bg-cyan-900/5 pointer-events-none" />
 
         {/* Chat Header */}
-        <div className="p-6 border-b border-cyan-500/10 backdrop-blur-md flex justify-between items-center z-10">
-          <div>
-            <h1 className="text-xl font-black uppercase tracking-widest text-cyan-400">Hermes Terminal</h1>
-            <p className="text-xs text-zinc-500 mt-1 uppercase font-bold">Actieve verbinding met RYL Backend</p>
+        <div className="p-6 border-b border-cyan-500/10 backdrop-blur-md flex justify-between items-center z-10 relative">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+              className="md:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl font-black uppercase tracking-widest text-cyan-400">Hermes Terminal</h1>
+              <p className="text-xs text-zinc-500 mt-1 uppercase font-bold hidden sm:block">Actieve verbinding met RYL Backend</p>
+            </div>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
             <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />

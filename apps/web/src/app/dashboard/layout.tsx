@@ -198,6 +198,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     syndicate: false,
     vitality: false,
     system: false,
+    machines: true,
   });
 
   const [activeProject, setActiveProject] = useState<any>("holding");
