@@ -5,12 +5,7 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   serverExternalPackages: ["@prisma/client", "bcryptjs", "jsonwebtoken", "@rebuildyourlife/database", "@supabase/ssr"],
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   async headers() {
     return [
       {

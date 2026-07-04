@@ -145,6 +145,7 @@ export default function CommunityPage() {
           <LeaderboardWidget />
         </div>
       </div>
+      </div>
     </div>
   );
 }

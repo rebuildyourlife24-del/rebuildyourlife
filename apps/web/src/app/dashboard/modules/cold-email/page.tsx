@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Search, Send, Play, Pause, BarChart3, Settings } from "lucide-react";
+import { Mail, Search, Send, Play, Pause, ChartColumn, Settings } from "lucide-react";
 
 export default function ColdEmailModule() {
   const [niche, setNiche] = useState("Tandartsen in Amsterdam");
@@ -195,7 +195,7 @@ export default function ColdEmailModule() {
         <div className="space-y-6">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <BarChart3 className="text-emerald-400" size={20} />
+              <ChartColumn className="text-emerald-400" size={20} />
               Campagne Resultaten
             </h2>
             

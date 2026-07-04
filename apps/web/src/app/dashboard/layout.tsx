@@ -37,7 +37,6 @@ import {
   CreditCard,
   Building,
   MessageSquare,
-  ActivitySquare,
   MousePointerClick,
   Mail,
   LifeBuoy,
@@ -103,7 +102,7 @@ const getGroupedNavItems = (user: any) => {
         { label: 'Viral Video Factory', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> },
         { label: 'Cold Email B2B', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
         { label: 'Newsletter AI', href: '/dashboard/modules/newsletter', icon: <Newspaper size={16} /> },
-        { label: 'SEO Audit', href: '/dashboard/modules/seo-audit', icon: <ActivitySquare size={16} /> },
+        { label: 'SEO Audit', href: '/dashboard/modules/seo-audit', icon: <Activity size={16} /> },
         { label: 'AI Chatbot', href: '/dashboard/modules/ai-chatbot', icon: <Bot size={16} /> }
       ]
     },
