@@ -41,7 +41,11 @@ import {
   MousePointerClick,
   Mail,
   LifeBuoy,
-  Target
+  Target,
+  Monitor,
+  Send,
+  Newspaper,
+  Bot
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -82,9 +86,20 @@ const getGroupedNavItems = (user: any) => {
       label: 'Sovereign OS',
       items: [
         { label: 'Funnel Builder', href: '/dashboard/funnels', icon: <MousePointerClick size={16} /> },
+        { label: 'Website Builder', href: '/dashboard/modules/website-builder', icon: <Monitor size={16} /> },
         { label: 'E-mail Marketing', href: '/dashboard/marketing/email', icon: <Mail size={16} /> },
         { label: 'Helpdesk', href: '/dashboard/support', icon: <LifeBuoy size={16} /> },
         { label: 'Ad-Manager', href: '/dashboard/marketing/ads', icon: <Target size={16} /> }
+      ]
+    },
+    {
+      id: 'machines',
+      label: 'AI Machines',
+      items: [
+        { label: 'Cold Email B2B', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
+        { label: 'Newsletter AI', href: '/dashboard/modules/newsletter', icon: <Newspaper size={16} /> },
+        { label: 'SEO Audit', href: '/dashboard/modules/seo-audit', icon: <ActivitySquare size={16} /> },
+        { label: 'AI Chatbot', href: '/dashboard/modules/ai-chatbot', icon: <Bot size={16} /> }
       ]
     },
     {
