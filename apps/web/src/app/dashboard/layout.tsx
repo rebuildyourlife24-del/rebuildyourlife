@@ -53,78 +53,37 @@ const getGroupedNavItems = (user: any) => {
   return [
     {
       id: 'boardroom',
-      label: 'The Boardroom',
+      label: 'Control Room',
       items: [
-        { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
-        { label: 'CEO (Growth)', href: '/dashboard/c-suite/ceo', icon: <Brain size={16} /> },
-        { label: 'CFO (Profit)', href: '/dashboard/c-suite/cfo', icon: <Briefcase size={16} /> },
-        { label: 'CMO (Acquisition)', href: '/dashboard/c-suite/cmo', icon: <Activity size={16} /> },
-        { label: 'COO (Systems)', href: '/dashboard/c-suite/coo', icon: <Network size={16} /> }
+        { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> }
       ]
     },
     {
       id: 'finance',
       label: 'Finance & Admin',
       items: [
-        { label: 'Treasury Vault', href: '/dashboard/finance', icon: <Briefcase size={16} /> },
-        { label: 'Bank & Transacties', href: '/dashboard/finance/banking', icon: <CreditCard size={16} /> },
-        { label: 'Schulden & Budget', href: '/dashboard/finance/debts', icon: <Layers size={16} /> },
         { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> },
+        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> },
         { label: 'Mijn Abonnement', href: '/dashboard/billing', icon: <Shield size={16} /> }
-      ]
-    },
-    {
-      id: 'revenue',
-      label: 'Verdienmodellen',
-      items: [
-        { label: 'E-Commerce / Dropship', href: '/dashboard/ecommerce', icon: <ShoppingCart size={16} /> },
-        { label: 'Social & Marketing', href: '/dashboard/social', icon: <MessageSquare size={16} /> },
-        { label: 'SaaS & Enterprise', href: '/dashboard/enterprise', icon: <Building size={16} /> },
-        { label: 'The Syndicate', href: '/dashboard/community', icon: <Globe size={16} /> },
-        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> }
-      ]
-    },
-    {
-      id: 'sovereign',
-      label: 'Sovereign OS',
-      items: [
-        { label: 'Funnel Builder', href: '/dashboard/funnels', icon: <MousePointerClick size={16} /> },
-        { label: 'Website Builder', href: '/dashboard/modules/website-builder', icon: <Monitor size={16} /> },
-        { label: 'E-mail Marketing', href: '/dashboard/marketing/email', icon: <Mail size={16} /> },
-        { label: 'Helpdesk', href: '/dashboard/support', icon: <LifeBuoy size={16} /> },
-        { label: 'Ad-Manager', href: '/dashboard/marketing/ads', icon: <Target size={16} /> }
       ]
     },
     {
       id: 'machines',
       label: 'AI Machines',
       items: [
-        { label: 'Viral Video Factory', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> },
-        { label: 'Cold Email B2B', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
-        { label: 'Newsletter AI', href: '/dashboard/modules/newsletter', icon: <Newspaper size={16} /> },
-        { label: 'SEO Audit', href: '/dashboard/modules/seo-audit', icon: <Activity size={16} /> },
-        { label: 'AI Chatbot', href: '/dashboard/modules/ai-chatbot', icon: <Bot size={16} /> }
-      ]
-    },
-    {
-      id: 'agents',
-      label: 'Revenue Agents',
-      items: [
-        { label: 'E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> },
-        { label: 'SEO & Traffic', href: '/dashboard/agents/seo', icon: <Search size={16} /> },
-        { label: 'CRO & Funnel', href: '/dashboard/agents/cro', icon: <Map size={16} /> },
-        { label: 'Copy & Content', href: '/dashboard/agents/copywriter', icon: <Terminal size={16} /> },
-        { label: 'Ads & Media', href: '/dashboard/agents/ads', icon: <Tv size={16} /> }
+        { label: 'E-Commerce Agent (Shopify)', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> },
+        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Activity size={16} /> },
+        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
+        { label: 'Viral Video Scripts', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> }
       ]
     },
     {
       id: 'system',
       label: 'System & Admin',
       items: [
-        { label: 'Integrations (Telegram)', href: '/dashboard/settings/telegram', icon: <Link2 size={16} /> },
-        { label: 'Databases', href: '/dashboard/databases', icon: <Database size={16} /> },
-        { label: 'Security & Access', href: '/dashboard/security', icon: <Shield size={16} /> },
-        { label: 'Platform Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
+        { label: 'API Integraties', href: '/dashboard/settings', icon: <Settings size={16} /> },
+        { label: 'Telegram Notificaties', href: '/dashboard/settings/telegram', icon: <Link2 size={16} /> },
+        { label: 'Helpdesk', href: '/dashboard/support', icon: <LifeBuoy size={16} /> }
       ]
     }
   ];
