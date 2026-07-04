@@ -1,5 +1,19 @@
 import { routeAIRequest } from '@/lib/ai-router';
 
+// Helper function to extract JSON from AI responses safely
+function extractJSON(content: string): string {
+  try {
+    // Vind alles tussen de eerste [ of { en de laatste ] of }
+    const match = content.match(/[\{\[][\s\S]*[\}\]]/);
+    if (match) {
+      return match[0];
+    }
+    return content;
+  } catch (e) {
+    return content;
+  }
+}
+
 export async function generateWebsiteAction(topic: string, targetAudience: string) {
   try {
     const prompt = `
@@ -72,28 +86,18 @@ Geef je antwoord EXACT in het volgende JSON-formaat terug. Let op, retourneer AL
 
     const response = await routeAIRequest([{ role: 'user', content: prompt }]);
     
-    // Clean up potential markdown formatting from AI output
-    const jsonString = response.content.replace(/\`\`\`json/gi, '').replace(/\`\`\`/g, '').trim();
-    
-    const sequence = JSON.parse(jsonString);
+    const cleanJson = extractJSON(response.content);
+    const sequence = JSON.parse(cleanJson);
 
     return { success: true, sequence };
   } catch (error: any) {
     console.error("Cold Email Generation error:", error);
-    return { success: false, error: "Kon de e-mail flow niet genereren met AI." };
+    return { success: false, error: "Kon de e-mail flow niet genereren met AI. De output was mogelijk geen geldige JSON." };
   }
 }
 
-import { GoogleGenAI } from '@google/genai';
-
 export async function generateViralScriptAction(topic: string, platform: string) {
   try {
-    const aiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1;
-    if (!aiKey) {
-      throw new Error("Geen AI API Key gevonden.");
-    }
-    const ai = new GoogleGenAI({ apiKey: aiKey });
-
     const prompt = `
 Je bent een virale social media expert.
 Schrijf een extreem boeiend, controversieel of hoog-converterend script voor een korte video op ${platform} over het onderwerp: "${topic}".
@@ -106,15 +110,13 @@ Structuur:
 Geef het script terug in een overzichtelijk format. Géén markdown JSON, gewoon tekst.
 `;
     
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt
-    });
+    // We use the centralized AI router so it benefits from the fallback system!
+    const response = await routeAIRequest([{ role: 'user', content: prompt }]);
 
-    return { success: true, script: response.text?.trim() || '' };
+    return { success: true, script: response.content.trim() };
   } catch (error: any) {
     console.error("Viral Script error:", error);
-    return { success: false, error: "Kon script niet genereren. Zorg dat je OpenAI/Gemini sleutel is ingevuld." };
+    return { success: false, error: "Kon script niet genereren via de AI router." };
   }
 }
 
@@ -141,11 +143,12 @@ Je MOET je antwoord EXACT formatteren als onderstaande JSON, geen andere tekst o
 }
 `;
     const response = await routeAIRequest([{ role: 'user', content: prompt }]);
-    const cleanJson = response.content.replace(/\`\`\`json/gi, '').replace(/\`\`\`/g, '').trim();
+    const cleanJson = extractJSON(response.content);
+    
     return { success: true, report: JSON.parse(cleanJson) };
   } catch (error: any) {
     console.error("SEO Audit error:", error);
-    return { success: false, error: "Kon audit niet genereren." };
+    return { success: false, error: "Kon audit niet genereren. De output was mogelijk geen geldige JSON." };
   }
 }
 
