@@ -1,0 +1,44 @@
+name: COO System Audit (Build Control)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-audit:
+    name: 🛡️ COO Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Database Verification (Prisma)
+      run: npm run db:generate
+
+    - name: Full Build Control (Turbo)
+      run: npm run build
+      env:
+        # Pass dummy environment variables required for the build to pass statically
+        NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+
+    - name: Audit Status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "✅ COO System: All builds passed successfully. Safe to deploy."
+        else
+          echo "❌ COO System: BUILD FAILED. Deployment halted. Investigate logs."
+        fi
