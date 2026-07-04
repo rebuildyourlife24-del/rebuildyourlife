@@ -97,6 +97,7 @@ const getGroupedNavItems = (user: any) => {
       id: 'machines',
       label: 'AI Machines',
       items: [
+        { label: 'Viral Video Factory', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> },
         { label: 'Cold Email B2B', href: '/dashboard/modules/cold-email', icon: <Send size={16} /> },
         { label: 'Newsletter AI', href: '/dashboard/modules/newsletter', icon: <Newspaper size={16} /> },
         { label: 'SEO Audit', href: '/dashboard/modules/seo-audit', icon: <ActivitySquare size={16} /> },
