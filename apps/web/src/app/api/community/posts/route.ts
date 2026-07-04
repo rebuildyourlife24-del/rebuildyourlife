@@ -47,6 +47,12 @@ export async function POST(req: Request) {
       }
     });
 
+    // Gamification: Award 10 XP for posting
+    await prisma.user.update({
+      where: { id: userId },
+      data: { experiencePoints: { increment: 10 } }
+    });
+
     return NextResponse.json({ success: true, post });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

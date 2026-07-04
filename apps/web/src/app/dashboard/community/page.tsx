@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MessageSquare, Heart, Share2, Flame, Award, Loader2, Send } from 'lucide-react';
+import LeaderboardWidget from './LeaderboardWidget';
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -60,8 +61,12 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      {/* Create Post */}
-      <div className="bg-black/40 border border-white/10 p-4 rounded-2xl relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Feed Column */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Create Post */}
+          <div className="bg-black/40 border border-white/10 p-4 rounded-2xl relative">
         <textarea
           value={newPost}
           onChange={(e) => setNewPost(e.target.value)}
@@ -126,13 +131,19 @@ export default function CommunityPage() {
           </div>
         ))}
 
-        {posts.length === 0 && (
-          <div className="text-center p-12 border border-white/5 rounded-2xl bg-black/40">
-            <Award className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-            <h3 className="text-white font-bold uppercase tracking-widest mb-2">Geen berichten nog</h3>
-            <p className="text-zinc-500 text-sm">Breek het ijs en wees de eerste die een bericht plaatst in The Syndicate.</p>
-          </div>
-        )}
+          {posts.length === 0 && (
+            <div className="text-center p-12 border border-white/5 rounded-2xl bg-black/40">
+              <Award className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
+              <h3 className="text-white font-bold uppercase tracking-widest mb-2">Geen berichten nog</h3>
+              <p className="text-zinc-500 text-sm">Breek het ijs en wees de eerste die een bericht plaatst in The Syndicate.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="hidden lg:block space-y-6">
+          <LeaderboardWidget />
+        </div>
       </div>
     </div>
   );
