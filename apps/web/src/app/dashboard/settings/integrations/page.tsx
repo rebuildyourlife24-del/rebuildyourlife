@@ -1,10 +1,23 @@
 import { getIntegrations, getSocialIntegrations } from '@/actions/integrations';
 import { SettingsIntegrationsClient } from './SettingsIntegrationsClient';
 import { SettingsSocialIntegrationsClient } from './SettingsSocialIntegrationsClient';
+import { SettingsShopifyIntegrationsClient } from './SettingsShopifyIntegrationsClient';
+import { getSessionAction } from '@/app/actions/auth';
+import { prisma } from '@rebuildyourlife/database';
 
 export default async function SettingsIntegrationsPage() {
   const integrations = await getIntegrations();
   const socialIntegrations = await getSocialIntegrations();
+  const session = await getSessionAction();
+  const user = session?.user;
+  
+  let shopifyStores: any[] = [];
+  if (user) {
+    shopifyStores = await prisma.shopifyStore.findMany({
+      where: { userId: user.id },
+      select: { id: true, shopUrl: true, status: true }
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -86,6 +99,16 @@ export default async function SettingsIntegrationsPage() {
                 description="Token voor wereldwijde afrekentransacties (Creditcard/Apple Pay)."
                 existingIntegration={integrations.find(i => i.provider === 'STRIPE_API')}
              />
+          </div>
+        </div>
+
+        <div className="bg-black/50 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-white">E-Commerce Platforms</h3>
+            <p className="text-sm text-gray-400">Verbind je webshops voor automatische product push.</p>
+          </div>
+          <div className="space-y-6">
+             <SettingsShopifyIntegrationsClient existingStores={shopifyStores} />
           </div>
         </div>
       </div>
