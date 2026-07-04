@@ -1,6 +1,8 @@
 import { prisma } from '@rebuildyourlife/database';
 import { runSeoScanAction } from '../actions/seo';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SeoControlDashboard() {
   const pendingProposals = await prisma.seoAgentProposal.findMany({
     where: { status: 'PENDING' },
