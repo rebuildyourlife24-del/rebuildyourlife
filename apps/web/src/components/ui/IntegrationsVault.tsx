@@ -40,7 +40,7 @@ export function IntegrationsVault() {
       setAccessToken('');
       await fetchConnections();
     } else {
-      setMsg({ text: res.error || 'Connection failed', type: 'error' });
+      setMsg({ text: (res as any).error || 'Connection failed', type: 'error' });
     }
     setConnecting(false);
   };
@@ -51,7 +51,7 @@ export function IntegrationsVault() {
     if (res.success) {
       await fetchConnections();
     } else {
-      alert(res.error);
+      alert((res as any).error);
     }
   };
 

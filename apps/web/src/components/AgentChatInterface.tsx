@@ -13,7 +13,7 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 
 interface AgentChatInterfaceProps {
-  agentId: "HERMES" | "ORION" | "CEO" | "CFO" | "CMO" | "COO"; 
+  agentId: "HERMES" | "ORION" | "CEO" | "CFO" | "CMO" | "COO" | "SEO" | "ADS" | "CRO" | "COPY" | "DATA"; 
   agentName: string;
   agentRole: string;
   agentDescription: string;
@@ -50,7 +50,8 @@ export function AgentChatInterface({
   agentDescription,
   icon,
   suggestedPrompts,
-  themeColor
+  themeColor,
+  contextData
 }: AgentChatInterfaceProps) {
   const { user } = useRequireAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);

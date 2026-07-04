@@ -18,7 +18,7 @@ export default function FunnelsPage() {
     setLoading(true);
     const res = await getFunnels();
     if (res.success) {
-      setFunnels(res.funnels);
+      setFunnels(res.funnels || []);
     }
     setLoading(false);
   };

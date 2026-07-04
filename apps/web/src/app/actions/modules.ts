@@ -13,7 +13,7 @@ Vereisten voor het design (Cyberpunk / Modern Donker thema):
 - Font: Inter (via sans-serif fallback).
 - Tailwind CSS klassen gebruiken voor styling.
 - Voeg in de styling wat neon-text en neon-border CSS toe in een <style> tag.
-- Geen markdown blockticks (```html), stuur ALLEEN pure HTML code terug!
+- Geen markdown blockticks (\`\`\`html), stuur ALLEEN pure HTML code terug!
 
 De structuur moet bevatten:
 1. Een navigatiebalk met bedrijfsnaam en een Call to Action knop.
@@ -28,7 +28,7 @@ Stuur uitsluitend HTML code terug.
     const response = await routeAIRequest([{ role: 'user', content: prompt }]);
 
     // Remove any markdown formatting if the AI still included it
-    let html = response.content.replace(/```html/gi, '').replace(/```/g, '').trim();
+    let html = response.content.replace(/\`\`\`html/gi, '').replace(/\`\`\`/g, '').trim();
 
     return { success: true, html };
   } catch (error: any) {
@@ -73,7 +73,7 @@ Geef je antwoord EXACT in het volgende JSON-formaat terug. Let op, retourneer AL
     const response = await routeAIRequest([{ role: 'user', content: prompt }]);
     
     // Clean up potential markdown formatting from AI output
-    const jsonString = response.content.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const jsonString = response.content.replace(/\`\`\`json/gi, '').replace(/\`\`\`/g, '').trim();
     
     const sequence = JSON.parse(jsonString);
 
@@ -128,7 +128,7 @@ Je MOET je antwoord EXACT formatteren als onderstaande JSON, geen andere tekst o
 }
 `;
     const response = await routeAIRequest([{ role: 'user', content: prompt }]);
-    const cleanJson = response.content.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const cleanJson = response.content.replace(/\`\`\`json/gi, '').replace(/\`\`\`/g, '').trim();
     return { success: true, report: JSON.parse(cleanJson) };
   } catch (error: any) {
     console.error("SEO Audit error:", error);

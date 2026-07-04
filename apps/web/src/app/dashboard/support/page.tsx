@@ -20,7 +20,7 @@ export default function NativeHelpdeskPage() {
     const res = await getTickets();
     if (res.success) {
       setTickets(res.tickets || []);
-      if (res.tickets.length > 0 && !activeTicket) {
+      if (res.tickets && res.tickets.length > 0 && !activeTicket) {
         setActiveTicket(res.tickets[0]);
       }
     }

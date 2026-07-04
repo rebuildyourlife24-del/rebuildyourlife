@@ -17,7 +17,7 @@ export default function NativeAdsManagerPage() {
     setLoading(true);
     const res = await getAdCampaigns();
     if (res.success) {
-      setCampaigns(res.campaigns);
+      setCampaigns(res.campaigns || []);
       setPlatforms(res.platforms || []);
     }
     setLoading(false);

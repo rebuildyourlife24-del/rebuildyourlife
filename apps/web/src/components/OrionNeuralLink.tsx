@@ -3,19 +3,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, X, Mic, Send, Command, Zap } from 'lucide-react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 
 export function OrionNeuralLink() {
   const [isOpen, setIsOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+  const chatProps: any = useChat({
     api: '/api/ai/chat',
     initialMessages: [
       { id: '1', role: 'system', content: 'ORION CORE ONLINE. NEURAL LINK ESTABLISHED. WAITING FOR DIRECTIVE.' }
     ],
-    onFinish: (message) => {
+    onFinish: (message: any) => {
       // TEXT TO SPEECH System (alleen voor antwoorden van Orion)
       if ('speechSynthesis' in window) {
         // Strip markdown stars for speech
@@ -27,7 +27,9 @@ export function OrionNeuralLink() {
         window.speechSynthesis.speak(utterance);
       }
     }
-  });
+  } as any);
+
+  const { messages, input, handleInputChange, handleSubmit, setInput } = chatProps;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -111,7 +113,7 @@ export function OrionNeuralLink() {
 
             {/* Chat Area */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 relative z-10 custom-scrollbar">
-              {messages.map((msg, idx) => (
+              {messages.map((msg: any, idx: any) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div 
                     className={`max-w-[85%] p-3 rounded-xl text-sm font-mono leading-relaxed whitespace-pre-wrap ${

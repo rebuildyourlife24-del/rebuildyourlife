@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@rebuildyourlife/database';
-import { getSession } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 
 export async function POST(req: Request) {
   try {
-    const session = await getSession();
-    if (!session?.userId) {
+    const session = await getSessionAction();
+    if (!session.success || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const newPost = await prisma.socialMediaPost.create({
       data: {
-        userId: session.userId,
+        userId: session.user.id,
         platform,
         content,
         publishAt: new Date(publishAt),

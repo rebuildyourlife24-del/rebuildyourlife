@@ -22,7 +22,7 @@ export default function EnterpriseDataRoom() {
   const [selectedFolder, setSelectedFolder] = useState<string>('');
 
   useEffect(() => {
-    if (auth.isAuthenticated && (auth.user?.subscriptionTier === 'ELITE' || auth.user?.role === 'SUPER_ADMIN')) {
+    if (auth.isAuthenticated && ((auth.user?.subscriptionTier as any) === 'ELITE' || (auth.user?.role as any) === 'SUPER_ADMIN')) {
       fetchData();
     } else {
       setLoading(false);
@@ -65,7 +65,7 @@ export default function EnterpriseDataRoom() {
   }
 
   // Elite Gate
-  if (auth.user?.subscriptionTier !== 'ELITE' && auth.user?.role !== 'SUPER_ADMIN') {
+  if ((auth.user?.subscriptionTier as any) !== 'ELITE' && (auth.user?.role as any) !== 'SUPER_ADMIN') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] p-8 text-center bg-black text-white">
         <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />

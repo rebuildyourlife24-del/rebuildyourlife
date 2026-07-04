@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     if (contentType.includes('application/json')) {
       return NextResponse.json({ checkoutUrl: payment.getCheckoutUrl() });
     } else {
-      return NextResponse.redirect(payment.getCheckoutUrl(), 303);
+      return NextResponse.redirect(payment.getCheckoutUrl()!, 303);
     }
 
   } catch (error: any) {

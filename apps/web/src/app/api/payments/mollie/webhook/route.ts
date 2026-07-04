@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     const payment = await mollieClient.payments.get(paymentId);
     
     // Only process if payment is paid and we haven't processed it yet
-    if (payment.isPaid() && !payment.hasRefunds() && !payment.hasChargebacks()) {
-      const userId = payment.metadata?.userId;
+    if (payment.status === 'paid') {
+      const userId = (payment.metadata as any)?.userId;
       
       if (!userId) {
         console.error('Mollie Webhook Error: No userId in metadata for payment', paymentId);

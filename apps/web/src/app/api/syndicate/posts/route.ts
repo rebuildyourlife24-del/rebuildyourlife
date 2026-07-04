@@ -80,7 +80,6 @@ export async function POST(request: Request) {
     const post = await prisma.syndicatePost.create({
       data: {
         content,
-        imageUrl: finalImageUrl,
         authorId: user.id
       },
       include: {

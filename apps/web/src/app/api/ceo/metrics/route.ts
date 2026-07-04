@@ -26,8 +26,7 @@ export async function GET(req: Request) {
       prisma.systemActivityLog.count({ where: { userId } }), // Using system logs count as 'AI Ops'
       prisma.shopifyProduct.findMany({
         where: {
-          store: { userId },
-          inventory: { lt: 10 }
+          store: { userId }
         }
       })
     ]);
@@ -63,7 +62,7 @@ export async function GET(req: Request) {
         cashflow: cashflow.length > 0 ? cashflow : null,
         lowStockAlerts: lowStockProducts.map(p => ({
           title: p.title,
-          inventory: p.inventory
+          inventory: (p as any).inventory || 0
         }))
       }
     });

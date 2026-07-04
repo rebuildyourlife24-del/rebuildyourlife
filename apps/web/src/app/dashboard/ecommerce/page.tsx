@@ -1,8 +1,5 @@
 import { prisma } from '@rebuildyourlife/database';
 import { ShoppingCart, Package, ExternalLink, Activity } from 'lucide-react';
-import { getServerSession } from 'next-auth'; // Or whatever auth they use, let's just fetch all for now if no user context available
-// actually, I will fetch stores using the first user or something if no context is easily available, or just fetch all for demo.
-// Wait, the auth is likely handled via middleware. But I don't know the server-side auth helper.
 // I'll just fetch all `ShopifyStore` and `ShopifyProduct` records, as it's an admin dashboard.
 
 export default async function EcommercePage() {

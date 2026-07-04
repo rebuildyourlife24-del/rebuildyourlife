@@ -32,7 +32,7 @@ export default async function CROPage() {
 
     const contextData = `
     RECENTE CRO ACTIES:
-    ${recentActions.length > 0 ? recentActions.map(a => `- ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente CRO acties in de database.'}
+    ${recentActions.length > 0 ? recentActions.map(a => `- ${a.actionType} | Status: ${a.status} | Details: ${JSON.stringify(a.resultData)}`).join('\n') : 'Geen recente CRO acties in de database.'}
     `;
 
   return (
@@ -49,7 +49,7 @@ export default async function CROPage() {
             {recentActions.map(action => (
               <li key={action.id} className="border-b border-white/5 pb-2 last:border-0">
                 <span className="text-white">{action.actionType}</span> ({action.status})<br/>
-                <span className="text-xs text-slate-500 truncate block mt-1">{action.resultData}</span>
+                <span className="text-xs text-slate-500 truncate block mt-1">{JSON.stringify(action.resultData)}</span>
               </li>
             ))}
           </ul>

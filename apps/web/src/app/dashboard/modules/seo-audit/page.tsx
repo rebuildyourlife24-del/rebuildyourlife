@@ -6,10 +6,13 @@ import { Search, Globe, AlertTriangle, CheckCircle, TrendingUp, Loader2 } from "
 import { generateSEOReportAction } from "@/app/actions/modules";
 import { firecrawlScrapeUrlAction } from "@/app/actions/scraper";
 
+import { logSystemHealthAction } from "@/app/actions/system";
+
 export default function SeoAuditModule() {
   const [url, setUrl] = useState("https://");
   const [status, setStatus] = useState<"IDLE" | "SCANNING" | "COMPLETE" | "ERROR">("IDLE");
   const [report, setReport] = useState<any>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const handleScan = async () => {
     if (!url || url === "https://") return;
@@ -32,6 +35,13 @@ export default function SeoAuditModule() {
       console.error(err);
       setStatus("ERROR");
     }
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloading(true);
+    window.print(); // Simple fallback
+    await logSystemHealthAction('SeoAuditModule', 'WARNING', 'De Download PDF knop maakt momenteel gebruik van window.print(). Bouw een robuuste PDF generator (bijv. react-pdf of puppeteer) voor een professionele output.');
+    setTimeout(() => setDownloading(false), 1000);
   };
 
   return (
@@ -145,8 +155,12 @@ export default function SeoAuditModule() {
                 <h3 className="font-bold text-lg">Klaar om te verkopen?</h3>
                 <p className="text-sm text-slate-400">Stuur dit rapport naar de lead als PDF om je dienst te pitchen.</p>
               </div>
-              <button className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold transition-colors">
-                Download PDF Rapport
+              <button 
+                onClick={handleDownloadPdf}
+                disabled={downloading}
+                className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold transition-colors disabled:opacity-50"
+              >
+                {downloading ? "Downloaden..." : "Download PDF Rapport"}
               </button>
             </div>
           </div>

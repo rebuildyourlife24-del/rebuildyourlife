@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSessionAction } from '@/app/actions/auth';
 import { GoogleGenAI } from '@google/genai';
 
 export async function POST(req: Request) {
   try {
-    const session = await getSession();
-    if (!session?.userId) {
+    const session = await getSessionAction();
+    if (!session?.success || !session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { Mail, Search, Send, Play, Pause, BarChart, Settings } from "lucide-react";
 import { generateColdEmailAction } from "../../../actions/modules";
+import { logSystemHealthAction } from "@/app/actions/system";
 
 export default function ColdEmailModule() {
   const [niche, setNiche] = useState("Tandartsen in Amsterdam");
@@ -20,8 +21,15 @@ export default function ColdEmailModule() {
   const [liveLeads, setLiveLeads] = useState<any[]>([]);
 
   const [autopilotEnabled, setAutopilotEnabled] = useState(false);
-
   const [isPending, startTransition] = useTransition();
+
+  const handleToggleAutopilot = async () => {
+    const newState = !autopilotEnabled;
+    setAutopilotEnabled(newState);
+    if (newState) {
+      await logSystemHealthAction('ColdEmailModule', 'WARNING', 'De Autopilot (SMTP integratie) knop werd ingeschakeld, maar de echte SMTP loop ontbreekt nog in de acties. Bouw de verzend-queue.');
+    }
+  };
 
   const handleStartCampaign = () => {
     setStatus("SCRAPING");
@@ -135,7 +143,7 @@ export default function ColdEmailModule() {
                     <p className="text-xs text-slate-500 mt-1">Laat de AI daadwerkelijk de gegenereerde e-mails versturen via jouw ingestelde SMTP.</p>
                   </div>
                   <button 
-                    onClick={() => setAutopilotEnabled(!autopilotEnabled)}
+                    onClick={handleToggleAutopilot}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autopilotEnabled ? 'bg-cyan-500' : 'bg-slate-700'}`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autopilotEnabled ? 'translate-x-6' : 'translate-x-1'}`} />

@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // Aanname van de db import in deze monorepo
+import { prisma } from '@rebuildyourlife/database'; // Aanname van de db import in deze monorepo
 
 export async function POST(req: Request) {
   try {

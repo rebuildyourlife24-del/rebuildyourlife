@@ -25,13 +25,19 @@ export default async function CMOPage() {
   if (userId) {
     // Haal actieve advertentiecampagnes op
     const campaigns = await prisma.socialCampaign.findMany({
-      where: { userId, status: 'ACTIVE' },
+      where: { 
+        platform: { userId }, 
+        status: 'ACTIVE' 
+      },
+      include: {
+        platform: true
+      },
       take: 5
     });
 
     contextData = `
     ACTIEVE MARKETING CAMPAGNES:
-    ${campaigns.length > 0 ? campaigns.map(c => `- ${c.platform} | Doel: ${c.goal} | Budget: €${c.budget} | Besteed: €${c.spend}`).join('\n') : 'Er draaien momenteel geen actieve marketing campagnes.'}
+    ${campaigns.length > 0 ? campaigns.map(c => `- ${c.platform.platform} | Doel: ${c.campaignType} | Budget: €${c.budgetDaily} | Besteed: €${c.totalSpend}`).join('\n') : 'Er draaien momenteel geen actieve marketing campagnes.'}
     `;
   }
 

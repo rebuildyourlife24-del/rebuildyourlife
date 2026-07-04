@@ -19,8 +19,9 @@ export async function createEliteCheckoutAction(email: string, passwordRaw: stri
       user = await prisma.user.create({
         data: {
           email,
-          password: hashedPassword,
-          name: email.split('@')[0],
+          passwordHash: hashedPassword,
+          firstName: email.split('@')[0],
+          lastName: 'User',
           subscriptionStatus: 'PENDING',
           subscriptionTier: 'ELITE'
         }

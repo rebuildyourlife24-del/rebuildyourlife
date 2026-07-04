@@ -132,8 +132,9 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     const userData = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        budget: true,
-        userLessonProgress: {
+        budgets: true,
+        goals: true,
+        lessonProgress: {
           include: { lesson: { include: { module: { include: { course: true } } } } }
         }
       }
@@ -141,8 +142,17 @@ export async function sendAIMessageAction(agentType: string, message: string, co
 
     let contextString = "";
     if (userData && agentType === 'ORION') {
-      const balance = userData.budget?.find(b => b.type === 'INCOME')?.amount || 0;
-      const progressCount = userData.userLessonProgress.length;
+      const userContext = {
+        role: userData.role,
+        subscription: userData.subscriptionTier,
+        experiencePoints: userData.experiencePoints,
+        budget: (userData as any).budgets ? (userData as any).budgets.map((b: any) => ({ totalIncome: b.totalIncome, totalExpenses: b.totalExpenses, month: b.month })) : null,
+        lessons: (userData as any).lessonProgress ? (userData as any).lessonProgress.map((l: any) => ({ lessonId: l.lessonId, status: l.status })) : null,
+        goals: userData.goals.length,
+      };
+      
+      const balance = (userData as any).budgets?.find((b: any) => b.type === 'INCOME')?.amount || 0;
+      const progressCount = (userData as any).lessonProgress.length;
       contextString = `\n[CONTEXT VAN DE GEBRUIKER: Gebruiker heeft €${balance} inkomen geregistreerd. Aantal gevolgde/afgeronde lessen: ${progressCount}. Geef advies gebaseerd op de RYL (Rebuild Your Life) filosofie: agressief vermogen opbouwen, schulden elimineren, en netwerken.]`;
     }
 

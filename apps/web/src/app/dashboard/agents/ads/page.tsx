@@ -24,7 +24,8 @@ export default async function AdsPage() {
 
   if (userId) {
     const campaigns = await prisma.socialCampaign.findMany({
-      where: { userId, status: 'ACTIVE' },
+      where: { platform: { userId }, status: 'ACTIVE' },
+      include: { platform: true },
       take: 5
     });
 
@@ -36,7 +37,7 @@ export default async function AdsPage() {
 
     contextData = `
     ACTIEVE CAMPAGNES:
-    ${campaigns.length > 0 ? campaigns.map(c => `- ${c.platform} (Budget: €${c.budget}, Spend: €${c.spend})`).join('\n') : 'Geen actieve campagnes.'}
+    ${campaigns.length > 0 ? campaigns.map(c => `- ${c.platform.platform} (Budget: €${c.budgetDaily}, Spend: €${c.totalSpend})`).join('\n') : 'Geen actieve campagnes.'}
     
     RECENTE ADS ACTIES:
     ${recentActions.length > 0 ? recentActions.map(a => `- ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente ads acties in de database.'}

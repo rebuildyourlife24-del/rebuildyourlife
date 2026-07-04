@@ -35,9 +35,11 @@ export default async function EnterprisePage() {
               <div key={proj.id} className="border border-white/10 bg-black/40 p-5 rounded-xl hover:border-cyan-500/50 transition-colors">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-white text-lg">{proj.name}</h3>
-                  <span className={`text-[10px] px-2 py-1 rounded-full uppercase font-mono ${proj.status === 'ACTIVE' ? 'bg-green-500/10 text-green-400' : 'bg-zinc-800 text-zinc-400'}`}>
-                    {proj.status}
-                  </span>
+                  {proj.isHolding && (
+                    <span className="text-[10px] px-2 py-1 rounded-full uppercase font-mono bg-purple-500/10 text-purple-400">
+                      HOLDING
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 mt-2">
                   <span className="text-xs font-mono text-zinc-500 uppercase flex items-center gap-2">

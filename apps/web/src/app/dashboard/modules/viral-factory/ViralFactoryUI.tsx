@@ -25,7 +25,7 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
       const res = await generateViralScriptAction(topic, platform);
       
       if (res.success) {
-        setCurrentScript(res.script);
+        setCurrentScript(res.script || '');
         // Voor nu simuleren we de opgeslagen post lokaal totdat we DB sync hebben
         setDrafts([{
           id: Math.random().toString(),

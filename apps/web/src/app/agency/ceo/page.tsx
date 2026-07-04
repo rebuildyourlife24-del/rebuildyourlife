@@ -12,7 +12,7 @@ export default function CEOPortal() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user && user.role !== 'SUPER_ADMIN' && user.role !== 'SUPREME_OVERSEER' && user.role !== 'ADMIN') {
+    if (!isLoading && user && (user.role as string) !== 'SUPER_ADMIN' && (user.role as string) !== 'SUPREME_OVERSEER' && (user.role as string) !== 'ADMIN') {
       router.push('/agency/klanten');
     }
   }, [user, isLoading, router]);

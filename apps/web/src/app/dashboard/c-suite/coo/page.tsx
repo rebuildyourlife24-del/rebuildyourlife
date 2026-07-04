@@ -30,9 +30,17 @@ export default async function COOPage() {
       take: 10
     });
 
+    const systemLogs = await prisma.systemHealthLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    });
+
     contextData = `
     RECENTE OPERATIONELE ACTIES (AUTOMATISERING):
     ${recentActions.length > 0 ? recentActions.map(a => `- ${a.agentType}: ${a.actionType} | Status: ${a.status} | Details: ${a.resultData}`).join('\n') : 'Geen recente automatiseringsacties gedetecteerd.'}
+    
+    [AUTO-HEAL DIAGNOSTICS]:
+    ${systemLogs.length > 0 ? systemLogs.map(l => `[${l.status}] Component: ${l.component} - ${l.errorLog}`).join('\n') : 'Systeem functioneert 100%. Geen losse eindjes.'}
     `;
   }
 

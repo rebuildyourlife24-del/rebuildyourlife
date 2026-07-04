@@ -51,11 +51,11 @@ export async function POST(req: Request) {
     if (actionType === 'PUBLISH_POST') {
       await prisma.socialMediaPost.create({
         data: {
-          title: data.subject || "Autopilot Post",
           content: data.body,
           status: "PUBLISHED",
-          scheduledFor: new Date(),
-          authorId: userId
+          platform: "AUTOPILOT",
+          publishAt: new Date(),
+          userId: userId
         }
       });
     }

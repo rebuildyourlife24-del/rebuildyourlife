@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Bot, Save, Copy, CheckCircle, Settings, MessageSquare, Code, Wand2, Loader2 } from "lucide-react";
 import { trainChatbotAction } from "@/app/actions/modules";
 
+import { logSystemHealthAction } from "@/app/actions/system";
+
 export default function AiChatbotModule() {
   const [botName, setBotName] = useState("Klantenservice Bot");
   const [botPrompt, setBotPrompt] = useState("Je bent een behulpzame assistent voor ons bedrijf. Beantwoord vragen kort en vriendelijk.");
@@ -12,6 +14,18 @@ export default function AiChatbotModule() {
   const [isSaved, setIsSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem('ryl_chatbot_config');
+    if (saved) {
+      try {
+        const config = JSON.parse(saved);
+        if (config.botName) setBotName(config.botName);
+        if (config.botPrompt) setBotPrompt(config.botPrompt);
+        if (config.primaryColor) setPrimaryColor(config.primaryColor);
+      } catch (e) {}
+    }
+  }, []);
 
   const handleGeneratePrompt = async () => {
     if (!botName) return;
@@ -23,9 +37,13 @@ export default function AiChatbotModule() {
     setIsGenerating(false);
   };
 
-  const handleSave = () => {
-    // TODO: Sla de configuratie op in de database onder UserBusinessModule.config
+  const handleSave = async () => {
+    localStorage.setItem('ryl_chatbot_config', JSON.stringify({ botName, botPrompt, primaryColor }));
     setIsSaved(true);
+    
+    // Auto-Heal trigger voor the COO Agent
+    await logSystemHealthAction('AiChatbotModule', 'WARNING', 'De AI Chatbot Save knop gebruikt momenteel localStorage. Er ontbreekt nog een koppeling om dit definitief in de UserBusinessModule (Postgres) op te slaan.');
+    
     setTimeout(() => setIsSaved(false), 3000);
   };
 

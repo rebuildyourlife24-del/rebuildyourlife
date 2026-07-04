@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@rebuildyourlife/database';
 import { getSessionAction } from '@/app/actions/auth';
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getSessionAction();
     if (!session.success || !session.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN' && session.user.role !== 'SUPREME_OVERSEER')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
     const body = await req.json();
 
     const allowedUpdates = ['subscriptionTier', 'role', 'clearanceLevel'];

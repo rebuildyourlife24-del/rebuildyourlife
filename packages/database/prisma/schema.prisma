@@ -43,6 +43,7 @@ model User {
   mollieAccessToken      String?
   mollieOrganizationId   String?
   mollieRefreshToken     String?
+  settings               String?
   aiConciergeLogs        AIConciergeLog[]
   aiConversations        AIConversation[]
   aiMemories             AIMemory[]

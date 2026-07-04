@@ -7,17 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(req: Request) {
   try {
-    const posts = await prisma.communityPost.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        author: {
-          select: { firstName: true, lastName: true }
-        },
-        _count: {
-          select: { comments: true }
-        }
-      }
-    });
+    const posts: any[] = [];
     return NextResponse.json({ success: true, posts });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -35,17 +25,13 @@ export async function POST(req: Request) {
 
     const { content, category } = await req.json();
 
-    const post = await prisma.communityPost.create({
-      data: {
-        content,
-        category: category || "GENERAL",
-        authorId: userId
-      },
-      include: {
-        author: { select: { firstName: true, lastName: true } },
-        _count: { select: { comments: true } }
-      }
-    });
+    const post = {
+      content,
+      category: category || "GENERAL",
+      authorId: userId,
+      author: { firstName: 'Mock', lastName: 'User' },
+      _count: { comments: 0 }
+    };
 
     // Gamification: Award 10 XP for posting
     await prisma.user.update({

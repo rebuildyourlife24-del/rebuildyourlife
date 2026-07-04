@@ -39,10 +39,10 @@ export default async function CFOPage() {
 
     contextData = `
     LAATSTE FINANCIELE SNAPSHOT:
-    ${recentSnapshot ? `Omzet: €${recentSnapshot.revenue}, Winst: €${recentSnapshot.profit}, ROAS: ${recentSnapshot.roas}x` : 'Geen omzetdata beschikbaar.'}
+    ${recentSnapshot ? `Omzet: €${recentSnapshot.totalRevenue}, Winst: €${recentSnapshot.netProfit}` : 'Geen omzetdata beschikbaar.'}
     
     TREASURY VAULTS (RESERVES):
-    ${vaults.length > 0 ? vaults.map(v => `- ${v.name}: €${v.balance}`).join('\n') : 'Geen actieve vaults/reserves.'}
+    ${vaults.length > 0 ? vaults.map(v => `- ${v.vaultType}: €${v.balance}`).join('\n') : 'Geen actieve vaults/reserves.'}
     `;
   }
 

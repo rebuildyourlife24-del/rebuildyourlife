@@ -20,13 +20,13 @@ export async function POST(req: Request) {
           where: { provider: 'CJ_DROPSHIPPING', userId: payload.userId }
         });
 
-        if (!cjIntegration || !cjIntegration.accessToken) {
+        if (!cjIntegration || !cjIntegration.apiKey) {
           console.error('[GODBRAIN CORE] FOUT: Geen CJ Dropshipping API key gevonden voor deze user.');
           return NextResponse.json({ error: 'CJ Dropshipping niet gekoppeld' }, { status: 400 });
         }
 
         // Simuleer / Communiceer met de échte CJ API
-        console.log(`[GODBRAIN CORE] Contacting CJ Dropshipping API via AccessToken: ${cjIntegration.accessToken.substring(0,5)}...`);
+        console.log(`[GODBRAIN CORE] Contacting CJ Dropshipping API via AccessToken: ${cjIntegration.apiKey.substring(0,5)}...`);
         
         // Echte implementatie: 
         // const cjResponse = await fetch('https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder', {
@@ -56,7 +56,8 @@ export async function POST(req: Request) {
             query: `Order #${payload.orderNumber} binnengekomen via Shopify.`,
             response: `Succesvol ingeschoten bij CJ Dropshipping via API.`,
             status: 'SUCCESS',
-            decisionType: 'SYSTEM'
+            decisionType: 'SYSTEM',
+            rationale: 'Auto-fulfilled based on system rules'
           }
         });
 
@@ -118,7 +119,8 @@ export async function POST(req: Request) {
             query: `Inkomende mail van ${payload.senderEmail}: "${payload.subject}"`,
             response: `AI heeft geantwoord (${toneOfVoice}): ${aiResponse.substring(0, 100)}...`,
             status: 'SUCCESS',
-            decisionType: 'SYSTEM'
+            decisionType: 'SYSTEM',
+            rationale: 'Auto-reply based on user tone settings'
           }
         });
 

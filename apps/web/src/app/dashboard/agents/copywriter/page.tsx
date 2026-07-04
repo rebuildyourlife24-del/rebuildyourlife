@@ -37,7 +37,7 @@ export default async function CopywriterPage() {
 
   return (
     <AgentChatInterface
-      agentId="COPYWRITER"
+      agentId="COPY"
       agentName="Copywriter Agent"
       agentRole="Sales & Content Wordsmith"
       agentDescription="Schrijft verkoopteksten, advertentie-copy, en e-mail funnels die converteren."

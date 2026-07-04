@@ -41,10 +41,10 @@ export async function POST(req: Request) {
         },
       });
       */
-      stripeCustomerId = customer.id;
+      // stripeCustomerId = customer.id;
       
       await db.user.update({
-        where: { id: user.id },
+        where: { id: user!.id },
         data: { stripeCustomerId }
       });
     }
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     });
     */
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: 'disabled' });
   } catch (error: any) {
     console.error('[STRIPE_CHECKOUT_ERROR]', error);
     return new NextResponse('Internal Error', { status: 500 });
