@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/ui/AppHeader";
 import { ThemeProvider } from "@/lib/contexts/ThemeContext";
 import { LightweightCinematicBackground } from "@/components/3d/LightweightCinematicBackground";
 import { SoundscapeEngine } from "@/components/audio/SoundscapeEngine";
+import AffiliateTracker from "@/components/AffiliateTracker";
 import "./globals.css";
 
 export const dynamic = 'force-dynamic';
@@ -55,6 +56,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LightweightCinematicBackground />
           <SoundscapeEngine />
+          <AffiliateTracker />
           
           <LanguageProvider>
           <AuthProvider>

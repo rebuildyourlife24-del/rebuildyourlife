@@ -186,6 +186,8 @@ export async function POST(req: Request) {
     // Step B: Create payment
     const isLocal = appUrl.includes("localhost") || appUrl.includes("127.0.0.1") || appUrl.includes("::1");
     const webhookUrl = isLocal ? undefined : `${appUrl}/api/mollie/webhook`;
+    
+    const affiliateCookie = cookieStore.get("ryl_affiliate")?.value;
 
     const paymentRequestBody: any = {
       amount: {
@@ -199,7 +201,7 @@ export async function POST(req: Request) {
         userEmail: user.email,
         priceId: priceId,
         tier: planConfig.tier,
-        affiliateCode: req.headers.get("x-affiliate-code") || null, // Will read from header if provided by frontend
+        affiliateCode: req.headers.get("x-affiliate-code") || affiliateCookie || null, // Will read from header or 30-day cookie
       },
     };
 
