@@ -58,3 +58,44 @@ export async function createEmailCampaign(name: string, subject: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function sendNewsletterAction(subject: string, content: string, toEmail: string = "test@rebuildyourlife.nl") {
+  const userId = await getAuthenticatedUser();
+  if (!userId) return { success: false, error: "Not authenticated" };
+
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    
+    if (!apiKey) {
+      console.log('RESEND_API_KEY not found. Simulating email sending.');
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return { success: true, simulated: true, messageId: `mock_${Date.now()}` };
+    }
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        from: 'The Sovereign Grid <grid@rebuildyourlife.nl>',
+        to: [toEmail],
+        subject: subject,
+        html: content.replace(/\n/g, '<br />')
+      })
+    });
+
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to send email via Resend');
+    }
+
+    return { success: true, simulated: false, messageId: data.id };
+  } catch (error: any) {
+    console.error('Email Send Error:', error);
+    return { success: false, error: error.message };
+  }
+}

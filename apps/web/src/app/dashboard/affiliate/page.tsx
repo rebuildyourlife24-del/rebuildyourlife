@@ -8,7 +8,11 @@ export default async function AffiliateDashboardPage() {
     include: {
       user: true,
       clicks: { orderBy: { clickedAt: 'desc' }, take: 10 },
-      sales: { orderBy: { createdAt: 'desc' }, take: 10 }
+      sales: { orderBy: { createdAt: 'desc' }, take: 10 },
+      tier2Sales: { orderBy: { createdAt: 'desc' }, take: 10 },
+      _count: {
+        select: { subAffiliates: true, tier2Sales: true }
+      }
     }
   });
 
@@ -19,7 +23,7 @@ export default async function AffiliateDashboardPage() {
           <Network className="w-8 h-8 text-purple-500" />
           Partner Netwerk
         </h1>
-        <p className="text-zinc-400 font-mono text-sm">Verdien {affiliate?.commissionRate || 30}% recurring commissie over elke nieuwe Syndicate of SaaS gebruiker.</p>
+        <p className="text-zinc-400 font-mono text-sm">Verdien €500 vaste commissie per Elite Sale. Bouw een team en verdien €100 per sub-sale.</p>
       </div>
 
       {!affiliate ? (
@@ -33,7 +37,7 @@ export default async function AffiliateDashboardPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="border border-white/10 bg-black/40 p-6 rounded-xl">
               <h3 className="text-xs uppercase font-mono text-zinc-500 mb-2">Totaal Verdiend</h3>
               <p className="text-4xl font-black text-white">€{affiliate.totalEarned.toFixed(2)}</p>
@@ -49,16 +53,25 @@ export default async function AffiliateDashboardPage() {
               </button>
             </div>
             <div className="border border-white/10 bg-black/40 p-6 rounded-xl">
-              <h3 className="text-xs uppercase font-mono text-zinc-500 mb-2">Jouw Unieke Link</h3>
+              <h3 className="text-xs uppercase font-mono text-zinc-500 mb-2">Jouw Sales Link</h3>
               <div className="flex items-center gap-2 bg-black border border-white/10 p-3 rounded-lg mt-2">
                 <LinkIcon size={14} className="text-zinc-500" />
-                <code className="text-sm text-cyan-400 flex-1 truncate">
+                <code className="text-[10px] text-cyan-400 flex-1 truncate">
                   rebuildyourlife.eu/?ref={affiliate.affiliateCode}
                 </code>
               </div>
-              <button className="mt-4 w-full bg-purple-600 hover:bg-purple-500 text-white text-xs uppercase py-2 rounded transition-colors">
-                Kopieer Link
-              </button>
+              <p className="text-[10px] text-zinc-500 mt-2">Deel deze link voor €500 per Elite Sale.</p>
+            </div>
+            <div className="border border-purple-500/30 bg-purple-900/10 p-6 rounded-xl">
+              <h3 className="text-xs uppercase font-mono text-purple-400 mb-2 flex items-center gap-2"><Network size={14}/> Team Werven</h3>
+              <div className="flex items-center gap-2 bg-black border border-white/10 p-3 rounded-lg mt-2">
+                <Users size={14} className="text-purple-500" />
+                <code className="text-[10px] text-purple-400 flex-1 truncate">
+                  rebuildyourlife.eu/join?sponsor={affiliate.affiliateCode}
+                </code>
+              </div>
+              <p className="text-[10px] text-zinc-400 mt-2">Krijg €100 passief voor élke sale uit je team.</p>
+              <p className="text-xs font-bold text-white mt-1">Huidig Team: {affiliate._count.subAffiliates} verkopers</p>
             </div>
           </div>
 
@@ -70,18 +83,30 @@ export default async function AffiliateDashboardPage() {
                 </h3>
               </div>
               <div className="p-4">
-                {affiliate.sales.length === 0 ? (
+                {affiliate.sales.length === 0 && affiliate.tier2Sales.length === 0 ? (
                   <p className="text-sm text-zinc-500 p-4 text-center">Nog geen sales geregistreerd.</p>
                 ) : (
                   <div className="space-y-3">
                     {affiliate.sales.map(sale => (
                       <div key={sale.id} className="flex items-center justify-between p-3 border border-white/5 bg-black rounded-lg">
                         <div>
-                          <p className="text-xs uppercase font-mono text-green-400">Sale: €{sale.amount.toFixed(2)}</p>
+                          <p className="text-xs uppercase font-mono text-green-400">Directe Sale (Tier 1)</p>
                           <p className="text-[10px] text-zinc-500">{new Date(sale.createdAt).toLocaleDateString()}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-bold text-white">+ €{sale.commission.toFixed(2)}</p>
+                          <p className="text-[10px] text-zinc-500 font-mono uppercase">{sale.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {affiliate.tier2Sales.map(sale => (
+                      <div key={`t2-${sale.id}`} className="flex items-center justify-between p-3 border border-purple-500/20 bg-purple-950/20 rounded-lg">
+                        <div>
+                          <p className="text-xs uppercase font-mono text-purple-400">Team Sale (Tier 2)</p>
+                          <p className="text-[10px] text-zinc-500">{new Date(sale.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-purple-300">+ €{sale.tier2Commission.toFixed(2)}</p>
                           <p className="text-[10px] text-zinc-500 font-mono uppercase">{sale.status}</p>
                         </div>
                       </div>

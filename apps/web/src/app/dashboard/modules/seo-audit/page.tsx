@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Globe, AlertTriangle, CheckCircle, TrendingUp, Loader2 } from "lucide-react";
+import { generateSEOReportAction } from "@/app/actions/modules";
+import { firecrawlScrapeUrlAction } from "@/app/actions/scraper";
 
 export default function SeoAuditModule() {
   const [url, setUrl] = useState("https://");
@@ -15,16 +17,16 @@ export default function SeoAuditModule() {
     setReport(null);
 
     try {
-      const res = await fetch("/api/seo-audit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      });
+      // 1. Eerst de website scrapen via Firecrawl
+      const scrapeRes = await firecrawlScrapeUrlAction(url);
+      const markdownContext = scrapeRes.success ? scrapeRes.data?.markdown : "";
 
-      if (!res.ok) throw new Error("API Fout");
+      // 2. Dan de ruwe data naar the Sovereign AI Router sturen
+      const res = await generateSEOReportAction(url, markdownContext);
 
-      const data = await res.json();
-      setReport(data);
+      if (!res.success) throw new Error(res.error || "Fout bij genereren");
+
+      setReport(res.report);
       setStatus("COMPLETE");
     } catch (err) {
       console.error(err);

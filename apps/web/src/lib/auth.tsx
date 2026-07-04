@@ -100,7 +100,7 @@ export function useRequireAuth(): AuthContextValue {
     if (!auth.isLoading) {
       if (!auth.isAuthenticated) {
         window.location.href = '/auth/login';
-      } else if (auth.user?.subscriptionTier === 'NONE' || auth.user?.subscriptionTier === 'FREE') {
+      } else if ((auth.user?.subscriptionTier as any) === 'NONE' || (auth.user?.subscriptionTier as any) === 'FREE') {
         window.location.href = '/agency';
       }
     }

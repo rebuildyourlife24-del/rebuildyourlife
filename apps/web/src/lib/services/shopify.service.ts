@@ -188,4 +188,19 @@ export class ShopifySwarmService {
       throw error;
     }
   }
+
+  /**
+   * Fetch unfulfilled orders for the orchestrator
+   */
+  static async getUnfulfilledOrders(storeId: string) {
+    try {
+      const orders = await prisma.shopifyOrder.findMany({
+        where: { storeId, status: 'PENDING' }
+      });
+      return orders;
+    } catch (error: any) {
+      console.error("[SHOPIFY SWARM] Error fetching unfulfilled orders:", error.message);
+      return [];
+    }
+  }
 }

@@ -25,9 +25,9 @@ export function SceneController({ theme = 'scifi' }: SceneControllerProps) {
           <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} />
           <Noise opacity={0.04} />
           <Vignette eskil={false} offset={0.1} darkness={1.1} />
-          {theme === 'cyberpunk' && (
+          {theme === 'cyberpunk' ? (
             <ChromaticAberration blendFunction={BlendFunction.NORMAL} offset={[0.002, 0.002] as any} />
-          )}
+          ) : null}
         </EffectComposer>
       </Canvas>
     </div>

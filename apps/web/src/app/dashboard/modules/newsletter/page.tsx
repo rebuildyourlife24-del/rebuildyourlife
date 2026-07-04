@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Mail, Sparkles, Send, FileText } from 'lucide-react';
 
+import { generateNewsletterAction } from '@/app/actions/modules';
+
 export default function NewsletterPage() {
   const [topic, setTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -15,14 +17,9 @@ export default function NewsletterPage() {
     
     setIsGenerating(true);
     try {
-      const res = await fetch('/api/modules/newsletter/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic })
-      });
-      const data = await res.json();
-      if (data.content) {
-        setGeneratedContent(data.content);
+      const res = await generateNewsletterAction(topic, "Professioneel B2B / The Syndicate Stijl");
+      if (res.success) {
+        setGeneratedContent(res.newsletter || "");
       }
     } catch (err) {
       console.error(err);
@@ -34,11 +31,22 @@ export default function NewsletterPage() {
     if (!generatedContent) return;
     setIsSending(true);
     try {
-      // In a real scenario, this would send via Resend API
-      // We will just simulate a success response for now, or hook to an endpoint
-      alert('Nieuwsbrief succesvol verzonden via email / Resend!');
+      // Gebruik de nieuwe Server Action met Resend API fallback
+      const { sendNewsletterAction } = await import('@/app/actions/mailer');
+      const res = await sendNewsletterAction(`Nieuwsbrief: ${topic.substring(0, 30)}...`, generatedContent);
+      
+      if (res.success) {
+        if (res.simulated) {
+          alert('Nieuwsbrief succesvol gesimuleerd! (Geen RESEND_API_KEY gevonden)');
+        } else {
+          alert(`Nieuwsbrief succesvol verzonden via Resend! (ID: ${res.messageId})`);
+        }
+      } else {
+        alert(`Fout bij verzenden: ${res.error}`);
+      }
     } catch (err) {
       console.error(err);
+      alert('Er is een onverwachte fout opgetreden.');
     }
     setIsSending(false);
   };

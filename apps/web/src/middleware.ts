@@ -12,13 +12,36 @@ export function middleware(request: NextRequest) {
   if ((url.pathname.startsWith('/ceo') || url.pathname.startsWith('/klanten')) && !isAiHenksemler) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  // Als we op het ai-henksemler domein zitten en we zitten in de root `/`, 
-  // routeer dan naar de /agency map (de verkooppagina)
+  let response = NextResponse.next();
+
+  // Routeer naar agency page als we op het ai-henksemler domein zitten en we zitten in de root `/`
   if (isAiHenksemler && url.pathname === '/') {
-    return NextResponse.rewrite(new URL(`/agency`, request.url));
+    response = NextResponse.rewrite(new URL(`/agency`, request.url));
   }
 
-  return NextResponse.next();
+  // Affiliate & Partner Tracking
+  const ref = url.searchParams.get('ref');
+  const sponsor = url.searchParams.get('sponsor');
+
+  // Zet de ref cookie (directe sale) voor 30 dagen
+  if (ref) {
+    response.cookies.set('ryl_affiliate_ref', ref, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax'
+    });
+  }
+
+  // Zet de sponsor cookie (netwerk werving) voor 30 dagen
+  if (sponsor) {
+    response.cookies.set('ryl_affiliate_sponsor', sponsor, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax'
+    });
+  }
+
+  return response;
 }
 
 export const config = {

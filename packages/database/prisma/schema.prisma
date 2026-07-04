@@ -626,6 +626,7 @@ model AgentBudget {
   currentBalance  Float         @default(0)
   spentAmount     Float         @default(0)
   profitGenerated Float         @default(0)
+  hardCeiling     Float         @default(0)
   status          String        @default("ACTIVE")
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -1522,11 +1523,13 @@ model AgentRegistry {
   totalTasks      Int                   @default(0)
   successRate     Float                 @default(100.0)
   budgetAllocated Float                 @default(0.0)
+  genesisPhase    Int                   @default(1) // 1: Shadow, 2: Capped, 3: Scaled
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
   evolutions      AgentEvolutionLog[]
   actions         GlobalNeuralNetwork[]
   predictions     HermesPrediction[]
+  knowledgeBase   AgentKnowledgeBase[]
 
   @@index([status])
   @@index([department])
@@ -1568,9 +1571,12 @@ model HermesPrediction {
 model AgentEvolutionLog {
   id              String        @id @default(uuid())
   agentId         String
+  targetAgentId   String?
   previousVersion String
   newVersion      String
   upgradeReason   String
+  reason          String?
+  score           Float?
   newPrompt       String?
   approvedBy      String        @default("HERMES")
   appliedAt       DateTime      @default(now())
@@ -1578,6 +1584,40 @@ model AgentEvolutionLog {
 
   @@index([agentId])
   @@index([appliedAt])
+}
+
+model AgentKnowledgeBase {
+  id             String                     @id @default(uuid())
+  agentId        String
+  domain         String                     @default("GENERAL") // e.g., MARKETING, FINANCE, SUPPORT
+  type           String                     @default("HYPOTHESIS") // VERIFIED, HYPOTHESIS, CONTRADICTION, FAILURE
+  claim          String                     @db.Text
+  evidence       String?                    @db.Text
+  source         String?                    // e.g., URL, USER_FEEDBACK, A/B_TEST_RESULT
+  confidence     Float                      @default(0.5) // 0.0 to 1.0
+  status         String                     @default("ACTIVE") // ACTIVE, ARCHIVED, DEPRECATED
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  agent          AgentRegistry              @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  verifications  KnowledgeVerificationLog[]
+
+  @@index([agentId])
+  @@index([type])
+  @@index([domain])
+}
+
+model KnowledgeVerificationLog {
+  id             String             @id @default(uuid())
+  knowledgeId    String
+  verifierId     String?            // Agent ID or User ID who verified
+  verifierType   String             @default("SYSTEM") // USER, SYSTEM, AGENT
+  previousType   String             // Before verification
+  newType        String             // After verification
+  reasoning      String             @db.Text
+  createdAt      DateTime           @default(now())
+  knowledge      AgentKnowledgeBase @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+
+  @@index([knowledgeId])
 }
 
 model Document {
@@ -2086,18 +2126,27 @@ model AffiliateProfile {
   id               String          @id @default(uuid())
   userId           String          @unique
   affiliateCode    String          @unique
-  commissionRate   Float           @default(30.0)
+  commissionRate   Float           @default(30.0) // Fallback for standard products
   totalEarned      Float           @default(0)
   pendingBalance   Float           @default(0)
   status           String          @default("ACTIVE")
+  
+  // MLM / Multi-Tier Network
+  parentAffiliateId String?
+  parentAffiliate   AffiliateProfile?  @relation("AffiliateNetwork", fields: [parentAffiliateId], references: [id], onDelete: SetNull)
+  subAffiliates     AffiliateProfile[] @relation("AffiliateNetwork")
+
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  
   user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   clicks           AffiliateClick[]
-  sales            AffiliateSale[]
+  sales            AffiliateSale[] @relation("DirectSales")
+  tier2Sales       AffiliateSale[] @relation("Tier2Sales")
 
   @@index([userId])
   @@index([affiliateCode])
+  @@index([parentAffiliateId])
 }
 
 model AffiliateClick {
@@ -2116,19 +2165,61 @@ model AffiliateClick {
 }
 
 model AffiliateSale {
-  id                 String           @id @default(uuid())
-  affiliateProfileId String
-  purchaserUserId    String?
-  molliePaymentId    String
-  amount             Float
-  commission         Float
-  status             String           @default("PENDING")
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  affiliateProfile   AffiliateProfile @relation(fields: [affiliateProfileId], references: [id], onDelete: Cascade)
-  purchaser          User?            @relation(fields: [purchaserUserId], references: [id])
+  id                      String           @id @default(uuid())
+  affiliateProfileId      String
+  tier2AffiliateProfileId String?
+  purchaserUserId         String?
+  molliePaymentId         String
+  amount                  Float
+  
+  // Fixed commissions
+  commission              Float            // Direct seller (Tier 1)
+  tier2Commission         Float            @default(0) // Parent seller (Tier 2)
+  
+  status                  String           @default("PENDING")
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  
+  affiliateProfile        AffiliateProfile @relation("DirectSales", fields: [affiliateProfileId], references: [id], onDelete: Cascade)
+  tier2AffiliateProfile   AffiliateProfile? @relation("Tier2Sales", fields: [tier2AffiliateProfileId], references: [id], onDelete: SetNull)
+  purchaser               User?            @relation(fields: [purchaserUserId], references: [id])
 
   @@index([affiliateProfileId])
+  @@index([tier2AffiliateProfileId])
   @@index([status])
   @@index([molliePaymentId])
+}
+
+// -----------------------------------------------------------------------------
+// PRIVATE R&D ADMIN ENVIRONMENT (PROMPT I & J)
+// -----------------------------------------------------------------------------
+
+model CapabilityDevelopment {
+  id              String   @id @default(uuid())
+  title           String
+  description     String   @db.Text
+  genesisPhase    String   @default("PHASE_A") // PHASE_A, PHASE_B, PHASE_C
+  justification   String   @db.Text
+  status          String   @default("IN_DEVELOPMENT") // IN_DEVELOPMENT, TESTING, DEPLOYED, REJECTED
+  createdBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([genesisPhase])
+  @@index([status])
+}
+
+model SeoAgentProposal {
+  id              String   @id @default(uuid())
+  title           String
+  description     String   @db.Text
+  targetUrl       String
+  evidence        String   @db.Text
+  reasoning       String   @db.Text
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, IMPLEMENTED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([targetUrl])
 }

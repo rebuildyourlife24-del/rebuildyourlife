@@ -8,7 +8,7 @@ export class ContentWorker {
     const baseContent = "High quality luxury product that changes your life.";
     const translated = await this.mockTranslate(baseContent, targetLanguage);
     
-    await HermesService.logEvent({
+    await HermesExecutionService.logEvent({
       action: 'CONTENT_GENERATED',
       details: { productUrl, language: targetLanguage, length: translated.length },
       status: 'success'

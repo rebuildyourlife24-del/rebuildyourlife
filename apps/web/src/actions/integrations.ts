@@ -43,3 +43,43 @@ export async function getIntegrations() {
 
   return integrations;
 }
+
+export async function saveSocialIntegration(platform: string, accessToken: string, accountId?: string) {
+  const session = await getSessionAction(); const user = session?.user;
+  if (!user) throw new Error('Niet geauthenticeerd');
+
+  await prisma.socialPlatformIntegration.upsert({
+    where: {
+      userId_platform: {
+        userId: user.id,
+        platform: platform,
+      }
+    },
+    update: {
+      accessToken: accessToken,
+      accountId: accountId || null,
+      status: 'ACTIVE',
+    },
+    create: {
+      userId: user.id,
+      platform: platform,
+      accessToken: accessToken,
+      accountId: accountId || null,
+      status: 'ACTIVE',
+    }
+  });
+
+  revalidatePath('/dashboard/settings/integrations');
+  return { success: true };
+}
+
+export async function getSocialIntegrations() {
+  const session = await getSessionAction(); const user = session?.user;
+  if (!user) throw new Error('Niet geauthenticeerd');
+
+  const integrations = await prisma.socialPlatformIntegration.findMany({
+    where: { userId: user.id }
+  });
+
+  return integrations;
+}

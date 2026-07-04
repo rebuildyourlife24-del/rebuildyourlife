@@ -7,7 +7,7 @@ export class TrafficWorker {
     const adCopy = await this.generateAdCopy(productId);
     const campaignId = `CAMP-${Math.random().toString(36).substring(7).toUpperCase()}`;
     
-    await HermesService.logEvent({
+    await HermesExecutionService.logEvent({
       action: 'CAMPAIGN_LAUNCHED',
       details: { productId, budget, campaignId, copy: adCopy },
       status: 'success'

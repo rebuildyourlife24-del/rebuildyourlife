@@ -1,0 +1,148 @@
+
+// ============================================================================
+// THE AGENTIC OS (ORION & HERMES)
+// ============================================================================
+
+model AgentRegistry {
+  id           String   @id @default(cuid())
+  name         String
+  role         String
+  status       String   @default("IDLE")
+  systemPrompt String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  evolutions   AgentEvolutionLog[]
+}
+
+model AgentEvolutionLog {
+  id              String   @id @default(cuid())
+  agentId         String
+  targetAgentId   String?
+  agent           AgentRegistry @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  previousVersion String
+  newVersion      String
+  upgradeReason   String?
+  reason          String?
+  score           Float?
+  newPrompt       String?  @db.Text
+  approvedBy      String?
+  appliedAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+}
+
+// ============================================================================
+// E-COMMERCE (SHOPIFY)
+// ============================================================================
+
+model ShopifyStore {
+  id          String   @id @default(cuid())
+  domain      String   @unique
+  accessToken String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    ShopifyProduct[]
+  orders      ShopifyOrder[]
+}
+
+model ShopifyProduct {
+  id          String   @id @default(cuid())
+  storeId     String
+  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  title       String
+  description String?  @db.Text
+  price       Float
+  inventory   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ShopifyOrder {
+  id          String   @id @default(cuid())
+  storeId     String
+  store       ShopifyStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderNumber String
+  totalPrice  Float
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================================================
+// MARKETING & SUPPORT
+// ============================================================================
+
+model EmailCampaign {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  subject      String
+  htmlContent  String   @db.Text
+  status       String   @default("DRAFT")
+  scheduledFor DateTime?
+  sentCount    Int      @default(0)
+  openCount    Int      @default(0)
+  clickCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation("UserTickets", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo String?
+  assignee   User?    @relation("AssignedTickets", fields: [assignedTo], references: [id], onDelete: SetNull)
+  status     String   @default("OPEN")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  messages   TicketMessage[]
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender    String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+// ============================================================================
+// THE SYNDICATE COMMUNITY (SOCIAL FEED)
+// ============================================================================
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  likes     Like[]
+  comments  Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, userId])
+}

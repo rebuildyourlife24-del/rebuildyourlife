@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Bot, Save, Copy, CheckCircle, Settings, MessageSquare, Code } from "lucide-react";
+import { Bot, Save, Copy, CheckCircle, Settings, MessageSquare, Code, Wand2, Loader2 } from "lucide-react";
+import { trainChatbotAction } from "@/app/actions/modules";
 
 export default function AiChatbotModule() {
   const [botName, setBotName] = useState("Klantenservice Bot");
@@ -10,6 +11,17 @@ export default function AiChatbotModule() {
   const [primaryColor, setPrimaryColor] = useState("#3B82F6");
   const [isSaved, setIsSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGeneratePrompt = async () => {
+    if (!botName) return;
+    setIsGenerating(true);
+    const res = await trainChatbotAction(botName, botPrompt);
+    if (res.success && res.prompt) {
+      setBotPrompt(res.prompt);
+    }
+    setIsGenerating(false);
+  };
 
   const handleSave = () => {
     // TODO: Sla de configuratie op in de database onder UserBusinessModule.config
@@ -70,9 +82,19 @@ export default function AiChatbotModule() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
-                  Instructies (Prompt) - Wat moet de bot doen?
-                </label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-slate-400">
+                    Instructies (Prompt) - Wat moet de bot doen?
+                  </label>
+                  <button 
+                    onClick={handleGeneratePrompt}
+                    disabled={isGenerating}
+                    className="text-xs flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+                  >
+                    {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />} 
+                    Verrijk met AI
+                  </button>
+                </div>
                 <textarea 
                   value={botPrompt}
                   onChange={(e) => setBotPrompt(e.target.value)}

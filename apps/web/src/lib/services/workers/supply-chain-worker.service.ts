@@ -8,7 +8,7 @@ export class SupplyChainWorker {
     const supplierOrderId = `SUP-${Math.random().toString(36).substring(7).toUpperCase()}`;
     const trackingCode = `TRK${Math.random().toString(10).substring(2, 12)}`;
     
-    await HermesService.logEvent({
+    await HermesExecutionService.logEvent({
       action: 'ORDER_FULFILLED',
       details: { orderId, supplierOrderId, trackingCode },
       status: 'success'

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from "@rebuildyourlife/database";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 
 
@@ -119,6 +120,16 @@ export async function POST(req: Request) {
       console.log(`[SPLIT PAYMENT ROUTING]`);
       console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
       console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
+
+      // 🔔 Telegram Push Notification
+      await sendTelegramMessage(
+        `🚨 *NIEUWE BETALING BINNEN* 🚨\n\n` +
+        `💰 Bedrag: €${totalAmount.toFixed(2)}\n` +
+        `👤 User ID: ${userId}\n` +
+        `🏆 Tier: ${tier || "ECOM"}\n` +
+        `${affiliateCode ? `🤝 Affiliate: ${affiliateCode} (Commissie: €${(totalAmount * 0.25).toFixed(2)})\n` : ""}` +
+        `\n*Sovereign OS Treasury Engine*`
+      );
 
       return NextResponse.json({ 
         success: true,

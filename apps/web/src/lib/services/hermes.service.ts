@@ -1,6 +1,7 @@
 import { prisma } from '@rebuildyourlife/database';
 import { generateText } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
+import { TelegramService } from './telegram.service';
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY || 'mock_key',
@@ -75,6 +76,13 @@ export class HermesExecutionService {
       }
     });
 
+    // Stuur een Telegram notificatie naar de CEO
+    await TelegramService.sendApprovalRequest(
+      action.title, 
+      action.description,
+      action.id
+    );
+
     console.log(`[HERMES] Actie succesvol in Control Matrix geplaatst: ${action.id}`);
     return { status: 'PENDING_APPROVAL', actionId: action.id };
   }
@@ -83,8 +91,42 @@ export class HermesExecutionService {
    * Zodra de CEO op "Approve" klikt in de Control Matrix.
    */
   static async executeApprovedAction(userId: string, actionId: string, resultStatus: 'SUCCESS' | 'FAILURE') {
+    const defaultAgent = await prisma.agentRegistry.findFirst({
+      where: { department: "FINANCIAL" }
+    });
+
+    if (!defaultAgent) {
+      throw new Error("Financial Agent not found.");
+    }
+
+    if (defaultAgent.genesisPhase === 1) {
+      console.log(`[HERMES - PHASE 1 SHADOW MODE] Action ${actionId} execution blocked. Real money is protected.`);
+      
+      // Log as Hypothesis in Epistemic Grid
+      await prisma.agentKnowledgeBase.create({
+        data: {
+          agentId: defaultAgent.id,
+          domain: "FINANCE",
+          type: "HYPOTHESIS",
+          claim: `Action ${actionId} executed in SHADOW MODE. Projected result: ${resultStatus}`,
+          evidence: "Genesis Protocol Phase 1 simulation",
+          source: "HERMES_EXECUTION",
+          confidence: 0.5
+        }
+      });
+      return;
+    }
+
+    if (defaultAgent.genesisPhase === 2) {
+      const budget = await prisma.agentBudget.findUnique({ where: { agentType: "FINANCIAL" }});
+      if (budget && budget.spentAmount >= budget.hardCeiling) {
+         console.warn(`[HERMES - PHASE 2] Budget hard ceiling reached. Blocking execution.`);
+         return;
+      }
+    }
+
     // 1. Voer actie uit (Bijv. Stripe Refund, Meta Ads launch, etc.)
-    // ... API calls ...
+    // ... API calls (only if Phase 2 or 3 and budget allows) ...
 
     // 2. EVOLUTIE / LEREN
     let reason = '';
@@ -100,18 +142,27 @@ export class HermesExecutionService {
     await this.logEvolutionLesson(userId, reason, score);
   }
 
+  static async logEvent(payload: { action: string; details: any; status: string }) {
+    console.log(`[HERMES EVENT] ${payload.action}`, payload.details);
+  }
+
   private static async logEvolutionLesson(userId: string, reason: string, score: number) {
-    await prisma.agentEvolutionLog.create({
-      data: {
-        agent: {
-          connectOrCreate: {
-            where: { agentNumber: 1 }, // Fallback for concept
-            create: { targetAgentId: userId }
-          }
-        },
-        score: score,
-        reason: reason
-      }
+    const defaultAgent = await prisma.agentRegistry.findFirst({
+      where: { department: "FINANCIAL" }
     });
+
+    if (defaultAgent) {
+      await prisma.agentEvolutionLog.create({
+        data: {
+          agentId: defaultAgent.id,
+          targetAgentId: userId,
+          previousVersion: "1.0.0",
+          newVersion: "1.0.1",
+          upgradeReason: "Action feedback loop",
+          score: score,
+          reason: reason
+        }
+      });
+    }
   }
 }

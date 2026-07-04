@@ -14,7 +14,7 @@ export class SupportWorker {
        response = `Bedankt voor je bericht, we helpen je graag verder. (Auto-translated to ${language})`;
     }
     
-    await HermesService.logEvent({
+    await HermesExecutionService.logEvent({
       action: 'TICKET_RESOLVED',
       details: { ticketId, intent, autoReply: true },
       status: 'success'

@@ -32,18 +32,32 @@ export class OrionIntelligenceService {
   static async performMarketReconnaissance(userId: string, marketQuery: string) {
     console.log(`[ORION] Start verkenningsfase voor markt: ${marketQuery}`);
 
-    // 1. Lees het lange termijn geheugen (Evolution Logs)
-    const pastLessons = await prisma.agentEvolutionLog.findMany({
-      where: { 
-        agent: { targetAgentId: userId } // Conceptueel: Haal logs op gerelateerd aan deze user/omgeving
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 5
+    // Genesis Protocol: Rule 1 Pipeline at a Time
+    const pendingActions = await prisma.agentAction.count({
+      where: {
+        userId: userId,
+        status: 'PENDING'
+      }
     });
 
-    const memoryContext = pastLessons.length > 0 
-      ? `PAST LESSONS (DO NOT REPEAT THESE MISTAKES):\n${pastLessons.map(l => `- ${l.reason} (Score: ${l.score})`).join('\n')}`
-      : 'No past lessons available. Operating in blank state.';
+    if (pendingActions > 0) {
+      console.warn(`[ORION - GENESIS PROTOCOL] Er loopt al een pijplijn. Orion wacht af. (Actieve acties: ${pendingActions})`);
+      return { error: 'Eén pijplijn tegelijk. Sluit de huidige af voordat je een nieuwe start.' };
+    }
+
+    // 1. Epistemic Protocol: Lees geverifieerde feiten (VERIFIED) uit de Knowledge Base
+    const verifiedKnowledge = await prisma.agentKnowledgeBase.findMany({
+      where: { 
+        type: 'VERIFIED'
+        // targetAgentId niet nodig, we gebruiken het gedeelde epistemic grid
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
+
+    const memoryContext = verifiedKnowledge.length > 0 
+      ? `VERIFIED FACTS (YOU MUST OBEY THESE STRICTLY):\n${verifiedKnowledge.map(k => `- ${k.claim} (Confidence: ${k.confidence})`).join('\n')}`
+      : 'No verified facts available. Operating in blank state.';
 
     // 2. Synthese (Orion denkt na via de LLM)
     const prompt = `
@@ -73,8 +87,23 @@ export class OrionIntelligenceService {
       const dossier = JSON.parse(text);
       console.log(`[ORION] Intelligence Dossier compleet:`, dossier);
 
-      // 3. De Estafette: We slaan het dossier (virtueel) op of sturen het direct door naar Hermes.
-      // (In de app flow triggert dit hierna Hermes).
+      // 3. Epistemic Protocol: Sla het dossier op als een HYPOTHESE.
+      // Het wordt pas een FACT (VERIFIED) als Hermes er winst mee boekt of jij het goedkeurt.
+      const defaultAgent = await prisma.agentRegistry.findFirst({ where: { department: "MARKETING" } });
+      
+      if (defaultAgent) {
+        await prisma.agentKnowledgeBase.create({
+          data: {
+            agentId: defaultAgent.id,
+            domain: "MARKETING",
+            type: "HYPOTHESIS",
+            claim: `Intelligence Dossier: ${dossier.opportunityName} -> ${dossier.recommendedAction}`,
+            evidence: dossier.strategicReasoning,
+            source: "ORION_RECONNAISSANCE",
+            confidence: dossier.confidenceScore / 100
+          }
+        });
+      }
       return dossier;
 
     } catch (e) {

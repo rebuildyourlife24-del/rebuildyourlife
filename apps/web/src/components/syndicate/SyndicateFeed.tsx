@@ -12,7 +12,7 @@ import {
 interface Comment {
   id: string;
   content: string;
-  createdAt: string;
+  createdAt: any;
   author: {
     id: string;
     firstName: string | null;
@@ -26,7 +26,7 @@ interface Post {
   id: string;
   content: string;
   imageUrl?: string | null;
-  createdAt: string;
+  createdAt: any;
   author: {
     id: string;
     firstName: string | null;

@@ -1,22 +1,46 @@
-import { getIntegrations } from '@/actions/integrations';
+import { getIntegrations, getSocialIntegrations } from '@/actions/integrations';
 import { SettingsIntegrationsClient } from './SettingsIntegrationsClient';
+import { SettingsSocialIntegrationsClient } from './SettingsSocialIntegrationsClient';
 
 export default async function SettingsIntegrationsPage() {
   const integrations = await getIntegrations();
+  const socialIntegrations = await getSocialIntegrations();
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-white">API Integraties</h3>
+        <h3 className="text-lg font-medium text-white">API Integraties & Socials</h3>
         <p className="text-sm text-gray-400">
-          Koppel externe diensten zodat de Hermes Omnibus autonoom acties kan uitvoeren. Geen code nodig, alleen je tokens.
+          Koppel externe diensten zodat de Sovereign Grid autonoom acties kan uitvoeren. Geen code nodig, alleen je tokens.
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="bg-black/50 border border-white/10 rounded-xl p-6 backdrop-blur-md">
           <div className="mb-4">
-            <h3 className="text-xl font-semibold text-white">Autonome Marketing</h3>
+            <h3 className="text-xl font-semibold text-white">Social Media (Auto-Poster)</h3>
+            <p className="text-sm text-gray-400">Jouw persoonlijke social media profielen.</p>
+          </div>
+          <div className="space-y-6">
+             <SettingsSocialIntegrationsClient 
+                platform="LINKEDIN" 
+                title="LinkedIn Profile" 
+                description="Vul je LinkedIn Access Token in om The Grid organisch te laten posten op je profiel."
+                existingIntegration={socialIntegrations.find(i => i.platform === 'LINKEDIN')}
+             />
+             <div className="border-t border-white/10" />
+             <SettingsSocialIntegrationsClient 
+                platform="TWITTER" 
+                title="X (Twitter) Profile" 
+                description="Vul je X API sleutel in om autonoom content te syndicaten."
+                existingIntegration={socialIntegrations.find(i => i.platform === 'TWITTER')}
+             />
+          </div>
+        </div>
+
+        <div className="bg-black/50 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-white">Autonome Marketing (Ads)</h3>
             <p className="text-sm text-gray-400">Meta Ads en TikTok API koppelingen.</p>
           </div>
           <div className="space-y-6">
@@ -45,14 +69,14 @@ export default async function SettingsIntegrationsPage() {
              <SettingsIntegrationsClient 
                 provider="CJ_DROPSHIPPING" 
                 title="CJ Dropshipping API" 
-                description="Zodat Hermes autonoom bestellingen kan omleiden bij vertraging."
+                description="Zodat The Grid autonoom bestellingen kan omleiden bij vertraging."
                 existingIntegration={integrations.find(i => i.provider === 'CJ_DROPSHIPPING')}
              />
              <div className="border-t border-white/10" />
              <SettingsIntegrationsClient 
                 provider="IMAP_SUPPORT" 
                 title="Gmail / IMAP Support" 
-                description="Wachtwoord om Hermes e-mails te laten afhandelen."
+                description="Wachtwoord om E-mails te laten afhandelen."
                 existingIntegration={integrations.find(i => i.provider === 'IMAP_SUPPORT')}
              />
              <div className="border-t border-white/10" />

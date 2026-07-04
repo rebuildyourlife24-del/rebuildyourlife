@@ -49,6 +49,14 @@ model User {
   
   subAgreements      CommissionAgreement[] @relation("AgreementSub")
   parentAgreements   CommissionAgreement[] @relation("AgreementParent")
+  
+  // Nieuwe Relaties (AI OS Master Update)
+  tickets            Ticket[]        @relation("UserTickets")
+  assignedTickets    Ticket[]        @relation("AssignedTickets")
+  emailCampaigns     EmailCampaign[]
+  posts              Post[]
+  comments           Comment[]
+  likes              Like[]
 }
 
 // Actie 1: Bank Koppeling (PSD2) Portaal

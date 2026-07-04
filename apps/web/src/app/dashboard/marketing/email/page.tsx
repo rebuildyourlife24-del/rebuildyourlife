@@ -20,7 +20,7 @@ export default function NativeMailerPage() {
     setLoading(true);
     const res = await getEmailCampaigns();
     if (res.success) {
-      setCampaigns(res.campaigns);
+      setCampaigns(res.campaigns || []);
       setSubsCount(res.subsCount || 0);
     }
     setLoading(false);

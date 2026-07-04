@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { LayoutPanelTop, Wand2, Monitor, Code } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { LayoutPanelTop, Wand2, Monitor, Code, Loader2 } from 'lucide-react';
+import { generateWebsiteAction } from '../../../actions/modules';
 
 export default function WebsiteBuilderPage() {
   const [topic, setTopic] = useState('');
@@ -9,25 +10,20 @@ export default function WebsiteBuilderPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
 
-  const handleGenerate = async (e: React.FormEvent) => {
+  const [isPending, startTransition] = useTransition();
+
+  const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!topic) return;
     
-    setIsGenerating(true);
-    try {
-      const res = await fetch('/api/modules/website-builder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, targetAudience })
-      });
-      const data = await res.json();
-      if (data.html) {
-        setGeneratedHtml(data.html);
+    startTransition(async () => {
+      const res = await generateWebsiteAction(topic, targetAudience);
+      if (res.success && res.html) {
+        setGeneratedHtml(res.html);
+      } else {
+        alert("Fout bij het genereren van de website.");
       }
-    } catch (err) {
-      console.error(err);
-    }
-    setIsGenerating(false);
+    });
   };
 
   return (
@@ -70,10 +66,10 @@ export default function WebsiteBuilderPage() {
 
             <button 
               type="submit" 
-              disabled={isGenerating || !topic}
+              disabled={isPending || !topic}
               className="w-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold uppercase tracking-widest py-3 rounded-lg flex justify-center items-center gap-2 transition-colors disabled:opacity-50"
             >
-              {isGenerating ? <Wand2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Genereer Pagina
+              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Genereer Pagina
             </button>
           </form>
         </div>

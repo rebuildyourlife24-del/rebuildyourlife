@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Users, FileText, Briefcase, Phone, Mail, Plus, X, Loader2 } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { Users, FileText, Briefcase, Phone, Mail, Plus, X, Loader2, Link as LinkIcon } from 'lucide-react';
+import { createCRMClientAction, createCRMInvoiceAction, generatePaymentLinkAction } from '../../actions/crm';
 
 export default function CRMClientList({ initialClients }: { initialClients: any[] }) {
   const [clients, setClients] = useState(initialClients);
@@ -11,52 +12,61 @@ export default function CRMClientList({ initialClients }: { initialClients: any[
   // New Client State
   const [newClient, setNewClient] = useState({ name: '', email: '', phone: '', company: '' });
 
-  const handleAddClient = async (e: React.FormEvent) => {
+  const [isPending, startTransition] = useTransition();
+
+  const handleAddClient = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await fetch('/api/crm/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newClient)
-      });
-      const data = await res.json();
-      if (data.success) {
-        setClients([{ ...data.client, invoices: [] }, ...clients]);
+    startTransition(async () => {
+      const res = await createCRMClientAction(newClient);
+      if (res.success) {
+        setClients([{ ...res.client, invoices: [] }, ...clients]);
         setShowAddClient(false);
         setNewClient({ name: '', email: '', phone: '', company: '' });
+      } else {
+        alert("Fout bij aanmaken klant: " + res.error);
       }
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
+    });
   };
 
-  const handleAddInvoice = async (clientId: string) => {
-    const amount = prompt("Factuurbedrag (€):");
-    if (!amount || isNaN(parseFloat(amount))) return;
+  const handleAddInvoice = (clientId: string) => {
+    const amountStr = prompt("Factuurbedrag (€):");
+    if (!amountStr || isNaN(parseFloat(amountStr))) return;
 
     const description = prompt("Omschrijving van dienst/product:");
     if (!description) return;
 
-    try {
-      const res = await fetch('/api/crm/invoices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, amount, description })
-      });
-      const data = await res.json();
-      if (data.success) {
+    startTransition(async () => {
+      const res = await createCRMInvoiceAction({ clientId, amount: parseFloat(amountStr), description });
+      if (res.success) {
         setClients(clients.map(c => {
           if (c.id === clientId) {
-            return { ...c, invoices: [data.invoice, ...c.invoices] };
+            return { ...c, invoices: [res.invoice, ...c.invoices] };
+          }
+          return c;
+        }));
+      } else {
+        alert("Fout bij aanmaken factuur.");
+      }
+    });
+  };
+
+  const handleGenerateLink = (invoiceId: string, clientId: string) => {
+    startTransition(async () => {
+      const res = await generatePaymentLinkAction(invoiceId);
+      if (res.success) {
+        alert(`Mollie Betaallink gegenereerd:\n${res.paymentUrl}\n\nDe status is gewijzigd naar SENT.`);
+        // Update local state for immediate feedback
+        setClients(clients.map(c => {
+          if (c.id === clientId) {
+            return {
+              ...c,
+              invoices: c.invoices.map((inv: any) => inv.id === invoiceId ? { ...inv, status: 'SENT' } : inv)
+            };
           }
           return c;
         }));
       }
-    } catch (err) {
-      console.error(err);
-    }
+    });
   };
 
   return (
@@ -84,8 +94,8 @@ export default function CRMClientList({ initialClients }: { initialClients: any[
             <input type="text" placeholder="Bedrijfsnaam" className="bg-black border border-white/10 rounded p-3 text-white" value={newClient.company} onChange={e => setNewClient({...newClient, company: e.target.value})} />
             <input type="email" placeholder="E-mailadres" className="bg-black border border-white/10 rounded p-3 text-white" value={newClient.email} onChange={e => setNewClient({...newClient, email: e.target.value})} />
             <input type="text" placeholder="Telefoonnummer" className="bg-black border border-white/10 rounded p-3 text-white" value={newClient.phone} onChange={e => setNewClient({...newClient, phone: e.target.value})} />
-            <button type="submit" disabled={loading} className="col-span-1 md:col-span-2 bg-white text-black font-bold uppercase py-3 rounded mt-2">
-              {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Opslaan"}
+            <button type="submit" disabled={isPending} className="col-span-1 md:col-span-2 bg-white text-black font-bold uppercase py-3 rounded mt-2 disabled:opacity-50 flex items-center justify-center">
+              {isPending ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Opslaan"}
             </button>
           </form>
         </div>
@@ -146,9 +156,24 @@ export default function CRMClientList({ initialClients }: { initialClients: any[
                         </div>
                         <div className="text-right">
                           <span className="font-bold text-white block">€{invoice.amount.toFixed(2)}</span>
-                          <span className={`px-1.5 py-0.5 rounded text-[8px] uppercase ${invoice.status === 'PAID' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                            {invoice.status}
-                          </span>
+                          <div className="flex items-center justify-end gap-2 mt-1">
+                            {invoice.status === 'DRAFT' && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleGenerateLink(invoice.id, client.id); }}
+                                disabled={isPending}
+                                className="text-[9px] uppercase text-cyan-400 border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 rounded hover:bg-cyan-500/20 transition-colors flex items-center gap-1"
+                              >
+                                <LinkIcon className="w-2 h-2" /> Mollie Link
+                              </button>
+                            )}
+                            <span className={`px-1.5 py-0.5 rounded text-[8px] uppercase font-bold tracking-wider ${
+                              invoice.status === 'PAID' ? 'bg-green-500/20 text-green-400' : 
+                              invoice.status === 'SENT' ? 'bg-blue-500/20 text-blue-400' :
+                              'bg-amber-500/20 text-amber-400'
+                            }`}>
+                              {invoice.status}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}

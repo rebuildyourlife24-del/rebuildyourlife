@@ -351,4 +351,10 @@ export class TrafficService {
       return null;
     }
   }
+
+  static async optimizeTrafficSources(userId: string) {
+    console.log(`[TRAFFIC SERVICE] Optimizing traffic sources for user ${userId}...`);
+    // Placeholder for actual optimization logic
+    return { success: true };
+  }
 }

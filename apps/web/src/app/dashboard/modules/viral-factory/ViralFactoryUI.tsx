@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Video, Wand2, Loader2, Play, Calendar, Copy } from 'lucide-react';
+import { Video, Wand2, Loader2, Play, Calendar, Copy, Volume2, Smartphone } from 'lucide-react';
+
+import { generateViralScriptAction } from '@/app/actions/modules';
+import { generateVoiceAction } from '@/app/actions/voice';
 
 export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[] }) {
   const [topic, setTopic] = useState('');
@@ -10,6 +13,8 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
   const [loading, setLoading] = useState(false);
   const [drafts, setDrafts] = useState(initialDrafts);
   const [currentScript, setCurrentScript] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [generatingAudio, setGeneratingAudio] = useState(false);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,20 +22,39 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
     setLoading(true);
 
     try {
-      const res = await fetch('/api/video-factory/script', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, platform, length })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setCurrentScript(data.script);
-        setDrafts([data.post, ...drafts]);
+      const res = await generateViralScriptAction(topic, platform);
+      
+      if (res.success) {
+        setCurrentScript(res.script);
+        // Voor nu simuleren we de opgeslagen post lokaal totdat we DB sync hebben
+        setDrafts([{
+          id: Math.random().toString(),
+          platform: platform,
+          status: 'DRAFT',
+          content: res.script,
+          createdAt: new Date().toISOString()
+        }, ...drafts]);
       }
     } catch (err) {
       console.error(err);
     }
     setLoading(false);
+  };
+
+  const handleGenerateAudio = async () => {
+    if (!currentScript) return;
+    setGeneratingAudio(true);
+    try {
+      const res = await generateVoiceAction(currentScript);
+      if (res.success && res.audioBase64) {
+        setAudioUrl(res.audioBase64);
+      } else {
+        alert(res.error || 'Er ging iets mis.');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setGeneratingAudio(false);
   };
 
   return (
@@ -99,14 +123,65 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
                 <Copy size={12} /> Kopieer
               </button>
             </div>
-            <div className="bg-black border border-white/5 p-4 rounded-lg max-h-[300px] overflow-y-auto">
+            <div className="bg-black border border-white/5 p-4 rounded-lg max-h-[150px] overflow-y-auto mb-4">
               <pre className="text-zinc-300 text-sm whitespace-pre-wrap font-sans">{currentScript}</pre>
             </div>
-            <button className="w-full border border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-bold uppercase tracking-widest py-3 rounded-lg mt-4 flex justify-center items-center gap-2 transition-colors">
-              <Play className="w-4 h-4" /> Genereer Voice-over (Soon)
-            </button>
+            
+            {audioUrl ? (
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-purple-400 font-bold uppercase tracking-widest text-xs mb-1">
+                  <Volume2 className="w-4 h-4" /> ElevenLabs Audio Klaar
+                </div>
+                <audio controls src={audioUrl} className="w-full h-10" />
+              </div>
+            ) : (
+              <button 
+                onClick={handleGenerateAudio}
+                disabled={generatingAudio}
+                className="w-full border border-purple-500/50 text-purple-400 hover:bg-purple-500/10 font-bold uppercase tracking-widest py-3 rounded-lg flex justify-center items-center gap-2 transition-colors disabled:opacity-50"
+              >
+                {generatingAudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Genereer Voice-over (ElevenLabs)
+              </button>
+            )}
           </div>
         )}
+      </div>
+
+      {/* Preview Section */}
+      <div className="border border-white/10 bg-black/40 p-6 rounded-xl flex flex-col items-center justify-center">
+        <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2 w-full">
+          <Smartphone className="w-5 h-5 text-emerald-400" /> 4K Video Preview
+        </h3>
+        
+        <div className="relative w-[300px] h-[533px] bg-zinc-900 rounded-[2rem] border-8 border-zinc-800 overflow-hidden shadow-2xl">
+          {/* Fake 4K Video Background (Looping gradient/placeholder for now to simulate stock footage) */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-black animate-pulse opacity-50"></div>
+          
+          {/* Overlay Text */}
+          <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+             {currentScript ? (
+               <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-lg border border-white/10 shadow-2xl">
+                 <p className="text-white font-bold text-lg leading-tight uppercase" style={{ textShadow: '2px 2px 0 #000' }}>
+                   {currentScript.split('.')[0]}...
+                 </p>
+               </div>
+             ) : (
+               <p className="text-white/30 font-bold uppercase tracking-widest text-sm text-center">
+                 Wachtend op Script...
+               </p>
+             )}
+          </div>
+
+          {/* Fake UI Overlays */}
+          <div className="absolute right-3 bottom-20 flex flex-col gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><div className="w-6 h-6 bg-white rounded-full" /></div>
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><div className="w-6 h-6 bg-white rounded-full" /></div>
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><div className="w-6 h-6 bg-white rounded-full" /></div>
+          </div>
+        </div>
+        <p className="text-xs text-zinc-500 mt-6 text-center max-w-[300px]">
+          Live preview van je content. Gebruik CapCut om de gegenereerde audio en tekst samen te voegen met luxe 4K stock-footage.
+        </p>
       </div>
 
       {/* Library Section */}
