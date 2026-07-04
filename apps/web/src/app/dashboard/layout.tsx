@@ -110,6 +110,7 @@ const getGroupedNavItems = (user: any) => {
       id: 'agents',
       label: 'Revenue Agents',
       items: [
+        { label: 'E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> },
         { label: 'SEO & Traffic', href: '/dashboard/agents/seo', icon: <Search size={16} /> },
         { label: 'CRO & Funnel', href: '/dashboard/agents/cro', icon: <Map size={16} /> },
         { label: 'Copy & Content', href: '/dashboard/agents/copywriter', icon: <Terminal size={16} /> },

@@ -110,6 +110,74 @@ export class ShopifySwarmService {
   }
 
   /**
+   * Pushes a newly generated product directly to the live Shopify store
+   */
+  static async createProductInShopify(storeId: string, productData: { title: string, description: string, price: number, margin?: number }, userId: string) {
+    const store = await prisma.shopifyStore.findUnique({
+      where: { id: storeId }
+    });
+
+    if (!store) throw new Error("Store not found or lacks access.");
+
+    const shopifyApiUrl = `https://${store.shopUrl}/admin/api/2024-01/products.json`;
+    const payload = {
+      product: {
+        title: productData.title,
+        body_html: productData.description,
+        vendor: "Glitching AI Agent",
+        status: "draft", // Push as draft first to be safe, or "active" if user prefers
+        variants: [
+          {
+            price: productData.price.toString(),
+            requires_shipping: true
+          }
+        ]
+      }
+    };
+
+    const response = await fetch(shopifyApiUrl, {
+      method: 'POST',
+      headers: {
+        'X-Shopify-Access-Token': store.accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Shopify API responded with ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+    const liveProduct = data.product;
+
+    // Create the local product record
+    const created = await prisma.shopifyProduct.create({
+      data: {
+        storeId: store.id,
+        shopifyId: liveProduct.id.toString(),
+        title: liveProduct.title,
+        description: liveProduct.body_html,
+        price: productData.price,
+        margin: productData.margin,
+        status: "DRAFT"
+      }
+    });
+
+    await prisma.agentDossier.create({
+      data: {
+        agentType: "ECOMMERCE_AGENT",
+        action: "PUSHED_PRODUCT_TO_SHOPIFY",
+        target: liveProduct.title,
+        userId: userId,
+        details: `Successfully pushed product to Shopify store ${store.shopUrl} with ID ${liveProduct.id}`
+      }
+    });
+
+    return created;
+  }
+
+  /**
    * Syncs orders from Shopify to the local database.
    */
   static async syncOrders(storeId: string) {
