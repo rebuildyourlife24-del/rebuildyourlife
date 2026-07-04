@@ -108,29 +108,29 @@ export default function ColdEmailModule() {
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-2">
-                  Doelgroep (Niche & Locatie)
+                  Doelwit (Website URL van de Lead)
                 </label>
                 <input 
                   type="text" 
                   value={niche}
                   onChange={(e) => setNiche(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-                  placeholder="Bijv. Advocatenkantoren in Rotterdam"
+                  placeholder="Bijv. https://www.doelwit-bedrijf.nl"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-2">
-                  Wat verkoop je? (De Pitch)
+                  Wat verkoop je? (Jouw Propositie)
                 </label>
                 <textarea 
                   value={pitch}
                   onChange={(e) => setPitch(e.target.value)}
                   rows={4}
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-                  placeholder="Vertel de AI wat we aan deze leads willen verkopen..."
+                  placeholder="Vertel de AI wat we aan deze lead willen verkopen..."
                 />
-                <p className="text-xs text-slate-500 mt-2">De AI zal elke e-mail persoonlijk maken op basis van de website van de lead, en deze pitch verwerken.</p>
+                <p className="text-xs text-slate-500 mt-2">De AI zal de website van de lead scrapen en de pitch perfect afstemmen op hun diensten of pijnpunten.</p>
               </div>
 
               <div className="pt-4 border-t border-slate-800">
@@ -140,7 +140,7 @@ export default function ColdEmailModule() {
                       <Play className="text-cyan-400 w-4 h-4" /> 
                       GodBrain Autopilot
                     </h4>
-                    <p className="text-xs text-slate-500 mt-1">Laat de AI daadwerkelijk de gegenereerde e-mails versturen via jouw ingestelde SMTP.</p>
+                    <p className="text-xs text-slate-500 mt-1">Sla deze gegenereerde e-mail direct op in je CRM verzend-queue (komt eraan).</p>
                   </div>
                   <button 
                     onClick={handleToggleAutopilot}
