@@ -75,11 +75,46 @@ export async function POST(req: Request) {
         },
       });
 
-      // Split Payment Simulation
+      // Split Payment Simulation & Affiliate Tracking
       const amountVal = payment.amount?.value || "0.00";
       const totalAmount = parseFloat(amountVal);
-      const platformCut = totalAmount * 0.25;
+      let platformCut = totalAmount * 0.25;
       const franchiseCut = totalAmount * 0.75;
+      
+      const { affiliateCode } = payment.metadata || {};
+
+      if (affiliateCode) {
+        // Find affiliate
+        const affiliate = await prisma.affiliateProfile.findUnique({
+          where: { affiliateCode }
+        });
+        
+        if (affiliate && affiliate.status === "ACTIVE") {
+          const commissionAmount = totalAmount * (affiliate.commissionRate / 100);
+          platformCut = platformCut - commissionAmount; // Platform pays the affiliate from its cut
+          
+          await prisma.affiliateSale.create({
+            data: {
+              affiliateProfileId: affiliate.id,
+              purchaserUserId: userId,
+              molliePaymentId: paymentId,
+              amount: totalAmount,
+              commission: commissionAmount,
+              status: "APPROVED"
+            }
+          });
+          
+          await prisma.affiliateProfile.update({
+            where: { id: affiliate.id },
+            data: {
+              pendingBalance: { increment: commissionAmount },
+              totalEarned: { increment: commissionAmount }
+            }
+          });
+          
+          console.log(`[AFFILIATE] Allocated €${commissionAmount.toFixed(2)} to Affiliate ${affiliateCode}`);
+        }
+      }
 
       console.log(`[SPLIT PAYMENT ROUTING]`);
       console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);

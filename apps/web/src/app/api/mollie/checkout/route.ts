@@ -199,6 +199,7 @@ export async function POST(req: Request) {
         userEmail: user.email,
         priceId: priceId,
         tier: planConfig.tier,
+        affiliateCode: req.headers.get("x-affiliate-code") || null, // Will read from header if provided by frontend
       },
     };
 

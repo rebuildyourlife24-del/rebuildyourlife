@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Klantbericht ontbreekt' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = (process.env.GEMINI_API_KEY_1 || process.env.GOOGLE_GENERATIVE_AI_API_KEY);
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is niet ingesteld in de server environment.");
     }

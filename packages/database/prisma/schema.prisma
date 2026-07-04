@@ -103,6 +103,9 @@ model User {
   entitySchemas          EntitySchema[]              @relation("UserEntitySchemas")
   entityInstances        EntityInstance[]            @relation("UserEntityInstances")
   businessModels         BusinessModel[]             @relation("UserBusinessModels")
+  affiliateProfile       AffiliateProfile?
+  affiliateClicks        AffiliateClick[]
+  affiliateSales         AffiliateSale[]
 
   @@index([email])
   @@index([role])
@@ -2077,3 +2080,53 @@ model AdCreative {
 }
 
 
+model AffiliateProfile {
+  id               String          @id @default(uuid())
+  userId           String          @unique
+  affiliateCode    String          @unique
+  commissionRate   Float           @default(30.0)
+  totalEarned      Float           @default(0)
+  pendingBalance   Float           @default(0)
+  status           String          @default("ACTIVE")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clicks           AffiliateClick[]
+  sales            AffiliateSale[]
+
+  @@index([userId])
+  @@index([affiliateCode])
+}
+
+model AffiliateClick {
+  id                 String           @id @default(uuid())
+  affiliateProfileId String
+  ipAddress          String?
+  userAgent          String?
+  referrer           String?
+  clickedAt          DateTime         @default(now())
+  userId             String?
+  affiliateProfile   AffiliateProfile @relation(fields: [affiliateProfileId], references: [id], onDelete: Cascade)
+  user               User?            @relation(fields: [userId], references: [id])
+
+  @@index([affiliateProfileId])
+  @@index([clickedAt])
+}
+
+model AffiliateSale {
+  id                 String           @id @default(uuid())
+  affiliateProfileId String
+  purchaserUserId    String?
+  molliePaymentId    String
+  amount             Float
+  commission         Float
+  status             String           @default("PENDING")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  affiliateProfile   AffiliateProfile @relation(fields: [affiliateProfileId], references: [id], onDelete: Cascade)
+  purchaser          User?            @relation(fields: [purchaserUserId], references: [id])
+
+  @@index([affiliateProfileId])
+  @@index([status])
+  @@index([molliePaymentId])
+}

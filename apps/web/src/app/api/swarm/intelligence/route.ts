@@ -3,7 +3,7 @@ import { prisma } from '@rebuildyourlife/database';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize the AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const genAI = new GoogleGenerativeAI((process.env.GEMINI_API_KEY_1 || process.env.GOOGLE_GENERATIVE_AI_API_KEY) || '');
 
 export async function POST(req: Request) {
   try {

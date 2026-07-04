@@ -78,7 +78,8 @@ const getGroupedNavItems = (user: any) => {
         { label: 'E-Commerce / Dropship', href: '/dashboard/ecommerce', icon: <ShoppingCart size={16} /> },
         { label: 'Social & Marketing', href: '/dashboard/social', icon: <MessageSquare size={16} /> },
         { label: 'SaaS & Enterprise', href: '/dashboard/enterprise', icon: <Building size={16} /> },
-        { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> }
+        { label: 'The Syndicate', href: '/dashboard/syndicate', icon: <Globe size={16} /> },
+        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> }
       ]
     },
     {
