@@ -46,7 +46,8 @@ import {
   Send,
   Newspaper,
   Bot,
-  Link2
+  Link2,
+  Database
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
