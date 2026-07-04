@@ -84,8 +84,16 @@ Geef je antwoord EXACT in het volgende JSON-formaat terug. Let op, retourneer AL
   }
 }
 
+import { GoogleGenAI } from '@google/genai';
+
 export async function generateViralScriptAction(topic: string, platform: string) {
   try {
+    const aiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1;
+    if (!aiKey) {
+      throw new Error("Geen AI API Key gevonden.");
+    }
+    const ai = new GoogleGenAI({ apiKey: aiKey });
+
     const prompt = `
 Je bent een virale social media expert.
 Schrijf een extreem boeiend, controversieel of hoog-converterend script voor een korte video op ${platform} over het onderwerp: "${topic}".
@@ -97,11 +105,16 @@ Structuur:
 
 Geef het script terug in een overzichtelijk format. Géén markdown JSON, gewoon tekst.
 `;
-    const response = await routeAIRequest([{ role: 'user', content: prompt }]);
-    return { success: true, script: response.content.trim() };
+    
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt
+    });
+
+    return { success: true, script: response.text?.trim() || '' };
   } catch (error: any) {
     console.error("Viral Script error:", error);
-    return { success: false, error: "Kon script niet genereren." };
+    return { success: false, error: "Kon script niet genereren. Zorg dat je OpenAI/Gemini sleutel is ingevuld." };
   }
 }
 
