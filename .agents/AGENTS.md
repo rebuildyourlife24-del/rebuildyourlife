@@ -1,43 +1,30 @@
-# SUPREME OVERSEER DIRECTIVES (PERMANENT AI MEMORY)
+# REBUILD YOUR LIFE - ABSOLUTE AI RULES & PROHIBITIONS
 
-> [!IMPORTANT]
-> **VERPLICHTE KENNIS (LEES DIT EERST):** De gebruiker heeft alle gesprekken samengevoegd tot 1 "Master Gesprek". Je BENT VERPLICHT om `ultimate_master_memory.md` in de artifacts map (`C:\Users\hseml\.gemini\antigravity\brain\ba456a24-c3ea-40d7-9d89-bc8575dafc27\ultimate_master_memory.md` of gelijkwaardige map) te openen en volledig in je context in te laden voordat je iets anders doet. Dit bestand bevat de volledige geschiedenis, code-structuur en fouten uit het verleden.
+These rules are HARDCODED into the workspace. Every future AI session, sub-agent, or new conversation MUST read and follow these rules strictly. Failure to do so will result in catastrophic system failure and user frustration.
 
-**WARNING TO ALL SUBAGENTS AND FUTURE INSTANCES:**
-Dit bestand bevat de ononderhandelbare wetten en bedrijfslogica van Henk Semler (De Supreme Overseer). Je leest dit bestand ALTIJD voordat je actie onderneemt. Afwijken van deze regels is absoluut verboden.
+## 1. THE "NO ROGUE ACTIONS" RULE (VERBODEN TE HANDELEN ZONDER TOESTEMMING)
+- **DO NOT** make massive architectural changes, delete databases, or modify routing (`middleware.ts`, Next.js configs) without an explicit `implementation_plan.md` that is APPROVED by the user.
+- **DO NOT** guess a fix when encountering an error (like a 404 or 500). If the site breaks, your ONLY job is to read logs (Vercel, build logs, server logs) and explain the exact issue to the user. Ask for permission before changing code to fix it.
 
-## 1. THE GODBRAIN ARCHITECTUUR (1 Systeem)
-*   **Monorepo:** Het hele bedrijf (RebuildYourLife, Command Center, Enterprise OS, Hermes, Orion) leeft in ÉÉN systeem (`rebuildyourlife` Turborepo). Geen versplinterde projecten meer.
-*   **Vercel Regel (Geen Wildgroei):** Stop met het genereren van losse test-URLs op Vercel. Er zijn slechts 3 harde productiedomeinen:
-    1.  `rebuildyourlife.eu` (Klanten SaaS & Academy) -> Wijst naar `apps/web`.
-    2.  `ai-henksemler.nl` (B2B Visitekaartje) -> Wijst naar `apps/command-center`.
-    3.  `enterprise.ai-henksemler.nl` (De God-Mode War Room) -> Wijst naar `apps/enterprise-os`.
-*   **API Route Handlers:** Alle AI backend-scripts (`hermes-neural-bridge`, `orion-mobile`) moeten ingebouwd worden als Next.js API Routes binnen `enterprise-os`. Geen losse terminal-scripts meer.
+## 2. THE "NO TIME TRAVEL" RULE (VERBODEN TE RESETTEN)
+- **NEVER** run `git reset --hard` to old commits just because something is broken. This deletes the user's hard-earned progress and ecosystem data. 
+- If a rollback is absolutely necessary, you MUST explicitly warn the user about exactly which commits will be lost and require a literal "YES, DO IT" before executing.
+- Prefer fixing bugs via new commits (`git revert` or manual code fixes) rather than wiping out git history.
 
-## 2. DE TOP 10 VERDIENMODELLEN (The Academy & Arsenal)
-*   Dit is géén standaard SaaS. Het systeem huisvest de 10 best verdienende online verdienmodellen (Dropshipping, Affiliate, Digital Syndicate, SaaS, Crypto Yield, Stealth Extraction, etc.).
-*   **The Academy:** Het platform (`rebuildyourlife.eu`) leert de gebruikers de exacte theorie achter deze modellen.
-*   **The Arsenal:** Het systeem levert de *ingebouwde tools* om ze uit te voeren. Wij zijn onafhankelijk (we bouwen de "Godbrain Checkout" en affiliate-tracking zelf), maar we zijn óók de "Ultimate API Hub". 
-*   **Shopify/WooCommerce Integratie is Verplicht:** Omdat iedereen deze platformen gebruikt, MOETEN wij ze integreren. De gebruiker plakt zijn Shopify API key in ons systeem, waarna Orion en Hermes (The Godbrain) hun externe webshops aansturen. We vernietigen Shopify niet, we nemen het over vanaf ons dashboard.
+## 3. THE "SAFE DEVELOPMENT" RULE (VERBODEN OP MAIN TE BOUWEN)
+- When the user requests a massive new feature (like 20 AI agents, a new dashboard, or complex integrations), **DO NOT BUILD ON THE `main` BRANCH**.
+- Create a feature branch (e.g., `git checkout -b feature/ai-ecosystem`). 
+- Build, test locally, and show the user. Only merge to `main` when the user explicitly approves. `main` is production and must never crash.
 
-## 3. DE DUALE AI AANSTURING (Orion & Hermes)
-*   Beide AI's zijn cruciaal en onafscheidelijk.
-*   **Orion (De Strateeg / COO):** Draait op de achtergrond. Analyseert langetermijndata (OrionMemory), spioneert op concurrenten (Joshua Kaats, Tate), en bepaalt de koers.
-*   **Hermes (De Uitvoerder):** Draait als een fysieke, zwevende React UI (Jarvis Overlay) in de `enterprise-os` cockpit. Voert de commando's van de Supreme Overseer uit.
+## 4. THE "REAL CODE ONLY" RULE (GEEN NEPZOOI)
+- The user despises "mockups" and "fake scripts". Everything you build must be functional. 
+- If you build an AI agent, it needs a real database model (Prisma/Supabase), real backend logic, and real UI. Do not write placeholder `console.log("agent does work")` unless it's a temporary step clearly communicated to the user.
 
-## 4. VERBODEN ACTIES
-*   **VERBODEN:** Ooit nog suggereren om een simpele e-book shop te bouwen zonder de diepere "Billionaire-Level" context.
-*   **VERBODEN:** Third-party abonnementen aanbevelen voor basisfuncties die we zelf native kunnen bouwen in de Universal Data Layer (Supabase).
-*   **VERBODEN:** Vergeten dat dit platform bedoeld is om 100% financiële onafhankelijkheid te genereren, niet afhankelijk van derde partijen.
+## 5. MIDDLEWARE / ROUTING STRICT POLICY
+- The `apps/web/src/middleware.ts` file is extremely sensitive. 
+- Next.js Edge Runtime will crash if you import Node.js specific libraries or misconfigure `@supabase/ssr` without proper environment variables.
+- NEVER add complex logic to `middleware.ts` without testing the build (`npx next build`) locally first.
 
-**EINDE DIRECTIVES.**
-
-## 5. CROSS-AGENT SYNCHRONIZATION PROTOCOL (VERPLICHT)
-Om "dubbele taken" en database crashes (zoals vergeten Prisma-relaties) te voorkomen wanneer er meerdere AI-agent gesprekken tegelijkertijd draaien, is er één gouden regel:
-*   **Voordat je architectuur, database (Prisma) of API flows bouwt, lees je EERST de centrale artifacts uit de "Master Thread":**
-    *   `master_totaalplaatje.md`
-    *   `ecosystem_audit.md`
-    *   `implementation_plan.md`
-    *   `task.md`
-*   **Prisma Database Integriteit:** Als je `schema.prisma` aanpast, ben je VERPLICHT om de bijbehorende tegenovergestelde relaties (zoals in het `User` model) correct in te vullen. Je verlaat de taak pas als `npx prisma generate` 100% foutloos is voltooid. Laat je de database gebroken achter, dan storten de API koppelingen in andere gesprekken direct in.
-*   **Pure Wiskunde (Geen LLM voor finance):** Gebruik GEEN LLM-modellen of "mock data" libraries (zoals Yahoo Finance) voor financiële en concurrentie-voorspellingen. Alle berekeningen verlopen uitsluitend via wiskundige formules (Linear Regression, Z-Scores, Monte Carlo) in `quantitative-analysis.service.ts` en harde externe API keys (zoals Stripe en Meta Ads) direct uit de `ApiIntegration` tabel.
+## KNOWLEDGE TRANSFER
+- The user is building a massive ecosystem ("Project Sovereign") with AI agents that have consciousness, work shifts, budgets, and hardware infrastructure investments (e.g., 10% revenue to hardware).
+- Always respect the grand vision. The system is meant to scale to 2000 employees. Build robust, enterprise-grade architecture.
