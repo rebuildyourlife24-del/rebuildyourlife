@@ -18,6 +18,8 @@ export default function ColdEmailModule() {
 
   const [liveLeads, setLiveLeads] = useState<any[]>([]);
 
+  const [autopilotEnabled, setAutopilotEnabled] = useState(false);
+
   const handleStartCampaign = async () => {
     setStatus("SCRAPING");
     try {
@@ -30,10 +32,42 @@ export default function ColdEmailModule() {
       if (!res.ok) throw new Error("API Fout");
       
       const data = await res.json();
-      setLiveLeads(data.leads || []);
+      const leads = data.leads || [];
+      setLiveLeads(leads);
+      
+      setStatus("SENDING");
+      
+      let sentCount = 0;
+      if (autopilotEnabled && leads.length > 0) {
+        for (const lead of leads) {
+          try {
+            await fetch("/api/autopilot/execute", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                actionType: "SEND_EMAIL",
+                userId: "demo-user-id",
+                data: {
+                  to: lead.email,
+                  subject: `Vraag over ${lead.companyName}`,
+                  body: lead.personalizedPitch
+                }
+              })
+            });
+            sentCount++;
+            setStats(prev => ({ ...prev, emailsSent: sentCount }));
+          } catch (e) {
+            console.error("Autopilot execution failed for", lead.email);
+          }
+        }
+      } else {
+        // If not autopilot, just simulate
+        sentCount = leads.length;
+      }
+
       setStats({
-        leadsFound: data.leads?.length || 0,
-        emailsSent: data.leads?.length || 0, // In this real demo, we simulate sending to all found
+        leadsFound: leads.length,
+        emailsSent: sentCount,
         opened: 0,
         replied: 0
       });
@@ -106,6 +140,24 @@ export default function ColdEmailModule() {
                   placeholder="Vertel de AI wat we aan deze leads willen verkopen..."
                 />
                 <p className="text-xs text-slate-500 mt-2">De AI zal elke e-mail persoonlijk maken op basis van de website van de lead, en deze pitch verwerken.</p>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                <div className="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800">
+                  <div>
+                    <h4 className="text-white font-bold flex items-center gap-2">
+                      <Play className="text-cyan-400 w-4 h-4" /> 
+                      GodBrain Autopilot
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-1">Laat de AI daadwerkelijk de gegenereerde e-mails versturen via jouw ingestelde SMTP.</p>
+                  </div>
+                  <button 
+                    onClick={() => setAutopilotEnabled(!autopilotEnabled)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autopilotEnabled ? 'bg-cyan-500' : 'bg-slate-700'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autopilotEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
