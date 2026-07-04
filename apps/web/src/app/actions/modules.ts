@@ -1,3 +1,5 @@
+'use server';
+
 import { routeAIRequest } from '@/lib/ai-router';
 
 // Helper function to extract JSON from AI responses safely
