@@ -2,28 +2,34 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  const pathname = url.pathname;
+  const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  // Bepaal domeinen
+  // Bepaal of we op het exclusieve ai-henksemler.nl domein zitten
   const isAiHenksemler = hostname.includes('ai-henksemler.nl') || hostname.includes('localhost') || hostname.includes('192.168');
-  
-  if (isAiHenksemler && pathname === '/') {
-    return response;
+
+  // Enforce Domain Access voor /ceo en /klanten
+  if ((url.pathname.startsWith('/ceo') || url.pathname.startsWith('/klanten')) && !isAiHenksemler) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  // Als we op het ai-henksemler domein zitten en we zitten in de root `/`, 
+  // routeer dan naar de /agency map (de verkooppagina)
+  if (isAiHenksemler && url.pathname === '/') {
+    return NextResponse.rewrite(new URL(`/agency`, request.url));
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
