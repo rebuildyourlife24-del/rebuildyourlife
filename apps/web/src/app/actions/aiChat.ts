@@ -5,8 +5,6 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { Sentinel } from "../../lib/orion/sentinel-scanner";
 import { routeAIRequest } from "../../lib/ai-router";
-import { execSync } from "child_process";
-import path from "path";
 
 const workspaceRoot = process.cwd();
 
