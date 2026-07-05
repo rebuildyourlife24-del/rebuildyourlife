@@ -77,17 +77,17 @@ export default function BrandLauncherPage() {
             </div>
           </div>
           
-          {(data.coverPrompt || data.profilePrompt) && (
+          {(data.coverPrompt || data.profilePrompt || data.lensPrompt) && (
             <div>
-              <label className="text-[10px] uppercase font-mono text-zinc-500 mb-1 block">AI Image Prompt (Midjourney)</label>
+              <label className="text-[10px] uppercase font-mono text-zinc-500 mb-1 block">AI Image/Lens Prompt (Midjourney)</label>
               <div className="relative group">
                 <textarea 
                   readOnly 
-                  value={data.coverPrompt || data.profilePrompt} 
+                  value={data.coverPrompt || data.profilePrompt || data.lensPrompt} 
                   className="w-full bg-emerald-900/10 border border-emerald-500/20 rounded-lg p-3 text-xs text-emerald-400 font-mono h-20 custom-scrollbar focus:outline-none"
                 />
                 <button 
-                  onClick={() => copyToClipboard(data.coverPrompt || data.profilePrompt, `${title}-prompt`)}
+                  onClick={() => copyToClipboard(data.coverPrompt || data.profilePrompt || data.lensPrompt, `${title}-prompt`)}
                   className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   {copiedField === `${title}-prompt` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
@@ -188,6 +188,7 @@ export default function BrandLauncherPage() {
             {renderPlatformCard('Facebook', result.facebook)}
             {renderPlatformCard('LinkedIn', result.linkedin)}
             {renderPlatformCard('X (Twitter)', result.x)}
+            {renderPlatformCard('Snapchat', result.snapchat)}
           </div>
         </motion.div>
       )}

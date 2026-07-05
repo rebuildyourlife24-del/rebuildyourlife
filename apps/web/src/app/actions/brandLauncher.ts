@@ -29,6 +29,7 @@ export async function generateBrandKitAction(domain: string, industry: string = 
         "instagram": { "bio": "...", "profilePrompt": "...", "firstPost": "..." },
         "linkedin": { "bio": "...", "coverPrompt": "...", "firstPost": "..." },
         "x": { "bio": "...", "firstPost": "..." },
+        "snapchat": { "bio": "...", "firstPost": "...", "lensPrompt": "..." },
         "strategy": "Een korte pitch van 2 zinnen over de brand voice."
       }
       
