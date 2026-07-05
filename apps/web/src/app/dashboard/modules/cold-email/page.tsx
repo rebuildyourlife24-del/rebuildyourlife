@@ -1,236 +1,228 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import { motion } from "framer-motion";
-import { Mail, Search, Send, Play, Pause, BarChart, Settings } from "lucide-react";
-import { generateColdEmailAction } from "../../../actions/modules";
-import { logSystemHealthAction } from "@/app/actions/system";
+import React, { useState, useEffect } from "react";
+import { createEmailCampaign, getUserCampaigns, addLead, getLeads } from "@/app/actions/cold-email";
+import { Mail, Plus, Users, Send, Loader2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-export default function ColdEmailModule() {
-  const [niche, setNiche] = useState("Tandartsen in Amsterdam");
-  const [pitch, setPitch] = useState("Wij kunnen een AI chatbot bouwen die 24/7 afspraken voor u inplant.");
-  const [status, setStatus] = useState<"IDLE" | "SCRAPING" | "SENDING" | "COMPLETE">("IDLE");
+export default function ColdEmailPage() {
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   
-  const [stats, setStats] = useState({
-    leadsFound: 0,
-    emailsSent: 0,
-    opened: 0,
-    replied: 0
-  });
+  // New Campaign State
+  const [campaignName, setCampaignName] = useState("");
+  const [campaignSubject, setCampaignSubject] = useState("");
+  const [campaignContext, setCampaignContext] = useState("");
 
-  const [liveLeads, setLiveLeads] = useState<any[]>([]);
+  // New Lead State
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadFirstName, setLeadFirstName] = useState("");
 
-  const [autopilotEnabled, setAutopilotEnabled] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleToggleAutopilot = async () => {
-    const newState = !autopilotEnabled;
-    setAutopilotEnabled(newState);
-    if (newState) {
-      await logSystemHealthAction('ColdEmailModule', 'WARNING', 'De Autopilot (SMTP integratie) knop werd ingeschakeld, maar de echte SMTP loop ontbreekt nog in de acties. Bouw de verzend-queue.');
+  const loadData = async () => {
+    try {
+      const camps = await getUserCampaigns();
+      const lds = await getLeads();
+      setCampaigns(camps);
+      setLeads(lds);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleStartCampaign = () => {
-    setStatus("SCRAPING");
+  const handleCreateCampaign = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!campaignName || !campaignSubject || !campaignContext) return;
     
-    startTransition(async () => {
-      try {
-        const res = await generateColdEmailAction(pitch, niche);
-        
-        if (res.success && res.sequence) {
-          // ACTUALLY save to database
-          const htmlContent = JSON.stringify(res.sequence, null, 2);
-          await import('../../../actions/modules').then(m => 
-            m.saveEmailCampaignAction(`Campagne: ${niche}`, res.sequence[0].subject, htmlContent)
-          );
+    setLoading(true);
+    setError("");
 
-          // Get REAL leads from CRM (BusinessClients) that might match, or just show the generated sequence
-          const crmRes = await fetch('/api/crm/clients').then(r => r.ok ? r.json() : { clients: [] }).catch(() => ({ clients: [] }));
-          
-          let leads = crmRes.clients?.slice(0, 5) || [];
-          if (leads.length === 0) {
-             // Fallback to show the user what was generated if no CRM clients exist yet
-             leads = [
-               { companyName: "Voorbeeld Lead (Voeg klanten toe in CRM)", email: "test@voorbeeld.nl", personalizedPitch: res.sequence[0].body.substring(0, 100) + "..." }
-             ];
-          } else {
-             leads = leads.map((l: any) => ({
-                companyName: l.name,
-                email: l.email || "Geen email",
-                personalizedPitch: res.sequence[0].body.substring(0, 100) + "..."
-             }));
-          }
-          
-          setLiveLeads(leads);
-          setStatus("SENDING");
-          
-          setStats({
-            leadsFound: leads.length,
-            emailsSent: autopilotEnabled ? leads.length : 0,
-            opened: 0,
-            replied: 0
-          });
-          
-          setTimeout(() => {
-            setStatus("COMPLETE");
-          }, 1500);
-        } else {
-          throw new Error("Generatie mislukt");
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus("IDLE");
+    try {
+      const res = await createEmailCampaign(campaignName, campaignSubject, campaignContext);
+      if (!res.success) {
+        setError(res.error || "Fout bij maken campagne.");
+      } else {
+        await loadData();
+        setCampaignName("");
+        setCampaignSubject("");
+        setCampaignContext("");
       }
-    });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadEmail) return;
+
+    try {
+      const res = await addLead(leadEmail, leadFirstName);
+      if (!res.success) {
+        alert(res.error);
+      } else {
+        await loadData();
+        setLeadEmail("");
+        setLeadFirstName("");
+      }
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto min-h-screen text-white bg-slate-950">
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Mail className="text-emerald-500" size={32} />
-            <h1 className="text-3xl font-bold">Cold Email Outreach Engine</h1>
-          </div>
-          <p className="text-slate-400">
-            AI schraapt leads voor je op basis van je niche en stuurt hyper-gepersonaliseerde e-mails om calls in te plannen.
-          </p>
-        </div>
-        <button 
-          onClick={handleStartCampaign}
-          disabled={status !== "IDLE"}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-lg ${
-            status === "IDLE" 
-              ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20 text-white" 
-              : "bg-slate-800 text-slate-500 cursor-wait"
-          }`}
-        >
-          {status === "IDLE" ? <Play size={20} /> : <Search size={20} className="animate-spin" />}
-          {status === "IDLE" ? "Start Campagne" : "Bezig met Scrapen..."}
-        </button>
+    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-slate-950">
+      <Link href="/dashboard/modules" className="flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Terug naar Modules
+      </Link>
+
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+          Cold Email Outreach
+        </h1>
+        <p className="text-slate-400 mt-2 text-lg">
+          Beheer je leads, genereer hyper-gepersonaliseerde AI e-mail campagnes en automatiseer je sales.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Linker kolom: Campagne Settings */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Settings className="text-blue-400" size={20} />
-              Campagne Configuratie
-            </h2>
+        {/* CREATE CAMPAIGN */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 h-fit">
+          <h2 className="text-xl font-bold mb-6 flex items-center">
+            <Mail className="w-5 h-5 mr-2 text-blue-400" />
+            Nieuwe AI Campagne
+          </h2>
+          <form onSubmit={handleCreateCampaign} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Interne Naam</label>
+              <input 
+                type="text" 
+                value={campaignName}
+                onChange={e => setCampaignName(e.target.value)}
+                placeholder="Bijv. Zomer Promo Webdesign"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+                required
+              />
+            </div>
             
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
-                  Doelwit (Website URL van de Lead)
-                </label>
-                <input 
-                  type="text" 
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-                  placeholder="Bijv. https://www.doelwit-bedrijf.nl"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">
-                  Wat verkoop je? (Jouw Propositie)
-                </label>
-                <textarea 
-                  value={pitch}
-                  onChange={(e) => setPitch(e.target.value)}
-                  rows={4}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-                  placeholder="Vertel de AI wat we aan deze lead willen verkopen..."
-                />
-                <p className="text-xs text-slate-500 mt-2">De AI zal de website van de lead scrapen en de pitch perfect afstemmen op hun diensten of pijnpunten.</p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-800">
-                <div className="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800">
-                  <div>
-                    <h4 className="text-white font-bold flex items-center gap-2">
-                      <Play className="text-cyan-400 w-4 h-4" /> 
-                      GodBrain Autopilot
-                    </h4>
-                    <p className="text-xs text-slate-500 mt-1">Sla deze gegenereerde e-mail direct op in je CRM verzend-queue (komt eraan).</p>
-                  </div>
-                  <button 
-                    onClick={handleToggleAutopilot}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autopilotEnabled ? 'bg-cyan-500' : 'bg-slate-700'}`}
-                  >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autopilotEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
-                  </button>
-                </div>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">E-mail Onderwerp</label>
+              <input 
+                type="text" 
+                value={campaignSubject}
+                onChange={e => setCampaignSubject(e.target.value)}
+                placeholder="Snelle vraag over {{companyName}}"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+                required
+              />
             </div>
-          </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Send className="text-purple-400" size={20} />
-              Live Inbox (Recente Antwoorden)
-            </h2>
-            <div className="space-y-3">
-              {liveLeads.length === 0 && status !== "SCRAPING" && (
-                <p className="text-slate-500 text-sm">Nog geen campagne gestart.</p>
-              )}
-              {liveLeads.map((lead: any, idx: number) => (
-                <div key={idx} className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col justify-between items-start gap-2">
-                  <div className="flex justify-between w-full">
-                    <h4 className="font-bold text-sm text-emerald-400">{lead.companyName}</h4>
-                    <span className="bg-blue-900/30 text-blue-400 px-2 py-1 rounded text-xs font-bold">Verzonden</span>
-                  </div>
-                  <p className="text-slate-500 text-xs font-mono">{lead.email}</p>
-                  <p className="text-slate-300 text-xs mt-1 italic">"{lead.personalizedPitch}"</p>
-                </div>
-              ))}
-              {status === "SCRAPING" && (
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex items-center gap-3">
-                  <Search size={16} className="animate-spin text-slate-500" />
-                  <p className="text-slate-500 text-sm">AI zoekt momenteel naar realtime leads in "{niche}"...</p>
-                </div>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Context voor de AI (Aanbod)</label>
+              <textarea 
+                value={campaignContext}
+                onChange={e => setCampaignContext(e.target.value)}
+                rows={4}
+                placeholder="We verkopen een webdesign pakket voor €999 inclusief hosting. Benadruk dat we snel kunnen leveren."
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none resize-none"
+                required
+              />
             </div>
-          </div>
+
+            {error && <div className="text-red-400 text-sm">{error}</div>}
+
+            <button 
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center mt-4"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Genereer E-mail Template"}
+            </button>
+          </form>
         </div>
 
-        {/* Rechter kolom: Analytics */}
-        <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <BarChart className="text-emerald-400" size={20} />
-              Campagne Resultaten
-            </h2>
-            
-            <div className="space-y-4">
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                <p className="text-slate-400 text-sm">Leads Gevonden</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.leadsFound}</p>
-              </div>
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                <p className="text-slate-400 text-sm">E-mails Verzonden</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.emailsSent}</p>
-              </div>
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                <p className="text-slate-400 text-sm">Geopend</p>
-                <div className="flex items-end gap-2 mt-1">
-                  <p className="text-3xl font-bold text-blue-400">{stats.opened}</p>
-                  <p className="text-sm text-slate-500 mb-1">({stats.emailsSent > 0 ? Math.round((stats.opened/stats.emailsSent)*100) : 0}%)</p>
-                </div>
-              </div>
-              <div className="bg-slate-950 p-4 rounded-xl border border-emerald-900/50">
-                <p className="text-slate-400 text-sm">Antwoorden (Leads)</p>
-                <div className="flex items-end gap-2 mt-1">
-                  <p className="text-3xl font-bold text-emerald-400">{stats.replied}</p>
-                  <p className="text-sm text-slate-500 mb-1">({stats.emailsSent > 0 ? Math.round((stats.replied/stats.emailsSent)*100) : 0}%)</p>
-                </div>
-              </div>
+        {/* MANAGE LEADS */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 h-fit">
+          <h2 className="text-xl font-bold mb-6 flex items-center">
+            <Users className="w-5 h-5 mr-2 text-emerald-400" />
+            Leads Toevoegen
+          </h2>
+          <form onSubmit={handleAddLead} className="space-y-4 mb-8">
+            <div className="flex gap-4">
+              <input 
+                type="text" 
+                value={leadFirstName}
+                onChange={e => setLeadFirstName(e.target.value)}
+                placeholder="Voornaam"
+                className="w-1/3 bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+              />
+              <input 
+                type="email" 
+                value={leadEmail}
+                onChange={e => setLeadEmail(e.target.value)}
+                placeholder="E-mailadres"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+                required
+              />
             </div>
+            <button 
+              type="submit"
+              className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center border border-slate-700"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Lead Opslaan
+            </button>
+          </form>
+
+          <h3 className="font-bold text-slate-400 mb-4">Recente Leads ({leads.length})</h3>
+          <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+            {leads.map(lead => (
+              <div key={lead.id} className="flex justify-between p-3 bg-slate-950 rounded-lg border border-slate-800 text-sm">
+                <span>{lead.firstName || "Geen naam"}</span>
+                <span className="text-slate-400">{lead.email}</span>
+              </div>
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* CAMPAIGN LIST */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-6">Mijn Campagnes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {campaigns.length === 0 && (
+            <div className="col-span-full p-8 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
+              Nog geen campagnes gegenereerd.
+            </div>
+          )}
+          {campaigns.map(camp => (
+            <div key={camp.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold text-lg">{camp.name}</h3>
+                  <span className={`px-2 py-1 text-xs rounded-full font-bold ${camp.status === 'DRAFT' ? 'bg-amber-900/30 text-amber-400' : 'bg-emerald-900/30 text-emerald-400'}`}>
+                    {camp.status}
+                  </span>
+                </div>
+                <p className="text-slate-400 text-sm mb-4 line-clamp-2">{camp.subject}</p>
+                <div className="text-xs text-slate-500 bg-slate-950 p-3 rounded-lg mb-6 line-clamp-3 overflow-hidden">
+                  {camp.htmlContent.replace(/<[^>]*>?/gm, '')}
+                </div>
+              </div>
+              <button className="w-full bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 font-bold py-2 rounded-lg transition-colors flex items-center justify-center border border-blue-600/30">
+                <Send className="w-4 h-4 mr-2" />
+                Review & Verzend
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>

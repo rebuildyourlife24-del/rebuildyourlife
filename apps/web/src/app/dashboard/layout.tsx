@@ -61,35 +61,47 @@ const getGroupedNavItems = (user: any) => {
       ]
     },
     {
-      id: 'finance',
-      label: 'Zakelijk & Finance',
+      id: 'academy',
+      label: 'The Academy',
       items: [
-        { label: 'CRM & Facturatie', href: '/dashboard/crm', icon: <Users size={16} /> },
+        { label: 'Alle Cursussen', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
+        { label: 'Mijn Voortgang', href: '/dashboard/academy/progress', icon: <Target size={16} /> }
+      ]
+    },
+    {
+      id: 'community',
+      label: 'The Network',
+      items: [
+        { label: 'Community Forum', href: '/dashboard/community', icon: <MessageSquare size={16} /> },
+        { label: 'Live Evenementen', href: '/dashboard/community/events', icon: <Map size={16} /> }
+      ]
+    },
+    {
+      id: 'finance',
+      label: 'E-Commerce & Finance',
+      items: [
+        { label: 'Shopify E-Commerce', href: '/dashboard/ecommerce', icon: <ShoppingCart size={16} /> },
+        { label: 'CRM & Facturatie', href: '/dashboard/finance', icon: <Users size={16} /> },
         { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> }
       ]
     },
     {
-      id: 'agents',
-      label: 'AI Agents (Autonoom)',
+      id: 'tools',
+      label: 'Tools & Resources',
       items: [
-        { label: 'CEO (Overkoepelend)', href: '/dashboard/agents/ceo', icon: <Briefcase size={16} /> },
-        { label: 'CFO (Financiën)', href: '/dashboard/agents/cfo', icon: <Activity size={16} /> },
-        { label: 'CMO (Marketing)', href: '/dashboard/agents/cmo', icon: <Target size={16} /> },
-        { label: 'Ads (Performance)', href: '/dashboard/agents/ads', icon: <Megaphone size={16} /> },
-        { label: 'Copywriter Agent', href: '/dashboard/agents/copy', icon: <PenTool size={16} /> },
-        { label: 'Shopify E-Commerce', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> }
+        { label: 'Resource Bibliotheek', href: '/dashboard/tools', icon: <Briefcase size={16} /> },
+        { label: 'AI Product Hunter', href: '/dashboard/modules/product-hunter', icon: <Search size={16} /> },
+        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Search size={16} /> },
+        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Mail size={16} /> }
       ]
     },
     {
-      id: 'tools',
-      label: 'AI Tools (Marketing)',
+      id: 'agents',
+      label: 'Autonomous Agents',
       items: [
-        { label: 'Website Builder', href: '/dashboard/modules/website-builder', icon: <Globe size={16} /> },
-        { label: 'AI Product Hunter', href: '/dashboard/modules/product-hunter', icon: <Search size={16} /> },
-        { label: 'Omnichannel Brand Launcher', href: '/dashboard/modules/brand-launcher', icon: <Target size={16} /> },
-        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Search size={16} /> },
-        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Mail size={16} /> },
-        { label: 'Viral Video Scripts', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> }
+        { label: 'Active Agents (Swarm)', href: '/dashboard/agents', icon: <Bot size={16} /> },
+        { label: 'CEO (Overkoepelend)', href: '/dashboard/agents/ceo', icon: <Briefcase size={16} /> },
+        { label: 'CMO (Marketing)', href: '/dashboard/agents/cmo', icon: <Target size={16} /> }
       ]
     },
     {

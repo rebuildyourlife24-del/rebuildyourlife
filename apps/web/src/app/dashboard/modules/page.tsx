@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   Bot, 
@@ -12,7 +13,11 @@ import {
   GraduationCap, 
   Users, 
   Newspaper, 
-  Briefcase
+  Briefcase,
+  MessageSquare,
+  PenTool,
+  Contact2,
+  Globe
 } from "lucide-react";
 
 const RYL_MODULES = [
@@ -23,7 +28,28 @@ const RYL_MODULES = [
     icon: Bot,
     category: "B2B",
     status: "AVAILABLE",
-    profitPotential: "Hoog (€150+ per maand/klant)"
+    profitPotential: "Hoog (€150+ per maand/klant)",
+    href: "/dashboard/modules/chatbot"
+  },
+  {
+    id: "crm",
+    title: "CRM & Lead Beheer",
+    description: "Beheer leads, deals en contacten in een overzichtelijk Kanban bord",
+    icon: Contact2,
+    category: "B2B",
+    status: "AVAILABLE",
+    profitPotential: "Hoog (Bespaart tijd)",
+    href: "/dashboard/modules/crm"
+  },
+  {
+    id: "monitoring",
+    title: "Uptime & Website Monitoring",
+    description: "Krijg direct een melding als je websites offline gaan",
+    icon: Globe,
+    category: "B2B",
+    status: "COMING_SOON",
+    profitPotential: "Gemiddeld",
+    href: "#"
   },
   {
     id: "cold_email_outreach",
@@ -32,7 +58,8 @@ const RYL_MODULES = [
     icon: Mail,
     category: "B2B",
     status: "AVAILABLE",
-    profitPotential: "Hoog (€500+ per gesloten deal)"
+    profitPotential: "Hoog (€500+ per gesloten deal)",
+    href: "/dashboard/modules/cold-email"
   },
   {
     id: "seo_audit_tool",
@@ -40,17 +67,59 @@ const RYL_MODULES = [
     description: "Automatische SEO website-verbeterrapporten genereren en verkopen.",
     icon: Search,
     category: "B2B",
-    status: "COMING_SOON",
-    profitPotential: "Gemiddeld (€50-€100 per rapport)"
+    status: "AVAILABLE",
+    profitPotential: "Gemiddeld (€50-€100 per rapport)",
+    href: "/dashboard/modules/seo-audit"
   },
   {
-    id: "ai_social_media",
+    id: "social_media_agency",
     title: "AI Social Media Agency",
-    description: "Volautomatisch inplannen en genereren van social media content.",
+    description: "Laat AI je contentkalender 30 dagen vooruit plannen en schrijven.",
     icon: Share2,
     category: "B2B",
-    status: "COMING_SOON",
-    profitPotential: "Gemiddeld (€250+ per maand/klant)"
+    status: "AVAILABLE",
+    profitPotential: "Laag (€15-€30 per maand/klant)",
+    href: "/dashboard/modules/social-media"
+  },
+  {
+    id: "digital_product_store",
+    title: "Digitaal Producten Winkel",
+    description: "Verkoop prompts, Notion templates of e-books direct aan klanten.",
+    icon: ShoppingBag,
+    category: "B2B",
+    status: "AVAILABLE",
+    profitPotential: "Hoog (100% winstmarge)",
+    href: "/dashboard/modules/store"
+  },
+  {
+    id: "seo_audit_tool",
+    title: "6. SEO Audit Tool",
+    description: "Automatische SEO scans met FireCrawl & Gemini rapporten.",
+    icon: Search,
+    category: "B2B",
+    status: "AVAILABLE",
+    profitPotential: "Hoog (€150+ per audit)",
+    href: "/dashboard/modules/seo-audit"
+  },
+  {
+    id: "review_management",
+    title: "7. Review Management",
+    description: "Beheer Google Reviews en beantwoord ze automatisch met AI.",
+    icon: MessageSquare,
+    category: "B2B",
+    status: "AVAILABLE",
+    profitPotential: "Hoog (€50-€100 per maand)",
+    href: "/dashboard/modules/reviews"
+  },
+  {
+    id: "ai_copywriting_tool",
+    title: "8. AI Copywriting Tool",
+    description: "Genereer hoog-converterende advertenties, e-mails en landingspagina's in seconden.",
+    icon: PenTool,
+    category: "B2B",
+    status: "AVAILABLE",
+    profitPotential: "Zeer Hoog (Onbeperkte tekstcreatie)",
+    href: "/dashboard/modules/copywriting"
   },
   {
     id: "website_builder",
@@ -58,8 +127,9 @@ const RYL_MODULES = [
     description: "1-klik AI website builder om te verhuren aan zzp'ers.",
     icon: LayoutTemplate,
     category: "B2B",
-    status: "COMING_SOON",
-    profitPotential: "Gemiddeld (€20-€50 per maand/klant)"
+    status: "AVAILABLE",
+    profitPotential: "Gemiddeld (€20-€50 per maand/klant)",
+    href: "/dashboard/modules/website-builder"
   },
   {
     id: "digital_product_store",
@@ -109,12 +179,16 @@ const RYL_MODULES = [
 ];
 
 export default function ModuleHub() {
-  const [activeModule, setActiveModule] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleActivate = (id: string, status: string) => {
+  const handleActivate = (id: string, status: string, href?: string) => {
     if (status === "COMING_SOON") return;
-    setActiveModule(id);
-    // TODO: Roep API aan om module te activeren voor deze gebruiker
+    
+    if (href) {
+      router.push(href);
+      return;
+    }
+    
     alert(`Module ${id} activatie-proces gestart!`);
   };
 
@@ -161,7 +235,7 @@ export default function ModuleHub() {
               </div>
               
               <button 
-                onClick={() => handleActivate(mod.id, mod.status)}
+                onClick={() => handleActivate(mod.id, mod.status, (mod as any).href)}
                 disabled={mod.status === "COMING_SOON"}
                 className={`w-full py-3 rounded-xl font-bold transition-all ${
                   mod.status === "AVAILABLE" 

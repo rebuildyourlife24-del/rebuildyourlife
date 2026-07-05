@@ -40,30 +40,42 @@ export default function FinanceDashboard() {
   }
 
   return (
-    <div className="flex-1 p-8 overflow-y-auto bg-[#0a0a0a]">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-10">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Layers className="text-[#d4af37] w-6 h-6" />
-            <h1 className="text-3xl font-black uppercase tracking-wider text-white">God-Mode Treasury</h1>
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Widget */}
+      <div className="relative overflow-hidden rounded-[2rem] border border-[#d4af37]/20 glass-cyber p-8 md:p-12 group">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#d4af37]/5 rounded-full blur-3xl pointer-events-none group-hover:bg-[#d4af37]/10 transition-colors duration-1000"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-flex items-center justify-center bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                <Layers className="w-3 h-3 mr-2" />
+                Sovereign Holding
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+              God-Mode <span className="text-[#d4af37]">Treasury</span>
+            </h1>
+            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+              Centraal overzicht van de geaggregeerde omzet over alle gekoppelde projecten (E-Com, Agency, SaaS).
+            </p>
           </div>
-          <p className="text-zinc-400">Sovereign Holding Command Center (Geaggregeerd)</p>
-        </div>
-        <div className="flex gap-4">
-          <button className="bg-[#111] border border-white/10 hover:border-white/30 text-white px-6 py-3 font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-colors">
-            <Download className="w-4 h-4" /> Export P&L
-          </button>
-          <button 
-            onClick={handleConnectMollie}
-            className={`px-6 py-3 font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-colors ${
-              bankConnected 
-                ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30' 
-                : 'bg-[#d4af37] text-black hover:bg-white border border-transparent'
-            }`}
-          >
-            {bankConnected ? <><ShieldCheck className="w-4 h-4" /> Banken Gekoppeld (3)</> : <><CreditCard className="w-4 h-4" /> Koppel Banken (Stripe/Mollie)</>}
-          </button>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button className="bg-black/50 border border-white/10 hover:border-white/30 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-colors">
+              <Download className="w-4 h-4" /> Export P&L
+            </button>
+            <button 
+              onClick={handleConnectMollie}
+              className={`px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-colors ${
+                bankConnected 
+                  ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30' 
+                  : 'bg-[#d4af37] text-black hover:bg-white border border-transparent shadow-[0_0_20px_rgba(212,175,55,0.3)]'
+              }`}
+            >
+              {bankConnected ? <><ShieldCheck className="w-4 h-4" /> Gekoppeld (3)</> : <><CreditCard className="w-4 h-4" /> Bank Koppelen</>}
+            </button>
+          </div>
         </div>
       </div>
 

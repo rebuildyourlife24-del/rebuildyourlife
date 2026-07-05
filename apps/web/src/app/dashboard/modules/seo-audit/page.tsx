@@ -1,171 +1,201 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Globe, AlertTriangle, CheckCircle, TrendingUp, Loader2 } from "lucide-react";
-import { generateSEOReportAction } from "@/app/actions/modules";
-import { firecrawlScrapeUrlAction } from "@/app/actions/scraper";
+import { createSeoAudit, getUserSeoAudits } from "@/app/actions/seo-audit";
+import { Search, Loader2, CheckCircle, AlertTriangle, XCircle, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-import { logSystemHealthAction } from "@/app/actions/system";
+export default function SeoAuditPage() {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [audits, setAudits] = useState<any[]>([]);
 
-export default function SeoAuditModule() {
-  const [url, setUrl] = useState("https://");
-  const [status, setStatus] = useState<"IDLE" | "SCANNING" | "COMPLETE" | "ERROR">("IDLE");
-  const [report, setReport] = useState<any>(null);
-  const [downloading, setDownloading] = useState(false);
+  useEffect(() => {
+    loadAudits();
+  }, []);
 
-  const handleScan = async () => {
-    if (!url || url === "https://") return;
-    setStatus("SCANNING");
-    setReport(null);
-
+  const loadAudits = async () => {
     try {
-      // 1. Eerst de website scrapen via Firecrawl
-      const scrapeRes = await firecrawlScrapeUrlAction(url);
-      const markdownContext = scrapeRes.success ? scrapeRes.data?.markdown : "";
-
-      // 2. Dan de ruwe data naar the Sovereign AI Router sturen
-      const res = await generateSEOReportAction(url, markdownContext);
-
-      if (!res.success) throw new Error(res.error || "Fout bij genereren");
-
-      setReport(res.report);
-      setStatus("COMPLETE");
+      const data = await getUserSeoAudits();
+      setAudits(data);
     } catch (err) {
       console.error(err);
-      setStatus("ERROR");
     }
   };
 
-  const handleDownloadPdf = async () => {
-    setDownloading(true);
-    window.print(); // Simple fallback
-    await logSystemHealthAction('SeoAuditModule', 'WARNING', 'De Download PDF knop maakt momenteel gebruik van window.print(). Bouw een robuuste PDF generator (bijv. react-pdf of puppeteer) voor een professionele output.');
-    setTimeout(() => setDownloading(false), 1000);
+  const handleScan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url) return;
+    
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await createSeoAudit(url);
+      if (!res.success) {
+        setError(res.error || "Er ging iets mis tijdens de scan.");
+      } else {
+        await loadAudits();
+        setUrl("");
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto min-h-screen text-white bg-slate-950">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-slate-950">
+      <Link href="/dashboard/modules" className="flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Terug naar Modules
+      </Link>
+
       <div className="mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <Globe className="text-blue-500" size={32} />
-          <h1 className="text-3xl font-bold">SEO Audit Agency Tool</h1>
-        </div>
-        <p className="text-slate-400">
-          Genereer in enkele seconden een real-time SEO-rapport voor een potentiële klant. 
-          Deel dit rapport om direct je autoriteit te bewijzen en SEO-diensten te verkopen.
+        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+          SEO Audit Scanner
+        </h1>
+        <p className="text-slate-400 mt-2 text-lg">
+          Voer een domeinnaam in en onze AI (Firecrawl + Gemini) analyseert de website op SEO en UX verbeteringen.
         </p>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl mb-8">
-        <label className="block text-sm font-medium text-slate-400 mb-2">
-          Website URL van je lead
-        </label>
-        <div className="flex gap-4">
-          <input 
-            type="url" 
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            disabled={status === "SCANNING"}
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all"
-            placeholder="https://www.website-van-de-lead.nl"
-          />
+      {/* Input Section */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-12 shadow-xl shadow-blue-900/10">
+        <form onSubmit={handleScan} className="flex gap-4">
+          <div className="relative flex-grow">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+            <input 
+              type="url"
+              placeholder="https://jouwklant.nl"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+              required
+            />
+          </div>
           <button 
-            onClick={handleScan}
-            disabled={status === "SCANNING" || !url || url === "https://"}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-all flex items-center gap-2"
+            type="submit"
+            disabled={loading || !url}
+            className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center min-w-[160px] justify-center"
           >
-            {status === "SCANNING" ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
-            {status === "SCANNING" ? "Scannen..." : "Genereer Rapport"}
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                Scannen...
+              </>
+            ) : (
+              "Start Audit"
+            )}
           </button>
-        </div>
-        {status === "ERROR" && <p className="text-red-400 text-sm mt-3">Er is een fout opgetreden bij het scrapen van de website. Controleer of de URL bereikbaar is.</p>}
+        </form>
+        {error && (
+          <div className="mt-4 p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-200 text-sm flex items-start">
+            <XCircle className="w-5 h-5 mr-2 shrink-0" />
+            {error}
+          </div>
+        )}
       </div>
 
-      {report && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-        >
-          {/* SEO Score Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center text-center">
-            <h2 className="text-xl font-bold mb-4 text-slate-300">Algemene SEO Score</h2>
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                <path
-                  className="text-slate-800"
-                  strokeWidth="3"
-                  stroke="currentColor"
-                  fill="none"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                  className={report.score > 70 ? "text-emerald-500" : report.score > 40 ? "text-yellow-500" : "text-red-500"}
-                  strokeDasharray={`${report.score}, 100`}
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  stroke="currentColor"
-                  fill="none"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-              </svg>
-              <div className="absolute text-4xl font-bold">{report.score}</div>
-            </div>
-            <p className="mt-4 text-slate-400 text-sm">{report.scoreSummary}</p>
-          </div>
-
-          {/* Details & Actiepunten */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-bold flex items-center gap-2 mb-4 text-red-400">
-                <AlertTriangle size={20} />
-                Kritieke Fouten (Fix Direct)
-              </h3>
-              <ul className="space-y-3">
-                {report.criticalIssues.map((issue: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3 bg-red-950/20 border border-red-900/30 p-3 rounded-lg">
-                    <span className="text-red-500 mt-0.5">•</span>
-                    <span className="text-slate-300 text-sm">{issue}</span>
-                  </li>
-                ))}
-                {report.criticalIssues.length === 0 && (
-                  <p className="text-slate-500 text-sm">Geen kritieke fouten gevonden.</p>
-                )}
-              </ul>
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-bold flex items-center gap-2 mb-4 text-yellow-400">
-                <TrendingUp size={20} />
-                Optimalisatie Kansen
-              </h3>
-              <ul className="space-y-3">
-                {report.opportunities.map((opp: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3 bg-yellow-950/20 border border-yellow-900/30 p-3 rounded-lg">
-                    <span className="text-yellow-500 mt-0.5">•</span>
-                    <span className="text-slate-300 text-sm">{opp}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center">
-              <div>
-                <h3 className="font-bold text-lg">Klaar om te verkopen?</h3>
-                <p className="text-sm text-slate-400">Stuur dit rapport naar de lead als PDF om je dienst te pitchen.</p>
-              </div>
-              <button 
-                onClick={handleDownloadPdf}
-                disabled={downloading}
-                className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold transition-colors disabled:opacity-50"
-              >
-                {downloading ? "Downloaden..." : "Download PDF Rapport"}
-              </button>
-            </div>
-          </div>
-        </motion.div>
+      {/* Results Section */}
+      <h2 className="text-2xl font-bold mb-6">Recente Audits</h2>
+      
+      {audits.length === 0 && !loading && (
+        <div className="text-center py-12 border border-dashed border-slate-800 rounded-2xl text-slate-500">
+          Geen audits gevonden. Voer een URL in om te beginnen.
+        </div>
       )}
+
+      <div className="space-y-6">
+        {audits.map((audit) => (
+          <motion.div 
+            key={audit.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-slate-900 border border-slate-800 rounded-2xl p-6"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-blue-400">{audit.targetUrl}</h3>
+                <p className="text-sm text-slate-500 mt-1">
+                  Geschaapt op: {new Date(audit.createdAt).toLocaleString('nl-NL')}
+                </p>
+              </div>
+              <div className="flex flex-col items-end">
+                <div className={`text-3xl font-black ${audit.score >= 80 ? 'text-emerald-400' : audit.score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                  {audit.score}/100
+                </div>
+                <div className="text-xs text-slate-500 font-medium tracking-wider">SEO SCORE</div>
+              </div>
+            </div>
+
+            {audit.status === "COMPLETED" && audit.aiReport && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800">
+                    <h4 className="font-bold text-emerald-400 mb-2 flex items-center">
+                      <CheckCircle className="w-4 h-4 mr-2" /> Wat gaat er goed?
+                    </h4>
+                    <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
+                      {(audit.aiReport as any).pros?.map((pro: string, i: number) => (
+                        <li key={i}>{pro}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800">
+                    <h4 className="font-bold text-red-400 mb-2 flex items-center">
+                      <AlertTriangle className="w-4 h-4 mr-2" /> Wat moet er beter?
+                    </h4>
+                    <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
+                      {(audit.aiReport as any).cons?.map((con: string, i: number) => (
+                        <li key={i}>{con}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-slate-950 rounded-xl border border-slate-800 p-5">
+                  <h4 className="font-bold mb-4">Actieplan (To-Do's)</h4>
+                  <div className="space-y-3">
+                    {(audit.aiReport as any).actionItems?.map((item: any, i: number) => (
+                      <div key={i} className="flex items-start bg-slate-900 p-3 rounded-lg border border-slate-800">
+                        <span className={`text-xs font-bold px-2 py-1 rounded mr-3 shrink-0 ${
+                          item.priority === 'HIGH' ? 'bg-red-500/20 text-red-400' : 
+                          item.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' : 
+                          'bg-blue-500/20 text-blue-400'
+                        }`}>
+                          {item.priority}
+                        </span>
+                        <span className="text-sm text-slate-300">{item.task}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {audit.status === "COMPLETED" && audit.aiReport?.summary && (
+              <div className="mt-6 pt-4 border-t border-slate-800">
+                <h4 className="text-sm font-bold text-slate-400 mb-2">AI Samenvatting</h4>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  {(audit.aiReport as any).summary}
+                </p>
+              </div>
+            )}
+
+            {audit.status === "PENDING" && (
+              <div className="flex items-center text-yellow-400 mt-4">
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                Bezig met scrapen en analyseren...
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }

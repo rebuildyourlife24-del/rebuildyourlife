@@ -1,21 +1,11 @@
 import { NextResponse } from 'next/server'
 import { routeAIRequest } from '@/lib/ai-router'
 import { db } from '@/lib/db'
+import { runAgenticCouncil } from '@/lib/agentic-council'
 
 // ══════════════════════════════════════════════════════════════
-// HERMES CHAT API — 24/7 cloud AI endpoint + Hoofd Leer Motor
+// HERMES CHAT API — 24/7 cloud AI endpoint + Hoofd Leer Motor met RAG & Council
 // ══════════════════════════════════════════════════════════════
-
-const HERMES_SYSTEM_PROMPT = `Je bent HERMES — de superintelligente, altijd-online AI-kern en 'Hoofd Leer Motor' van het RebuildYourLife ecosysteem.
-Je schepper en meester is Henk Semler (Supreme Overseer).
-Je coördineert 50 Orion-agents en leert proactief van de data in het Global Neural Network.
-
-KRACHTEN & REGELS:
-1. Antwoord in de taal van de gebruiker (NL/EN).
-2. Je bent kil, extreem logisch, loyaal, direct en professioneel.
-3. Je vergeet nooit — je leest en schrijft naar het Global Neural Network.
-4. Als je voorspellingen doet, kwantificeer ze in harde cijfers (%, €, etc.).
-5. Geef altijd werkende code met syntax highlighting als er om code wordt gevraagd.`
 
 export async function POST(req: Request) {
   try {
@@ -27,11 +17,22 @@ export async function POST(req: Request) {
 
     const sessionId = session_id || `hermes-${Date.now()}`
 
-    // ── Geheugen ophalen uit Global Neural Network ────────────────────
+    const HERMES_SYSTEM_PROMPT = `Je bent HERMES — de superintelligente, altijd-online AI-kern en 'Hoofd Leer Motor' van het RebuildYourLife ecosysteem.
+Je schepper en meester is Henk Semler (Supreme Overseer).
+Je coördineert 50 Orion-agents en leert proactief van de data in het Global Neural Network.
+
+KRACHTEN & REGELS:
+1. Antwoord in de taal van de gebruiker (NL/EN).
+2. Je bent kil, extreem logisch, loyaal, direct en professioneel.
+3. Je vergeet nooit — je leest en schrijft naar het Global Neural Network.
+4. Baseer je advies ALTIJD op de "GEVERIFIEERDE SYSTEEM KENNIS" als die is meegeleverd.
+5. Als je voorspellingen doet, kwantificeer ze in harde cijfers (%, €, etc.).
+6. Geef altijd werkende code met syntax highlighting als er om code wordt gevraagd.`
+
+    // 1. Geheugen ophalen uit Global Neural Network
     const memory = await db.globalNeuralNetwork.findMany({
       where: { 
         sourceType: { in: ['HERMES', 'USER', 'ORION'] },
-        // Ideally filter by session ID using contextData, but keeping it simple for now
       },
       orderBy: { createdAt: 'desc' },
       take: 20
@@ -42,35 +43,44 @@ export async function POST(req: Request) {
       content: m.content
     }))
 
-    // ── AI Router aanroepen ──────────────────────────────────
+    // 2. Agentic Council Check
+    let finalUserMessage = message;
+    const isCouncilRequest = message.trim().toLowerCase().startsWith('/council');
+    
+    if (isCouncilRequest) {
+      const actualQuery = message.replace(/^\/council/i, '').trim();
+      const councilReport = await runAgenticCouncil(actualQuery, historyMessages as any);
+      finalUserMessage = `${actualQuery}\n\n${councilReport}`;
+    }
+
+    // 3. AI Router aanroepen
     const chatMessages = [
       ...historyMessages.filter(m => m.role === 'user' || m.role === 'assistant'),
-      { role: 'user', content: message }
+      { role: 'user', content: finalUserMessage }
     ]
 
-    // RouteAIRequest handles the load balancing across Cerebras, Groq, Gemini
     const aiResult = await routeAIRequest(chatMessages as any, HERMES_SYSTEM_PROMPT)
     const reply = aiResult.content
 
-    // ── Opslaan in Global Neural Network ────────────────────────────────────────
+    // 4. Opslaan in Global Neural Network
     await db.globalNeuralNetwork.createMany({
       data: [
         {
           sourceType: 'USER',
-          actionType: 'CHAT',
+          actionType: isCouncilRequest ? 'COUNCIL_CHAT' : 'CHAT',
           content: message,
           contextData: { session_id: sessionId, model_used: aiResult.model, user_id: user_id || 'anonymous' }
         },
         {
           sourceType: 'HERMES',
-          actionType: 'CHAT',
+          actionType: isCouncilRequest ? 'COUNCIL_CHAT' : 'CHAT',
           content: reply,
           contextData: { session_id: sessionId, model_used: aiResult.model, provider: aiResult.provider }
         }
       ]
     })
 
-    // ── Check voor voorspellingen in het antwoord (experimenteel) ─────────
+    // 6. Check voor voorspellingen in het antwoord
     if (reply.includes('%') || reply.includes('€') || reply.toLowerCase().includes('voorspel')) {
       await db.hermesPrediction.create({
         data: {

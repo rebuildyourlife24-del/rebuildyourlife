@@ -14,13 +14,27 @@ export default async function EcommercePage() {
   });
 
   return (
-    <div className="p-6 lg:p-10 space-y-8 max-w-7xl mx-auto">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black uppercase tracking-widest text-white flex items-center gap-3">
-          <ShoppingCart className="w-8 h-8 text-cyan-500" />
-          E-Commerce & Dropshipping
-        </h1>
-        <p className="text-zinc-400 font-mono text-sm">Beheer je gekoppelde Shopify winkels, producten en winstmarges (LIVE DATA).</p>
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Widget */}
+      <div className="relative overflow-hidden rounded-[2rem] border border-emerald-500/20 glass-cyber p-8 md:p-12 group">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors duration-1000"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <ShoppingCart className="w-3 h-3 mr-2" />
+                E-Commerce
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+              Store <span className="text-emerald-400">Command</span>
+            </h1>
+            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+              Beheer je gekoppelde Shopify winkels, fysieke producten en digitale aanbiedingen (LIVE DATA).
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">

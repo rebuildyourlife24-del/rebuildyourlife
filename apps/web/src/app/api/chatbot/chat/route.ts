@@ -1,40 +1,73 @@
-import { streamText } from 'ai';
-import { createGroq } from '@ai-sdk/groq';
-import { NextResponse } from 'next/server';
-import { prisma } from '@rebuildyourlife/database'; // Aanname van de db import in deze monorepo
+import { NextResponse } from "next/server";
+import { prisma } from "@rebuildyourlife/database";
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
+});
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { messages, botId } = body;
+    const { chatbotId, visitorId, messages } = body;
 
-    if (!botId) {
-      return NextResponse.json({ error: 'Missing botId' }, { status: 400 });
+    if (!chatbotId || !visitorId || !messages || !Array.isArray(messages)) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    // In een echte productie-omgeving halen we hier de configuratie (prompt) op uit de database
-    // const module = await prisma.userBusinessModule.findUnique({ where: { id: botId } });
-    // const config = JSON.parse(module.config);
-    // const systemPrompt = config.prompt;
-
-    // Fallback/Demo system prompt
-    const systemPrompt = "Je bent een uiterst behulpzame AI-assistent. Beantwoord vragen kort, professioneel en klantvriendelijk. Als je het antwoord niet weet, vraag je de bezoeker om hun e-mailadres achter te laten.";
-
-    // Initialize Groq provider using the first available API key from environment
-    const groq = createGroq({
-      apiKey: process.env.GROQ_API_KEY_1 || process.env.GROQ_API_KEY,
+    // Retrieve chatbot config
+    const chatbot = await prisma.chatbot.findUnique({
+      where: { id: chatbotId },
     });
 
-    // Gebruik de AI SDK om een streaming response te genereren via Groq (Llama 3) voor extreme snelheid
-    const result = await streamText({
-      model: groq('llama3-70b-8192') as any,
-      system: systemPrompt,
-      messages,
+    if (!chatbot) {
+      return NextResponse.json({ error: "Chatbot not found" }, { status: 404 });
+    }
+
+    // Format messages for Gemini (Gemini uses 'user' and 'model' instead of 'assistant')
+    // systemInstruction is passed separately in config
+    const formattedMessages = messages.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }));
+
+    // Call Gemini API
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: formattedMessages,
+      config: {
+        systemInstruction: chatbot.systemPrompt,
+      }
     });
 
-    return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('[CHATBOT_API_ERROR]', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const reply = aiResponse.text || "Sorry, ik kon geen antwoord genereren.";
+
+    // Store in DB (ChatSession)
+    // Find or create session
+    let session = await prisma.chatSession.findFirst({
+      where: { chatbotId, visitorId },
+    });
+
+    const fullHistory = [...messages, { role: 'assistant', content: reply }];
+
+    if (session) {
+      await prisma.chatSession.update({
+        where: { id: session.id },
+        data: { messages: fullHistory }
+      });
+    } else {
+      await prisma.chatSession.create({
+        data: {
+          chatbotId,
+          visitorId,
+          messages: fullHistory
+        }
+      });
+    }
+
+    return NextResponse.json({ reply });
+  } catch (error: any) {
+    console.error("Chatbot Chat API Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

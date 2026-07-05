@@ -80,23 +80,23 @@ export function SwarmAvatar({ theme = 'blue' }: { theme?: 'blue' | 'red' }) {
       const chatRes = await fetch('/api/hermes/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command: input }),
+        body: JSON.stringify({ message: input }),
       });
       const chatData = await chatRes.json();
       
-      if (!chatRes.ok || !chatData.response) {
-        setResponse("Systeemfout: Kan niet verbinden met Ollama. Zorg dat de Ollama app draait en 'llama3' is geïnstalleerd (typ 'ollama run llama3' in je terminal).");
+      if (!chatRes.ok || !chatData.reply) {
+        setResponse("Systeemfout: Kan niet verbinden met Hermes. Controleer de API.");
         setLoading(false);
         return;
       }
 
-      setResponse(chatData.response);
+      setResponse(chatData.reply);
 
       // 2. Convert Text to Speech (Vin Diesel / Onyx)
       const ttsRes = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: chatData.response, voice: 'onyx' }),
+        body: JSON.stringify({ text: chatData.reply, voice: 'onyx' }),
       });
       const ttsData = await ttsRes.json();
 

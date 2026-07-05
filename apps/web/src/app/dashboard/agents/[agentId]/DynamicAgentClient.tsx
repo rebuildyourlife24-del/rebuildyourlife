@@ -5,9 +5,21 @@ import { Target, Megaphone, PenTool, Bot, Briefcase, FileLineChart } from "lucid
 import { notFound } from "next/navigation";
 
 export function DynamicAgentClient({ agentIdRaw }: { agentIdRaw: string }) {
-  const agentId = agentIdRaw.toUpperCase() as "CEO" | "CFO" | "CMO" | "ADS" | "COPY" | "DATA";
+  const agentId = agentIdRaw.toUpperCase() as "HERMES" | "CEO" | "CFO" | "CMO" | "ADS" | "COPY" | "DATA";
 
   const AGENTS_METADATA: Record<string, any> = {
+    HERMES: {
+      name: "Hermes",
+      role: "Persoonlijk Assistent",
+      description: "Jouw superslimme rechterhand in het Rebuild Your Life OS. Kan content zoeken, systeem navigatie uitleggen en simpele taken uitvoeren.",
+      themeColor: "text-emerald-500",
+      icon: <Bot className="w-8 h-8 text-emerald-500" />,
+      suggestedPrompts: [
+        { label: "Platform Navigatie", text: "Waar kan ik mijn Shopify winkel koppelen?" },
+        { label: "Content Zoeken", text: "Welke module legt dropshipping product research uit?" },
+        { label: "Mijn Voortgang", text: "Wat was ik de vorige keer aan het leren in de Academy?" }
+      ]
+    },
     CMO: {
       name: "CMO Agent",
       role: "Chief Marketing Officer",

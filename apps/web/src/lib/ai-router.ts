@@ -1,18 +1,21 @@
 /**
  * THE SOVEREIGN AI ROUTER
  * Automatisch schakelen tussen meerdere AI providers en API keys.
- * Als provider 1 een limiet raakt (429), schakelt het systeem automatisch
- * door naar de volgende provider. Volledig transparant voor de rest van de app.
- *
- * Prioriteit: Cerebras -> Groq -> Google Gemini -> OpenRouter (fallback)
+ * Inclusief Agentic Loop (Tools) en de Universal Memory Matrix (RAG).
  */
+import { GoogleGenAI } from '@google/genai';
+import { db } from '@/lib/db';
+import { systemTools, executeToolCall } from './ai-tools';
 
-interface AIMessage {
-  role: 'system' | 'user' | 'assistant';
+export interface AIMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool';
   content: string;
+  name?: string;
+  tool_call_id?: string;
+  tool_calls?: any[];
 }
 
-interface AIResponse {
+export interface AIResponse {
   content: string;
   provider: string;
   model: string;
@@ -27,11 +30,10 @@ interface AIProvider {
 }
 
 // Providers in volgorde van prioriteit (meest genereus eerst)
-// Providers in volgorde van prioriteit (meest genereus eerst)
 function getProviders(): AIProvider[] {
   const providers: AIProvider[] = [];
 
-  // --- CEREBRAS (Incredible speed, 1M tokens/dag gratis) ---
+  // --- CEREBRAS ---
   const cerebrasKeys = [
     process.env.CEREBRAS_API_KEY_1,
     process.env.CEREBRAS_API_KEY_2,
@@ -43,20 +45,19 @@ function getProviders(): AIProvider[] {
       name: `Cerebras-${i + 1}`,
       baseUrl: 'https://api.cerebras.ai/v1',
       apiKey: key,
-      model: 'llama3.1-70b', // Fixed model name
+      model: 'llama3.1-70b',
       priority: 1,
     });
   });
 
-  // --- GROQ (Zeer snel, genereuze gratis tier) ---
+  // --- GROQ ---
   const groqKeys = [
     process.env.GROQ_API_KEY_1,
     process.env.GROQ_API_KEY_2,
     process.env.GROQ_API_KEY_3,
-    process.env.GROQ_API_KEY, // also check default
+    process.env.GROQ_API_KEY, 
   ].filter(Boolean) as string[];
 
-  // Unieke keys filteren
   const uniqueGroqKeys = [...new Set(groqKeys)];
 
   uniqueGroqKeys.forEach((key, i) => {
@@ -76,7 +77,7 @@ function getProviders(): AIProvider[] {
     });
   });
 
-  // --- GOOGLE GEMINI (Zeer slim, veel gratis reqs) ---
+  // --- GOOGLE GEMINI ---
   const geminiKeys = [
     process.env.GEMINI_API_KEY_1,
     process.env.GEMINI_API_KEY_2,
@@ -89,14 +90,14 @@ function getProviders(): AIProvider[] {
   uniqueGeminiKeys.forEach((key, i) => {
     providers.push({
       name: `Gemini-Flash-${i + 1}`,
-      baseUrl: 'google-genai-sdk', // special flag for SDK
+      baseUrl: 'google-genai-sdk',
       apiKey: key,
       model: 'gemini-2.5-flash',
       priority: 4,
     });
   });
 
-  // --- OPENROUTER (Fallback met gratis modellen zoals Hermes en Qwen) ---
+  // --- OPENROUTER ---
   if (process.env.OPENROUTER_API_KEY) {
     const orKey = process.env.OPENROUTER_API_KEY;
     providers.push({
@@ -106,129 +107,180 @@ function getProviders(): AIProvider[] {
       model: 'nousresearch/hermes-3-llama-3.1-8b:free',
       priority: 5,
     });
-    providers.push({
-      name: 'OpenRouter-Qwen',
-      baseUrl: 'https://openrouter.ai/api/v1',
-      apiKey: orKey,
-      model: 'qwen/qwen-2-7b-instruct:free',
-      priority: 6,
-    });
-    providers.push({
-      name: 'OpenRouter-Llama',
-      baseUrl: 'https://openrouter.ai/api/v1',
-      apiKey: orKey,
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
-      priority: 7,
-    });
   }
 
-  // Sorteer op prioriteit (laagste getal = hoogste prioriteit)
   return providers.sort((a, b) => a.priority - b.priority);
 }
 
-import { GoogleGenAI } from '@google/genai';
+/**
+ * Functie om de Universele Geheugen Matrix te injecteren
+ */
+async function injectUniversalMemory(messages: AIMessage[], systemPrompt: string): Promise<string> {
+  try {
+    // We pakken de laatste user message om context te bepalen
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || '';
+    const keywords = lastUserMessage.toLowerCase().split(' ').filter(w => w.length > 4);
+    
+    if (keywords.length === 0) return systemPrompt;
+
+    const orConditions = keywords.map(kw => ({ evidence: { contains: kw, mode: 'insensitive' } }));
+    
+    // Haal relevante feiten op voor ALLE agents
+    const relevantDocs = await db.agentKnowledgeBase.findMany({
+      where: {
+        status: 'ACTIVE',
+        OR: orConditions as any
+      },
+      take: 2 
+    });
+
+    if (relevantDocs.length > 0) {
+      let injectedKnowledge = '\n\n[SYSTEM INSTRUCTION: UNIVERSAL MEMORY MATRIX]\nGebruik de volgende geverifieerde feiten uit de database als absolute waarheid voor je antwoord:\n';
+      relevantDocs.forEach(doc => {
+        const snippet = doc.evidence ? doc.evidence.substring(0, 5000) : '';
+        injectedKnowledge += `\nDOCUMENT: ${doc.claim}\n${snippet}...\n`;
+      });
+      return systemPrompt + injectedKnowledge;
+    }
+  } catch (err) {
+    console.error('[MEMORY INJECTOR] Error fetching memory:', err);
+  }
+  
+  return systemPrompt;
+}
 
 /**
  * Stuur een bericht naar de AI. Het systeem probeert automatisch alle
- * geconfigureerde providers, in volgorde van prioriteit.
+ * geconfigureerde providers, in volgorde van prioriteit, en beheert de Agentic Loop.
  */
 export async function routeAIRequest(
-  messages: AIMessage[],
-  systemPrompt?: string
+  originalMessages: AIMessage[],
+  baseSystemPrompt: string = 'Je bent een AI assistent.',
+  options: { preferredModel?: string } = {}
 ): Promise<AIResponse> {
   const providers = getProviders();
 
   if (providers.length === 0) {
-    throw new Error(
-      'Geen AI providers geconfigureerd. Voeg API keys toe aan je .env bestand.'
-    );
+    throw new Error('Geen AI providers geconfigureerd. Voeg API keys toe aan je .env bestand.');
   }
 
-  const allMessages: AIMessage[] = systemPrompt
-    ? [{ role: 'system', content: systemPrompt }, ...messages]
-    : messages;
+  // 1. Injecteer de Universele Geheugen Matrix (RAG)
+  const systemPrompt = await injectUniversalMemory(originalMessages, baseSystemPrompt);
+  
+  // 2. Prepareer de berichten
+  let conversation: AIMessage[] = [
+    { role: 'system', content: systemPrompt },
+    ...originalMessages
+  ];
 
   let lastError: Error | null = null;
-
+  
+  // Agentic Loop: Maximaal 3 iteraties voor tool calls
+  const MAX_ITERATIONS = 3;
+  
   for (const provider of providers) {
+    // Model Forcing: Skip als er een preferred model is en dit is hem niet (simpele regex check)
+    if (options.preferredModel && !provider.name.toLowerCase().includes(options.preferredModel.toLowerCase())) {
+      continue;
+    }
+
     try {
       console.log(`[AI ROUTER] Proberen via ${provider.name}...`);
       
-      let content = '';
+      let iteration = 0;
+      let isDone = false;
+      let finalContent = '';
 
-      if (provider.baseUrl === 'google-genai-sdk') {
-        // Gebruik de robuuste Google SDK voor Gemini
-        const ai = new GoogleGenAI({ apiKey: provider.apiKey });
-        // Zet messages om in 1 lange string (Gemini SDK houdt van platte tekst als simpele fallback)
-        const promptString = allMessages.map(m => `[${m.role.toUpperCase()}]:\n${m.content}`).join('\n\n');
+      while (!isDone && iteration < MAX_ITERATIONS) {
+        iteration++;
         
-        const response = await ai.models.generateContent({
-          model: provider.model,
-          contents: promptString,
-        });
-        
-        if (!response.text) {
-          throw new Error('Gemini SDK gaf geen text terug');
-        }
-        content = response.text.trim();
-      } else {
-        // OpenAI Compatible endpoints (Cerebras, Groq, OpenRouter)
-        const response = await fetch(`${provider.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${provider.apiKey}`,
-            ...(provider.name.startsWith('OpenRouter') && {
-              'HTTP-Referer': 'https://rebuildyourlife.eu',
-              'X-Title': 'Sovereign Grid',
-            }),
-          },
-          body: JSON.stringify({
+        if (provider.baseUrl === 'google-genai-sdk') {
+          // Gemini SDK fallback (nog geen tools geïmplementeerd voor Gemini in deze build)
+          const ai = new GoogleGenAI({ apiKey: provider.apiKey });
+          const promptString = conversation.map(m => `[${m.role.toUpperCase()}]:\n${m.content}`).join('\n\n');
+          
+          const response = await ai.models.generateContent({
             model: provider.model,
-            messages: allMessages,
-            max_tokens: 3000,
-            temperature: 0.7,
-          }),
-        });
+            contents: promptString,
+          });
+          
+          finalContent = response.text?.trim() || '';
+          isDone = true; 
+        } else {
+          // OpenAI Compatible endpoints (Cerebras, Groq, OpenRouter) MET TOOL CALLING
+          const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${provider.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: provider.model,
+              messages: conversation,
+              tools: systemTools,
+              tool_choice: 'auto',
+              max_tokens: 3000,
+              temperature: 0.7,
+            }),
+          });
 
-        if (response.status === 429 || response.status >= 500) {
-          console.warn(`[AI ROUTER] ${provider.name} geeft ${response.status}. Schakel naar volgende...`);
-          lastError = new Error(`${provider.name} rate limit of server error: ${response.status}`);
-          continue;
-        }
+          if (response.status === 429 || response.status >= 500) {
+            throw new Error(`Rate limit of server error: ${response.status}`);
+          }
 
-        if (!response.ok) {
-          const errText = await response.text();
-          console.warn(`[AI ROUTER] ${provider.name} fout: ${errText}`);
-          lastError = new Error(errText);
-          continue;
-        }
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
 
-        const data = await response.json();
-        content = data.choices?.[0]?.message?.content;
-        
-        if (!content) {
-          lastError = new Error(`${provider.name} gaf geen content terug`);
-          continue;
+          const data = await response.json();
+          const message = data.choices?.[0]?.message;
+          
+          if (!message) {
+            throw new Error('Geen message teruggekregen');
+          }
+
+          // Controleer of de AI een Tool wil gebruiken
+          if (message.tool_calls && message.tool_calls.length > 0) {
+            console.log(`[AI ROUTER] 🛠️ Tool call gedetecteerd door ${provider.name}`);
+            
+            // Voeg de assistent response (met tool calls) toe aan de conversatie
+            conversation.push(message);
+
+            // Voer alle tools uit
+            for (const toolCall of message.tool_calls) {
+              const args = JSON.parse(toolCall.function.arguments);
+              const result = await executeToolCall(toolCall.function.name, args);
+              
+              // Geef het resultaat terug aan de AI
+              conversation.push({
+                role: 'tool',
+                tool_call_id: toolCall.id,
+                name: toolCall.function.name,
+                content: String(result)
+              });
+            }
+            // Loop gaat verder, AI mag nu het antwoord formuleren op basis van de tool resultaten
+          } else {
+            // Geen tool calls, we zijn klaar
+            finalContent = message.content || '';
+            isDone = true;
+          }
         }
       }
 
-      console.log(`[AI ROUTER] ✅ Succes via ${provider.name}`);
+      console.log(`[AI ROUTER] ✅ Succes via ${provider.name} (Iteraties: ${iteration})`);
 
       return {
-        content,
+        content: finalContent,
         provider: provider.name,
         model: provider.model,
       };
     } catch (err: any) {
-      console.warn(`[AI ROUTER] ${provider.name} netwerk fout:`, err.message);
+      console.warn(`[AI ROUTER] ❌ ${provider.name} faalde:`, err.message);
       lastError = err;
       continue;
     }
   }
 
-  // Alle providers gefaald
-  throw new Error(
-    `Alle AI providers gefaald. Laatste fout: ${lastError?.message}`
-  );
+  throw new Error(`Alle AI providers gefaald. Laatste fout: ${lastError?.message}`);
 }
