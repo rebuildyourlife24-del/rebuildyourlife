@@ -80,7 +80,7 @@ export async function storeDocumentInVectorDB(docId: string, title: string, text
     const batchSize = 100;
     for (let i = 0; i < vectors.length; i += batchSize) {
       const batch = vectors.slice(i, i + batchSize);
-      await index.upsert(batch);
+      await index.upsert(batch as any);
     }
 
     console.log(`Successfully stored ${chunks.length} chunks for document ${docId} in Pinecone.`);

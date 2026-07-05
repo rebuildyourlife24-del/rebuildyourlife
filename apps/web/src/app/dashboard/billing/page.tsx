@@ -1,7 +1,7 @@
 import { CreditCard, Zap, Shield, Crown, CheckCircle2, TrendingUp } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma'; // Assuming standard prisma client
+import { prisma } from '@rebuildyourlife/database'; // Assuming standard prisma client
 
 export default async function BillingPage() {
   const supabase = await createServerClient();
