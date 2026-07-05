@@ -1,94 +1,47 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Play, Loader2, Video, DatabaseZap, Star } from "lucide-react";
+import { useState } from 'react';
+import { Play, Loader2, Mic, Settings2, Download } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function VideoForge() {
+export default function VoiceForge() {
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [modelType, setModelType] = useState<"free" | "premium">("free");
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!prompt) return;
-
+  const handleGenerate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!prompt.trim()) return;
+    
     setIsGenerating(true);
-    setVideoUrl(null);
+    setError(null);
+    setAudioUrl(null);
 
     try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, modelType }),
+      const response = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: prompt }),
       });
 
-      const data = await res.json();
-      
-      if (data.videoUrl) {
-        setVideoUrl(data.videoUrl);
-      } else {
-        alert("Render gefaald. Controleer API logs.");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Genereren mislukt');
       }
-    } catch (error) {
-      console.error(error);
-      alert("Netwerkfout tijdens renderen.");
+
+      if (data.audioUrl) {
+        setAudioUrl(data.audioUrl);
+      }
+    } catch (err: any) {
+      setError(err.message || "Er is een onbekende fout opgetreden.");
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 font-sans flex flex-col items-center justify-start pt-24 px-6 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 rounded-full hidden blur-[] pointer-events-none" />
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="z-10 w-full max-w-4xl text-center mb-12"
-      >
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-950/40 border border-cyan-800/50 rounded-full text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6">
-          <DatabaseZap className="w-4 h-4" />
-          <span>Open-Source Video Render Engine</span>
-        </div>
-        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
-          Video <span className="text-cyan-400">Forge</span>
-        </h1>
-        <p className="text-zinc-400 max-w-2xl mx-auto">
-          Kies tussen 100% gratis rendering via Hugging Face of activeer de premium 4K Mochi-1 engine voor maximale kwaliteit.
-        </p>
-      </motion.div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="z-10 w-full max-w-2xl bg-navy border border-white/10 rounded-2xl p-6 shadow-2xl"
-      >
-        <form onSubmit={handleGenerate} className="flex flex-col gap-6">
-          {/* Model Switcher */}
-          <div className="flex bg-black border border-white/10 rounded-xl p-1">
-            <button
-              type="button"
-              onClick={() => setModelType("free")}
-              className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-lg transition-all ${
-                modelType === "free" ? "bg-navyLight text-white" : "text-zinc-500 hover:text-zinc-300"
-              }`}
-            >
-              Gratis Engine (1080p)
-            </button>
-            <button
-              type="button"
-              onClick={() => setModelType("premium")}
-              className={`flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all ${
-                modelType === "premium" ? "bg-cyan-900/50 text-cyan-400 border border-cyan-500/30" : "text-zinc-500 hover:text-zinc-300"
-              }`}
-            >
-              <Star className="w-3 h-3" /> Premium 4K (Mochi-1)
-            </button>
-          </div>
     <div className="min-h-screen bg-[#020202] text-zinc-300 p-8 pb-32">
       <div className="max-w-5xl mx-auto space-y-8">
         
@@ -110,7 +63,7 @@ export default function VideoForge() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Input */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-black/40 border border-white/10 p-6 rounded-2xl relative overflow-hidden">
+            <form onSubmit={handleGenerate} className="bg-black/40 border border-white/10 p-6 rounded-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500"></div>
               
               <h2 className="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -129,7 +82,7 @@ export default function VideoForge() {
                 </div>
 
                 <button
-                  onClick={handleGenerate}
+                  type="submit"
                   disabled={isGenerating || !prompt.trim()}
                   className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-sm p-4 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden shadow-[0_0_20px_rgba(6,182,212,0.3)]"
                 >
@@ -158,7 +111,7 @@ export default function VideoForge() {
                   )}
                 </div>
               )}
-            </div>
+            </form>
           </div>
 
           {/* Right: Output */}
