@@ -29,11 +29,17 @@ export default function SeoAuditPage() {
     e.preventDefault();
     if (!url) return;
     
+    let finalUrl = url.trim();
+    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+      finalUrl = 'https://' + finalUrl;
+      setUrl(finalUrl);
+    }
+    
     setLoading(true);
     setError("");
 
     try {
-      const res = await createSeoAudit(url);
+      const res = await createSeoAudit(finalUrl);
       if (!res.success) {
         setError(res.error || "Er ging iets mis tijdens de scan.");
       } else {
@@ -77,7 +83,7 @@ export default function SeoAuditPage() {
           <div className="relative flex-grow">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
             <input 
-              type="url"
+              type="text"
               placeholder="https://jouwklant.nl"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
