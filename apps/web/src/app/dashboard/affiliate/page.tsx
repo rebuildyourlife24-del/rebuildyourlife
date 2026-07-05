@@ -38,7 +38,10 @@ export default async function AffiliateDashboardPage() {
           <Network className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-white uppercase tracking-widest">Word een Partner</h3>
           <p className="text-zinc-500 mt-2 mb-6">Je hebt nog geen affiliate account. Genereer je unieke code en start met bouwen.</p>
-          <form action={createAffiliateProfileAction}>
+          <form action={async (formData) => {
+            "use server";
+            await createAffiliateProfileAction(formData);
+          }}>
             <button type="submit" className="bg-purple-600 hover:bg-purple-500 text-white font-bold uppercase tracking-widest px-8 py-3 rounded-lg transition-colors">
               Genereer Partner Link
             </button>
