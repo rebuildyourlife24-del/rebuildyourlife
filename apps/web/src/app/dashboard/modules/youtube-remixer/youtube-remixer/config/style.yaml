@@ -1,0 +1,31 @@
+# Dit bestand bepaalt jouw eigen "thema" waarin content wordt gegenereerd.
+# Pas dit vrij aan - dit is de kern van "in eigen thema opnieuw uitbrengen".
+
+brand:
+  naam: "Mijn Kanaal"
+  taal: "Nederlands"              # bv. Nederlands, Engels, ...
+  doelgroep: "algemeen publiek, 20-40 jaar, geïnteresseerd in technologie"
+  toon: "enthousiast, toegankelijk, met af en toe humor"
+  perspectief: "wij"               # "ik", "wij", "je" (aanspreekvorm)
+
+blog:
+  gewenste_lengte_woorden: 600
+  structuur: "pakkende titel, korte intro, 3-5 subkopjes, korte conclusie met call-to-action"
+  extra_instructies: "voeg een korte 'waarom dit ertoe doet'-alinea toe"
+
+video_script:
+  gewenste_lengte_seconden: 90
+  structuur: "hook (5s), kernboodschap (60s), afsluiting met vraag aan kijker (15s)"
+  stem: "energiek, korte zinnen, geschikt voor voice-over"
+
+social:
+  platforms:
+    - naam: "LinkedIn"
+      lengte: "150-200 woorden, professioneel maar persoonlijk"
+    - naam: "Instagram"
+      lengte: "korte caption, max 5 zinnen, met relevante hashtags"
+    - naam: "X"
+      lengte: "max 280 tekens, prikkelend"
+
+disclaimer:
+  bronvermelding: true   # zet op true om altijd te verwijzen naar het originele filmpje/kanaal
