@@ -24,13 +24,27 @@ export default async function AffiliateDashboardPage() {
   });
 
   return (
-    <div className="p-6 lg:p-10 space-y-8 max-w-7xl mx-auto">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black uppercase tracking-widest text-white flex items-center gap-3">
-          <Network className="w-8 h-8 text-purple-500" />
-          Partner Netwerk
-        </h1>
-        <p className="text-zinc-400 font-mono text-sm">Verdien €500 vaste commissie per Elite Sale. Bouw een team en verdien €100 per sub-sale.</p>
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Widget */}
+      <div className="relative overflow-hidden rounded-[2rem] border border-purple-500/30 glass-cyber p-8 md:p-12 group mb-8">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/20 transition-colors duration-1000"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-flex items-center justify-center bg-purple-500/10 border border-purple-500/40 text-purple-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+                <Network className="w-3 h-3 mr-2" />
+                Affiliate Program
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+              Partner <span className="text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">Netwerk</span>
+            </h1>
+            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+              Verdien €500 vaste commissie per Elite Sale. Bouw een team en verdien €100 per sub-sale.
+            </p>
+          </div>
+        </div>
       </div>
 
       {!affiliate ? (

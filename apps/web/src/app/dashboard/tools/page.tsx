@@ -28,19 +28,19 @@ export default function ToolsPage() {
     <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Header Widget */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-amber-500/20 glass-cyber p-8 md:p-12 group">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/10 transition-colors duration-1000"></div>
+      <div className="relative overflow-hidden rounded-[2rem] border border-amber-500/30 glass-cyber p-8 md:p-12 group">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/20 transition-colors duration-1000"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="inline-flex items-center justify-center bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <span className="inline-flex items-center justify-center bg-amber-500/10 border border-amber-500/40 text-amber-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(245,158,11,0.5)]">
                 <Briefcase className="w-3 h-3 mr-2" />
                 Tools & Resources
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              The <span className="text-amber-400">Vault</span>
+              The <span className="text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.8)]">Vault</span>
             </h1>
             <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
               Jouw wapenkamer. Gebruik onze custom AI-tools voor marketing en download de exacte SOP's en templates die wij gebruiken om miljoenenomzetten te draaien.

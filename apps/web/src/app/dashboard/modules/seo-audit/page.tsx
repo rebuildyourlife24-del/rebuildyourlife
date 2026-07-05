@@ -48,39 +48,47 @@ export default function SeoAuditPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-slate-950">
-      <Link href="/dashboard/modules" className="flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Terug naar Modules
-      </Link>
-
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-          SEO Audit Scanner
-        </h1>
-        <p className="text-slate-400 mt-2 text-lg">
-          Voer een domeinnaam in en onze AI (Firecrawl + Gemini) analyseert de website op SEO en UX verbeteringen.
-        </p>
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Widget */}
+      <div className="relative overflow-hidden rounded-[2rem] border border-blue-500/30 glass-cyber p-8 md:p-12 group mb-8">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-1000"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-flex items-center justify-center bg-blue-500/10 border border-blue-500/40 text-blue-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <Search className="w-3 h-3 mr-2" />
+                SEO & Analytics
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+              SEO <span className="text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">Audit Scanner</span>
+            </h1>
+            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+              Voer een domeinnaam in en onze AI (Firecrawl + Gemini) analyseert de website op SEO en UX verbeteringen.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Input Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-12 shadow-xl shadow-blue-900/10">
+      <div className="bg-black/40 border border-white/10 rounded-2xl p-6 lg:p-8 mb-12 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
         <form onSubmit={handleScan} className="flex gap-4">
           <div className="relative flex-grow">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
             <input 
               type="url"
               placeholder="https://jouwklant.nl"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+              className="w-full bg-zinc-900/50 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               required
             />
           </div>
           <button 
             type="submit"
             disabled={loading || !url}
-            className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center min-w-[160px] justify-center"
+            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold uppercase tracking-wider py-4 px-8 rounded-xl transition-all flex items-center min-w-[160px] justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]"
           >
             {loading ? (
               <>

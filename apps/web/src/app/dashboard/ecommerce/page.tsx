@@ -22,13 +22,13 @@ export default async function EcommercePage() {
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+              <span className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]">
                 <ShoppingCart className="w-3 h-3 mr-2" />
                 E-Commerce
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              Store <span className="text-emerald-400">Command</span>
+              Store <span className="text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)]">Command</span>
             </h1>
             <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
               Beheer je gekoppelde Shopify winkels, fysieke producten en digitale aanbiedingen (LIVE DATA).

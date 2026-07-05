@@ -1,0 +1,13 @@
+Vercel CLI 54.13.0 (Node.js 26.3.0)
+Fetching projects in henk-s-projects355
+> Projects found under henk-s-projects355  [1s]
+
+  Project Name                         Latest Production URL                                           Updated   Node Version   
+  rebuildyourlife24-del                https://rebuildyourlife24-del.vercel.app                        16m       24.x           
+  rebuildyourlife-123-web              https://rebuildyourlife.eu                                      22m       24.x           
+  rebuildyourlife-123-api              https://rebuildyourlife-123-api-henk-s-projects355.vercel.app   33m       24.x           
+  web                                  https://web-henk-s-projects355.vercel.app                       2d        24.x           
+  antigravity                          --                                                              12d       24.x           
+  rebuildyourlife-123-command-center   https://rebuildyourlife-123-command-center-five.vercel.app      12d       24.x           
+  rebuildyourlife-123-enterprise-os    https://rebuildyourlife-123-enterprise-os.vercel.app            16d       24.x           
+

@@ -41,15 +41,27 @@ export default function AIProductHunter() {
   };
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-white uppercase tracking-widest flex items-center gap-3">
-          <Target className="w-8 h-8 text-rose-500" />
-          AI Product Hunter
-        </h1>
-        <p className="text-zinc-400 mt-2 font-mono text-sm">
-          Scrape elke e-commerce concurrent of dropship URL. Sovereign AI haalt het winnende product eruit, schrijft copy, en injecteert het direct in jouw Shopify.
-        </p>
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Widget */}
+      <div className="relative overflow-hidden rounded-[2rem] border border-rose-500/30 glass-cyber p-8 md:p-12 group mb-8">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-rose-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/20 transition-colors duration-1000"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="inline-flex items-center justify-center bg-rose-500/10 border border-rose-500/40 text-rose-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(244,63,94,0.5)]">
+                <Target className="w-3 h-3 mr-2" />
+                Product Research
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+              AI Product <span className="text-rose-500 drop-shadow-[0_0_15px_rgba(244,63,94,0.8)]">Hunter</span>
+            </h1>
+            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+              Scrape elke e-commerce concurrent of dropship URL. Sovereign AI haalt het winnende product eruit, schrijft copy, en injecteert het direct in jouw Shopify.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="bg-black/40 border border-white/10 rounded-2xl p-6 lg:p-8 mb-8">

@@ -56,3 +56,4 @@ coverage/
 .turbo/runs/
 
 .vercel
+.env*

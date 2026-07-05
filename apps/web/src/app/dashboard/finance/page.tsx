@@ -48,13 +48,13 @@ export default function FinanceDashboard() {
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="inline-flex items-center justify-center bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+              <span className="inline-flex items-center justify-center bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(212,175,55,0.5)]">
                 <Layers className="w-3 h-3 mr-2" />
                 Sovereign Holding
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              God-Mode <span className="text-[#d4af37]">Treasury</span>
+              God-Mode <span className="text-[#d4af37] drop-shadow-[0_0_15px_rgba(212,175,55,0.8)]">Treasury</span>
             </h1>
             <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
               Centraal overzicht van de geaggregeerde omzet over alle gekoppelde projecten (E-Com, Agency, SaaS).

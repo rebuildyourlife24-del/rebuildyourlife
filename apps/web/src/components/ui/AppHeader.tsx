@@ -54,15 +54,15 @@ export function AppHeader() {
 
       {/* RIGHT: Navigation */}
       <nav className="relative z-10 flex items-center gap-6">
-        <Link href="/vault" className="text-xs text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
+        <Link href="/dashboard/tools" className="text-xs text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
           The Vault
         </Link>
-        <Link href="/" className="text-xs text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
+        <Link href="/coming-soon" className="text-xs text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
           The Syndicate
         </Link>
-        <button className="border border-neonCyan/50 bg-neonCyan/10 text-neonCyan px-4 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-neonCyan hover:text-[#020202] transition-colors shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+        <Link href="/login" className="border border-neonCyan/50 bg-neonCyan/10 text-neonCyan px-4 py-1.5 text-xs font-bold tracking-widest uppercase hover:bg-neonCyan hover:text-[#020202] transition-colors shadow-[0_0_15px_rgba(6,182,212,0.2)]">
           Initiate
-        </button>
+        </Link>
       </nav>
     </motion.header>
   );
