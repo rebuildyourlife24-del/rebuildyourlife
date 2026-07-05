@@ -3,6 +3,7 @@
 import { prisma } from "@rebuildyourlife/database";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { revalidatePath } from "next/cache";
 import { Sentinel } from "../../lib/orion/sentinel-scanner";
 import { routeAIRequest } from "../../lib/ai-router";
 
@@ -220,6 +221,10 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       where: { id: conversation.id },
       data: { updatedAt: new Date() },
     });
+
+    revalidatePath("/dashboard/agents/copywriter");
+    revalidatePath("/dashboard/agents/orion");
+    revalidatePath("/dashboard/agents/hermes");
 
     return {
       success: true,
