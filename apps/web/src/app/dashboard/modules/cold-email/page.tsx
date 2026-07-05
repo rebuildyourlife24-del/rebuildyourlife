@@ -39,19 +39,35 @@ export default function ColdEmailModule() {
         const res = await generateColdEmailAction(pitch, niche);
         
         if (res.success && res.sequence) {
-          // We mock a lead response for the UI visualization based on the sequence
-          const leads = [
-            { companyName: "Dental Care Plus", email: "info@dentalcareplus.nl", personalizedPitch: res.sequence[0].body.substring(0, 100) + "..." },
-            { companyName: "Tandartspraktijk de Molen", email: "contact@demolen.nl", personalizedPitch: res.sequence[0].body.substring(0, 100) + "..." },
-            { companyName: "Mondzorg Centrum", email: "hello@mondzorg.nl", personalizedPitch: res.sequence[0].body.substring(0, 100) + "..." }
-          ];
+          // ACTUALLY save to database
+          const htmlContent = JSON.stringify(res.sequence, null, 2);
+          await import('../../../actions/modules').then(m => 
+            m.saveEmailCampaignAction(`Campagne: ${niche}`, res.sequence[0].subject, htmlContent)
+          );
+
+          // Get REAL leads from CRM (BusinessClients) that might match, or just show the generated sequence
+          const crmRes = await fetch('/api/crm/clients').then(r => r.ok ? r.json() : { clients: [] }).catch(() => ({ clients: [] }));
+          
+          let leads = crmRes.clients?.slice(0, 5) || [];
+          if (leads.length === 0) {
+             // Fallback to show the user what was generated if no CRM clients exist yet
+             leads = [
+               { companyName: "Voorbeeld Lead (Voeg klanten toe in CRM)", email: "test@voorbeeld.nl", personalizedPitch: res.sequence[0].body.substring(0, 100) + "..." }
+             ];
+          } else {
+             leads = leads.map((l: any) => ({
+                companyName: l.name,
+                email: l.email || "Geen email",
+                personalizedPitch: res.sequence[0].body.substring(0, 100) + "..."
+             }));
+          }
           
           setLiveLeads(leads);
           setStatus("SENDING");
           
           setStats({
             leadsFound: leads.length,
-            emailsSent: leads.length,
+            emailsSent: autopilotEnabled ? leads.length : 0,
             opened: 0,
             replied: 0
           });

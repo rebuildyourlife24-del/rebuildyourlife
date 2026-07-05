@@ -98,6 +98,78 @@ Geef je antwoord EXACT in het volgende JSON-formaat terug. Let op, retourneer AL
   }
 }
 
+import { prisma } from '@rebuildyourlife/database';
+import { getSessionAction } from './auth';
+
+export async function saveEmailCampaignAction(name: string, subject: string, htmlContent: string) {
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    const campaign = await prisma.emailCampaign.create({
+      data: {
+        userId: session.user.id,
+        name,
+        subject,
+        htmlContent,
+        status: "DRAFT"
+      }
+    });
+    return { success: true, campaign };
+  } catch (error: any) {
+    console.error("Save Email Campaign error:", error);
+    return { success: false, error: "Kon campagne niet opslaan." };
+  }
+}
+
+export async function saveWebsiteToDatabaseAction(name: string, htmlCode: string) {
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) return { success: false, error: "Unauthorized" };
+  
+  try {
+    // 1. Create Funnel
+    const funnel = await prisma.funnel.create({
+      data: {
+        userId: session.user.id,
+        name: name,
+        domain: \`\${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.rebuildyourlife.nl\`,
+        status: "DRAFT"
+      }
+    });
+
+    // 2. Create FunnelPage
+    await prisma.funnelPage.create({
+      data: {
+        funnelId: funnel.id,
+        slug: "home",
+        html: htmlCode
+      }
+    });
+
+    return { success: true, funnelId: funnel.id };
+  } catch (error: any) {
+    console.error("Save Website Error:", error);
+    return { success: false, error: "Kon website niet opslaan in database." };
+  }
+}
+
+export async function getEmailCampaignsAction() {
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) return { success: false, data: [] };
+  
+  try {
+    const campaigns = await prisma.emailCampaign.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: 'desc' }
+    });
+    return { success: true, data: campaigns };
+  } catch (error) {
+    return { success: false, data: [] };
+  }
+}
+
 export async function generateViralScriptAction(topic: string, platform: string) {
   try {
     const prompt = `

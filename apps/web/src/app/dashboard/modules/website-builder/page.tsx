@@ -113,18 +113,34 @@ export default function WebsiteBuilderPage() {
               <div className="flex items-center justify-between p-4 border-b border-white/10 bg-[#0a0a0a]">
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider">Output Renderer</h3>
                 {htmlCode && (
-                  <div className="flex items-center gap-2 bg-black border border-white/10 rounded-lg p-1">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-black border border-white/10 rounded-lg p-1">
+                      <button
+                        onClick={() => setViewMode('preview')}
+                        className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${viewMode === 'preview' ? 'bg-neonCyan text-black' : 'text-zinc-500 hover:text-white'}`}
+                      >
+                        <Eye className="w-4 h-4" /> Preview
+                      </button>
+                      <button
+                        onClick={() => setViewMode('code')}
+                        className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${viewMode === 'code' ? 'bg-neonCyan text-black' : 'text-zinc-500 hover:text-white'}`}
+                      >
+                        <Code className="w-4 h-4" /> Code
+                      </button>
+                    </div>
                     <button
-                      onClick={() => setViewMode('preview')}
-                      className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${viewMode === 'preview' ? 'bg-neonCyan text-black' : 'text-zinc-500 hover:text-white'}`}
+                      onClick={async () => {
+                        const { saveWebsiteToDatabaseAction } = await import('@/app/actions/modules');
+                        const res = await saveWebsiteToDatabaseAction(topic, htmlCode);
+                        if (res.success) {
+                           alert('Website is succesvol opgeslagen in je Database (Funnels)!');
+                        } else {
+                           alert('Fout bij opslaan: ' + res.error);
+                        }
+                      }}
+                      className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-colors"
                     >
-                      <Eye className="w-4 h-4" /> Preview
-                    </button>
-                    <button
-                      onClick={() => setViewMode('code')}
-                      className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${viewMode === 'code' ? 'bg-neonCyan text-black' : 'text-zinc-500 hover:text-white'}`}
-                    >
-                      <Code className="w-4 h-4" /> Code
+                      Opslaan in Database
                     </button>
                   </div>
                 )}
