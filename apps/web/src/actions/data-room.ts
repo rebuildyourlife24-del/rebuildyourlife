@@ -18,7 +18,7 @@ export async function getEnterpriseFolders() {
   }
 }
 
-import { storeDocumentInVectorDB } from '@/lib/pinecone';
+// Pinecone removed in favor of Supabase pgvector
 
 export async function createDocument(folderId: string, title: string, content: string, owner: string) {
   try {
@@ -33,8 +33,8 @@ export async function createDocument(folderId: string, title: string, content: s
       }
     });
 
-    // Store in Pinecone Vector DB for Orion's Long-Term Memory
-    await storeDocumentInVectorDB(doc.id, doc.title, doc.content);
+    // TODO: Store in Supabase pgvector for Orion's Long-Term Memory
+    // await storeDocumentInSupabase(doc.id, doc.title, doc.content);
 
     return { success: true };
   } catch (error: any) {

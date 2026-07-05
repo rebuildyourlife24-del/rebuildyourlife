@@ -92,19 +92,18 @@ export async function POST(req: Request) {
       }
     }
 
-    // Pinecone RAG (Corporate Memory Retrieval)
+    // TODO: Supabase pgvector RAG (Corporate Memory Retrieval)
     let ragContext = "";
     const userQueryText = command || (messages && messages.length > 0 ? messages[messages.length - 1].content : null);
     
     if (userQueryText) {
       try {
-        const { queryVectorDB } = await import('@/lib/pinecone');
-        const retrievedDocs = await queryVectorDB(userQueryText);
-        if (retrievedDocs) {
-          ragContext = `\n\nLONG-TERM MEMORY RECALL (Bedrijfsdocumenten en regels uit de Data Room):\nJe mag deze interne kennis direct gebruiken om de vraag te beantwoorden:\n${retrievedDocs}`;
-        }
+        // const retrievedDocs = await querySupabaseVectorDB(userQueryText);
+        // if (retrievedDocs) {
+        //   ragContext = `...`;
+        // }
       } catch (e) {
-        console.error("Pinecone Query failed in Orion Chat:", e);
+        console.error("Vector Query failed in Orion Chat:", e);
       }
     }
 
