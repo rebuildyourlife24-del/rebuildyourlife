@@ -8,10 +8,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields: platform, content' }, { status: 400 });
     }
 
-    const webhookUrl = process.env.MAKE_SOCIAL_WEBHOOK_URL;
+    const webhookUrl = process.env.MAKE_WEBHOOK_URL || process.env.MAKE_SOCIAL_WEBHOOK_URL;
 
     if (!webhookUrl) {
-      console.warn("MAKE_SOCIAL_WEBHOOK_URL ontbreekt. Social post wordt gesimuleerd.");
+      console.warn("MAKE_WEBHOOK_URL ontbreekt. Social post wordt gesimuleerd.");
       console.log(`[SIMULATION SOCIAL] Platform: ${platform} | Content: ${content}`);
       return NextResponse.json({ success: true, message: 'Social post gesimuleerd (geen webhook URL)' }, { status: 200 });
     }
