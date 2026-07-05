@@ -37,7 +37,7 @@ function chunkText(text: string, maxChunkSize: number = 1000): string[] {
  * Generates vector embeddings for a given text using Google's embedding model.
  */
 export async function generateEmbeddings(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+  const model = genAI.getGenerativeModel({ model: "embedding-001" });
   const result = await model.embedContent(text);
   return result.embedding.values;
 }

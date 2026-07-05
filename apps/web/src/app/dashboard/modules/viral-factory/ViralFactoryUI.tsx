@@ -5,12 +5,14 @@ import { Video, Wand2, Loader2, Play, Calendar, Copy, Volume2, Smartphone } from
 
 import { generateViralScriptAction } from '@/app/actions/modules';
 import { generateVoiceAction } from '@/app/actions/voice';
+import { publishSocialPost } from '@/actions/social-poster';
 
 export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[] }) {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('TIKTOK');
   const [length, setLength] = useState('30');
   const [loading, setLoading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [drafts, setDrafts] = useState(initialDrafts);
   const [currentScript, setCurrentScript] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -26,19 +28,35 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
       
       if (res.success) {
         setCurrentScript(res.script || '');
-        // Voor nu simuleren we de opgeslagen post lokaal totdat we DB sync hebben
-        setDrafts([{
-          id: Math.random().toString(),
-          platform: platform,
-          status: 'DRAFT',
-          content: res.script,
-          createdAt: new Date().toISOString()
-        }, ...drafts]);
       }
     } catch (err) {
       console.error(err);
     }
     setLoading(false);
+  };
+
+  const handlePublish = async () => {
+    if (!currentScript) return;
+    setPublishing(true);
+    try {
+      const res = await publishSocialPost(platform, currentScript, audioUrl || undefined);
+      if (res.success) {
+        alert('Succes! Webhook is afgevuurd naar Make.com!');
+        // Refresh de drafts (in theorie regelt de server action revalidatePath dit al bij een reload)
+        setDrafts([{
+          id: Math.random().toString(),
+          platform: platform,
+          status: 'PUBLISHED',
+          content: currentScript,
+          createdAt: new Date().toISOString()
+        }, ...drafts]);
+      } else {
+        alert('Fout: ' + res.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setPublishing(false);
   };
 
   const handleGenerateAudio = async () => {
@@ -143,6 +161,15 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
                 {generatingAudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Genereer Voice-over (ElevenLabs)
               </button>
             )}
+
+            {/* NEW PUBLISH BUTTON */}
+            <button 
+              onClick={handlePublish}
+              disabled={publishing}
+              className="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-black font-black uppercase tracking-widest py-4 rounded-lg flex justify-center items-center gap-2 transition-colors disabled:opacity-50 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)]"
+            >
+              {publishing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Smartphone className="w-5 h-5" />} Auto-Publish naar Socials
+            </button>
           </div>
         )}
       </div>

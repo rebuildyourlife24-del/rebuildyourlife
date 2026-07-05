@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Target, Search, Copy, CheckCircle2, Building, Zap, Share2 } from 'lucide-react';
+import { Target, Search, Copy, CheckCircle2, Building, Zap, Share2, Loader2, Send } from 'lucide-react';
 import { generateBrandKitAction } from '@/app/actions/brandLauncher';
+import { publishSocialPost } from '@/actions/social-poster';
 
 export default function BrandLauncherPage() {
   const [domain, setDomain] = useState('');
   const [industry, setIndustry] = useState('Tech & E-commerce');
   const [loading, setLoading] = useState(false);
+  const [publishingTo, setPublishingTo] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -31,6 +33,21 @@ export default function BrandLauncherPage() {
     navigator.clipboard.writeText(text);
     setCopiedField(id);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handlePublish = async (platform: string, content: string) => {
+    setPublishingTo(platform);
+    try {
+      const res = await publishSocialPost(platform.toUpperCase(), content);
+      if (res.success) {
+        alert(`Succes! Webhook is afgevuurd naar Make.com voor ${platform}!`);
+      } else {
+        alert('Fout: ' + res.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setPublishingTo(null);
   };
 
   const renderPlatformCard = (title: string, data: any) => {
@@ -95,6 +112,15 @@ export default function BrandLauncherPage() {
               </div>
             </div>
           )}
+
+          <button
+            onClick={() => handlePublish(title, data.firstPost)}
+            disabled={publishingTo === title}
+            className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider py-3 rounded-lg flex justify-center items-center gap-2 transition-colors disabled:opacity-50"
+          >
+            {publishingTo === title ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            Auto-Publish
+          </button>
         </div>
       </div>
     );
