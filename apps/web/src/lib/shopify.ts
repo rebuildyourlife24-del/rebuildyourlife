@@ -9,7 +9,7 @@ async function shopifyFetch<T>({ cache = 'force-cache', headers, query, tags, va
   variables?: any;
 }): Promise<{ status: number; body: T } | never> {
   try {
-    const endpoint = \`https://\${domain}/api/2024-01/graphql.json\`;
+    const endpoint = `https://${domain}/api/2024-01/graphql.json`;
     const result = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -44,7 +44,7 @@ async function shopifyFetch<T>({ cache = 'force-cache', headers, query, tags, va
   }
 }
 
-const getProductsQuery = \`
+const getProductsQuery = `
   query getProducts($first: Int!) {
     products(first: $first) {
       edges {
@@ -71,7 +71,7 @@ const getProductsQuery = \`
       }
     }
   }
-\`;
+`;
 
 export async function getProducts(limit = 10) {
   if (!domain || !storefrontAccessToken) return [];
