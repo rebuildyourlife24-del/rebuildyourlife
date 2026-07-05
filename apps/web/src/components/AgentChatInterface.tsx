@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { 
-  Send, Sparkles, MessageSquare, AlertCircle, Zap, TrendingUp, Globe, Briefcase, Plus, Menu
+  Send, Sparkles, MessageSquare, AlertCircle, Zap, TrendingUp, Globe, Briefcase, Plus, Menu, Volume2, Square
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -64,6 +64,11 @@ export function AgentChatInterface({
   
   // Mobile history drawer state
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  // Audio state
+  const [playingMsgId, setPlayingMsgId] = useState<string | null>(null);
+  const [audioLoadingMsgId, setAudioLoadingMsgId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const colorBase = themeColor.split("-")[1] || "zinc";
@@ -175,6 +180,56 @@ export function AgentChatInterface({
 
   const handleModelSelect = (modelId: string, modelTitle: string) => {
     handleSendMessage(`Ik wil direct starten met het verdienmodel: ${modelTitle}. Geef me een stap-voor-stap kickstart plan en de benodigde resources.`);
+  };
+
+  const toggleAudio = async (msgId: string, text: string) => {
+    if (playingMsgId === msgId) {
+      // Stop playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlayingMsgId(null);
+      return;
+    }
+
+    // Stop currently playing
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setPlayingMsgId(null);
+    }
+
+    try {
+      setAudioLoadingMsgId(msgId);
+      
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch audio');
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      
+      audio.onended = () => setPlayingMsgId(null);
+      audio.onerror = () => {
+        console.error('Audio playback error');
+        setPlayingMsgId(null);
+      };
+
+      await audio.play();
+      setPlayingMsgId(msgId);
+    } catch (err) {
+      console.error('TTS Error:', err);
+      setError('Kon spraak niet laden. Controleer of ElevenLabs actief is.');
+    } finally {
+      setAudioLoadingMsgId(null);
+    }
   };
 
   return (
@@ -339,7 +394,30 @@ export function AgentChatInterface({
                     <span className={msg.role === "user" ? "text-white" : themeColor}>
                       {msg.role === "user" ? "Operator" : agentName}
                     </span>
-                    <span>{new Date(msg.createdAt).toLocaleTimeString("nl-NL", {hour: '2-digit', minute:'2-digit'})}</span>
+                    <div className="flex items-center gap-4">
+                      {msg.role === "assistant" && (
+                        <button
+                          onClick={() => toggleAudio(msg.id, msg.content)}
+                          disabled={audioLoadingMsgId === msg.id}
+                          className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${
+                            playingMsgId === msg.id 
+                              ? "bg-red-500/20 text-red-400 hover:bg-red-500/30" 
+                              : "bg-white/5 hover:bg-white/10 text-zinc-300"
+                          }`}
+                          title="Lees voor"
+                        >
+                          {audioLoadingMsgId === msg.id ? (
+                            <span className="w-3 h-3 rounded-full border-2 border-white/20 border-t-white animate-spin"></span>
+                          ) : playingMsgId === msg.id ? (
+                            <Square size={12} className="fill-current" />
+                          ) : (
+                            <Volume2 size={12} />
+                          )}
+                          <span className="text-[10px]">{playingMsgId === msg.id ? "Stop" : "Spreek"}</span>
+                        </button>
+                      )}
+                      <span>{new Date(msg.createdAt).toLocaleTimeString("nl-NL", {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
                   </div>
                   <div className="prose prose-invert prose-lg max-w-none prose-p:leading-loose prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-white/10 prose-headings:font-black">
                     <p className="whitespace-pre-wrap font-medium">{msg.content.replace(/\[SYSTEM:.*?\]\s*/g, '')}</p>
