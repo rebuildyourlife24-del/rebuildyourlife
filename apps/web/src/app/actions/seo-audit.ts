@@ -13,7 +13,7 @@ const firecrawl = new FirecrawlApp({
 
 // Gemini Initialization
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1 || "",
 });
 
 export async function createSeoAudit(url: string) {
