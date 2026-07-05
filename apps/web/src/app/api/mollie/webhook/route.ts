@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const mollieClient = createMollieClient({ apiKey: mollieKey });
     const payment = await mollieClient.payments.get(paymentId);
 
-    if (payment.isPaid()) {
+    if (payment.status === 'paid') {
       console.log(`✅ Payment ${paymentId} completed successfully!`);
       const metadata = payment.metadata;
       
