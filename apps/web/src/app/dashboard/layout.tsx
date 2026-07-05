@@ -70,7 +70,8 @@ const getGroupedNavItems = (user: any) => {
       id: 'agents',
       label: 'AI Agents (Autonoom)',
       items: [
-        { label: 'Shopify E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <Bot size={16} /> }
+        { label: 'Shopify E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <Bot size={16} /> },
+        { label: 'Copywriter Agent', href: '/dashboard/agents/copywriter', icon: <Bot size={16} /> }
       ]
     },
     {

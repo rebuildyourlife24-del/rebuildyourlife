@@ -182,58 +182,30 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     }));
 
     try {
-      const routerResponse = await routeAIRequest(messagesForApi, systemPrompt);
+      // Gebruik een timeout van 8.5 seconden (Vercel free tier limit is 10s)
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("AI_TIMEOUT")), 8500);
+      });
+
+      const aiPromise = routeAIRequest(messagesForApi, systemPrompt);
+      const routerResponse = await Promise.race([aiPromise, timeoutPromise]) as { content: string };
+      
       aiResponse = routerResponse.content;
     } catch (routerError: any) {
       console.error("[AI CHAT ACTION] AI Router error:", routerError);
-      aiResponse = "Ik ondervind momenteel technische problemen bij het verwerken van uw aanvraag. Probeer het later nog eens.";
+      if (routerError.message === "AI_TIMEOUT") {
+        aiResponse = "De AI doet er momenteel te lang over om te reageren (Timeout). Probeer een kortere of simpelere vraag.";
+      } else {
+        aiResponse = "Ik ondervind momenteel technische problemen bij het verwerken van uw aanvraag. Probeer het later nog eens.";
+      }
     }
 
-    // Parse actions and execute them in the workspace (filesystem & terminal)
     let finalResponseContent = aiResponse;
-    const writeRegex = /<<<WRITE_FILE:\s*([^\n>]+)>>>([\s\S]*?)<<<END_WRITE_FILE>>>/g;
-    const execRegex = /<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
-
     let executionLog = "";
 
-    // 1. WRITE_FILE execution disabled in prod
-    // 2. EXECUTE_COMMAND execution
-    let match;
-    while ((match = execRegex.exec(aiResponse)) !== null) {
-      const command = match[1]?.trim();
-      try {
-        const stdout = execSync(command, { 
-          cwd: workspaceRoot,
-          timeout: 30000,
-          encoding: 'utf-8'
-        });
-        executionLog += `\n[Systeem: Commando '${command}' uitgevoerd. Output:\n${stdout}]`;
-      } catch (e: any) {
-        executionLog += `\n[Systeem: Commando '${command}' falen. Error: ${e.message}\nOutput: ${e.stdout || ''}]`;
-      }
-    }
-
-    if (executionLog) {
-      finalResponseContent += `\n\n=== EXECUTIE LOGS ===${executionLog}`;
-
-      // Log the execution to SystemActivityLog in the database
-      try {
-        await prisma.systemActivityLog.create({
-          data: {
-            userId,
-            action: "AGENT_EXECUTE_ACTION",
-            category: "TECH",
-            status: "SUCCESS",
-            metadata: JSON.stringify({
-              agentType,
-              executionLog,
-              rawResponse: aiResponse
-            })
-          }
-        });
-      } catch (logErr) {
-        console.error("Failed to write AGENT_EXECUTE_ACTION log:", logErr);
-      }
+    // Geen directe execSync meer op Vercel (voorkomt vastlopers en 504 errors)
+    if (aiResponse.includes("<<<EXECUTE_COMMAND>>>")) {
+      finalResponseContent = aiResponse.replace(/<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g, "\n[SYSTEM: Command execution omitted for safety on cloud runtime]\n");
     }
 
     // Sla AI antwoord op
