@@ -1,7 +1,0 @@
-.env
-__pycache__/
-*.pyc
-output/*
-!output/.gitkeep
-.venv/
-venv/
