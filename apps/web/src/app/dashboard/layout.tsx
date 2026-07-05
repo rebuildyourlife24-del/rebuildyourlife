@@ -46,7 +46,9 @@ import {
   Newspaper,
   Bot,
   Link2,
-  Database
+  Database,
+  Megaphone,
+  PenTool
 } from 'lucide-react';
 
 const getGroupedNavItems = (user: any) => {
@@ -70,8 +72,12 @@ const getGroupedNavItems = (user: any) => {
       id: 'agents',
       label: 'AI Agents (Autonoom)',
       items: [
-        { label: 'Shopify E-Commerce Agent', href: '/dashboard/agents/ecommerce', icon: <Bot size={16} /> },
-        { label: 'Copywriter Agent', href: '/dashboard/agents/copywriter', icon: <Bot size={16} /> }
+        { label: 'CEO (Overkoepelend)', href: '/dashboard/agents/ceo', icon: <Briefcase size={16} /> },
+        { label: 'CFO (Financiën)', href: '/dashboard/agents/cfo', icon: <Activity size={16} /> },
+        { label: 'CMO (Marketing)', href: '/dashboard/agents/cmo', icon: <Target size={16} /> },
+        { label: 'Ads (Performance)', href: '/dashboard/agents/ads', icon: <Megaphone size={16} /> },
+        { label: 'Copywriter Agent', href: '/dashboard/agents/copy', icon: <PenTool size={16} /> },
+        { label: 'Shopify E-Commerce', href: '/dashboard/agents/ecommerce', icon: <ShoppingCart size={16} /> }
       ]
     },
     {
