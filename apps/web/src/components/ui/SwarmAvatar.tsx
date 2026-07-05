@@ -76,8 +76,8 @@ export function SwarmAvatar({ theme = 'blue' }: { theme?: 'blue' | 'red' }) {
     }
 
     try {
-      // 1. Get Text Response from Orion (ChatGPT)
-      const chatRes = await fetch('/api/orion/chat', {
+      // 1. Get Text Response from Hermes (ChatGPT)
+      const chatRes = await fetch('/api/hermes/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command: input }),

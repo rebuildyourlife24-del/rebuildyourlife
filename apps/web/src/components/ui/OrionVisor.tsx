@@ -9,8 +9,8 @@ export function OrionVisor() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   const pathname = usePathname();
-  const [logs, setLogs] = useState<{ id: number; sender: "ceo" | "orion"; text: string; time: string }[]>([
-    { id: 1, sender: "orion", text: "GodBrain OS Visor initialized. Waiting for CEO input.", time: new Date().toLocaleTimeString() }
+  const [logs, setLogs] = useState<{ id: number; sender: "ceo" | "hermes"; text: string; time: string }[]>([
+    { id: 1, sender: "hermes", text: "GodBrain OS Visor initialized. Waiting for CEO input.", time: new Date().toLocaleTimeString() }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -49,11 +49,11 @@ export function OrionVisor() {
     setLogs((prev) => [...prev, newLog]);
     setInputMessage("");
 
-    // Simulate Orion/Groq Response
+    // Simulate Hermes/Groq Response
     setTimeout(() => {
       setLogs((prev) => [...prev, {
         id: Date.now() + 1,
-        sender: "orion",
+        sender: "hermes",
         text: `Command received: "${newLog.text}". I am analyzing the request through the GodBrain matrix.`,
         time: new Date().toLocaleTimeString()
       }]);
@@ -84,7 +84,7 @@ export function OrionVisor() {
             <div className="flex items-center justify-between p-4 border-b border-gold/10 bg-gradient-to-r from-black via-slate-900 to-black">
               <div className="flex items-center gap-3">
                 <Terminal className="w-5 h-5 text-gold" />
-                <h2 className="text-white font-bold tracking-widest uppercase text-sm">Orion Comms Link</h2>
+                <h2 className="text-white font-bold tracking-widest uppercase text-sm">Hermes Comms Link</h2>
                 <div className="flex items-center gap-2 ml-4 px-2 py-1 bg-gold/10 border border-gold/20 rounded text-xs text-gold font-mono">
                   <Zap className="w-3 h-3 animate-pulse" />
                   GROQ ENGINE ONLINE
@@ -109,7 +109,7 @@ export function OrionVisor() {
                       : "bg-slate-900 border-slate-700 text-slate-300"
                   }`}>
                     <span className="font-bold uppercase text-[10px] block mb-1 opacity-50">
-                      {log.sender === "ceo" ? "Mitchel (CEO)" : "Orion"}
+                      {log.sender === "ceo" ? "Mitchel (CEO)" : "Hermes"}
                     </span>
                     {log.text}
                   </div>

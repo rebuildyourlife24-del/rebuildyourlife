@@ -1,0 +1,1 @@
+scripts/test-rag.ts(8,67): error TS2307: Cannot find module '../src/lib/pinecone' or its corresponding type declarations.
