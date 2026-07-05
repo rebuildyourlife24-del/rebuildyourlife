@@ -1,13 +1,17 @@
 'use server';
 
-import { requireAuth } from '@/lib/auth-server';
+import { getSessionAction } from '@/app/actions/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '');
 
 export async function generateBrandKitAction(domain: string, industry: string = 'Tech & E-commerce') {
   try {
-    const user = await requireAuth();
+    const session = await getSessionAction();
+    if (!session || !session.user) {
+      return { success: false, error: 'Unauthorized' };
+    }
+    const user = session.user;
 
     if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
       return { success: false, error: 'AI Configuratie ontbreekt (API Key).' };

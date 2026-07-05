@@ -134,7 +134,7 @@ export async function saveWebsiteToDatabaseAction(name: string, htmlCode: string
       data: {
         userId: session.user.id,
         name: name,
-        domain: \`\${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.rebuildyourlife.nl\`,
+        domain: `${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.rebuildyourlife.nl`,
         status: "DRAFT"
       }
     });

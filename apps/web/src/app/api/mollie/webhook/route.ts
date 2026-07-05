@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createMollieClient } from '@mollie/api-client';
+import { createMollieClient } from '@mollie/api-client';import { prisma } from '@rebuildyourlife/database';
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,9 +24,21 @@ export async function POST(req: NextRequest) {
       const metadata = payment.metadata;
       
       console.log("Upgrading user:", metadata.email, "to plan:", metadata.plan);
-      // NOTE: Here you would normally update the Prisma Database using:
-      // await prisma.user.update({ where: { id: metadata.userId }, data: { role: 'ELITE' } });
-      // If it was a High-Ticket sale through an affiliate, you'd calculate the €500 commission here.
+      
+      if (metadata.userId && metadata.userId !== 'guest') {
+        let newTier = 'PRO';
+        if (metadata.plan === 'highticket') newTier = 'ELITE';
+        else if (metadata.plan === 'subscription') newTier = 'BUSINESS';
+
+        await prisma.user.update({ 
+          where: { id: metadata.userId }, 
+          data: { 
+            subscriptionTier: newTier,
+            subscriptionStatus: 'ACTIVE'
+          } 
+        });
+        console.log(`User ${metadata.userId} upgraded to ${newTier} in database.`);
+      }
     } else {
       console.log(`Payment ${paymentId} status: ${payment.status}`);
     }

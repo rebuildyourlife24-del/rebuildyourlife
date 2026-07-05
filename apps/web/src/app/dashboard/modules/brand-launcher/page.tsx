@@ -173,13 +173,13 @@ export default function BrandLauncherPage() {
           <button 
             onClick={handleGenerate}
             disabled={loading || !domain}
-            className={\`
+            className={`
               flex items-center gap-2 px-8 py-3 rounded-lg font-bold uppercase tracking-wider transition-all
-              \${loading || !domain 
+              ${loading || !domain 
                 ? 'bg-white/5 text-zinc-500 cursor-not-allowed border border-white/5' 
                 : 'bg-blue-500/10 text-blue-400 border border-blue-500/50 hover:bg-blue-500/20 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
               }
-            \`}
+            `}
           >
             {loading ? (
               <>
