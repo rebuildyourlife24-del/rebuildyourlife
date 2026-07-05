@@ -47,9 +47,9 @@ const RYL_MODULES = [
     description: "Krijg direct een melding als je websites offline gaan",
     icon: Globe,
     category: "B2B",
-    status: "COMING_SOON",
+    status: "AVAILABLE",
     profitPotential: "Gemiddeld",
-    href: "#"
+    href: "/dashboard/modules/monitoring"
   },
   {
     id: "cold_email_outreach",

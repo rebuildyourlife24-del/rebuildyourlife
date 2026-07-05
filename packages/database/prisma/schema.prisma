@@ -116,6 +116,7 @@ model User {
   businessReviews        BusinessReview[]
   generatedCopies        GeneratedCopy[]
   crmLeads               CrmLead[]
+  uptimeMonitors         UptimeMonitor[]
 
   @@index([email])
   @@index([role])
@@ -2361,4 +2362,34 @@ model CrmLead {
 
   @@index([userId])
   @@index([stage])
+}
+
+model UptimeMonitor {
+  id              String   @id @default(uuid())
+  userId          String
+  name            String
+  url             String
+  status          String   @default("PENDING") // UP, DOWN, PENDING
+  lastCheck       DateTime?
+  interval        Int      @default(5) // Minuten
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs            UptimeLog[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model UptimeLog {
+  id              String   @id @default(uuid())
+  monitorId       String
+  status          String   // UP, DOWN
+  statusCode      Int?
+  responseTime    Int?     // In ms
+  createdAt       DateTime @default(now())
+  monitor         UptimeMonitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@index([monitorId])
+  @@index([createdAt])
 }
