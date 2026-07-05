@@ -13,7 +13,7 @@ function generateRandomCode(length: number) {
   return result;
 }
 
-export async function createAffiliateProfileAction() {
+export async function createAffiliateProfileAction(formData?: FormData) {
   try {
     const session = await getSessionAction();
     if (!session?.success || !session?.user?.id) {
