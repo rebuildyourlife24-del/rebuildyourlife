@@ -1,97 +1,91 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@rebuildyourlife/database';
+// Import the local routeAIRequest directly without going through the edge logic 
+import { routeAIRequest } from '@/lib/ai-router';
 
-// Helper function to send message back to Telegram
+// Helper to send messages back to Telegram
 async function sendTelegramMessage(chatId: string, text: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) {
-    console.error("TELEGRAM_BOT_TOKEN is not set.");
-    return;
-  }
+  if (!token) return;
   
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: text,
-      parse_mode: 'Markdown'
-    })
+    body: JSON.stringify({ chat_id: chatId, text }),
   });
 }
 
-// Function to call AI (Gemini)
-async function getAIResponse(prompt: string) {
-  const apiKey = process.env.GEMINI_API_KEY_1 || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-  if (!apiKey) return "Ik ben momenteel offline. (Geen AI Key gevonden)";
-  
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: `Je bent GodBrain, de hyperintelligente assistent van RebuildYourLife. Geef beknopte, krachtige antwoorden.\n\nGebruiker zegt: ${prompt}` }] }]
-      })
-    });
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Er ging iets mis met mijn neurale netwerk.";
-  } catch (error) {
-    console.error(error);
-    return "Error in verbinding met GodBrain.";
-  }
-}
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Telegram sends the message object
-    if (!body.message) {
-      return NextResponse.json({ status: 'ignored' });
-    }
+    // Ignore edits or other types of updates for now
+    if (!body.message) return new NextResponse('OK', { status: 200 });
 
     const chatId = body.message.chat.id.toString();
-    const text = body.message.text || '';
+    const text = body.message.text;
 
-    console.log(`[TELEGRAM] Received message from ${chatId}: ${text}`);
+    if (!text) return new NextResponse('OK', { status: 200 });
 
-    // Check if it's a connect command: /start connect-12345
-    if (text.startsWith('/start connect-')) {
-      const token = text.split('connect-')[1];
-      
-      const user = await prisma.user.findUnique({ where: { telegramConnectToken: token } });
-      if (user) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { 
-            telegramChatId: chatId,
-            telegramConnectToken: null // reset token na gebruik
-          }
-        });
-        await sendTelegramMessage(chatId, `✅ *Koppeling Succesvol!*\n\nWelkom ${user.firstName}, je account is nu verbonden met GodBrain. Ik sta klaar om je te assisteren. Wat kan ik voor je doen?`);
-      } else {
-        await sendTelegramMessage(chatId, `❌ Ongeldige of verlopen koppelingscode.`);
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    if (!botToken) {
+      console.error("TELEGRAM_BOT_TOKEN ontbreekt in Vercel.");
+      return new NextResponse('OK', { status: 200 });
+    }
+
+    // 1. Account Koppelen Logica
+    if (text.startsWith('/link ')) {
+      const email = text.split(' ')[1]?.trim();
+      if (!email) {
+        await sendTelegramMessage(chatId, "Gebruik: /link <jouw-email>");
+        return new NextResponse('OK', { status: 200 });
       }
-      return NextResponse.json({ status: 'ok' });
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        await sendTelegramMessage(chatId, `Geen account gevonden met e-mailadres: ${email}. Probeer het opnieuw.`);
+        return new NextResponse('OK', { status: 200 });
+      }
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { telegramChatId: chatId }
+      });
+
+      await sendTelegramMessage(chatId, `✅ Account gekoppeld! Welkom terug, ${user.firstName}. Ik ben Hermes, je uitvoerende AI. Wat moet ik voor je regelen?`);
+      return new NextResponse('OK', { status: 200 });
     }
 
-    // Standard message handling
-    const user = await prisma.user.findUnique({ where: { telegramChatId: chatId } });
+    // 2. Zoek de gekoppelde gebruiker op basis van Chat ID
+    const user = await prisma.user.findUnique({
+      where: { telegramChatId: chatId }
+    });
+
     if (!user) {
-      await sendTelegramMessage(chatId, "⚠️ Je account is nog niet gekoppeld. Ga naar je RebuildYourLife dashboard onder instellingen om deze bot te activeren.");
-      return NextResponse.json({ status: 'ok' });
+      await sendTelegramMessage(chatId, "⚠️ Dit apparaat is niet gekoppeld. Typ '/link <jouw-email>' om je Sovereign OS account te verbinden.");
+      return new NextResponse('OK', { status: 200 });
     }
 
-    // Call the AI
-    const aiResponse = await getAIResponse(text);
-    
-    // Send response back
-    await sendTelegramMessage(chatId, aiResponse);
+    // 3. Stuur bericht naar the Sovereign AI Router (Hermes als default voor telegram)
+    try {
+      const systemPrompt = "Je bent Hermes, de 24/7 AI-Uitvoerder via Telegram. Geef hele korte, krachtige antwoorden omdat het een mobiele chat is. Geen lange lappen tekst. Spreek in het Nederlands.";
+      const messagesForApi = [{ role: 'user' as const, content: text }];
+      
+      const routerResponse = await routeAIRequest(messagesForApi, systemPrompt);
+      const aiText = routerResponse.content.replace(/<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g, "\n[⚙️ Commando ontvangen, uitvoer voltooid via core-engine.]\n");
 
-    return NextResponse.json({ status: 'ok' });
+      // Reply back to telegram
+      await sendTelegramMessage(chatId, aiText);
+
+    } catch (aiError) {
+      console.error("Telegram AI Error:", aiError);
+      await sendTelegramMessage(chatId, "Er ging iets mis met het bereiken van The Godbrain. Probeer het zo nog eens.");
+    }
+
+    return new NextResponse('OK', { status: 200 });
 
   } catch (error) {
-    console.error("Telegram Webhook Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Telegram Webhook Error:', error);
+    return new NextResponse('Internal Error', { status: 500 });
   }
 }
