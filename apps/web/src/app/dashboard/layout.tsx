@@ -79,6 +79,7 @@ const getGroupedNavItems = (user: any) => {
       label: 'AI Tools (Marketing)',
       items: [
         { label: 'Website Builder', href: '/dashboard/modules/website-builder', icon: <Globe size={16} /> },
+        { label: 'Omnichannel Brand Launcher', href: '/dashboard/modules/brand-launcher', icon: <Target size={16} /> },
         { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Search size={16} /> },
         { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Mail size={16} /> },
         { label: 'Viral Video Scripts', href: '/dashboard/modules/viral-factory', icon: <Tv size={16} /> }

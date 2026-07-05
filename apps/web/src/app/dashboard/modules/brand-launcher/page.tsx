@@ -1,0 +1,196 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Target, Search, Copy, CheckCircle2, Building, Zap, Share2 } from 'lucide-react';
+import { generateBrandKitAction } from '@/app/actions/brandLauncher';
+
+export default function BrandLauncherPage() {
+  const [domain, setDomain] = useState('');
+  const [industry, setIndustry] = useState('Tech & E-commerce');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!domain) return;
+    setLoading(true);
+    setResult(null);
+
+    const res = await generateBrandKitAction(domain, industry);
+    if (res.success) {
+      setResult(res.brandKit);
+    } else {
+      alert(res.error || 'Er is een fout opgetreden.');
+    }
+    
+    setLoading(false);
+  };
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(id);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const renderPlatformCard = (title: string, data: any) => {
+    if (!data) return null;
+    return (
+      <div className="bg-black/40 border border-white/10 rounded-xl p-5 hover:border-emerald-500/30 transition-colors">
+        <h3 className="text-lg font-bold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+          <Share2 className="w-5 h-5 text-emerald-400" />
+          {title}
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-[10px] uppercase font-mono text-zinc-500 mb-1 block">Bio / Profieltekst</label>
+            <div className="relative group">
+              <textarea 
+                readOnly 
+                value={data.bio} 
+                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-24 custom-scrollbar focus:outline-none focus:border-emerald-500/50"
+              />
+              <button 
+                onClick={() => copyToClipboard(data.bio, `${title}-bio`)}
+                className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                {copiedField === `${title}-bio` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase font-mono text-zinc-500 mb-1 block">Lancering Post (Post 1)</label>
+            <div className="relative group">
+              <textarea 
+                readOnly 
+                value={data.firstPost} 
+                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-32 custom-scrollbar focus:outline-none focus:border-emerald-500/50"
+              />
+              <button 
+                onClick={() => copyToClipboard(data.firstPost, `${title}-post`)}
+                className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                {copiedField === `${title}-post` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+              </button>
+            </div>
+          </div>
+          
+          {(data.coverPrompt || data.profilePrompt) && (
+            <div>
+              <label className="text-[10px] uppercase font-mono text-zinc-500 mb-1 block">AI Image Prompt (Midjourney)</label>
+              <div className="relative group">
+                <textarea 
+                  readOnly 
+                  value={data.coverPrompt || data.profilePrompt} 
+                  className="w-full bg-emerald-900/10 border border-emerald-500/20 rounded-lg p-3 text-xs text-emerald-400 font-mono h-20 custom-scrollbar focus:outline-none"
+                />
+                <button 
+                  onClick={() => copyToClipboard(data.coverPrompt || data.profilePrompt, `${title}-prompt`)}
+                  className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  {copiedField === `${title}-prompt` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-white uppercase tracking-widest flex items-center gap-3">
+          <Target className="w-8 h-8 text-emerald-500" />
+          Omnichannel Brand Launcher
+        </h1>
+        <p className="text-zinc-400 mt-2 font-mono text-sm">
+          Genereer met 1 druk op de knop een volledige Social Media kit (Bio's, Posts, AI Visuals) voor een nieuw project.
+        </p>
+      </div>
+
+      {/* Input Section */}
+      <div className="bg-black/40 border border-white/10 rounded-2xl p-6 mb-10 shadow-[0_0_30px_rgba(16,185,129,0.05)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-xs uppercase font-bold text-zinc-300 mb-2 block flex items-center gap-2">
+              <Building className="w-4 h-4 text-emerald-500" />
+              Domeinnaam / Projectnaam
+            </label>
+            <input 
+              type="text" 
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="bijv. Henk.nl"
+              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase font-bold text-zinc-300 mb-2 block flex items-center gap-2">
+              <Search className="w-4 h-4 text-emerald-500" />
+              Industrie / Niche
+            </label>
+            <input 
+              type="text" 
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              placeholder="bijv. E-commerce, SaaS, Coaching"
+              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button 
+            onClick={handleGenerate}
+            disabled={loading || !domain}
+            className={`
+              flex items-center gap-2 px-8 py-3 rounded-lg font-bold uppercase tracking-wider transition-all
+              ${loading || !domain 
+                ? 'bg-white/5 text-zinc-500 cursor-not-allowed border border-white/5' 
+                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/20 hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+              }
+            `}
+          >
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+                Systeem analyseert...
+              </>
+            ) : (
+              <>
+                <Zap className="w-5 h-5" />
+                Lanceer Brand Kit
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Results Section */}
+      {result && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
+          {/* Strategy */}
+          <div className="bg-emerald-900/10 border border-emerald-500/30 rounded-xl p-6">
+            <h3 className="text-sm font-bold text-emerald-400 mb-2 uppercase tracking-widest">Brand Voice & Strategie</h3>
+            <p className="text-white text-lg font-medium">{result.strategy}</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {renderPlatformCard('Instagram', result.instagram)}
+            {renderPlatformCard('Facebook', result.facebook)}
+            {renderPlatformCard('LinkedIn', result.linkedin)}
+            {renderPlatformCard('X (Twitter)', result.x)}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
