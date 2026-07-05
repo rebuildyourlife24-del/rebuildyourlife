@@ -95,3 +95,63 @@ export async function createCheckout(variantId: string) {
   // Logic to create checkout URL via Storefront API
   return { checkoutUrl: "#" };
 }
+
+export async function createShopifyProduct(productData: {
+  title: string;
+  body_html: string;
+  vendor?: string;
+  product_type?: string;
+  tags?: string;
+  price: string;
+  imageUrl?: string;
+}) {
+  const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+  if (!domain || !adminToken) throw new Error("Missing Shopify Admin Token or Domain");
+
+  const endpoint = `https://${domain}/admin/api/2024-01/products.json`;
+
+  const payload: any = {
+    product: {
+      title: productData.title,
+      body_html: productData.body_html,
+      vendor: productData.vendor || "Sovereign OS",
+      product_type: productData.product_type || "AI Generated",
+      tags: productData.tags || "AI Hunter",
+      variants: [
+        {
+          price: productData.price,
+          requires_shipping: true
+        }
+      ]
+    }
+  };
+
+  if (productData.imageUrl) {
+    payload.product.images = [
+      {
+        src: productData.imageUrl
+      }
+    ];
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': adminToken
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(JSON.stringify(data.errors));
+    }
+    return data.product;
+  } catch (error: any) {
+    console.error("Fout bij aanmaken Shopify product:", error);
+    throw error;
+  }
+}
+
