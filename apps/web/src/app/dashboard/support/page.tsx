@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getTickets, createTicketMessage } from "@/app/actions/helpdesk";
-import { LifeBuoy, MessageSquare, Send, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { getTickets, createTicketMessage, createHelpdeskTicket } from "@/app/actions/helpdesk";
+import { LifeBuoy, MessageSquare, Send, CheckCircle, AlertCircle, Clock, Plus } from "lucide-react";
 
 export default function NativeHelpdeskPage() {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -27,6 +27,19 @@ export default function NativeHelpdeskPage() {
     setLoading(false);
   };
 
+  const handleCreateTestTicket = async () => {
+    const res = await createHelpdeskTicket(
+      "Jan Klant", 
+      "jan@testklant.nl", 
+      "Vraag over mijn abonnement", 
+      "Hallo, ik probeerde gisteren mijn abonnement te upgraden maar de Mollie betaling liep vast. Kunnen jullie helpen?"
+    );
+    if (res.success) {
+      await loadData();
+      setActiveTicket(res.ticket);
+    }
+  };
+
   const handleReply = async () => {
     if (!replyText.trim() || isSending || !activeTicket) return;
     setIsSending(true);
@@ -46,14 +59,22 @@ export default function NativeHelpdeskPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 lg:p-10 text-white min-h-[85vh] flex flex-col">
-      <div className="mb-10">
-        <h1 className="text-3xl font-black uppercase tracking-widest flex items-center gap-3">
-          <LifeBuoy className="w-8 h-8 text-blue-500" />
-          RYL Native Helpdesk
-        </h1>
-        <p className="text-zinc-400 font-mono text-sm mt-2 max-w-xl">
-          Volledig onafhankelijke customer support. Zeg je Zendesk en Gorgias abonnementen op. Dit systeem vangt e-mails op en Orion (AI) leest mee.
-        </p>
+      <div className="mb-10 flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-black uppercase tracking-widest flex items-center gap-3">
+            <LifeBuoy className="w-8 h-8 text-blue-500" />
+            RYL Native Helpdesk
+          </h1>
+          <p className="text-zinc-400 font-mono text-sm mt-2 max-w-xl">
+            Volledig onafhankelijke customer support. Zeg je Zendesk en Gorgias abonnementen op. Dit systeem vangt e-mails op en Orion (AI) leest mee.
+          </p>
+        </div>
+        <button 
+          onClick={handleCreateTestTicket}
+          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-bold uppercase tracking-widest text-xs flex items-center gap-2 transition-colors"
+        >
+          <Plus size={16} /> Simuleer Klant Ticket
+        </button>
       </div>
 
       <div className="flex-1 flex gap-6 min-h-[600px]">

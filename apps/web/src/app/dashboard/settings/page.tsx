@@ -134,8 +134,8 @@ export default function SettingsPage() {
     }
   };
 
-  const downloadMockInvoice = (invoice: any) => {
-    // Generate simulated PDF text and download
+  const downloadInvoice = (invoice: any) => {
+    // Generate text invoice
     const invoiceContent = `
 =========================================
 REBUILD YOUR LIFE - SYSTEM INVOICE
@@ -513,7 +513,7 @@ Rebuild Your Life.
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-mono font-black text-white">€{inv.amount.toFixed(2)}</span>
                       <button 
-                        onClick={() => downloadMockInvoice(inv)}
+                        onClick={() => downloadInvoice(inv)}
                         className="w-8 h-8 rounded-lg bg-zinc-950 hover:bg-zinc-800 border border-zinc-900 hover:border-zinc-700 flex items-center justify-center transition-colors text-zinc-400 hover:text-white"
                         title="Download Factuur TXT"
                       >

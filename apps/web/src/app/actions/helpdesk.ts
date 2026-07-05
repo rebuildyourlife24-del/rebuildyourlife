@@ -55,3 +55,32 @@ export async function createTicketMessage(ticketId: string, body: string, sender
     return { success: false, error: error.message };
   }
 }
+
+export async function createHelpdeskTicket(customerName: string, customerEmail: string, subject: string, initialMessage: string) {
+  const userId = await getAuthenticatedUser();
+  if (!userId) return { success: false, error: "Not authenticated" };
+
+  try {
+    const ticket = await prisma.helpdeskTicket.create({
+      data: {
+        userId,
+        customerName,
+        customerEmail,
+        subject,
+        priority: "MEDIUM",
+        messages: {
+          create: {
+            sender: "CUSTOMER",
+            body: initialMessage
+          }
+        }
+      },
+      include: {
+        messages: true
+      }
+    });
+    return { success: true, ticket };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
