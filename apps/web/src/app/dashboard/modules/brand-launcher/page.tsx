@@ -36,9 +36,9 @@ export default function BrandLauncherPage() {
   const renderPlatformCard = (title: string, data: any) => {
     if (!data) return null;
     return (
-      <div className="bg-black/40 border border-white/10 rounded-xl p-5 hover:border-emerald-500/30 transition-colors">
+      <div className="bg-black/40 border border-white/10 rounded-xl p-5 hover:border-blue-500/30 transition-colors">
         <h3 className="text-lg font-bold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
-          <Share2 className="w-5 h-5 text-emerald-400" />
+          <Share2 className="w-5 h-5 text-blue-400" />
           {title}
         </h3>
         
@@ -49,13 +49,13 @@ export default function BrandLauncherPage() {
               <textarea 
                 readOnly 
                 value={data.bio} 
-                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-24 custom-scrollbar focus:outline-none focus:border-emerald-500/50"
+                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-24 custom-scrollbar focus:outline-none focus:border-blue-500/50"
               />
               <button 
                 onClick={() => copyToClipboard(data.bio, `${title}-bio`)}
                 className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                {copiedField === `${title}-bio` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                {copiedField === `${title}-bio` ? <CheckCircle2 className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
               </button>
             </div>
           </div>
@@ -66,13 +66,13 @@ export default function BrandLauncherPage() {
               <textarea 
                 readOnly 
                 value={data.firstPost} 
-                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-32 custom-scrollbar focus:outline-none focus:border-emerald-500/50"
+                className="w-full bg-black/60 border border-white/10 rounded-lg p-3 text-sm text-zinc-300 h-32 custom-scrollbar focus:outline-none focus:border-blue-500/50"
               />
               <button 
                 onClick={() => copyToClipboard(data.firstPost, `${title}-post`)}
                 className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                {copiedField === `${title}-post` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                {copiedField === `${title}-post` ? <CheckCircle2 className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
               </button>
             </div>
           </div>
@@ -84,13 +84,13 @@ export default function BrandLauncherPage() {
                 <textarea 
                   readOnly 
                   value={data.coverPrompt || data.profilePrompt || data.lensPrompt} 
-                  className="w-full bg-emerald-900/10 border border-emerald-500/20 rounded-lg p-3 text-xs text-emerald-400 font-mono h-20 custom-scrollbar focus:outline-none"
+                  className="w-full bg-blue-900/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-400 font-mono h-20 custom-scrollbar focus:outline-none"
                 />
                 <button 
                   onClick={() => copyToClipboard(data.coverPrompt || data.profilePrompt || data.lensPrompt, `${title}-prompt`)}
                   className="absolute top-2 right-2 p-1.5 bg-black/80 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  {copiedField === `${title}-prompt` ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
+                  {copiedField === `${title}-prompt` ? <CheckCircle2 className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4 text-zinc-400" />}
                 </button>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function BrandLauncherPage() {
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white uppercase tracking-widest flex items-center gap-3">
-          <Target className="w-8 h-8 text-emerald-500" />
+          <Target className="w-8 h-8 text-blue-500" />
           Omnichannel Brand Launcher
         </h1>
         <p className="text-zinc-400 mt-2 font-mono text-sm">
@@ -113,11 +113,11 @@ export default function BrandLauncherPage() {
       </div>
 
       {/* Input Section */}
-      <div className="bg-black/40 border border-white/10 rounded-2xl p-6 mb-10 shadow-[0_0_30px_rgba(16,185,129,0.05)]">
+      <div className="bg-black/40 border border-white/10 rounded-2xl p-6 mb-10 shadow-[0_0_30px_rgba(59,130,246,0.05)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="text-xs uppercase font-bold text-zinc-300 mb-2 block flex items-center gap-2">
-              <Building className="w-4 h-4 text-emerald-500" />
+              <Building className="w-4 h-4 text-blue-500" />
               Domeinnaam / Projectnaam
             </label>
             <input 
@@ -125,12 +125,12 @@ export default function BrandLauncherPage() {
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               placeholder="bijv. Henk.nl"
-              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
             />
           </div>
           <div>
             <label className="text-xs uppercase font-bold text-zinc-300 mb-2 block flex items-center gap-2">
-              <Search className="w-4 h-4 text-emerald-500" />
+              <Search className="w-4 h-4 text-blue-500" />
               Industrie / Niche
             </label>
             <input 
@@ -138,7 +138,7 @@ export default function BrandLauncherPage() {
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               placeholder="bijv. E-commerce, SaaS, Coaching"
-              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+              className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all"
             />
           </div>
         </div>
@@ -147,17 +147,17 @@ export default function BrandLauncherPage() {
           <button 
             onClick={handleGenerate}
             disabled={loading || !domain}
-            className={`
+            className={\`
               flex items-center gap-2 px-8 py-3 rounded-lg font-bold uppercase tracking-wider transition-all
-              ${loading || !domain 
+              \${loading || !domain 
                 ? 'bg-white/5 text-zinc-500 cursor-not-allowed border border-white/5' 
-                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/20 hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+                : 'bg-blue-500/10 text-blue-400 border border-blue-500/50 hover:bg-blue-500/20 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.2)]'
               }
-            `}
+            \`}
           >
             {loading ? (
               <>
-                <div className="w-5 h-5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
                 Systeem analyseert...
               </>
             ) : (
@@ -178,8 +178,8 @@ export default function BrandLauncherPage() {
           className="space-y-8"
         >
           {/* Strategy */}
-          <div className="bg-emerald-900/10 border border-emerald-500/30 rounded-xl p-6">
-            <h3 className="text-sm font-bold text-emerald-400 mb-2 uppercase tracking-widest">Brand Voice & Strategie</h3>
+          <div className="bg-blue-900/10 border border-blue-500/30 rounded-xl p-6">
+            <h3 className="text-sm font-bold text-blue-400 mb-2 uppercase tracking-widest">Brand Voice & Strategie</h3>
             <p className="text-white text-lg font-medium">{result.strategy}</p>
           </div>
 
