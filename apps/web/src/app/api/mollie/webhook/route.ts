@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     if (payment.status === 'paid') {
       console.log(`✅ Payment ${paymentId} completed successfully!`);
-      const metadata = payment.metadata;
+      const metadata = payment.metadata as any;
       
       console.log("Upgrading user:", metadata.email, "to plan:", metadata.plan);
       
