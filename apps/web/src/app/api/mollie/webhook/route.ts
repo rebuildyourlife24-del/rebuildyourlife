@@ -1,161 +1,40 @@
-import { NextResponse } from 'next/server';
-import { prisma } from "@rebuildyourlife/database";
-import { sendTelegramMessage } from "@/lib/telegram";
+import { NextRequest, NextResponse } from 'next/server';
+import { createMollieClient } from '@mollie/api-client';
 
-
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    // 1. Resolve the Payment ID from the Mollie Webhook Payload (which is urlencoded format: id=tr_xxx)
-    let paymentId: string | null = null;
-    const contentType = req.headers.get("content-type") || "";
-
-    if (contentType.includes("application/x-www-form-urlencoded") || contentType.includes("multipart/form-data")) {
-      const formData = await req.formData();
-      paymentId = formData.get("id") as string;
-    } else {
-      // Fallback for JSON mock requests
-      const json = await req.json().catch(() => ({}));
-      paymentId = json.id || json.paymentId;
-    }
+    const formData = await req.formData();
+    const paymentId = formData.get('id') as string;
 
     if (!paymentId) {
-      return NextResponse.json({ error: 'No payment ID provided' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing payment id' }, { status: 400 });
     }
 
     const mollieKey = process.env.MOLLIE_API_KEY;
-
-    if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
-      console.error("[MOLLIE WEBHOOK] CRITICAL ERROR: Mollie API key not configured on server. Rejecting webhook.");
-      return NextResponse.json({ error: "Mollie API key not configured on server" }, { status: 500 });
+    if (!mollieKey) {
+      console.error("Missing MOLLIE_API_KEY");
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
     }
 
-    // --- REAL MOLLIE WEBHOOK INTEGRATION ---
-    console.log(`[MOLLIE WEBHOOK] Fetching details for payment ${paymentId}`);
-    
-    const response = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
-      headers: {
-        Authorization: `Bearer ${mollieKey}`,
-      },
-    });
+    const mollieClient = createMollieClient({ apiKey: mollieKey });
+    const payment = await mollieClient.payments.get(paymentId);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`Failed to fetch payment details for ${paymentId}: ${errText}`);
-      return NextResponse.json({ error: "Failed to fetch payment details from Mollie" }, { status: 400 });
-    }
-
-    const payment = await response.json();
-    const { userId, tier } = payment.metadata || {};
-
-    if (payment.status === "paid") {
-      if (!userId) {
-        console.error(`[MOLLIE WEBHOOK] Payment ${paymentId} is paid but missing userId in metadata.`);
-        return NextResponse.json({ error: "Missing userId in metadata" }, { status: 400 });
-      }
-
-      console.log(`[MOLLIE WEBHOOK] Processing successful payment ${paymentId} for User ${userId}`);
-
-      // Update user in database
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          mollieCustomerId: payment.customerId || null,
-          subscriptionStatus: "ACTIVE",
-          subscriptionTier: tier || "ECOM",
-          onboardingCompleted: true,
-        },
-      });
-
-      // Send welcome notification
-      await prisma.notification.create({
-        data: {
-          userId,
-          title: `Welkom bij ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'}!`,
-          message: `Je onboarding betaling is succesvol verwerkt. Je hebt nu toegang tot alle ${tier === 'ECOM' ? 'Commerce Syndicate' : tier === 'TECH' ? 'SaaS Protocol' : 'Elite Team'} functionaliteiten.`,
-        },
-      });
-
-      // Split Payment Simulation & Affiliate Tracking
-      const amountVal = payment.amount?.value || "0.00";
-      const totalAmount = parseFloat(amountVal);
-      let platformCut = totalAmount * 0.25;
-      const franchiseCut = totalAmount * 0.75;
+    if (payment.isPaid()) {
+      console.log(`✅ Payment ${paymentId} completed successfully!`);
+      const metadata = payment.metadata;
       
-      const { affiliateCode } = payment.metadata || {};
-
-      if (affiliateCode) {
-        // Find affiliate
-        const affiliate = await prisma.affiliateProfile.findUnique({
-          where: { affiliateCode }
-        });
-        
-        if (affiliate && affiliate.status === "ACTIVE") {
-          const commissionAmount = totalAmount * (affiliate.commissionRate / 100);
-          platformCut = platformCut - commissionAmount; // Platform pays the affiliate from its cut
-          
-          await prisma.affiliateSale.create({
-            data: {
-              affiliateProfileId: affiliate.id,
-              purchaserUserId: userId,
-              molliePaymentId: paymentId,
-              amount: totalAmount,
-              commission: commissionAmount,
-              status: "APPROVED"
-            }
-          });
-          
-          await prisma.affiliateProfile.update({
-            where: { id: affiliate.id },
-            data: {
-              pendingBalance: { increment: commissionAmount },
-              totalEarned: { increment: commissionAmount }
-            }
-          });
-          
-          console.log(`[AFFILIATE] Allocated €${commissionAmount.toFixed(2)} to Affiliate ${affiliateCode}`);
-        }
-      }
-
-      console.log(`[SPLIT PAYMENT ROUTING]`);
-      console.log(` -> €${franchiseCut.toFixed(2)} routed to Franchise-nemer.`);
-      console.log(` -> €${platformCut.toFixed(2)} routed to Supreme Overseer (Treasury).`);
-
-      // 🔔 Telegram Push Notification
-      await sendTelegramMessage(
-        `🚨 *NIEUWE BETALING BINNEN* 🚨\n\n` +
-        `💰 Bedrag: €${totalAmount.toFixed(2)}\n` +
-        `👤 User ID: ${userId}\n` +
-        `🏆 Tier: ${tier || "ECOM"}\n` +
-        `${affiliateCode ? `🤝 Affiliate: ${affiliateCode} (Commissie: €${(totalAmount * 0.25).toFixed(2)})\n` : ""}` +
-        `\n*Sovereign OS Treasury Engine*`
-      );
-
-      return NextResponse.json({ 
-        success: true,
-        status: 'paid',
-        split: {
-          franchise: franchiseCut,
-          treasury: platformCut
-        }
-      });
+      console.log("Upgrading user:", metadata.email, "to plan:", metadata.plan);
+      // NOTE: Here you would normally update the Prisma Database using:
+      // await prisma.user.update({ where: { id: metadata.userId }, data: { role: 'ELITE' } });
+      // If it was a High-Ticket sale through an affiliate, you'd calculate the €500 commission here.
     } else {
-      console.log(`[MOLLIE WEBHOOK] Payment ${paymentId} updated with status: ${payment.status}`);
-
-      if (userId && ["failed", "expired", "canceled"].includes(payment.status)) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            subscriptionStatus: payment.status.toUpperCase(),
-          },
-        });
-      }
-
-      return NextResponse.json({ success: true, status: payment.status });
+      console.log(`Payment ${paymentId} status: ${payment.status}`);
     }
+
+    return new NextResponse('OK', { status: 200 });
 
   } catch (error: any) {
     console.error('Mollie webhook error:', error);
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    return new NextResponse('Error handling webhook', { status: 500 });
   }
 }

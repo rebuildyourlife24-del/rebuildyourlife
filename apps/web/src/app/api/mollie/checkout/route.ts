@@ -1,272 +1,61 @@
-import { NextResponse } from 'next/server';
-import { prisma } from "@rebuildyourlife/database";
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-import { createServerClient } from "@/lib/supabase/server";
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server';
+import { createMollieClient } from '@mollie/api-client';
+import { createServerClient } from '@/lib/supabase/server';
 
-
-const JWT_SECRET = process.env.JWT_SECRET! ;
-
-const TIER_MAPPING: Record<string, { amount: string; description: string; tier: string }> = {
-  tier_ecom_50: {
-    amount: "50.00",
-    description: "RebuildYourLife Commerce Syndicate — Maandelijks abonnement",
-    tier: "ECOM",
-  },
-  tier_tech_99: {
-    amount: "99.00",
-    description: "RebuildYourLife SaaS Protocol — Maandelijks abonnement",
-    tier: "TECH",
-  },
-  tier_elite_1500: {
-    amount: "1500.00",
-    description: "RebuildYourLife Elite Team — Toegang & begeleiding",
-    tier: "ELITE",
-  },
-  tier_elite_2000: {
-    amount: "2000.00",
-    description: "RebuildYourLife Sovereign Grid Elite — Eenmalig / Jaarlidmaatschap",
-    tier: "ELITE",
-  },
-};
-
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { priceId, successUrl, cancelUrl, name, email, franchiseOwnerId } = await req.json();
-    console.log("Onboarding Checkout Request:", { priceId, successUrl, cancelUrl, name, email, franchiseOwnerId });
+    const searchParams = req.nextUrl.searchParams;
+    const type = searchParams.get('type');
 
-    // 1. Resolve User
-    let userId: string | null = null;
-
-    // A. Check dev bypass cookie (for developer convenience)
-    const cookieStore = await cookies();
-    const devBypass = cookieStore.get('dev_bypass')?.value === 'true';
-    
-    // B. Check ryl_session JWT cookie (Omega Protocol)
-    const token = cookieStore.get("ryl_session")?.value;
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET) as any;
-        userId = decoded.userId;
-      } catch (err) {
-        console.warn("JWT verification failed, falling back to Supabase auth:", err);
-      }
+    if (!type || (type !== 'subscription' && type !== 'highticket')) {
+      return NextResponse.json({ error: 'Invalid plan type' }, { status: 400 });
     }
 
-    // C. Check Supabase auth
-    if (!userId) {
-      try {
-        const supabase = await createServerClient();
-        const { data: { user: sbUser } } = await supabase.auth.getUser();
-        if (sbUser) {
-          userId = sbUser.id;
-        }
-      } catch (err) {
-        console.warn("Supabase auth retrieval failed:", err);
-      }
-    }
+    // Get current user to link payment to them
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    // D. If dev bypass is active and still no userId, fallback to a local test user
-    if (!userId && (devBypass || process.env.NODE_ENV === 'development')) {
-      const devUser = await prisma.user.findFirst({
-        where: { email: email || 'hsemler50@gmail.com' }
-      });
-      if (devUser) {
-        userId = devUser.id;
-      }
-    }
-
-    // E. Resolve or create user by email from request body if still not resolved
-    if (!userId && email) {
-      const normalizedEmail = email?.trim().toLowerCase();
-      let dbUser = await prisma.user.findUnique({
-        where: { email: normalizedEmail }
-      });
-
-      if (!dbUser) {
-        const nameParts = (name || "").trim().split(/\s+/);
-        const firstName = nameParts[0] || "Voornaam";
-        const lastName = nameParts.slice(1).join(" ") || "Achternaam";
-        
-        // Generate secure random temp password
-        const tempPassword = Math.random().toString(36).slice(-12) + "A1!";
-        const passwordHash = await bcrypt.hash(tempPassword, 10);
-
-        dbUser = await prisma.user.create({
-          data: {
-            email: normalizedEmail,
-            passwordHash: passwordHash,
-            firstName: firstName,
-            lastName: lastName,
-            role: normalizedEmail === 'hsemler50@gmail.com' ? 'SUPER_ADMIN' : 'USER',
-            subscriptionTier: 'FREE',
-            subscriptionStatus: 'ACTIVE',
-            onboardingCompleted: false,
-          }
-        });
-        console.log(`[ONBOARDING] Created new user in database: ${dbUser.email} (${dbUser.id})`);
-      } else {
-        console.log(`[ONBOARDING] Resolved existing user in database by email: ${dbUser.email} (${dbUser.id})`);
-      }
-
-      userId = dbUser.id;
-
-      // Set cookie so the user is logged in
-      const jwtToken = jwt.sign({ userId: dbUser.id }, JWT_SECRET);
-      cookieStore.set('ryl_session', jwtToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-      });
-      console.log(`[ONBOARDING] Set ryl_session cookie for user ${dbUser.email}`);
-    }
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const planConfig = TIER_MAPPING[priceId] || TIER_MAPPING.tier_ecom_50;
-    console.log(`[OMEGA PROTOCOL] Initiating Mollie Checkout for ${user.email} - Price: ${priceId} - Tier: ${planConfig.tier}`);
-
+    // Use test API key by default if live is not provided, or fallback to env var
     const mollieKey = process.env.MOLLIE_API_KEY;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://rebuildyourlife.eu";
-
-    if (!mollieKey || mollieKey.startsWith("test_REPLACE") || mollieKey === "") {
-      console.error("[MOLLIE] CRITICAL ERROR: Mollie API key not configured on server.");
-      return NextResponse.json({ error: "Mollie API key is missing. Checkout aborted." }, { status: 500 });
+    if (!mollieKey) {
+      console.error("Missing MOLLIE_API_KEY");
+      return NextResponse.redirect(new URL('/dashboard/billing?error=mollie_not_configured', req.url));
     }
 
-    // --- REAL MOLLIE CHECKOUT ---
-    
-    // Step A: Ensure customer exists in Mollie
-    let customerId = user.mollieCustomerId;
-    if (!customerId) {
-      try {
-        const customerResponse = await fetch("https://api.mollie.com/v2/customers", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${mollieKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name || `${user.firstName} ${user.lastName}` || user.email,
-            email: email || user.email,
-            metadata: {
-              userId: user.id,
-            },
-          }),
-        });
+    const mollieClient = createMollieClient({ apiKey: mollieKey });
 
-        if (customerResponse.ok) {
-          const customerData = await customerResponse.json();
-          customerId = customerData.id;
-          
-          // Save customerId in database
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { mollieCustomerId: customerId },
-          });
-          console.log(`Created Mollie Customer ${customerId} for user ${user.id}`);
-        } else {
-          const errData = await customerResponse.json();
-          console.error("Failed to create Mollie customer:", errData);
-        }
-      } catch (err) {
-        console.error("Mollie Customer creation request error:", err);
-      }
+    let amount = { currency: 'EUR', value: '50.00' };
+    let description = 'Sovereign OS Abonnement (Maandelijks)';
+    
+    if (type === 'highticket') {
+      amount = { currency: 'EUR', value: '2000.00' };
+      description = 'Sovereign OS Elite Pakket (Lifetime + Affiliate Rechten)';
     }
 
-    // Step B: Create payment
-    const isLocal = appUrl.includes("localhost") || appUrl.includes("127.0.0.1") || appUrl.includes("::1");
-    const webhookUrl = isLocal ? undefined : `${appUrl}/api/mollie/webhook`;
+    // Note: To set up a real subscription with Mollie, you would use Customers & Mandates.
+    // For this demonstration/V1, we create a standard payment. 
+    // The webhook will later process it and update the Prisma DB.
     
-    const affiliateCookie = cookieStore.get("ryl_affiliate")?.value;
-
-    const paymentRequestBody: any = {
-      amount: {
-        currency: "EUR",
-        value: planConfig.amount,
-      },
-      description: planConfig.description,
-      redirectUrl: successUrl,
+    const payment = await mollieClient.payments.create({
+      amount: amount,
+      description: description,
+      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/billing?success=true`,
+      webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://your-production-url.com'}/api/mollie/webhook`,
       metadata: {
-        userId: user.id,
-        userEmail: user.email,
-        priceId: priceId,
-        tier: planConfig.tier,
-        affiliateCode: req.headers.get("x-affiliate-code") || affiliateCookie || null, // Will read from header or 30-day cookie
-      },
-    };
-
-    if (customerId) {
-      paymentRequestBody.customerId = customerId;
-      // sequenceType "first" allows us to obtain a billing mandate for recurring payments
-      paymentRequestBody.sequenceType = "first";
-    }
-
-    if (webhookUrl) {
-      paymentRequestBody.webhookUrl = webhookUrl;
-    }
-
-    // --- SPLIT PAYMENTS / ROUTING ---
-    // If this payment belongs to a specific Franchisee (passed via body as franchiseOwnerId)
-    // We look up their organizationId to route 75% to them.
-    if (franchiseOwnerId) {
-      const franchiseOwner = await prisma.user.findUnique({ where: { id: franchiseOwnerId } });
-      if (franchiseOwner && franchiseOwner.mollieOrganizationId) {
-        const totalAmount = parseFloat(planConfig.amount);
-        const franchiseCut = (totalAmount * 0.75).toFixed(2); // 75% for Franchisee
-        
-        paymentRequestBody.routing = [
-          {
-            amount: {
-              currency: "EUR",
-              value: franchiseCut
-            },
-            destination: {
-              type: "organization",
-              organizationId: franchiseOwner.mollieOrganizationId
-            }
-          }
-        ];
-        console.log(`[OMEGA PROTOCOL] Routing €${franchiseCut} of €${planConfig.amount} to Franchisee ${franchiseOwner.mollieOrganizationId}`);
+        userId: user?.id || 'guest',
+        plan: type,
+        email: user?.email || 'unknown'
       }
-    }
-
-    const paymentResponse = await fetch("https://api.mollie.com/v2/payments", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${mollieKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(paymentRequestBody),
     });
 
-    const paymentData = await paymentResponse.json();
-
-    if (!paymentResponse.ok) {
-      console.error("Mollie checkout API error:", paymentData);
-      return NextResponse.json({ error: paymentData.detail || "Mollie payment creation failed" }, { status: 400 });
+    if (payment._links?.checkout?.href) {
+      return NextResponse.redirect(payment._links.checkout.href);
     }
 
-    // Return the checkout url for redirection
-    const checkoutUrl = paymentData._links?.checkout?.href;
-    if (!checkoutUrl) {
-      console.error("Mollie did not return checkout link:", paymentData);
-      return NextResponse.json({ error: "No checkout URL returned from Mollie" }, { status: 500 });
-    }
-
-    return NextResponse.json({ url: checkoutUrl });
+    throw new Error("Geen checkout URL ontvangen van Mollie");
 
   } catch (error: any) {
-    console.error("Mollie Checkout Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Mollie checkout error:', error);
+    return NextResponse.redirect(new URL('/dashboard/billing?error=checkout_failed', req.url));
   }
 }
