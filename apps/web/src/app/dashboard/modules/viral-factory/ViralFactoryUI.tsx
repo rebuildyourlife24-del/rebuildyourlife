@@ -162,6 +162,30 @@ export default function ViralFactoryUI({ initialDrafts }: { initialDrafts: any[]
               </button>
             )}
 
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <button 
+                onClick={async () => {
+                  if (!currentScript) return;
+                  alert("B-Roll Video Job (minimax/video-01) gestart via Inngest!");
+                  await fetch('/api/inngest/broll', { method: 'POST', body: JSON.stringify({ prompt: currentScript.split('.')[0] }) });
+                }}
+                className="w-full bg-cyan-900/40 hover:bg-cyan-900/60 border border-cyan-500/50 text-cyan-400 font-bold uppercase tracking-widest py-3 rounded-lg flex justify-center items-center gap-2 transition-colors text-xs"
+              >
+                <Video className="w-4 h-4" /> B-Roll Video
+              </button>
+              
+              <button 
+                onClick={async () => {
+                  if (!audioUrl) return alert("Genereer eerst een Voice-over!");
+                  alert("Avatar Render Job (SadTalker) gestart via Inngest!");
+                  await fetch('/api/inngest/avatar', { method: 'POST', body: JSON.stringify({ audioUrl }) });
+                }}
+                className="w-full bg-fuchsia-900/40 hover:bg-fuchsia-900/60 border border-fuchsia-500/50 text-fuchsia-400 font-bold uppercase tracking-widest py-3 rounded-lg flex justify-center items-center gap-2 transition-colors text-xs"
+              >
+                <Wand2 className="w-4 h-4" /> AI Avatar
+              </button>
+            </div>
+
             {/* NEW PUBLISH BUTTON */}
             <button 
               onClick={handlePublish}
