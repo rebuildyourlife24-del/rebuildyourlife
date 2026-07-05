@@ -18,9 +18,11 @@ export async function getEnterpriseFolders() {
   }
 }
 
+import { storeDocumentInVectorDB } from '@/lib/pinecone';
+
 export async function createDocument(folderId: string, title: string, content: string, owner: string) {
   try {
-    await prisma.enterpriseDocument.create({
+    const doc = await prisma.enterpriseDocument.create({
       data: {
         folderId,
         title,
@@ -30,6 +32,10 @@ export async function createDocument(folderId: string, title: string, content: s
         status: 'PUBLISHED'
       }
     });
+
+    // Store in Pinecone Vector DB for Orion's Long-Term Memory
+    await storeDocumentInVectorDB(doc.id, doc.title, doc.content);
+
     return { success: true };
   } catch (error: any) {
     console.error('Error creating document:', error);
