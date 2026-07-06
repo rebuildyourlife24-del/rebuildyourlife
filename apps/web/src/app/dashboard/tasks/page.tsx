@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { WidgetGrid } from "@/components/widgets/WidgetGrid";
 import { WidgetBase } from "@/components/widgets/WidgetBase";
 import { Target, CheckCircle2, CircleDashed, AlertTriangle, Play, Pause, Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 const containerVariants = {
   hidden: { opacity: 0 },

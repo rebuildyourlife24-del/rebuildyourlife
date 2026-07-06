@@ -55,7 +55,7 @@ export default function HelpCenterPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-          <Card variant="gold" className="h-full flex flex-col items-center justify-center text-center">
+          <Card className="h-full flex flex-col items-center justify-center text-center border-[#d4af37]/30 shadow-[0_0_15px_rgba(212,175,55,0.1)]">
             <h3 className="text-xl font-bold text-textPrimary mb-4">Strategisch Advies Nodig?</h3>
             <p className="text-textSecondary mb-8 text-sm">
               Je virtuele CEO Agent is geprogrammeerd om complexe bedrijfsmatige en persoonlijke beslissingen te overzien. 

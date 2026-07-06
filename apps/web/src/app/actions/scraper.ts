@@ -73,3 +73,66 @@ export async function firecrawlScrapeUrlAction(url: string) {
     return { success: false, error: error.message };
   }
 }
+
+import { getSessionAction } from "./auth";
+import { prisma } from "@rebuildyourlife/database";
+import { GoogleGenAI } from "@google/genai";
+import { revalidatePath } from "next/cache";
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
+});
+
+export async function extractAndSaveLeadAction(url: string) {
+  const session = await getSessionAction();
+  if (!session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Stap 1: Scrape de website content via Firecrawl
+    const scrapeResult = await firecrawlScrapeUrlAction(url);
+    if (!scrapeResult.success || !scrapeResult.data?.markdown) {
+      throw new Error("Kan de URL niet scrapen.");
+    }
+
+    const markdown = scrapeResult.data.markdown.substring(0, 8000); // Limit context size
+
+    // Stap 2: Extract Name, Email, Company using Gemini
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `Analyseer deze websitetekst en extraheer B2B contactgegevens.
+      Tekst: ${markdown}
+      Geef de output STRIKT in dit JSON formaat (zonder markdown blokken):
+      {"name": "Volledige naam (of leeg als onbekend)", "email": "emailadres", "company": "bedrijfsnaam"}`,
+    });
+
+    let jsonString = aiResponse.text || "{}";
+    jsonString = jsonString.replace(/```json/g, "").replace(/```/g, "").trim();
+    const extractedData = JSON.parse(jsonString);
+
+    if (!extractedData.email && !extractedData.name) {
+      throw new Error("Geen bruikbare contactgegevens gevonden op deze site.");
+    }
+
+    // Stap 3: Opslaan in CrmLead Tabel
+    const lead = await prisma.crmLead.create({
+      data: {
+        userId: session.user.id,
+        name: extractedData.name || "Onbekend Contact",
+        email: extractedData.email || null,
+        company: extractedData.company || url,
+        stage: "NEW",
+        notes: `Automatisch gescraped van: ${url}`,
+      },
+    });
+
+    revalidatePath("/dashboard/crm");
+    revalidatePath("/dashboard/modules/cold-email");
+    return { success: true, lead };
+
+  } catch (error: any) {
+    console.error("Lead Extraction Error:", error);
+    return { success: false, error: error.message };
+  }
+}

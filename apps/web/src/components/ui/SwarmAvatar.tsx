@@ -157,7 +157,6 @@ export function SwarmAvatar({ theme = 'blue' }: { theme?: 'blue' | 'red' }) {
           <Button 
             onClick={handleCommand} 
             disabled={!input?.trim() || loading}
-            loading={loading}
             className={`${theme === 'red' ? 'bg-[#06b6d4]/10 border-[#06b6d4]/50 text-[#06b6d4] hover:bg-[#06b6d4]/20' : 'bg-[#00f0ff]/10 border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff]/20'} border font-mono tracking-widest uppercase min-w-[120px]`}
           >
             EXECUTE
