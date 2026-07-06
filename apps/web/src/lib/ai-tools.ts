@@ -67,6 +67,31 @@ export const systemTools = [
         required: ['title', 'description', 'confidence'],
       },
     },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delegate_to_agent',
+      description: 'Delegeert asynchroon een complexe taak naar een andere AI agent (binnen de Swarm).',
+      parameters: {
+        type: 'object',
+        properties: {
+          targetAgent: {
+            type: 'string',
+            description: 'De naam of het type van de agent die je wilt aanroepen (bijv. "copy", "cfo", "ecom_seo").',
+          },
+          taskTitle: {
+            type: 'string',
+            description: 'Een korte duidelijke titel van de taak.',
+          },
+          prompt: {
+            type: 'string',
+            description: 'De volledige instructie voor de ontvangende agent.',
+          }
+        },
+        required: ['targetAgent', 'taskTitle', 'prompt'],
+      },
+    },
   }
 ];
 
@@ -80,7 +105,6 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
         const { url } = args;
         const res = await fetch(url);
         const html = await res.text();
-        // Simpele tag-stripper om tokens te besparen
         const text = html.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').substring(0, 8000); 
         return `Resultaat van ${url}:\n\n${text}`;
       }
@@ -100,7 +124,6 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
       
       case 'create_platform_task': {
         const { title, description, confidence } = args;
-        // We slaan dit voor nu op als een HermesPrediction, wat als een actie in het dashboard verschijnt
         const prediction = await db.hermesPrediction.create({
           data: {
             category: 'AUTO_ACTION',
@@ -110,6 +133,33 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
           }
         });
         return `Taak succesvol aangemaakt met ID: ${prediction.id}`;
+      }
+
+      case 'delegate_to_agent': {
+        const { targetAgent, taskTitle, prompt } = args;
+        const { inngest } = await import('./inngest/client');
+        
+        // Sla de taak op in de database
+        const task = await db.aiBountyTask.create({
+          data: {
+            title: taskTitle,
+            description: `Aangeroepen door een agent.\n\nInstructies:\n${prompt}`,
+            bountyAmount: 0.0,
+            status: "OPEN"
+          }
+        });
+
+        // Vuur het asynchrone Inngest event af
+        await inngest.send({
+          name: "agent/task.assigned",
+          data: {
+            taskId: task.id,
+            agentId: targetAgent,
+            prompt: prompt
+          }
+        });
+
+        return `Taak succesvol gedelegeerd naar ${targetAgent} via Inngest (Task ID: ${task.id}). Je hoeft niet te wachten op antwoord, The Syndicate handelt dit asynchroon af op de achtergrond.`;
       }
 
       default:
