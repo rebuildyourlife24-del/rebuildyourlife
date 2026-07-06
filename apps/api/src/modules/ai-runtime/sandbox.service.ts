@@ -1,4 +1,4 @@
-import { EventDispatcher, EventTopic } from '@repo/shared/src/events/index.js';
+import { EventDispatcher, EventTopic } from '@rebuildyourlife/shared';
 import { AuditService } from '../audit/audit.service.js';
 
 export interface SandboxConfig {

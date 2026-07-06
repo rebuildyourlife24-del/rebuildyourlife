@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { EventDispatcher, EventTopic } from '@repo/shared/src/events/index.js';
+import { EventDispatcher, EventTopic } from '@rebuildyourlife/shared';
 
 export class EventBusController {
   

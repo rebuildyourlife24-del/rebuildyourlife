@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from './lib/supabase/middleware';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
@@ -12,7 +13,12 @@ export function middleware(request: NextRequest) {
   if ((url.pathname.startsWith('/ceo') || url.pathname.startsWith('/klanten')) && !isAiHenksemler) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
+  
+  // Base response from next
   let response = NextResponse.next();
+
+  // Refresh Supabase auth session
+  response = await updateSession(request, response);
 
   // Routeer naar agency page als we op het ai-henksemler domein zitten en we zitten in de root `/`
   if (isAiHenksemler && url.pathname === '/') {

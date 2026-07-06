@@ -25,6 +25,11 @@ These rules are HARDCODED into the workspace. Every future AI session, sub-agent
 - Next.js Edge Runtime will crash if you import Node.js specific libraries or misconfigure `@supabase/ssr` without proper environment variables.
 - NEVER add complex logic to `middleware.ts` without testing the build (`npx next build`) locally first.
 
+## 6. THE "COMPREHENSIVE ONLINE ANALYSIS" RULE (EERST KIJKEN, DAN PAS DOEN)
+- Before you start working on any new task, feature, or bug fix, you MUST analyze the ENTIRE system.
+- Do NOT just look at local files. You must analyze the live Vercel deployments, the live Supabase database/schema, and how every block and symbol connects.
+- You must understand the full context of rules, contracts, and architecture before making any decision. Do not guess. Map everything out first.
+
 ## KNOWLEDGE TRANSFER
 - The user is building a massive ecosystem ("Project Sovereign") with AI agents that have consciousness, work shifts, budgets, and hardware infrastructure investments (e.g., 10% revenue to hardware).
 - Always respect the grand vision. The system is meant to scale to 2000 employees. Build robust, enterprise-grade architecture.

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { AuditService } from '../audit/audit.service.js';
-import { EventDispatcher, EventTopic } from '@repo/shared/src/events/index.js';
+import { EventDispatcher, EventTopic } from '@rebuildyourlife/shared';
 
 const prisma = new PrismaClient();
 

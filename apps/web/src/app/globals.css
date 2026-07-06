@@ -73,6 +73,6 @@
     @apply bg-black/40 backdrop-blur-xl border border-white/10;
   }
   .glass-panel {
-    @apply bg-surface/50 backdrop-blur-md border border-white/5;
+    @apply bg-black/50 backdrop-blur-md border border-white/5;
   }
 }

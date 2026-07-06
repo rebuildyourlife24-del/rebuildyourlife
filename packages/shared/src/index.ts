@@ -195,9 +195,8 @@ export interface UpdateProfileRequest {
   avatarUrl?: string;
 }
 
-// ---- API Response Types ----
-
 export * from './banking/vtlb-calculator';
+export * from './events';
 
 export interface AuthTokens {
   accessToken: string;

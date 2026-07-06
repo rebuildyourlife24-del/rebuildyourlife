@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { EventTopic, EventPayloadMap } from '@repo/shared/src/events/index.js';
-import { EventDispatcher } from '@repo/shared/src/events/index.js';
+import { EventTopic, EventPayloadMap } from '@rebuildyourlife/shared';
+import { EventDispatcher } from '@rebuildyourlife/shared';
 
 const prisma = new PrismaClient();
 

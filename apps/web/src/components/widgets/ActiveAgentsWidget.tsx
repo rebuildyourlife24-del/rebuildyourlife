@@ -4,8 +4,8 @@ import { Bot, Terminal } from "lucide-react";
 
 export function ActiveAgentsWidget() {
   const agents = [
-    { name: "Mitchel", role: "Debt Resolver", status: "ACTIVE", color: "text-primary" },
-    { name: "Orion", role: "Financial Advisor", status: "STANDBY", color: "text-muted-foreground" },
+    { name: "Orion", role: "Chief Executive Officer", status: "ACTIVE", color: "text-yellow-500" },
+    { name: "Hermes", role: "Personal Assistant", status: "ACTIVE", color: "text-emerald-500" },
   ];
 
   return (

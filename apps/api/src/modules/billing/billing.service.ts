@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { AuditService } from '../audit/audit.service.js';
 // We should import EventDispatcher, but we can do that via relative paths to shared package.
-import { EventDispatcher, EventTopic } from '@repo/shared/src/events/index.js';
+import { EventDispatcher, EventTopic } from '@rebuildyourlife/shared';
 
 const prisma = new PrismaClient();
 

@@ -37,6 +37,7 @@ export class EventDispatcher {
   /**
    * (Placeholder) Subscription listener for microservices to bind to topics.
    */
+  /*
   static subscribe<T extends EventTopic>(
     topic: T, 
     handler: (payload: EventPayloadMap[T]) => Promise<void>
@@ -44,4 +45,5 @@ export class EventDispatcher {
     console.log(`[Event Bus] 🎧 SUBSCRIBED to ${topic}`);
     // TODO: Implement the listener binding (e.g., configuring Inngest functions)
   }
+  */
 }

@@ -16,9 +16,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
  * 3. Logging: We can log frontend network activity centrally.
  */
 
-async function handleProxy(req: NextRequest, { params }: { params: { path: string[] } }) {
+async function handleProxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   try {
-    const path = params.path.join('/');
+    const resolvedParams = await params;
+    const path = resolvedParams.path.join('/');
     const targetUrl = `${API_URL}/${path}`;
     
     // Extract search params

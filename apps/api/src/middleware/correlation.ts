@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CorrelationManager } from '@repo/shared/src/events/CorrelationId'; // Assuming shared is linked, or we can use relative path.
+import { CorrelationManager } from '@rebuildyourlife/shared'; // Assuming shared is linked, or we can use relative path.
 
 // We will use a relative path if the package alias doesn't work. Let's assume relative or we'll fix it if typescript complains.
 // For now, let's just use the shared path directly or import uuid locally if needed. 

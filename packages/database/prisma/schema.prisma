@@ -352,6 +352,8 @@ model AIMemory {
   updatedAt  DateTime  @updatedAt
   userId     String
   agentType  String
+  // vector field added for pgvector
+  embedding  Unsupported("vector(1536)")?
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -525,6 +527,8 @@ model OrionMemory {
   wasEffective  Boolean?
   learnWeight   Float    @default(1.0)
   tags          String?
+  // vector field added for pgvector
+  embedding     Unsupported("vector(1536)")?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -547,6 +551,7 @@ model RevenueSnapshot {
   actualVsBudget   Float    @default(0)
   vatReserve       Float    @default(0)
   safetyBuffer     Float    @default(0)
+  hardwareReserve  Float    @default(0) // Added for CFO 10% hardware rule
   source           String   @default("MANUAL")
   notes            String?
   cachedAt         DateTime @default(now())
