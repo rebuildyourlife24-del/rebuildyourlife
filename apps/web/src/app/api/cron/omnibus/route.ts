@@ -117,7 +117,7 @@ export async function GET(req: Request) {
       const action = await prisma.agentAction.create({
         data: {
           userId,
-          agentType: 'LOGISTICS',
+          agentType: 'ECOM_SUPPLY_CHAIN',
           title: 'Kritieke Voorraad Inkoop',
           description: `Er zijn ${lowStockProducts.length} producten met kritieke voorraad (< 50).`,
           estimatedCost: lowStockProducts.reduce((acc, p) => acc + (p.costPrice * 100), 0), // Order 100 units each

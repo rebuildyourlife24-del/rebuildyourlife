@@ -40,7 +40,7 @@ export async function GET(request: Request) {
         await prisma.agentAction.create({
           data: {
             userId: users[0].id,
-            agentType: 'COO',
+            agentType: 'ECOM_PRICING',
             actionType: 'DYNAMIC_PRICING_ADJUSTMENT',
             status: 'SUCCESS',
             title: 'Dynamic Pricing Adjustment',

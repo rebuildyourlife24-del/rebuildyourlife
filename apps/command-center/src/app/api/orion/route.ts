@@ -37,7 +37,7 @@ function detectEmotionalTone(text: string): { tone: string; intensity: number } 
 }
 
 // ============================================================
-// AGENT ROUTING SYSTEEM — 20 AGENTS
+// AGENT ROUTING SYSTEEM — 27 AGENTS
 // ============================================================
 const AGENT_MANIFEST = {
   // PERSOONLIJKE ASSISTENTEN
@@ -56,9 +56,18 @@ const AGENT_MANIFEST = {
   // GELD VERDIENEN AGENTS
   WEALTH_ENGINE:     { role: 'Wealth opportunity hunter', domain: 'niches vinden, trends spotten, €100→€1M strategie', type: 'revenue' },
   COMMISSION_AGENT:  { role: 'Commissie & affiliate specialist', domain: 'affiliate marketing, dropshipping, white label, reseller programmas', type: 'revenue' },
-  ECOMMERCE_AGENT:   { role: 'E-commerce specialist', domain: 'producten verkopen, Bol.com, Amazon, eigen webshop', type: 'revenue' },
   CONTENT_AGENT:     { role: 'Content & sociale media agent', domain: 'content maken, viral posts, YouTube, Instagram groei', type: 'revenue' },
   LEAD_AGENT:        { role: 'Lead generatie specialist', domain: 'prospects vinden, koude acquisitie, netwerk opbouwen', type: 'revenue' },
+
+  // SOVEREIGN E-COMMERCE COPILOTS
+  ECOM_CATALOG:      { role: 'Catalog & Sourcing Agent', domain: 'product catalogus, dropshipping, trendanalyses', type: 'revenue' },
+  ECOM_PRICING:      { role: 'Pricing & Promotions Agent', domain: 'dynamische prijzen, marges, kortingsacties', type: 'revenue' },
+  ECOM_CHECKOUT:     { role: 'Agentic Checkout Agent', domain: 'checkout optimalisatie, betalingen, carts', type: 'revenue' },
+  ECOM_CUSTOMER_SERVICE: { role: 'Autonomous Customer Service Agent', domain: 'klantenservice, retouren, tracking, clienteling', type: 'revenue' },
+  ECOM_SUPPLY_CHAIN: { role: 'Supply Chain & Procurement Agent', domain: 'inkooporders, voorraadvoorspellingen, leveranciers', type: 'revenue' },
+  ECOM_SEO:          { role: 'AI Search & SEO Agent', domain: 'GEO, Schema markup, Google rankings', type: 'revenue' },
+  ECOM_MERCHANDISING: { role: 'Merchandising & Content Agent', domain: 'productbeschrijvingen, upsells, cross-sells', type: 'revenue' },
+  ECOM_OPERATIONS:   { role: 'Operations & Uptime Agent', domain: 'monitoring, alerts, server uptime, klikdata', type: 'revenue' },
 
   // BUSINESS AGENTS
   SEO_MARKETING:     { role: 'SEO & marketing expert', domain: 'Google ranking, advertenties, conversie optimalisatie', type: 'business' },
@@ -81,6 +90,16 @@ type AgentName = keyof typeof AGENT_MANIFEST;
 function selectAgent(prompt: string, tone: string): AgentName {
   const lower = prompt.toLowerCase();
 
+  // E-commerce specialized agents (prioritized)
+  if (/sku|dropship|assortiment|sourcing/i.test(lower)) return 'ECOM_CATALOG';
+  if (/prijs|prijzen|marge|korting|promotie|actie/i.test(lower)) return 'ECOM_PRICING';
+  if (/betal|checkout|stripe|mollie|winkelwagen/i.test(lower)) return 'ECOM_CHECKOUT';
+  if (/retour|zending|track|status|verzending|klantenservice/i.test(lower)) return 'ECOM_CUSTOMER_SERVICE';
+  if (/inkoop|leverancier|bestel/i.test(lower)) return 'ECOM_SUPPLY_CHAIN';
+  if (/seo|geo|structured data|json-ld|ranking/i.test(lower)) return 'ECOM_SEO';
+  if (/schrijf|beschrijving|omschrijving|upsell|cross-sell|bundel/i.test(lower)) return 'ECOM_MERCHANDISING';
+  if (/uptime|server|monitoring|alert|klik/i.test(lower)) return 'ECOM_OPERATIONS';
+
   // Persoonlijk
   if (/gezond|sporten|eten|slapen|energie|fit|bewegen|dieet/.test(lower)) return 'HEALTH_COACH';
   if (/plan|agenda|dag|taken|focus|tijd|prioriteit/.test(lower)) return 'DAILY_PLANNER';
@@ -97,7 +116,6 @@ function selectAgent(prompt: string, tone: string): AgentName {
 
   // Geld verdienen
   if (/commissie|affiliate|partner|resell|verwijzing|doorverwijzen/.test(lower)) return 'COMMISSION_AGENT';
-  if (/bol.com|amazon|webshop|product|dropship|verkopen|winkel/.test(lower)) return 'ECOMMERCE_AGENT';
   if (/content|instagram|youtube|tiktok|viral|volgers|posts/.test(lower)) return 'CONTENT_AGENT';
   if (/lead|prospect|klant|acquisitie|netwerk|contact/.test(lower)) return 'LEAD_AGENT';
   if (/100 euro|1 miljoen|starten|niche|kans|verdienen|passief/.test(lower)) return 'WEALTH_ENGINE';

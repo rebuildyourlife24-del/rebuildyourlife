@@ -1,56 +1,201 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { Audio } from 'expo-av';
+
+const { width } = Dimensions.get('window');
 
 export default function RedBlackBoxMobile() {
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [transcribedText, setTranscribedText] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [activeAgent, setActiveAgent] = useState('ORION_CORE');
+  const [agentRole, setAgentRole] = useState('Supreme AI Partner');
+  const [emotion, setEmotion] = useState('CALM');
+
+  useEffect(() => {
+    // Request audio permissions on load
+    Audio.requestPermissionsAsync();
+  }, []);
+
+  async function startRecording() {
+    try {
+      const permission = await Audio.getPermissionsAsync();
+      if (permission.status !== 'granted') {
+        const req = await Audio.requestPermissionsAsync();
+        if (req.status !== 'granted') return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    if (!recording) return;
+    setIsRecording(false);
+    setRecording(null);
+
+    try {
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      if (!uri) return;
+
+      setIsProcessing(true);
+
+      // 1. Send the audio to our live Vercel Whisper transcription endpoint
+      const formData = new FormData();
+      formData.append('file', {
+        uri,
+        name: 'audio.m4a',
+        type: 'audio/m4a',
+      } as any);
+
+      const transcribeRes = await fetch('https://rebuildyourlife.eu/api/voice/transcribe', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (!transcribeRes.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const transcribeData = await transcribeRes.json();
+      if (!transcribeData.text) {
+        throw new Error('No transcription returned');
+      }
+
+      setTranscribedText(transcribeData.text);
+
+      // 2. Post the transcribed command to our Vercel Command Center Orion endpoint
+      const orionRes = await fetch('https://cc.ai-henksemler.nl/api/orion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: transcribeData.text,
+        }),
+      });
+
+      if (!orionRes.ok) {
+        throw new Error('Orion routing failed');
+      }
+
+      const orionData = await orionRes.json();
+      if (orionData.response) {
+        setAiResponse(orionData.response);
+        setActiveAgent(orionData.agent || 'ORION_CORE');
+        setEmotion(orionData.emotion || 'CALM');
+        if (orionData.agentInfo) {
+          setAgentRole(orionData.agentInfo.role);
+        }
+      }
+
+    } catch (err: any) {
+      console.error('Processing error:', err);
+      setAiResponse(`Uplink fout: ${err.message || 'Probeer opnieuw.'}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.superTitle}>ORION CORE</Text>
-          <Text style={styles.title}>Red Black Box</Text>
+          <Text style={styles.superTitle}>ORION OMNIPRESENCE</Text>
+          <Text style={styles.title}>Voice Link</Text>
         </View>
         <View style={styles.statusBadge}>
           <View style={styles.statusDot} />
-          <Text style={styles.statusText}>SECURE</Text>
+          <Text style={styles.statusText}>UPLINK READY</Text>
         </View>
       </View>
 
-      {/* Main KPI */}
-      <View style={styles.kpiCard}>
-        <Text style={styles.kpiLabel}>REAL-TIME REVENUE (24H)</Text>
-        <Text style={styles.kpiValue}>€ 14.280,00</Text>
-        <Text style={styles.kpiSub}>+12.4% vs Yesterday</Text>
-      </View>
+      {/* Main J.A.R.V.I.S. Orb UI */}
+      <View style={styles.orbCard}>
+        <Text style={styles.orbLabel}>ORION CORE UPLINK STATUS</Text>
+        
+        {/* Pulsating Orb Button */}
+        <View style={styles.orbContainer}>
+          <TouchableOpacity 
+            onPressIn={startRecording}
+            onPressOut={stopRecording}
+            activeOpacity={0.8}
+            style={[
+              styles.orb,
+              isRecording && styles.orbRecording,
+              isProcessing && styles.orbProcessing
+            ]}
+          >
+            {isProcessing ? (
+              <ActivityIndicator color="#06b6d4" size="large" />
+            ) : (
+              <View style={[styles.innerOrb, isRecording && styles.innerOrbRecording]} />
+            )}
+          </TouchableOpacity>
+        </View>
 
-      {/* Swarm Intelligence Alert */}
-      <View style={styles.alertCard}>
-        <Text style={styles.alertTitle}>SWARM INTELLIGENCE</Text>
-        <Text style={styles.alertText}>
-          Agent 1 & 2 have drafted a new TikTok campaign. Financial Agent approved €500 budget.
+        <Text style={styles.orbInstruction}>
+          {isRecording 
+            ? 'Orion luistert... Laat los om te verzenden.' 
+            : isProcessing 
+              ? 'Transcriberen & Agent Routeren...' 
+              : 'Houd de knop ingedrukt om te praten'}
         </Text>
-        <TouchableOpacity style={styles.alertButton}>
-          <Text style={styles.alertButtonText}>REVIEW & LAUNCH</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* Grid Stats */}
+      {/* Voice Transcript Card */}
+      {transcribedText ? (
+        <View style={styles.transcriptCard}>
+          <Text style={styles.cardHeader}>HENDRIK (GEBRUIKER):</Text>
+          <Text style={styles.transcriptText}>"{transcribedText}"</Text>
+        </View>
+      ) : null}
+
+      {/* Agent Response Card */}
+      {aiResponse ? (
+        <View style={[styles.responseCard, isProcessing && { opacity: 0.5 }]}>
+          <View style={styles.responseHeaderContainer}>
+            <Text style={styles.responseAgent}>{activeAgent}</Text>
+            <View style={[styles.emotionTag, { borderColor: emotion === 'ALERT' ? '#ef4444' : '#10b981' }]}>
+              <Text style={[styles.emotionText, { color: emotion === 'ALERT' ? '#ef4444' : '#10b981' }]}>{emotion}</Text>
+            </View>
+          </View>
+          <Text style={styles.responseRole}>{agentRole}</Text>
+          <Text style={styles.responseText}>{aiResponse}</Text>
+        </View>
+      ) : (
+        <View style={styles.responsePlaceholder}>
+          <Text style={styles.placeholderText}>Druk op de knop om spraak-commando's direct te sturen naar het AI-team.</Text>
+        </View>
+      )}
+
+      {/* Quick Status Stats */}
       <View style={styles.grid}>
         <View style={styles.gridItem}>
-          <Text style={styles.gridLabel}>ACTIVE ADS</Text>
-          <Text style={styles.gridValue}>24</Text>
+          <Text style={styles.gridLabel}>SWARM AGENTS</Text>
+          <Text style={styles.gridValue}>27 ACTIEF</Text>
         </View>
         <View style={styles.gridItem}>
-          <Text style={styles.gridLabel}>GLOBAL ROAS</Text>
-          <Text style={styles.gridValue}>4.2x</Text>
-        </View>
-        <View style={styles.gridItem}>
-          <Text style={styles.gridLabel}>DEVOPS (HANDYMAN)</Text>
-          <Text style={[styles.gridValue, {color: '#10b981'}]}>ONLINE</Text>
-        </View>
-        <View style={styles.gridItem}>
-          <Text style={styles.gridLabel}>AI VOICE (VIN DIESEL)</Text>
-          <Text style={[styles.gridValue, {color: '#3b82f6'}]}>READY</Text>
+          <Text style={styles.gridLabel}>SPEECH ENGINE</Text>
+          <Text style={[styles.gridValue, {color: '#06b6d4'}]}>WHISPER V3</Text>
         </View>
       </View>
     </ScrollView>
@@ -68,7 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 40,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   superTitle: {
     color: '#ef4444', // Red-500
@@ -84,90 +229,88 @@ const styles = StyleSheet.create({
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: 'rgba(6, 182, 212, 0.1)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: 'rgba(6, 182, 212, 0.3)',
   },
   statusDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#10b981',
+    backgroundColor: '#06b6d4',
     marginRight: 6,
   },
   statusText: {
-    color: '#10b981',
+    color: '#06b6d4',
     fontSize: 10,
     fontWeight: 'bold',
   },
-  kpiCard: {
-    backgroundColor: '#0a0a0a',
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+  orbCard: {
+    backgroundColor: '#050505',
+    borderColor: 'rgba(239, 68, 68, 0.15)',
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 24,
+    alignItems: 'center',
     marginBottom: 20,
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
   },
-  kpiLabel: {
+  orbLabel: {
     color: '#52525b',
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
-    letterSpacing: 1,
-    marginBottom: 8,
-  },
-  kpiValue: {
-    color: '#ffffff',
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  kpiSub: {
-    color: '#10b981',
-    fontSize: 12,
-    marginTop: 8,
-  },
-  alertCard: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
+    letterSpacing: 1.5,
     marginBottom: 20,
   },
-  alertTitle: {
-    color: '#ef4444',
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-    marginBottom: 8,
-  },
-  alertText: {
-    color: '#d4d4d8',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  alertButton: {
-    backgroundColor: '#ef4444',
-    paddingVertical: 10,
-    borderRadius: 8,
+  orbContainer: {
+    height: 150,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  alertButtonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+  orb: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+    borderWidth: 2,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  orbRecording: {
+    borderColor: '#ef4444',
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    transform: [{ scale: 1.15 }],
+  },
+  orbProcessing: {
+    borderColor: '#06b6d4',
+    backgroundColor: 'rgba(6, 182, 212, 0.1)',
+  },
+  innerOrb: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#ef4444',
+    opacity: 0.6,
+  },
+  innerOrbRecording: {
+    opacity: 1,
+    transform: [{ scale: 0.85 }],
+  },
+  orbInstruction: {
+    color: '#a1a1aa',
     fontSize: 12,
-    letterSpacing: 1,
+    fontWeight: 'bold',
+    marginTop: 20,
+    fontFamily: 'System',
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  gridItem: {
-    width: '48%',
+  transcriptCard: {
     backgroundColor: '#0a0a0a',
     borderColor: '#27272a',
     borderWidth: 1,
@@ -175,16 +318,101 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
+  cardHeader: {
+    color: '#a1a1aa',
+    fontSize: 9,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    marginBottom: 6,
+  },
+  transcriptText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontStyle: 'italic',
+  },
+  responseCard: {
+    backgroundColor: '#080808',
+    borderColor: '#18181b',
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+  },
+  responseHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  responseAgent: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  emotionTag: {
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  emotionText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  responseRole: {
+    color: '#ef4444',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 12,
+  },
+  responseText: {
+    color: '#e4e4e7',
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  responsePlaceholder: {
+    backgroundColor: '#050505',
+    borderColor: '#18181b',
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  placeholderText: {
+    color: '#52525b',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  grid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  gridItem: {
+    width: '48%',
+    backgroundColor: '#050505',
+    borderColor: '#18181b',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+  },
   gridLabel: {
     color: '#52525b',
     fontSize: 9,
     fontWeight: 'bold',
     letterSpacing: 1,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   gridValue: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

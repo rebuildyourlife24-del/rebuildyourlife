@@ -1,20 +1,18 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@rebuildyourlife/database';
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-export const dynamic = 'force-dynamic';
-
-export async function GET() {
+async function seed() {
+  console.log("Seeding academy data...");
   try {
-    // Schoon bestaande data op
+    // Clear existing
     await prisma.userLessonProgress.deleteMany({});
     await prisma.lesson.deleteMany({});
     await prisma.module.deleteMany({});
     await prisma.course.deleteMany({});
 
-    // Maak Course 1 aan (FREE)
+    // Course 1
     const course1 = await prisma.course.create({
       data: {
-        id: '1edf9375-3472-4ec5-a56a-93ac3c672a6a',
         title: 'Module 1: Ontsnappen uit de Matrix',
         description: 'Leer hoe je je mindset herprogrammeert, schulden vernietigt en controle pakt over je financiële toekomst.',
         tierAccess: 'FREE',
@@ -25,7 +23,6 @@ export async function GET() {
 
     const m1_1 = await prisma.module.create({
       data: {
-        id: '95c37a22-e37e-47f9-b977-6e9f78bf0184',
         courseId: course1.id,
         title: 'Fase 1: Mindset & Deconstructie',
         description: 'De basis leggen voor financiële en mentale onafhankelijkheid.',
@@ -36,21 +33,19 @@ export async function GET() {
     await prisma.lesson.createMany({
       data: [
         {
-          id: 'be300017-2dfd-401b-851f-21c3ac04deb8',
           moduleId: m1_1.id,
           title: '1.1 De Illusie van Zekerheid',
           content: 'In deze les deconstrueren we het traditionele pad van 9-tot-5 werk en leggen we bloot waarom de moderne economie is ingericht om je gevangen te houden. We kijken naar inflatie, schuldsystemen en de psychologie van de consumentenmatrix.',
-          videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', // Test video
-          duration: 340, // 5:40
+          videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+          duration: 340,
           order: 1,
         },
         {
-          id: '410e6d46-8524-415a-aaa8-db99519da5d6',
           moduleId: m1_1.id,
           title: '1.2 Schuld als Wapen',
           content: 'Schuld is de moderne ketting. Leer het verschil tussen goede en slechte schuld, hoe banken rente gebruiken als hefboom tegen je, en hoe je een agressief afbetalingsplan opstelt (de Debt Snowball methode) om je kettingen door te snijden.',
           videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-          duration: 480, // 8:00
+          duration: 480,
           order: 2,
         }
       ]
@@ -58,7 +53,6 @@ export async function GET() {
 
     const m1_2 = await prisma.module.create({
       data: {
-        id: '66bedfec-df32-40d4-bf23-87d1862a0578',
         courseId: course1.id,
         title: 'Fase 2: Financiële Soevereiniteit',
         description: 'Het bouwen van je eerste cashflow buffers.',
@@ -69,21 +63,19 @@ export async function GET() {
     await prisma.lesson.createMany({
       data: [
         {
-          id: 'e550e801-dfbc-4fe8-90e4-247a5d079905',
           moduleId: m1_2.id,
           title: '2.1 De Cashflow Blueprint',
           content: 'Hoe je elke euro die binnenkomt structureert volgens het Orion Grid. We bespreken vaste lasten, investeringspercentages en het opzetten van een noodfonds dat je minimaal 6 maanden ademruimte geeft.',
           videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          duration: 620, // 10:20
+          duration: 620,
           order: 1,
         }
       ]
     });
 
-    // Maak Course 2 aan (PREMIUM)
+    // Course 2
     const course2 = await prisma.course.create({
       data: {
-        id: 'c0c880be-d8d6-4b6c-bfa6-483eba7e8a92',
         title: 'Module 2: Jouw Eerste Werkopdracht',
         description: 'De ultieme gids om the Opportunity Engine te gebruiken. Hoe je 10x sneller werkt met AI tools.',
         tierAccess: 'PREMIUM',
@@ -94,7 +86,6 @@ export async function GET() {
 
     const m2_1 = await prisma.module.create({
       data: {
-        id: '7d78ce14-8eff-4b15-95cd-f77effadaeda',
         courseId: course2.id,
         title: 'Fase 3: De Opportunity Engine',
         description: 'Direct waarde leveren en euro\'s verdienen met AI.',
@@ -105,7 +96,6 @@ export async function GET() {
     await prisma.lesson.createMany({
       data: [
         {
-          id: '6de7cb54-8b7b-400f-a547-ca9b0732d789',
           moduleId: m2_1.id,
           title: '3.1 AI Copywriting Prompts',
           content: 'In deze les leren we je hoe je hoogwaardige marketingteksten schrijft met LLMs. We geven je kant-en-klare templates voor landingspagina\'s, e-mailcampagnes en social media ads die conversies genereren.',
@@ -114,7 +104,6 @@ export async function GET() {
           order: 1,
         },
         {
-          id: '787b4acf-7021-4448-b7fc-c9bf7400d5fe',
           moduleId: m2_1.id,
           title: '3.2 Klanten Werven met Cold Outreach',
           content: 'Hoe je de Opportunity Engine gebruikt om leads te genereren, gepersonaliseerde voorstellen te sturen en je eerste betalende B2B-klant binnen te halen zonder budget.',
@@ -125,10 +114,9 @@ export async function GET() {
       ]
     });
 
-    // Maak Course 3 aan (PREMIUM)
+    // Course 3
     const course3 = await prisma.course.create({
       data: {
-        id: '6dcb400d-0068-4802-8813-fe3094eea5f9',
         title: 'Module 3: Sovereign Capital & Swarm Ops',
         description: 'Gevorderde strategieën voor het meebouwen aan assets, schalen van AI agents en offshore structuren.',
         tierAccess: 'PREMIUM',
@@ -139,7 +127,6 @@ export async function GET() {
 
     const m3_1 = await prisma.module.create({
       data: {
-        id: 'b4054de4-f4fc-431b-b1af-48e1e4a96bae',
         courseId: course3.id,
         title: 'Fase 4: Sovereign Structures',
         description: 'Belastingoptimalisatie, e-Residency en offshore bankieren.',
@@ -150,7 +137,6 @@ export async function GET() {
     await prisma.lesson.createMany({
       data: [
         {
-          id: '851285da-b545-4a23-8e2e-72d917ca6bf4',
           moduleId: m3_1.id,
           title: '4.1 Estland e-Residency & LLCs',
           content: 'Een diepe duik in het opzetten van een Estse OÜ entiteit. Hoe je 0% vennootschapsbelasting betaalt over ingehouden winsten en hoe je overal ter wereld digitaal zaken doet.',
@@ -161,9 +147,12 @@ export async function GET() {
       ]
     });
 
-    return NextResponse.json({ success: true, message: 'Academy fully seeded with stable Course -> Module -> Lesson structure.' });
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to seed academy: ' + error.message }, { status: 500 });
+    console.log("Academy data successfully seeded!");
+  } catch (error) {
+    console.error("Failed to seed:", error);
+  } finally {
+    await prisma.$disconnect();
   }
 }
+
+seed();
