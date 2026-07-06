@@ -27,9 +27,9 @@ export function JarvisProvider({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
-  };
+  }, []);
 
   const append = async (message: UIMessage | Omit<UIMessage, 'id'>) => {
     const newMsg = { ...message, id: ('id' in message && message.id) ? message.id : Math.random().toString(36).substring(7) } as UIMessage;
