@@ -14,6 +14,18 @@ export default function SeoAuditPage() {
 
   useEffect(() => {
     loadAudits();
+
+    const interval = setInterval(() => {
+      setAudits((currentAudits) => {
+        const hasPending = currentAudits.some(a => a.status === 'PENDING' || a.status === 'RUNNING');
+        if (hasPending) {
+          loadAudits();
+        }
+        return currentAudits;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadAudits = async () => {
@@ -115,10 +127,10 @@ export default function SeoAuditPage() {
       </div>
 
       {/* Results Section */}
-      <h2 className="text-2xl font-bold mb-6">Recente Audits</h2>
+      <h2 className="text-2xl font-black uppercase tracking-widest mb-6">Recente Audits</h2>
       
       {audits.length === 0 && !loading && (
-        <div className="text-center py-12 border border-dashed border-slate-800 rounded-2xl text-slate-500">
+        <div className="text-center py-12 border-2 border-dashed border-white/10 rounded-2xl text-zinc-500 font-mono uppercase tracking-widest text-sm bg-black/40">
           Geen audits gevonden. Voer een URL in om te beginnen.
         </div>
       )}
@@ -129,62 +141,67 @@ export default function SeoAuditPage() {
             key={audit.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900 border border-slate-800 rounded-2xl p-6"
+            className="bg-black/40 border border-white/10 rounded-2xl p-6 hover:border-blue-500/30 transition-colors relative overflow-hidden group"
           >
-            <div className="flex justify-between items-start mb-6">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/0 via-blue-500/50 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="flex justify-between items-start mb-6 relative z-10">
               <div>
-                <h3 className="text-xl font-bold text-blue-400">{audit.targetUrl}</h3>
-                <p className="text-sm text-slate-500 mt-1">
+                <h3 className="text-xl font-bold text-blue-400 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]">{audit.targetUrl}</h3>
+                <p className="text-xs font-mono text-zinc-500 mt-1">
                   Geschaapt op: {new Date(audit.createdAt).toLocaleString('nl-NL')}
                 </p>
               </div>
               <div className="flex flex-col items-end">
-                <div className={`text-3xl font-black ${audit.score >= 80 ? 'text-emerald-400' : audit.score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
-                  {audit.score}/100
+                <div className={`text-3xl font-black ${
+                  audit.result && JSON.parse(audit.result).score >= 80 ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
+                  audit.result && JSON.parse(audit.result).score >= 50 ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 
+                  'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                }`}>
+                  {audit.result ? JSON.parse(audit.result).score : '?'}/100
                 </div>
-                <div className="text-xs text-slate-500 font-medium tracking-wider">SEO SCORE</div>
+                <div className="text-[10px] text-zinc-500 font-black tracking-widest uppercase">SEO SCORE</div>
               </div>
             </div>
 
-            {audit.status === "COMPLETED" && audit.aiReport && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {audit.status === "DONE" && audit.result && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 relative z-10">
                 <div className="space-y-4">
-                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800">
-                    <h4 className="font-bold text-emerald-400 mb-2 flex items-center">
+                  <div className="p-5 bg-zinc-900/50 rounded-xl border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]">
+                    <h4 className="font-black uppercase tracking-widest text-emerald-400 mb-3 flex items-center text-xs">
                       <CheckCircle className="w-4 h-4 mr-2" /> Wat gaat er goed?
                     </h4>
-                    <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
-                      {(audit.aiReport as any).pros?.map((pro: string, i: number) => (
+                    <ul className="list-disc list-inside text-sm text-zinc-300 space-y-1.5 marker:text-emerald-500">
+                      {JSON.parse(audit.result).pros?.map((pro: string, i: number) => (
                         <li key={i}>{pro}</li>
                       ))}
                     </ul>
                   </div>
                   
-                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800">
-                    <h4 className="font-bold text-red-400 mb-2 flex items-center">
+                  <div className="p-5 bg-zinc-900/50 rounded-xl border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.05)]">
+                    <h4 className="font-black uppercase tracking-widest text-red-400 mb-3 flex items-center text-xs">
                       <AlertTriangle className="w-4 h-4 mr-2" /> Wat moet er beter?
                     </h4>
-                    <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
-                      {(audit.aiReport as any).cons?.map((con: string, i: number) => (
+                    <ul className="list-disc list-inside text-sm text-zinc-300 space-y-1.5 marker:text-red-500">
+                      {JSON.parse(audit.result).cons?.map((con: string, i: number) => (
                         <li key={i}>{con}</li>
                       ))}
                     </ul>
                   </div>
                 </div>
 
-                <div className="bg-slate-950 rounded-xl border border-slate-800 p-5">
-                  <h4 className="font-bold mb-4">Actieplan (To-Do's)</h4>
+                <div className="bg-black/60 rounded-xl border border-white/5 p-6 backdrop-blur-sm">
+                  <h4 className="font-black uppercase tracking-widest text-white mb-5 text-sm">Actieplan (To-Do's)</h4>
                   <div className="space-y-3">
-                    {(audit.aiReport as any).actionItems?.map((item: any, i: number) => (
-                      <div key={i} className="flex items-start bg-slate-900 p-3 rounded-lg border border-slate-800">
-                        <span className={`text-xs font-bold px-2 py-1 rounded mr-3 shrink-0 ${
-                          item.priority === 'HIGH' ? 'bg-red-500/20 text-red-400' : 
-                          item.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' : 
-                          'bg-blue-500/20 text-blue-400'
+                    {JSON.parse(audit.result).actionItems?.map((item: any, i: number) => (
+                      <div key={i} className="flex items-start bg-zinc-900/80 p-3.5 rounded-lg border border-white/5 hover:border-blue-500/30 transition-colors">
+                        <span className={`text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded mr-3 shrink-0 ${
+                          item.priority === 'HIGH' ? 'bg-red-500/10 border border-red-500/30 text-red-400' : 
+                          item.priority === 'MEDIUM' ? 'bg-amber-500/10 border border-amber-500/30 text-amber-400' : 
+                          'bg-blue-500/10 border border-blue-500/30 text-blue-400'
                         }`}>
                           {item.priority}
                         </span>
-                        <span className="text-sm text-slate-300">{item.task}</span>
+                        <span className="text-sm text-zinc-300">{item.task}</span>
                       </div>
                     ))}
                   </div>
@@ -192,19 +209,26 @@ export default function SeoAuditPage() {
               </div>
             )}
             
-            {audit.status === "COMPLETED" && audit.aiReport?.summary && (
-              <div className="mt-6 pt-4 border-t border-slate-800">
-                <h4 className="text-sm font-bold text-slate-400 mb-2">AI Samenvatting</h4>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  {(audit.aiReport as any).summary}
+            {audit.status === "DONE" && audit.result && JSON.parse(audit.result).summary && (
+              <div className="mt-6 pt-5 border-t border-white/10 relative z-10">
+                <h4 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-3">AI Samenvatting</h4>
+                <p className="text-zinc-300 text-sm leading-relaxed bg-zinc-900/30 p-4 rounded-xl border border-white/5 italic">
+                  "{JSON.parse(audit.result).summary}"
                 </p>
               </div>
             )}
 
-            {audit.status === "PENDING" && (
-              <div className="flex items-center text-yellow-400 mt-4">
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Bezig met scrapen en analyseren...
+            {(audit.status === "PENDING" || audit.status === "RUNNING") && (
+              <div className="flex items-center text-amber-400 mt-4 font-mono text-sm uppercase tracking-widest relative z-10 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                Bezig met scrapen en analyseren (dit duurt ~30 seconden)...
+              </div>
+            )}
+            
+            {audit.status === "FAILED" && (
+              <div className="flex items-center text-red-500 mt-4 font-mono text-sm uppercase tracking-widest relative z-10 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <XCircle className="w-5 h-5 mr-3" />
+                Fout: {audit.error || "De SEO scan is gecrasht of getimed-out."}
               </div>
             )}
           </motion.div>

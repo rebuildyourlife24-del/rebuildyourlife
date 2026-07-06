@@ -98,3 +98,57 @@ export async function getLeads() {
     orderBy: { createdAt: "desc" },
   });
 }
+
+import { sendEmail } from "@/lib/email";
+
+export async function sendColdEmailAction(campaignId: string, leadId: string) {
+  const session = await getSessionAction();
+  if (!session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const campaign = await prisma.emailCampaign.findUnique({
+      where: { id: campaignId }
+    });
+    if (!campaign || campaign.userId !== session.user.id) {
+      throw new Error("Campagne niet gevonden of ongeautoriseerd.");
+    }
+
+    const lead = await prisma.subscriber.findUnique({
+      where: { id: leadId }
+    });
+    if (!lead || lead.userId !== session.user.id) {
+      throw new Error("Lead niet gevonden of ongeautoriseerd.");
+    }
+
+    // Replace placeholders
+    let finalHtml = campaign.htmlContent;
+    if (lead.firstName) {
+      finalHtml = finalHtml.replace(/{{firstName}}/g, lead.firstName);
+    }
+    finalHtml = finalHtml.replace(/{{companyName}}/g, "jouw bedrijf"); // Fallback for now
+
+    const res = await sendEmail({
+      to: lead.email,
+      subject: campaign.subject,
+      html: finalHtml,
+    });
+
+    if (!res.success) {
+      throw new Error(res.error);
+    }
+
+    // Mark as sent
+    await prisma.emailCampaign.update({
+      where: { id: campaignId },
+      data: { status: "SENT" }
+    });
+
+    revalidatePath("/dashboard/modules/cold-email");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error sending email:", error);
+    return { success: false, error: error.message };
+  }
+}

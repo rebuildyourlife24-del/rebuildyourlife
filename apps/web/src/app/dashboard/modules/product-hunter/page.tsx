@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Target, Search, ArrowRight, CheckCircle2, AlertCircle, ShoppingCart } from 'lucide-react';
-import { huntProductFromUrl, injectProductToShopify } from '@/actions/ai-hunter';
+import { huntProductFromUrl, injectProductToShopify, getProductHuntJob } from '@/actions/ai-hunter';
 
 export default function AIProductHunter() {
   const [url, setUrl] = useState('');
@@ -18,11 +18,24 @@ export default function AIProductHunter() {
 
     const res = await huntProductFromUrl(url);
     
-    if (res.success && res.product) {
-      setScrapedProduct(res.product);
-      setStatus('found');
+    if (res.success && res.jobId) {
+      // Start polling
+      const interval = setInterval(async () => {
+        const jobRes = await getProductHuntJob(res.jobId);
+        if (jobRes.success && jobRes.job) {
+          if (jobRes.job.status === 'DONE' && jobRes.job.result) {
+            clearInterval(interval);
+            setScrapedProduct(JSON.parse(jobRes.job.result));
+            setStatus('found');
+          } else if (jobRes.job.status === 'FAILED') {
+            clearInterval(interval);
+            setErrorMsg(jobRes.job.error || 'Er ging iets mis tijdens de hunt.');
+            setStatus('error');
+          }
+        }
+      }, 3000);
     } else {
-      setErrorMsg(res.error || 'Er ging iets mis tijdens de hunt.');
+      setErrorMsg(res.error || 'Kon job niet starten.');
       setStatus('error');
     }
   };

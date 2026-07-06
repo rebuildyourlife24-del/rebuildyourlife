@@ -14,7 +14,7 @@ export default function ChatbotAgencyPage() {
   // Form State
   const [name, setName] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("Je bent een vriendelijke klantenservice medewerker. Je beantwoordt vragen kort en bondig.");
-  const [themeColor, setThemeColor] = useState("#3b82f6");
+  const [themeColor, setThemeColor] = useState("#00f0ff"); // Default to Neon Cyan
 
   useEffect(() => {
     loadBots();
@@ -67,17 +67,17 @@ export default function ChatbotAgencyPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-slate-950">
-      <Link href="/dashboard/modules" className="flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-black">
+      <Link href="/dashboard/modules" className="flex items-center text-zinc-500 hover:text-cyan-400 mb-8 transition-colors uppercase tracking-widest text-xs font-bold">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Terug naar Modules
       </Link>
 
       <div className="mb-10">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+        <h1 className="text-4xl font-black uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">
           AI Chatbot Agency
         </h1>
-        <p className="text-slate-400 mt-2 text-lg">
+        <p className="text-zinc-400 mt-2 text-lg font-light">
           Maak custom AI-assistenten, kopieer de script-tag en verkoop dit aan lokale bedrijven als klantenservice-oplossing.
         </p>
       </div>
@@ -85,38 +85,40 @@ export default function ChatbotAgencyPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* CREATE FORM */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 h-fit">
-          <h2 className="text-xl font-bold mb-6 flex items-center">
-            <Plus className="w-5 h-5 mr-2 text-emerald-400" />
+        <div className="lg:col-span-1 bg-black/40 border border-white/10 rounded-2xl p-6 h-fit relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-colors duration-700"></div>
+          
+          <h2 className="text-xl font-bold mb-6 flex items-center uppercase tracking-wider relative z-10">
+            <Plus className="w-5 h-5 mr-2 text-cyan-400" />
             Nieuwe Bot Maken
           </h2>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={handleCreate} className="space-y-4 relative z-10">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Naam van het bedrijf / Bot</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Naam van het bedrijf / Bot</label>
               <input 
                 type="text" 
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="Bijv. Tandarts Jansen Support"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">System Prompt (Instructies)</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">System Prompt (Instructies)</label>
               <textarea 
                 value={systemPrompt}
                 onChange={e => setSystemPrompt(e.target.value)}
                 rows={5}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-blue-500 outline-none resize-none"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none resize-none custom-scrollbar"
                 required
               />
-              <p className="text-xs text-slate-500 mt-1">Vertel de AI hoe hij zich moet gedragen en welke info hij moet weten (prijzen, openingstijden, etc).</p>
+              <p className="text-xs text-zinc-500 mt-1 font-mono">Vertel de AI hoe hij zich moet gedragen en welke info hij moet weten.</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Merkkleur (Hex)</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Merkkleur (Hex)</label>
               <div className="flex gap-2">
                 <input 
                   type="color" 
@@ -128,17 +130,17 @@ export default function ChatbotAgencyPage() {
                   type="text" 
                   value={themeColor}
                   onChange={e => setThemeColor(e.target.value)}
-                  className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 text-white focus:border-blue-500 outline-none"
+                  className="flex-1 bg-zinc-900/50 border border-white/10 rounded-xl px-3 text-white focus:border-cyan-500 transition-all outline-none font-mono"
                 />
               </div>
             </div>
 
-            {error && <div className="text-red-400 text-sm">{error}</div>}
+            {error && <div className="text-red-400 text-xs font-mono border border-red-500/30 bg-red-500/10 p-2 rounded">{error}</div>}
 
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center mt-4"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-black font-black uppercase tracking-widest py-3 px-4 rounded-xl transition-all shadow-[0_0_20px_rgba(0,240,255,0.4)] flex items-center justify-center mt-4"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Bot Genereren"}
             </button>
@@ -147,10 +149,10 @@ export default function ChatbotAgencyPage() {
 
         {/* LIST OF BOTS */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-xl font-bold mb-6">Mijn Klanten (Bots)</h2>
+          <h2 className="text-xl font-bold mb-6 uppercase tracking-wider">Mijn Klanten (Bots)</h2>
           
           {chatbots.length === 0 && (
-            <div className="p-8 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
+            <div className="p-8 text-center border border-dashed border-white/20 rounded-2xl text-zinc-500 font-mono text-sm">
               Je hebt nog geen chatbots gemaakt. Vul het formulier links in!
             </div>
           )}
@@ -160,19 +162,19 @@ export default function ChatbotAgencyPage() {
               key={bot.id} 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+              className="bg-black/40 border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-cyan-500/30 transition-colors"
             >
               <div className="flex items-center gap-4">
                 <div 
-                  className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                  className="w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10"
                   style={{ backgroundColor: bot.themeColor }}
                 >
                   <Bot className="text-white w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold">{bot.name}</h3>
-                  <p className="text-xs text-slate-400">
-                    Aangemaakt op: {new Date(bot.createdAt).toLocaleDateString()} • {bot._count?.sessions || 0} Chat sessies
+                  <h3 className="text-lg font-bold text-white uppercase tracking-wider">{bot.name}</h3>
+                  <p className="text-xs text-zinc-500 font-mono">
+                    Aangemaakt op: {new Date(bot.createdAt).toLocaleDateString()} • <span className="text-cyan-400">{bot._count?.sessions || 0}</span> Chat sessies
                   </p>
                 </div>
               </div>
@@ -180,14 +182,14 @@ export default function ChatbotAgencyPage() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button 
                   onClick={() => copyToClipboard(bot.id)}
-                  className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors border border-slate-700"
+                  className="flex-1 sm:flex-none bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-bold flex items-center justify-center transition-colors border border-white/10"
                 >
-                  <Code className="w-4 h-4 mr-2 text-emerald-400" />
+                  <Code className="w-4 h-4 mr-2 text-cyan-400" />
                   Kopieer Embed
                 </button>
                 <button 
                   onClick={() => handleDelete(bot.id)}
-                  className="bg-red-900/20 hover:bg-red-900/40 text-red-400 p-2 rounded-lg transition-colors border border-red-900/50"
+                  className="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-2 rounded-xl transition-colors border border-red-500/20"
                   title="Verwijder bot"
                 >
                   <Trash2 className="w-5 h-5" />

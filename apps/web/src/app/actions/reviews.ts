@@ -2,12 +2,19 @@
 
 import { prisma } from "@rebuildyourlife/database";
 import { GoogleGenAI } from "@google/genai";
+import { getSessionAction } from "./auth";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Mock function to fetch reviews (since we don't have a real Google Places API key setup yet)
-export async function syncGoogleReviews(userId: string, placeId: string) {
+export async function syncGoogleReviews(placeId: string) {
   try {
+    const session = await getSessionAction();
+    if (!session?.success || !session?.user?.id) {
+      throw new Error("Unauthorized");
+    }
+    const userId = session.user.id;
+
     // In a real app we'd call Google My Business API or Outscraper
     const mockReviews = [
       { authorName: "Jan de Vries", rating: 5, text: "Fantastische service, heel erg geholpen met mijn probleem!" },
@@ -34,10 +41,15 @@ export async function syncGoogleReviews(userId: string, placeId: string) {
   }
 }
 
-export async function getBusinessReviews(userId: string) {
+export async function getBusinessReviews() {
   try {
+    const session = await getSessionAction();
+    if (!session?.success || !session?.user?.id) {
+      throw new Error("Unauthorized");
+    }
+
     const reviews = await prisma.businessReview.findMany({
-      where: { userId },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     });
 

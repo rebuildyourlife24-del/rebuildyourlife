@@ -88,23 +88,23 @@ export default function MonitoringModule() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-white/50 animate-pulse">Monitors laden...</div>;
+    return <div className="p-8 text-center text-zinc-500 animate-pulse font-mono uppercase tracking-wider text-sm">Monitors laden...</div>;
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto p-8 min-h-screen text-white bg-black">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-            <Globe className="w-6 h-6 text-blue-500" />
-            Uptime & Website Monitoring
+          <h1 className="text-4xl font-black uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,240,255,0.5)] flex items-center gap-3">
+            <Globe className="w-8 h-8 text-cyan-400 drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" />
+            Uptime Monitoring
           </h1>
-          <p className="text-white/60 text-sm mt-1">Krijg inzicht in de bereikbaarheid en prestaties van je websites.</p>
+          <p className="text-zinc-400 mt-2 text-lg font-light">Krijg inzicht in de bereikbaarheid en prestaties van je websites.</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
+          className="flex items-center gap-2 px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-black rounded-xl transition-all font-black uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(0,240,255,0.4)]"
         >
           <Plus className="w-4 h-4" />
           Nieuwe Monitor
@@ -114,19 +114,21 @@ export default function MonitoringModule() {
       {/* Monitors List */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {monitors.map((monitor) => (
-          <div key={monitor.id} className="bg-[#111111] border border-white/10 rounded-xl overflow-hidden group hover:border-white/20 transition-all">
-            <div className="p-5">
+          <div key={monitor.id} className="bg-black/40 border border-white/10 rounded-2xl overflow-hidden group hover:border-cyan-500/30 transition-colors relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-colors"></div>
+            
+            <div className="p-5 relative z-10">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-base font-semibold text-white mb-1 truncate">{monitor.name}</h3>
-                  <a href={monitor.url} target="_blank" rel="noreferrer" className="text-blue-400 text-xs hover:underline truncate block max-w-[200px]">
+                  <h3 className="text-base font-bold uppercase tracking-wider text-white mb-1 truncate">{monitor.name}</h3>
+                  <a href={monitor.url} target="_blank" rel="noreferrer" className="text-zinc-500 font-mono text-xs hover:text-cyan-400 hover:underline truncate block max-w-[200px] transition-colors">
                     {monitor.url}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => handleDelete(monitor.id)}
-                    className="text-white/30 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="text-white/30 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/10 p-1.5 rounded border border-red-500/20"
                     title="Verwijderen"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -138,13 +140,13 @@ export default function MonitoringModule() {
                 {getStatusBadge(monitor.status)}
                 
                 <div className="flex items-center gap-3">
-                  <span className="text-white/40 text-xs">
+                  <span className="text-zinc-500 font-mono text-xs">
                     {monitor.lastCheck ? new Date(monitor.lastCheck).toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'}) : 'Nooit'}
                   </span>
                   <button
                     onClick={() => handleCheck(monitor.id)}
                     disabled={checkingId === monitor.id}
-                    className="p-1.5 bg-white/5 hover:bg-white/10 rounded-md text-white/70 transition-colors disabled:opacity-50"
+                    className="p-1.5 bg-zinc-900 border border-white/10 hover:border-cyan-500/30 rounded-lg text-cyan-400 transition-colors disabled:opacity-50"
                     title="Check nu"
                   >
                     <RefreshCw className={`w-4 h-4 ${checkingId === monitor.id ? 'animate-spin' : ''}`} />
@@ -154,17 +156,17 @@ export default function MonitoringModule() {
 
               {/* Logs Preview (Latest 3) */}
               {monitor.logs && monitor.logs.length > 0 && (
-                <div className="mt-4 space-y-1.5">
-                  <div className="text-xs font-medium text-white/50 flex items-center gap-1.5 mb-2">
-                    <Activity className="w-3 h-3" />
+                <div className="mt-4 space-y-1.5 bg-zinc-950/50 p-3 rounded-xl border border-white/5">
+                  <div className="text-xs font-bold uppercase tracking-widest text-zinc-600 flex items-center gap-1.5 mb-2">
+                    <Activity className="w-3 h-3 text-cyan-500" />
                     Recente pings
                   </div>
                   {monitor.logs.slice(0, 3).map((log: any) => (
-                    <div key={log.id} className="flex justify-between items-center text-xs">
-                      <span className={log.status === "UP" ? "text-green-400/80" : "text-red-400/80"}>
+                    <div key={log.id} className="flex justify-between items-center text-xs font-mono">
+                      <span className={log.status === "UP" ? "text-emerald-400" : "text-red-400"}>
                         {log.statusCode || "Error"}
                       </span>
-                      <span className="text-white/30">
+                      <span className="text-zinc-500">
                         {log.responseTime ? `${log.responseTime}ms` : '-'}
                       </span>
                     </div>
@@ -176,15 +178,15 @@ export default function MonitoringModule() {
         ))}
         
         {monitors.length === 0 && (
-          <div className="col-span-full text-center py-16 bg-[#111111] border border-white/10 rounded-xl">
-            <Globe className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h3 className="text-white font-medium mb-1">Geen monitors actief</h3>
-            <p className="text-white/50 text-sm mb-6">Voeg een website toe om de uptime in de gaten te houden.</p>
+          <div className="col-span-full text-center py-16 bg-black/40 border border-dashed border-white/20 rounded-2xl">
+            <Globe className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
+            <h3 className="text-white font-bold uppercase tracking-wider mb-1">Geen monitors actief</h3>
+            <p className="text-zinc-500 font-mono text-sm mb-6">Voeg een website toe om de uptime in de gaten te houden.</p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-medium text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 hover:border-cyan-500/30 text-white rounded-xl transition-colors font-bold uppercase tracking-widest text-xs"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-cyan-400" />
               Website Toevoegen
             </button>
           </div>
@@ -193,67 +195,69 @@ export default function MonitoringModule() {
 
       {/* New Monitor Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#111111] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden">
-            <div className="p-6 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white">Nieuwe Monitor</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-white/50 hover:text-white">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-950 border border-white/10 rounded-2xl w-full max-w-md overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="p-6 border-b border-white/10 flex justify-between items-center relative z-10 bg-black/40">
+              <h2 className="text-lg font-black uppercase tracking-widest text-white">Nieuwe Monitor</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-lg">
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 relative z-10">
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">Naam</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Naam</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all"
                   placeholder="Mijn Webshop"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">Website URL</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Website URL</label>
                 <input
                   type="text"
                   required
                   value={formData.url}
                   onChange={e => setFormData({...formData, url: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all font-mono"
                   placeholder="https://jouwwebsite.nl"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1.5">Controle Interval</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Controle Interval</label>
                 <select
                   value={formData.interval}
                   onChange={e => setFormData({...formData, interval: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+                  className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all appearance-none uppercase font-bold text-xs tracking-wider"
                 >
-                  <option value="1" className="bg-neutral-900">Elke 1 minuut</option>
-                  <option value="5" className="bg-neutral-900">Elke 5 minuten</option>
-                  <option value="15" className="bg-neutral-900">Elke 15 minuten</option>
-                  <option value="60" className="bg-neutral-900">Elke 60 minuten</option>
+                  <option value="1" className="bg-zinc-950 text-white uppercase">Elke 1 minuut</option>
+                  <option value="5" className="bg-zinc-950 text-white uppercase">Elke 5 minuten</option>
+                  <option value="15" className="bg-zinc-950 text-white uppercase">Elke 15 minuten</option>
+                  <option value="60" className="bg-zinc-950 text-white uppercase">Elke 60 minuten</option>
                 </select>
-                <p className="text-xs text-white/40 mt-1.5">Opmerking: Automatische checks draaien via de backend CRON job op dit interval.</p>
+                <p className="text-xs text-zinc-600 font-mono mt-2">Opmerking: Automatische checks draaien via de backend CRON job op dit interval.</p>
               </div>
 
               <div className="pt-4 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors font-medium text-sm"
+                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-bold uppercase tracking-widest text-xs border border-white/10"
                 >
                   Annuleren
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50"
+                  className="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-500 text-black rounded-xl transition-all font-black uppercase tracking-widest text-xs disabled:opacity-50 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
                 >
                   {isSubmitting ? 'Bezig...' : 'Monitor Opslaan'}
                 </button>

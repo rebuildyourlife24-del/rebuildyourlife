@@ -1,11 +1,15 @@
 import { serve } from "inngest/next";
 import { inngest } from "../../../inngest/client";
-import { avatarRenderJob, bRollVideoJob } from "../../../inngest/functions";
+import { avatarRenderJob, bRollVideoJob, seoAuditJob, productHunterJob, brandLauncherJob, publishSocialPostJob } from "../../../inngest/functions";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
     avatarRenderJob,
-    bRollVideoJob
+    bRollVideoJob,
+    seoAuditJob,
+    productHunterJob,
+    brandLauncherJob,
+    publishSocialPostJob
   ],
 });

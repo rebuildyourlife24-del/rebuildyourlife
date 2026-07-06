@@ -70,7 +70,7 @@ export const avatarRenderJob = inngest.createFunction(
         });
         return { success: true, videoUrl };
       } else {
-        throw new Error(error || "Unknown error during rendering");
+        throw new Error(error ? String(error) : "Unknown error during rendering");
       }
     } catch (err: any) {
       // 5. Handle failure
@@ -116,6 +116,341 @@ export const bRollVideoJob = inngest.createFunction(
     } catch (err: any) {
       await step.run("save-error", async () => {
         console.error(`B-Roll failed: ${err.message}`);
+      });
+      throw err;
+    }
+  }
+);
+
+import FirecrawlApp from "@mendable/firecrawl-js";
+import { GoogleGenAI } from "@google/genai";
+
+const firecrawl = new FirecrawlApp({
+  apiKey: process.env.FIRECRAWL_API_KEY || "",
+});
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY_1 || "",
+});
+
+export const seoAuditJob = inngest.createFunction(
+  { id: "seo-audit-job", retries: 1 },
+  { event: "seo/audit.run" },
+  async ({ event, step }) => {
+    const { auditId, url } = event.data;
+
+    await step.run("mark-running", async () => {
+      return prisma.seoAuditJob.update({
+        where: { id: auditId },
+        data: { status: "RUNNING" },
+      });
+    });
+
+    try {
+      const scrapedContent = await step.run("scrape-url", async () => {
+        const scrapeResult = await firecrawl.scrapeUrl(url, {
+          formats: ["markdown", "html"],
+        });
+        if (!scrapeResult) throw new Error("Scrape failed: No result returned");
+        return {
+          markdown: scrapeResult.markdown || "Geen content gevonden.",
+          metadata: scrapeResult.metadata
+        };
+      });
+
+      const aiReportText = await step.run("generate-ai-report", async () => {
+        const prompt = `
+          Je bent een senior SEO expert. Je analyseert de volgende opgeschraapte webpagina-data en levert een gedetailleerd SEO Audit rapport op in JSON formaat.
+          
+          URL: ${url}
+          Titel: ${scrapedContent.metadata?.title || "Onbekend"}
+          Omschrijving: ${scrapedContent.metadata?.description || "Onbekend"}
+          
+          Website Content (Markdown):
+          ${scrapedContent.markdown.substring(0, 15000)}
+          
+          Beoordeel de site op:
+          1. On-page SEO (Title, Meta description, H1/H2 tags)
+          2. Content kwaliteit & Keyword kansen
+          3. Gebruiksvriendelijkheid en mogelijke UX blockers
+          
+          Geef de output EXACT in dit JSON formaat (zonder markdown blokken eromheen):
+          {
+            "score": 75,
+            "summary": "Een korte samenvatting van de staat van de SEO.",
+            "pros": ["Sterk punt 1", "Sterk punt 2"],
+            "cons": ["Zwak punt 1", "Zwak punt 2"],
+            "actionItems": [
+              { "priority": "HIGH", "task": "Voeg een meta description toe" },
+              { "priority": "MEDIUM", "task": "Gebruik meer H2 tags" }
+            ]
+          }
+        `;
+
+        const aiResponse = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          }
+        });
+        return aiResponse.text || "{}";
+      });
+
+      let reportData;
+      try {
+        const cleanText = aiReportText.replace(/```json/gi, "").replace(/```/g, "").trim();
+        reportData = JSON.parse(cleanText);
+      } catch (e) {
+        throw new Error(`AI gaf een ongeldig JSON rapport terug: ${aiReportText}`);
+      }
+
+      await step.run("save-success", async () => {
+        return prisma.seoAuditJob.update({
+          where: { id: auditId },
+          data: {
+            status: "DONE",
+            result: JSON.stringify(reportData)
+          },
+        });
+      });
+
+      return { success: true };
+
+    } catch (err: any) {
+      await step.run("save-error", async () => {
+        return prisma.seoAuditJob.update({
+          where: { id: auditId },
+          data: { status: "FAILED", error: err.message },
+        });
+      });
+      throw err;
+    }
+  }
+);
+export const productHunterJob = inngest.createFunction(
+  { id: "product-hunter-job", retries: 1 },
+  { event: "product/hunt.run" },
+  async ({ event, step }) => {
+    const { jobId, url } = event.data;
+
+    await step.run("mark-running", async () => {
+      return prisma.productHunterJob.update({
+        where: { id: jobId },
+        data: { status: "RUNNING" },
+      });
+    });
+
+    try {
+      const scrapedContent = await step.run("scrape-url", async () => {
+        const scrapeResult = await firecrawl.scrapeUrl(url, {
+          formats: ["markdown"],
+        });
+        if (!scrapeResult) throw new Error("Scrape failed: No result returned");
+        return scrapeResult.markdown || "";
+      });
+
+      if (!scrapedContent || scrapedContent.length < 50) {
+        throw new Error("Geen bruikbare content gevonden op de pagina.");
+      }
+
+      const aiReportText = await step.run("generate-ai-product", async () => {
+        const prompt = `
+          Je bent een expert in e-commerce en dropshipping. 
+          Lees de onderstaande markdown-content van een geschraapte website.
+          Identificeer het 'winnende' hoofdproduct op de pagina en converteer dit naar een commerciële JSON output.
+
+          Vereisten:
+          - title: Een pakkende commerciële titel (max 5 woorden)
+          - body_html: Een converterende HTML beschrijving (gebruik <b>, <br>, <ul>). Minimaal 2 zinnen, wervende tekst.
+          - price: Een realistische maar winstgevende verkoopprijs (bijv "29.95"). Alleen cijfers en punt.
+          - tags: 3 komma-gescheiden tags
+          - imageUrl: Zoek in de markdown naar de meest logische afbeeldings-URL (begint vaak met http, eindigt op jpg/png/webp) die het product toont. Als je er geen kan vinden, laat leeg of gebruik een placeholder.
+
+          GEEF ALLEEN RAW JSON TERUG (geen \`\`\`json etc).
+          Structuur:
+          {
+            "title": "...",
+            "body_html": "...",
+            "price": "...",
+            "tags": "...",
+            "imageUrl": "..."
+          }
+
+          Content:
+          ${scrapedContent.substring(0, 15000)}
+        `;
+
+        const aiResponse = await ai.models.generateContent({
+          model: "gemini-1.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          }
+        });
+        return aiResponse.text || "{}";
+      });
+
+      let productData;
+      try {
+        const cleanText = aiReportText.replace(/```json/gi, "").replace(/```/g, "").trim();
+        productData = JSON.parse(cleanText);
+      } catch (e) {
+        throw new Error(`AI gaf een ongeldig JSON rapport terug: ${aiReportText}`);
+      }
+
+      await step.run("save-success", async () => {
+        return prisma.productHunterJob.update({
+          where: { id: jobId },
+          data: {
+            status: "DONE",
+            result: JSON.stringify(productData)
+          },
+        });
+      });
+
+      return { success: true };
+
+    } catch (err: any) {
+      await step.run("save-error", async () => {
+        return prisma.productHunterJob.update({
+          where: { id: jobId },
+          data: { status: "FAILED", error: err.message },
+        });
+      });
+      throw err;
+    }
+  }
+);
+
+export const brandLauncherJob = inngest.createFunction(
+  { id: "brand-launcher-job", retries: 1 },
+  { event: "brand/launcher.run" },
+  async ({ event, step }) => {
+    const { jobId, domain, industry } = event.data;
+
+    await step.run("mark-running", async () => {
+      return prisma.brandLauncherJob.update({
+        where: { id: jobId },
+        data: { status: "RUNNING" },
+      });
+    });
+
+    try {
+      const aiReportText = await step.run("generate-brand-kit", async () => {
+        const prompt = `
+          Jij bent de ultieme Omnichannel Brand Architect van de wereld.
+          Maak een complete "Social Media & Brand Kit" voor een nieuwe onderneming.
+          
+          Bedrijfsnaam / Domein: ${domain}
+          Industrie: ${industry}
+          
+          Output dit ALTIJD als een RAW JSON object zonder markdown of code blocks.
+          Het JSON object MOET exact deze structuur hebben:
+          {
+            "facebook": { "bio": "...", "coverPrompt": "...", "firstPost": "..." },
+            "instagram": { "bio": "...", "profilePrompt": "...", "firstPost": "..." },
+            "linkedin": { "bio": "...", "coverPrompt": "...", "firstPost": "..." },
+            "x": { "bio": "...", "firstPost": "..." },
+            "snapchat": { "bio": "...", "firstPost": "...", "lensPrompt": "..." },
+            "strategy": "Een korte pitch van 2 zinnen over de brand voice."
+          }
+          
+          Zorg dat de content ultra-professioneel, wervend en SEO geoptimaliseerd is.
+          Gebruik relevante emoji's en hashtags in de posts.
+          De prompts moeten in het Engels zijn (voor tools zoals Midjourney of DALL-E).
+        `;
+
+        const aiResponse = await ai.models.generateContent({
+          model: "gemini-1.5-pro-latest",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+          }
+        });
+        return aiResponse.text || "{}";
+      });
+
+      let brandKit;
+      try {
+        const cleanText = aiReportText.replace(/```json/gi, "").replace(/```/g, "").trim();
+        brandKit = JSON.parse(cleanText);
+      } catch (e) {
+        throw new Error(`AI gaf een ongeldig JSON rapport terug: ${aiReportText}`);
+      }
+
+      await step.run("save-success", async () => {
+        return prisma.brandLauncherJob.update({
+          where: { id: jobId },
+          data: {
+            status: "DONE",
+            result: JSON.stringify(brandKit)
+          },
+        });
+      });
+
+      return { success: true };
+
+    } catch (err: any) {
+      await step.run("save-error", async () => {
+        return prisma.brandLauncherJob.update({
+          where: { id: jobId },
+          data: { status: "FAILED", error: err.message },
+        });
+      });
+      throw err;
+    }
+  }
+);
+
+export const publishSocialPostJob = inngest.createFunction(
+  { id: "publish-social-post", retries: 1 },
+  { event: "social/post.publish" },
+  async ({ event, step }) => {
+    const { campaignId, userId } = event.data;
+
+    const campaign = await step.run("fetch-campaign", async () => {
+      return prisma.socialCampaign.findUnique({
+        where: { id: campaignId },
+        include: { platform: true }
+      });
+    });
+
+    if (!campaign || campaign.platform.userId !== userId) {
+      throw new Error("Campaign not found or unauthorized.");
+    }
+
+    if (campaign.status === "PUBLISHED") {
+      return { success: true, message: "Already published." };
+    }
+
+    try {
+      // Dummy logic for the actual API call
+      // In production, use the platform token (campaign.platform.accessToken)
+      // to make requests to LinkedIn/Twitter APIs
+      await step.run("publish-to-platform", async () => {
+        if (!campaign.platform.accessToken) {
+          throw new Error(`Geen access token gevonden voor ${campaign.platform.platform}`);
+        }
+        
+        // Simulating API call latency
+        return new Promise(resolve => setTimeout(resolve, 2000));
+      });
+
+      await step.run("mark-published", async () => {
+        return prisma.socialCampaign.update({
+          where: { id: campaignId },
+          data: { status: "PUBLISHED", publishedAt: new Date() }
+        });
+      });
+
+      return { success: true };
+    } catch (err: any) {
+      await step.run("mark-failed", async () => {
+        return prisma.socialCampaign.update({
+          where: { id: campaignId },
+          data: { status: "FAILED" }
+        });
       });
       throw err;
     }

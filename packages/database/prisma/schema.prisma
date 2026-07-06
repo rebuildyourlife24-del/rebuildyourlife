@@ -120,6 +120,7 @@ model User {
   productHunterJobs      ProductHunterJob[]
   seoAuditJobs           SeoAuditJob[]
   avatarRenderJobs       AvatarRenderJob[]
+  brandLauncherJobs      BrandLauncherJob[]
 
   @@index([email])
   @@index([role])
@@ -2438,6 +2439,22 @@ model AvatarRenderJob {
   audioUrl        String   @db.Text
   status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
   videoUrl        String?  @db.Text
+  error           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model BrandLauncherJob {
+  id              String   @id @default(uuid())
+  userId          String
+  domain          String
+  industry        String
+  status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  result          String?  @db.Text
   error           String?  @db.Text
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

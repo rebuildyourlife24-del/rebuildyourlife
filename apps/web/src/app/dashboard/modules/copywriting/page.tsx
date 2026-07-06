@@ -15,14 +15,12 @@ export default function CopywritingPage() {
   const [history, setHistory] = useState<any[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const userId = "temp-user-id"; // TODO: Replace with real auth
-
   useEffect(() => {
     loadHistory();
   }, []);
 
   async function loadHistory() {
-    const res = await getGeneratedCopyHistory(userId);
+    const res = await getGeneratedCopyHistory();
     if (res.success && res.history) {
       setHistory(res.history);
     }
@@ -35,7 +33,7 @@ export default function CopywritingPage() {
     setLoading(true);
     setError("");
 
-    const res = await generateCopy(userId, projectType, topic, tone);
+    const res = await generateCopy(projectType, topic, tone);
     if (res.success) {
       setTopic("");
       await loadHistory();
@@ -52,10 +50,10 @@ export default function CopywritingPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-8 max-w-7xl mx-auto min-h-screen text-white bg-black">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Copywriting Tool</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-4xl font-black uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">AI Copywriting Tool</h1>
+        <p className="text-zinc-400 mt-2 text-lg font-light">
           Genereer hoog-converterende advertenties, e-mails en landingspagina's in seconden.
         </p>
       </div>
@@ -63,12 +61,14 @@ export default function CopywritingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Editor Form */}
-        <div className="lg:col-span-1 border rounded-xl p-6 bg-white shadow-sm space-y-6 h-fit">
-          <form onSubmit={handleGenerate} className="space-y-4">
+        <div className="lg:col-span-1 bg-black/40 border border-white/10 rounded-2xl p-6 h-fit relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-colors duration-700"></div>
+
+          <form onSubmit={handleGenerate} className="space-y-4 relative z-10">
             <div>
-              <label className="block text-sm font-medium mb-1">Type Content</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Type Content</label>
               <select 
-                className="w-full border rounded-md p-2 bg-gray-50"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none appearance-none"
                 value={projectType}
                 onChange={(e) => setProjectType(e.target.value)}
               >
@@ -80,9 +80,9 @@ export default function CopywritingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Onderwerp / Product</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Onderwerp / Product</label>
               <textarea 
-                className="w-full border rounded-md p-2 min-h-[120px]"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none resize-none custom-scrollbar min-h-[120px]"
                 placeholder="Bijv. Een nieuwe cursus over time management voor drukke moeders..."
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
@@ -91,9 +91,9 @@ export default function CopywritingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Tone of Voice</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Tone of Voice</label>
               <select 
-                className="w-full border rounded-md p-2 bg-gray-50"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:border-cyan-500 focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none appearance-none"
                 value={tone}
                 onChange={(e) => setTone(e.target.value)}
               >
@@ -105,57 +105,58 @@ export default function CopywritingPage() {
               </select>
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-400 text-xs font-mono border border-red-500/30 bg-red-500/10 p-2 rounded">{error}</p>}
 
             <button 
               type="submit" 
               disabled={loading || !topic}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-md font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-black font-black uppercase tracking-widest py-3 px-4 rounded-xl transition-all shadow-[0_0_20px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2 mt-4"
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <PenTool className="h-5 w-5" />}
-              {loading ? "Bezig met schrijven..." : "Genereer Tekst"}
+              {loading ? "Bezig..." : "Genereer Tekst"}
             </button>
           </form>
         </div>
 
         {/* History / Results view */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <FileText className="h-5 w-5 text-gray-500" /> Jouw Teksten
+          <h2 className="text-2xl font-black uppercase tracking-widest flex items-center gap-2 text-white">
+            <FileText className="h-6 w-6 text-purple-500" /> Jouw Teksten
           </h2>
           
           {history.length === 0 ? (
-            <div className="border rounded-xl p-12 text-center bg-gray-50 border-dashed">
-              <p className="text-gray-500">Nog geen teksten gegenereerd. Vul het formulier in om te starten.</p>
+            <div className="border border-dashed border-white/20 rounded-2xl p-12 text-center bg-transparent">
+              <p className="text-zinc-500 font-mono text-sm uppercase tracking-wider">Nog geen teksten gegenereerd. Vul het formulier in om te starten.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {history.map((item) => (
-                <div key={item.id} className="border rounded-xl bg-white p-6 shadow-sm">
-                  <div className="flex justify-between items-center mb-4">
+                <div key={item.id} className="bg-black/40 border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-colors relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
+                  <div className="relative z-10 flex justify-between items-center mb-4">
                     <div className="flex items-center gap-3">
-                      <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md">
+                      <span className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] uppercase font-mono tracking-widest font-bold px-2 py-1 rounded">
                         {item.projectType}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-zinc-500 font-mono">
                         {new Date(item.createdAt).toLocaleString()}
                       </span>
                     </div>
                     <button 
                       onClick={() => handleCopy(item.id, item.content)}
-                      className="text-gray-500 hover:text-black flex items-center gap-1 text-sm bg-gray-100 px-3 py-1.5 rounded-md transition-colors"
+                      className="text-zinc-400 hover:text-white flex items-center gap-1 text-xs uppercase tracking-widest font-bold bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-xl transition-colors hover:border-cyan-500/30"
                     >
-                      {copiedId === item.id ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                      {copiedId === item.id ? <CheckCircle className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4 text-cyan-400" />}
                       {copiedId === item.id ? "Gekopieerd!" : "Kopieer"}
                     </button>
                   </div>
                   
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-gray-700">Onderwerp:</h4>
-                    <p className="text-sm text-gray-500 line-clamp-1">{item.topic}</p>
+                  <div className="mb-4 relative z-10">
+                    <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1">Onderwerp:</h4>
+                    <p className="text-sm text-zinc-300 line-clamp-1">{item.topic}</p>
                   </div>
 
-                  <div className="bg-gray-50 p-4 rounded-md border text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">
+                  <div className="bg-zinc-950/50 p-4 rounded-xl border border-white/5 text-sm text-zinc-300 whitespace-pre-wrap font-mono leading-relaxed relative z-10 custom-scrollbar max-h-96 overflow-y-auto">
                     {item.content}
                   </div>
                 </div>

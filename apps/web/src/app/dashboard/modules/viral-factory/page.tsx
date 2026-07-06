@@ -1,11 +1,19 @@
 import { prisma } from '@rebuildyourlife/database';
 import { Video } from 'lucide-react';
 import ViralFactoryUI from './ViralFactoryUI';
+import { getSessionAction } from '@/app/actions/auth';
+import { redirect } from 'next/navigation';
 
 export default async function ViralFactoryPage() {
+  const session = await getSessionAction();
+  if (!session?.success || !session?.user?.id) {
+    redirect('/auth/signin');
+  }
+
   // Fetch existing drafts (SocialMediaPosts where platform is TIKTOK, REELS, etc)
   const drafts = await prisma.socialMediaPost.findMany({
     where: {
+      userId: session.user.id,
       platform: { in: ['TIKTOK', 'INSTAGRAM_REEL', 'YOUTUBE_SHORT'] }
     },
     orderBy: { createdAt: 'desc' },

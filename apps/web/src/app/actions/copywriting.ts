@@ -1,11 +1,18 @@
 "use server";
 
+import { getSessionAction } from "./auth";
 import { prisma } from "@rebuildyourlife/database";
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export async function generateCopy(userId: string, projectType: string, topic: string, tone: string) {
+export async function generateCopy(projectType: string, topic: string, tone: string) {
+  const session = await getSessionAction();
+  if (!session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+  const userId = session.user.id;
+
   try {
     let systemPrompt = "";
 
@@ -61,7 +68,13 @@ export async function generateCopy(userId: string, projectType: string, topic: s
   }
 }
 
-export async function getGeneratedCopyHistory(userId: string) {
+export async function getGeneratedCopyHistory() {
+  const session = await getSessionAction();
+  if (!session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+  const userId = session.user.id;
+
   try {
     const history = await prisma.generatedCopy.findMany({
       where: { userId },

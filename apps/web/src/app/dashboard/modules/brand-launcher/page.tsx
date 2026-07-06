@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Target, Search, Copy, CheckCircle2, Building, Zap, Share2, Loader2, Send } from 'lucide-react';
-import { generateBrandKitAction } from '@/app/actions/brandLauncher';
+import { generateBrandKitAction, getBrandLauncherJob } from '@/app/actions/brandLauncher';
 import { publishSocialPost } from '@/actions/social-poster';
 
 export default function BrandLauncherPage() {
@@ -13,20 +13,37 @@ export default function BrandLauncherPage() {
   const [publishingTo, setPublishingTo] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleGenerate = async () => {
     if (!domain) return;
     setLoading(true);
     setResult(null);
+    setErrorMsg('');
 
     const res = await generateBrandKitAction(domain, industry);
-    if (res.success) {
-      setResult(res.brandKit);
+    if (res.success && res.jobId) {
+      // Start polling
+      const interval = setInterval(async () => {
+        const jobRes = await getBrandLauncherJob(res.jobId);
+        if (jobRes.success && jobRes.job) {
+          if (jobRes.job.status === 'DONE' && jobRes.job.result) {
+            clearInterval(interval);
+            setResult(JSON.parse(jobRes.job.result));
+            setLoading(false);
+          } else if (jobRes.job.status === 'FAILED') {
+            clearInterval(interval);
+            setErrorMsg(jobRes.job.error || 'Er ging iets mis tijdens genereren.');
+            alert(jobRes.job.error || 'Er ging iets mis tijdens genereren.');
+            setLoading(false);
+          }
+        }
+      }, 3000);
     } else {
       alert(res.error || 'Er is een fout opgetreden.');
+      setErrorMsg(res.error || 'Er is een fout opgetreden.');
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const copyToClipboard = (text: string, id: string) => {

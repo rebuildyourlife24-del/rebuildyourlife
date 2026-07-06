@@ -65,18 +65,18 @@ export default function SocialMediaPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-slate-950">
-      <Link href="/dashboard/modules" className="flex items-center text-slate-400 hover:text-white mb-8 transition-colors">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen text-white bg-black">
+      <Link href="/dashboard/modules" className="flex items-center text-zinc-500 hover:text-cyan-400 mb-8 transition-colors font-mono uppercase tracking-widest text-xs">
         <ArrowLeft className="w-4 h-4 mr-2" />
         Terug naar Modules
       </Link>
 
       <div className="mb-10">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400 flex items-center gap-3">
-          <Share2 className="w-10 h-10 text-indigo-400" />
+        <h1 className="text-4xl font-black uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,240,255,0.5)] flex items-center gap-3">
+          <Share2 className="w-10 h-10 text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
           AI Social Media Agency
         </h1>
-        <p className="text-slate-400 mt-2 text-lg">
+        <p className="text-zinc-400 mt-2 text-lg font-light">
           Vul de brand voice in en genereer direct een contentkalender vol met hoogwaardige social media posts.
         </p>
       </div>
@@ -84,55 +84,57 @@ export default function SocialMediaPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* GENERATOR FORM */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 h-fit">
-          <h2 className="text-xl font-bold mb-6 flex items-center">
-            <Plus className="w-5 h-5 mr-2 text-indigo-400" />
+        <div className="lg:col-span-1 bg-black/40 border border-white/10 rounded-2xl p-6 h-fit relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/20 transition-colors"></div>
+          
+          <h2 className="text-xl font-black uppercase tracking-widest text-white mb-6 flex items-center relative z-10">
+            <Plus className="w-5 h-5 mr-2 text-purple-500" />
             Kalender Genereren
           </h2>
-          <form onSubmit={handleGenerate} className="space-y-4">
+          <form onSubmit={handleGenerate} className="space-y-4 relative z-10">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Brand Voice (Tone of Voice)</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Brand Voice (Tone of Voice)</label>
               <input 
                 type="text" 
                 value={brandVoice}
                 onChange={e => setBrandVoice(e.target.value)}
                 placeholder="Zakelijk, direct, beetje humor (Gary Vaynerchuk stijl)"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-indigo-500 outline-none"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Onderwerp / Niche</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Onderwerp / Niche</label>
               <textarea 
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
                 rows={3}
                 placeholder="AI tools voor ondernemers om tijd te besparen."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-indigo-500 outline-none resize-none"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all resize-none custom-scrollbar"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Aantal Dagen</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1.5">Aantal Dagen</label>
               <select 
                 value={days}
                 onChange={e => setDays(Number(e.target.value))}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:border-indigo-500 outline-none"
+                className="w-full bg-zinc-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all appearance-none uppercase tracking-wider text-xs font-bold"
               >
-                <option value={7}>1 Week (7 posts)</option>
-                <option value={14}>2 Weken (14 posts)</option>
-                <option value={30}>1 Maand (30 posts)</option>
+                <option value={7} className="bg-zinc-950 text-white">1 Week (7 posts)</option>
+                <option value={14} className="bg-zinc-950 text-white">2 Weken (14 posts)</option>
+                <option value={30} className="bg-zinc-950 text-white">1 Maand (30 posts)</option>
               </select>
             </div>
 
-            {error && <div className="text-red-400 text-sm">{error}</div>}
+            {error && <div className="text-red-400 text-sm font-mono border border-red-500/20 bg-red-500/10 p-2 rounded-lg">{error}</div>}
 
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center mt-4"
+              className="w-full bg-purple-600 hover:bg-purple-500 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-black uppercase tracking-widest text-xs py-4 px-4 rounded-xl transition-all flex items-center justify-center mt-6 shadow-[0_0_20px_rgba(168,85,247,0.3)] disabled:shadow-none border border-transparent disabled:border-white/10"
             >
               {loading ? (
                 <>
@@ -141,24 +143,24 @@ export default function SocialMediaPage() {
                 </>
               ) : "Genereer Content"}
             </button>
-            <p className="text-xs text-center text-slate-500 mt-2">Dit kan tot 30 seconden duren.</p>
+            <p className="text-xs text-center font-mono text-zinc-600 mt-3">Dit kan tot 30 seconden duren per maand.</p>
           </form>
         </div>
 
         {/* LIST OF POSTS */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <Calendar className="w-5 h-5" /> 
+          <div className="flex items-center justify-between mb-6 bg-black/40 border border-white/10 p-4 rounded-2xl">
+            <h2 className="text-xl font-black uppercase tracking-widest text-white flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-purple-500" /> 
               Geplande Content
             </h2>
-            <span className="bg-slate-800 text-slate-300 py-1 px-3 rounded-full text-xs font-bold">
+            <span className="bg-purple-500/10 border border-purple-500/20 text-purple-400 py-1 px-3 rounded text-xs font-bold font-mono">
               {posts.length} Posts
             </span>
           </div>
           
           {posts.length === 0 && (
-            <div className="p-8 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
+            <div className="p-12 text-center border-2 border-dashed border-white/10 rounded-2xl text-zinc-500 font-mono uppercase tracking-widest text-sm bg-black/40">
               Je kalender is leeg. Genereer je eerste batch posts aan de linkerkant!
             </div>
           )}
@@ -169,20 +171,20 @@ export default function SocialMediaPage() {
                 key={post.id} 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-900 border border-slate-800 rounded-2xl p-5"
+                className="bg-black/40 border border-white/10 rounded-2xl p-5 hover:border-purple-500/30 transition-colors group relative overflow-hidden"
               >
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-3 relative z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700">
+                    <div className="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center border border-white/5 group-hover:border-purple-500/20 transition-colors">
                       {post.platform.toLowerCase() === "twitter" ? (
-                        <Twitter className="w-5 h-5 text-sky-400" />
+                        <Twitter className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]" />
                       ) : (
-                        <Linkedin className="w-5 h-5 text-blue-500" />
+                        <Linkedin className="w-5 h-5 text-blue-500 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" />
                       )}
                     </div>
                     <div>
-                      <div className="font-semibold">{post.platform}</div>
-                      <div className="text-xs text-slate-400 flex items-center gap-1">
+                      <div className="font-bold uppercase tracking-wider text-sm text-white">{post.platform}</div>
+                      <div className="text-xs font-mono text-zinc-500 flex items-center gap-1 mt-0.5">
                         <Calendar className="w-3 h-3" /> {formatDate(post.publishAt)}
                       </div>
                     </div>
@@ -190,13 +192,13 @@ export default function SocialMediaPage() {
                   
                   <button 
                     onClick={() => handleDelete(post.id)}
-                    className="text-slate-500 hover:text-red-400 p-2 transition-colors"
+                    className="text-white/30 hover:text-red-500 p-2 transition-colors bg-red-500/0 hover:bg-red-500/10 rounded-lg border border-transparent hover:border-red-500/20"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <div className="bg-slate-950 p-4 rounded-xl text-slate-300 text-sm whitespace-pre-wrap border border-slate-800">
+                <div className="bg-zinc-900/50 p-4 rounded-xl text-zinc-300 text-sm whitespace-pre-wrap border border-white/5 relative z-10 leading-relaxed">
                   {post.content}
                 </div>
               </motion.div>

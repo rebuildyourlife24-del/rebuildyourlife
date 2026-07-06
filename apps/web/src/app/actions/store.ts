@@ -1,18 +1,23 @@
 "use server";
 
 import { prisma } from "@rebuildyourlife/database";
+import { getSessionAction } from "./auth";
 
 export async function createDigitalProduct(data: {
-  userId: string;
   title: string;
   description: string;
   price: number;
   fileUrl: string;
 }) {
   try {
+    const session = await getSessionAction();
+    if (!session || !session.user) {
+      throw new Error("Unauthorized");
+    }
+
     const product = await prisma.digitalProduct.create({
       data: {
-        userId: data.userId,
+        userId: session.user.id,
         title: data.title,
         description: data.description,
         price: data.price,
@@ -27,10 +32,15 @@ export async function createDigitalProduct(data: {
   }
 }
 
-export async function getDigitalProducts(userId: string) {
+export async function getDigitalProducts() {
   try {
+    const session = await getSessionAction();
+    if (!session || !session.user) {
+      throw new Error("Unauthorized");
+    }
+
     const products = await prisma.digitalProduct.findMany({
-      where: { userId },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     });
 
