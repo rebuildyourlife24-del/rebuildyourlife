@@ -99,7 +99,7 @@ const openrouterModels: ChatOpenAI[] = uniqueOpenrouterKeys.map((key) => {
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: key,
     },
-    modelName: "meta-llama/llama-3-8b-instruct:free",
+    modelName: "meta-llama/llama-3.1-8b-instruct:free",
     temperature: 0.2,
     maxRetries: 0
   });
@@ -161,3 +161,16 @@ export const model = {
     throw lastError;
   }
 };
+
+/**
+ * Expose a dedicated heavy-context model for Semantic ETL (Data Conditioning Kernel)
+ */
+export function getHeavyContextModel() {
+  if (geminiModels.length === 0) {
+    throw new Error("Geen Gemini sleutels beschikbaar voor Semantic ETL.");
+  }
+  // Use the first Gemini model. Gemini 1.5 Flash supports 1M tokens.
+  return {
+    model: geminiModels[0]
+  };
+}

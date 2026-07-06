@@ -16,7 +16,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   }
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent?key=${GEMINI_API_KEY}`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -101,10 +101,15 @@ export async function searchInPinecone(namespace: string, query: string, topK: n
     const { prisma } = require("@rebuildyourlife/database");
     const localMemories = await prisma.aiSharedMemory.findMany({
       where: {
-        contextTags: { has: namespace }
+        context: {
+          path: ['tags'],
+          array_contains: "rebuild-your-life-campaigns"
+        }
       },
-      orderBy: { createdAt: 'desc' },
-      take: topK
+      orderBy: {
+        createdAt: "desc"
+      },
+      take: 2
     });
     
     if (localMemories.length > 0) {

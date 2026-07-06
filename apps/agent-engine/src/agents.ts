@@ -1,9 +1,10 @@
 import { AgentEngineState, AgentStateAnnotation } from "./state";
-import { model } from "./llm";
+import { model, getHeavyContextModel } from "./llm";
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
 import { prisma } from "@rebuildyourlife/database";
 import * as fs from "fs";
 import * as path from "path";
+import { processSemanticETL } from "./semantic-etl";
 import { searchInPinecone, saveToPinecone } from "./memory";
 import { renderTikTokVideo } from "./videoRenderer";
 // Helper function to get the Supreme Overseer user id
@@ -168,9 +169,7 @@ async function performFirecrawlSearch(query: string): Promise<string> {
     }
 
     const json: any = await response.json();
-    const resultString = JSON.stringify(json.data || []);
-    // Zorg ervoor dat de LLM (vooral Groq) niet crasht op de 12k TPM limiet
-    return resultString.length > 4000 ? resultString.substring(0, 4000) + '... [TRUNCATED]' : resultString;
+    return JSON.stringify(json.data || []);
   } catch (err) {
     console.warn("[FIRECRAWL] Web search failed, returning mock:", err instanceof Error ? err.message : err);
     return "Mock search result: B2B conversion optimization strategies emphasize personalization and dynamic pricing.";
@@ -221,15 +220,21 @@ export async function predictiveOracleNode(state: typeof AgentStateAnnotation.St
   console.log(`[ORACLE] Zoeken op internet naar: "${searchQuery}"`);
   
   const searchResults = await performFirecrawlSearch(searchQuery);
-  console.log("[ORACLE] Zoekresultaten geladen.");
+  console.log("[ORACLE] Zoekresultaten geladen. Start Semantic ETL (Data Conditioning Kernel)...");
 
+  // 1. Semantic ETL (Heavy Lifter: Gemini)
+  const heavyModel = getHeavyContextModel();
+  const etlResult = await processSemanticETL(heavyModel, searchResults, state.task, "firecrawl", searchQuery);
+  console.log(`[ORACLE] ETL Voltooid. Compression Ratio: ${etlResult.metrics.compressionRatio}. Chunks accepted: ${etlResult.metrics.chunksAccepted}`);
+
+  // 2. Sovereign Router (Fast Reasoner: Groq)
   const systemPrompt = new SystemMessage(
-    "Je bent Oracle, de Predictive Analytics & Risk agent. Analyseer de webzoekresultaten en doe een concrete voorspelling (kansberekening) over het succes en de conversieboost van de taak. Antwoord in JSON-format met de velden: { predictionText: string, confidenceScore: float (tussen 0 en 1), suggestedAction: string }."
+    "Je bent Oracle, de Predictive Analytics & Risk agent. Analyseer de geverifieerde, dense data-payloads en doe een concrete voorspelling (kansberekening) over het succes en de conversieboost van de taak. Antwoord in JSON-format met de velden: { predictionText: string, confidenceScore: float (tussen 0 en 1), suggestedAction: string }."
   );
 
   const response = await model.invoke([
     systemPrompt,
-    new HumanMessage(`Analyseer deze zoekresultaten:\n${searchResults}\n\nTaak: ${state.task}`)
+    new HumanMessage(`Analyseer deze Semantic ETL payloads (met feiten, entiteiten en cijfers):\n${JSON.stringify(etlResult.payloads, null, 2)}\n\nTaak: ${state.task}`)
   ]);
 
   const rawJson = response.content.toString().replace(/```json/g, "").replace(/```/g, "").trim();

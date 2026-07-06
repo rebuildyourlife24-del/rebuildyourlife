@@ -18,7 +18,7 @@ const members = [
   "shopify_autopilot", "content_creator", "qwen", "prometheus", 
   "developer", "morpheus", "qa", "lead_scraper", "nexus", 
   "cold_email", "devops", "chronos", "echo"
-];
+] as const;
 
 const systemPrompt = `Je bent Orion, de Supervisor (CEO) van de RebuildYourLife AI-Swarm.
 Je beheert een Council van 18 gespecialiseerde experts: ${members.join(", ")}.
