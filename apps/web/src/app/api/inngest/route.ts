@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
 import { inngest } from "../../../inngest/client";
-import { avatarRenderJob, bRollVideoJob, seoAuditJob, productHunterJob, brandLauncherJob, publishSocialPostJob } from "../../../inngest/functions";
+import { avatarRenderJob, bRollVideoJob, seoAuditJob, productHunterJob, brandLauncherJob, publishSocialPostJob, dailyRoasValidationJob } from "../../../inngest/functions";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -10,6 +10,7 @@ export const { GET, POST, PUT } = serve({
     seoAuditJob,
     productHunterJob,
     brandLauncherJob,
-    publishSocialPostJob
+    publishSocialPostJob,
+    dailyRoasValidationJob
   ],
 });

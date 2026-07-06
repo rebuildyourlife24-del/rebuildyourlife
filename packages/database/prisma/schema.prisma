@@ -2463,3 +2463,21 @@ model BrandLauncherJob {
   @@index([userId])
   @@index([status])
 }
+
+// ==========================================
+// VIDEO GENERATION (Fase 7)
+// ==========================================
+
+model MarketingVideo {
+  id              String   @id @default(uuid())
+  productId       String?
+  title           String
+  script          String   @db.Text
+  renderedUrl     String?  // Toegevoegd voor Phase 11 Video Renderer
+  status          String   @default("DRAFT") // DRAFT, ACTIVE, REJECTED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([productId])
+  @@index([status])
+}

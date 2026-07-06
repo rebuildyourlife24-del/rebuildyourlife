@@ -99,6 +99,7 @@ const getGroupedNavItems = (user: any) => {
       id: 'agents',
       label: 'Autonomous Agents',
       items: [
+        { label: 'Sentinel (Approvals)', href: '/dashboard/sentinel', icon: <Shield size={16} /> },
         { label: 'Active Agents (Swarm)', href: '/dashboard/agents', icon: <Bot size={16} /> },
         { label: 'CEO (Overkoepelend)', href: '/dashboard/agents/ceo', icon: <Briefcase size={16} /> },
         { label: 'CMO (Marketing)', href: '/dashboard/agents/cmo', icon: <Target size={16} /> }

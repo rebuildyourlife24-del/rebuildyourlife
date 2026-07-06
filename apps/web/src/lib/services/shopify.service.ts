@@ -181,21 +181,90 @@ export class ShopifySwarmService {
    * Syncs orders from Shopify to the local database.
    */
   static async syncOrders(storeId: string) {
-    /*
-      TODO: Implement ShopifyOrder model in Prisma schema
-      For now, return early to prevent type errors.
-    */
-    return { success: true, syncedCount: 0, totalRevenue: 0 };
+    try {
+      const store = await prisma.shopifyStore.findUnique({
+        where: { id: storeId }
+      });
+
+      if (!store) throw new Error("Store not found or Swarm lacks access.");
+
+      const shopifyApiUrl = `https://${store.shopUrl}/admin/api/2024-01/orders.json?status=any&limit=250`;
+      const response = await fetch(shopifyApiUrl, {
+        headers: {
+          'X-Shopify-Access-Token': store.accessToken,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Shopify API responded with ${response.status}: ${await response.text()}`);
+      }
+
+      const data = await response.json();
+      const orders = data.orders || [];
+      
+      // Filter paid orders and calculate total revenue
+      const paidOrders = orders.filter((order: any) => order.financial_status === 'paid');
+      const totalRevenue = paidOrders.reduce((sum: number, order: any) => {
+        return sum + parseFloat(order.total_price || '0');
+      }, 0);
+
+      // Update totalRevenue in DB
+      await prisma.shopifyStore.update({
+        where: { id: storeId },
+        data: { totalRevenue }
+      });
+
+      // Log to AgentDossier
+      await prisma.agentDossier.create({
+        data: {
+          agentType: "SYSTEM",
+          action: "SYNCED_SHOPIFY_ORDERS",
+          target: store.shopUrl,
+          details: `Synced ${paidOrders.length} paid orders. Updated total revenue to €${totalRevenue.toFixed(2)}.`,
+          userId: store.userId
+        }
+      });
+
+      return { success: true, syncedCount: paidOrders.length, totalRevenue };
+    } catch (error: any) {
+      await prisma.agentDossier.create({
+        data: {
+          agentType: "ECOM_OPERATIONS",
+          action: "SYNC_ORDERS_FAILED",
+          status: "FAILED",
+          details: error.message
+        }
+      });
+      throw error;
+    }
   }
 
   /**
    * Fetch unfulfilled orders for the orchestrator
    */
   static async getUnfulfilledOrders(storeId: string) {
-    /*
-      TODO: Implement ShopifyOrder model in Prisma schema
-      For now, return empty array.
-    */
-    return [];
+    try {
+      const store = await prisma.shopifyStore.findUnique({
+        where: { id: storeId }
+      });
+
+      if (!store) return [];
+
+      const shopifyApiUrl = `https://${store.shopUrl}/admin/api/2024-01/orders.json?fulfillment_status=unfulfilled`;
+      const response = await fetch(shopifyApiUrl, {
+        headers: {
+          'X-Shopify-Access-Token': store.accessToken,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.orders || [];
+    } catch (error) {
+      console.error("Failed to fetch unfulfilled orders:", error);
+      return [];
+    }
   }
 }

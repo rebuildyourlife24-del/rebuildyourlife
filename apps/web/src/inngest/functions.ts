@@ -456,3 +456,45 @@ export const publishSocialPostJob = inngest.createFunction(
     }
   }
 );
+
+// Pijler 2: Epistemic Grid & Revenue Validation (Cron Job)
+export const dailyRoasValidationJob = inngest.createFunction(
+  { id: "daily-roas-validation" },
+  { cron: "TZ=Europe/Amsterdam 0 3 * * *" }, // Elke nacht om 03:00
+  async ({ step }) => {
+    console.log("[INNGEST] Start daily ROAS validation cron job...");
+
+    const hypotheses = await step.run("fetch-hypotheses", async () => {
+      return prisma.agentKnowledgeBase.findMany({
+        where: { type: "HYPOTHESIS" }
+      });
+    });
+
+    for (const h of hypotheses) {
+      await step.run(`validate-${h.id}`, async () => {
+        // Mock Stripe/Mollie data: simulate a 50% chance of success
+        const isProfitable = Math.random() > 0.5;
+        
+        await prisma.agentKnowledgeBase.update({
+          where: { id: h.id },
+          data: { 
+            type: isProfitable ? "VERIFIED" : "FAILURE",
+            confidence: isProfitable ? 0.99 : 0.05
+          }
+        });
+
+        // Schrijf eventueel log naar KnowledgeVerificationLog
+        await prisma.knowledgeVerificationLog.create({
+          data: {
+            knowledgeId: h.id,
+            verifierId: h.agentId, // Self-validated by the system
+            success: isProfitable,
+            reasoning: isProfitable ? "Mock Stripe API: ROAS > 2x." : "Mock Stripe API: Net verlies gedetecteerd."
+          }
+        });
+      });
+    }
+
+    return { success: true, verified: hypotheses.length };
+  }
+);

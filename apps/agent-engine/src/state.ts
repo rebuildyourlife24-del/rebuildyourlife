@@ -11,13 +11,37 @@ export const AgentStateAnnotation = Annotation.Root({
   architectKbId: Annotation<string>(),
   generatedCode: Annotation<Record<string, string>>(),
   developerKbId: Annotation<string>(),
-  
-  // FASE 3: Lead Scraper & Outreach velden
   scrapedLeads: Annotation<Array<{ email: string; firstName?: string; lastName?: string }>>({
     reducer: (current, update) => update,
     default: () => [],
   }),
   emailCampaignId: Annotation<string>(),
+  webSearchQuery: Annotation<string>(),
+  webSearchResults: Annotation<string>(),
+  predictionId: Annotation<string>(),
+
+  // FASE 5: Shopify Autopilot velden
+  sourcedProductTitle: Annotation<string>(),
+  sourcedProductPrice: Annotation<number>(),
+  shopifyProductId: Annotation<string>(),
+
+  videoScript: Annotation<string>(),
+  marketingVideoId: Annotation<string>(),
+
+  // Fase 8: 18-Member Council Vars
+  marginCalculated: Annotation<number>(),
+  legalApproved: Annotation<boolean>(),
+  trinityKbId: Annotation<string>(),
+  athenaKbId: Annotation<string>(),
+
+  // Fase 8 Deel 2: The Final 7
+  trendReport: Annotation<string>(),
+  adCopy: Annotation<string>(),
+  seoTags: Annotation<string>(),
+  uxHypothesis: Annotation<string>(),
+  influencerList: Annotation<string>(),
+  schedulePlan: Annotation<string>(),
+  faqMatrix: Annotation<string>(),
 
   testResults: Annotation<{
     success: boolean;
@@ -26,7 +50,12 @@ export const AgentStateAnnotation = Annotation.Root({
   }>(),
   prUrl: Annotation<string>(),
   feedback: Annotation<string>(),
-  nextAgent: Annotation<"architect" | "developer" | "qa" | "devops" | "lead_scraper" | "cold_email" | "user_approval" | "end">()
+  nextAgent: Annotation<
+    "architect" | "predictive_oracle" | "gaia" | "trinity" | "athena" | "shopify_autopilot" | 
+    "content_creator" | "qwen" | "prometheus" | "developer" | "morpheus" | "qa" | 
+    "lead_scraper" | "nexus" | "cold_email" | "devops" | "chronos" | "echo" | 
+    "user_approval" | "end"
+  >()
 });
 
 export type AgentEngineState = typeof AgentStateAnnotation.State;
