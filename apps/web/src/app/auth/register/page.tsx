@@ -62,7 +62,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <Card variant="glass" padding="lg">
+        <Card className="p-6 bg-black/40 border-[#00f0ff]/20">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-textPrimary">Nieuwe Registratie</h1>
             <p className="mt-1 text-sm text-textSecondary">

@@ -5,6 +5,7 @@ import { WidgetGrid } from "@/components/widgets/WidgetGrid";
 import { WidgetBase } from "@/components/widgets/WidgetBase";
 import { Brain, Cpu, MessageSquare, Terminal, Database, Sparkles, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { RemotionStudio } from "@/components/video/RemotionStudio";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -126,6 +127,10 @@ export default function AIStudioPage() {
           </WidgetBase>
           
         </WidgetGrid>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <RemotionStudio />
       </motion.div>
     </motion.div>
   );
