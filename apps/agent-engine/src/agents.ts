@@ -567,21 +567,26 @@ export async function devopsNode(state: typeof AgentStateAnnotation.State): Prom
 
 // 8. SHOPIFY AUTOPILOT NODE (Atlas & Qwen)
 export async function shopifyAutopilotNode(state: typeof AgentStateAnnotation.State): Promise<Partial<AgentEngineState>> {
-  console.log("\n[5/8] SHOPIFY AUTOPILOT (Atlas & Qwen): Product sourcing en copywriting...");
+  console.log("\n[5/8] SHOPIFY AUTOPILOT (Qwen): Autonomous Product Hunting (Thomas vd Leck Protocol)...");
 
-  // Zoek naar een populair B2B / Dropshipping product
-  const searchQuery = "viral trending TikTok B2B e-commerce product 2026";
+  const searchQuery = "upcoming e-commerce product trends USA problem solving urgency";
   console.log(`[SHOPIFY AUTOPILOT] Sourcing trend via internet: "${searchQuery}"`);
   
   const searchResults = await performFirecrawlSearch(searchQuery);
 
+  // Laad de Thomas vd Leck Blueprint
+  const fs = require('fs');
+  const path = require('path');
+  const blueprintPath = path.join(__dirname, "../prompts/thomas-vd-leck-blueprint.md");
+  const blueprint = fs.existsSync(blueprintPath) ? fs.readFileSync(blueprintPath, "utf-8") : "Zoek winnende producten.";
+
   const systemPrompt = new SystemMessage(
-    "Je bent Qwen, de CMO en Lead Copywriter. Bedenk op basis van de trends en conversion psychology een extreem overtuigende producttitel, prijs en een gehumaniseerde verkoopbeschrijving in HTML. Zorg dat je bezwaren wegneemt en emotionele triggers gebruikt. Antwoord in JSON-format: { title: string, price: number, description: string }."
+    `Je bent Qwen, de CMO en Lead E-commerce Strateeg.\n\n${blueprint}\n\nAnalyseer de web search results en bedenk een product dat VLEKKELOOS aan de 5 pijlers voldoet. Voer in je hoofd de 4-stappen validatie uit. Zorg voor een overtuigende producttitel, prijs (x3 marge) en HTML verkoopbeschrijving.\nAntwoord STRICT in het voorgeschreven JSON-formaat zonder extra tekst.`
   );
 
   const response = await model.invoke([
     systemPrompt,
-    new HumanMessage(`Ontwerp het product o.b.v. deze trends:\n${searchResults}`)
+    new HumanMessage(`Ontwerp het winnende product o.b.v. deze market data en trends:\n${searchResults}`)
   ]);
 
   const rawJson = response.content.toString().replace(/```json/g, "").replace(/```/g, "").trim();
@@ -589,14 +594,28 @@ export async function shopifyAutopilotNode(state: typeof AgentStateAnnotation.St
   let title = "Premium Ergonomic Multi-Tool";
   let price = 39.99;
   let description = "<p>De ultieme tool voor maximale efficiëntie.</p>";
+  let score = 0;
+  let hook = "Lost je probleem op";
+  let go_nogo = "NO-GO";
 
   try {
     const parsed = JSON.parse(rawJson);
-    title = parsed.title || title;
+    title = parsed.title || parsed.productName || title;
     price = parsed.price || price;
     description = parsed.description || description;
+    score = parsed.score || score;
+    hook = parsed.hook || hook;
+    go_nogo = parsed.go_nogo || go_nogo;
+    
+    console.log(`\n[PRODUCT HUNTER REPORT]`);
+    console.log(`Product:     ${parsed.productName} (${parsed.category})`);
+    console.log(`Probleem:    ${parsed.problemSolved}`);
+    console.log(`Validatie:   AliExpress Orders: ${parsed.validation?.aliexpressOrders} | Ads Actief: ${parsed.validation?.adsFound}`);
+    console.log(`Score:       ${score}/5`);
+    console.log(`Hook:        ${hook}`);
+    console.log(`Advies:      ${go_nogo}`);
   } catch (e) {
-    // Fallback
+    console.error("[SHOPIFY AUTOPILOT] JSON Parse Error in product hunter fallback.");
   }
 
   // --- LIVE SHOPIFY API INTEGRATIE ---
