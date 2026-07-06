@@ -60,6 +60,7 @@ const getGroupedNavItems = () => {
     { label: 'Business Models', href: '/dashboard/business-models', icon: <Briefcase size={16} /> },
     { label: 'AI Studio', href: '/dashboard/ai-studio', icon: <Brain size={16} /> },
     { label: 'Genesis', href: '/dashboard/genesis', icon: <ShoppingCart size={16} /> },
+    { label: 'Epistemic Grid', href: '/dashboard/epistemic', icon: <Brain size={16} /> },
     { label: 'Automations', href: '/dashboard/automations', icon: <Network size={16} /> },
     { label: 'Analytics', href: '/dashboard/analytics', icon: <Activity size={16} /> },
     { label: 'Approvals', href: '/dashboard/sentinel', icon: <Shield size={16} /> },
