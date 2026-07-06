@@ -56,13 +56,14 @@ export default function CinematicLandingPage() {
             <p className="max-w-xl mx-auto text-lg text-white/60 font-light mb-12">
               Voor de ondernemer die klaar is voor agressieve schaalvergroting en geavanceerde AI systemen. Ontsnap aan de massa.
             </p>
-            <Link href="/auth/login">
-              <button className="group relative px-8 py-4 bg-transparent border border-white/20 overflow-hidden transition-all hover:border-cyan-400">
-                <div className="absolute inset-0 w-0 bg-cyan-400 transition-all duration-500 ease-out group-hover:w-full -z-10"></div>
-                <span className="relative z-10 text-xs font-bold tracking-[0.2em] uppercase group-hover:text-black transition-colors duration-300">
-                  Initialiseer Protocol
-                </span>
-              </button>
+            <Link 
+              href="/auth/login"
+              className="group relative inline-block px-8 py-4 bg-transparent border border-white/20 overflow-hidden transition-all hover:border-cyan-400"
+            >
+              <div className="absolute inset-0 w-0 bg-cyan-400 transition-all duration-500 ease-out group-hover:w-full -z-10"></div>
+              <span className="relative z-10 text-xs font-bold tracking-[0.2em] uppercase group-hover:text-black transition-colors duration-300">
+                Initialiseer Protocol
+              </span>
             </Link>
           </div>
           
