@@ -39,8 +39,27 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 }
 
 export async function saveToPinecone(namespace: string, id: string, text: string, metadata: any = {}) {
+  // 1. ONSITE DATABASE BACKUP (Prisma)
+  try {
+    const { prisma } = require("@rebuildyourlife/database");
+    await prisma.aiSharedMemory.create({
+      data: {
+        agentId: metadata.agentId || "orion-supervisor",
+        projectId: metadata.projectId,
+        memoryType: "LTM",
+        content: text,
+        contextTags: [namespace],
+        importance: 0.8
+      }
+    });
+    console.log(`[MEMORY] LTM Opgeslagen in Prisma AiSharedMemory.`);
+  } catch (dbError) {
+    console.warn(`[MEMORY] Waarschuwing: Prisma AiSharedMemory save faalde.`, dbError);
+  }
+
+  // 2. VECTOR DATABASE BACKUP (Pinecone)
   if (!PINECONE_API_KEY) {
-    console.log(`[MEMORY] LTM Opgeslagen (gesimuleerd): [${namespace}] ${text.substring(0, 50)}...`);
+    console.log(`[MEMORY] Vector LTM Opgeslagen (gesimuleerd): [${namespace}] ${text.substring(0, 50)}...`);
     return;
   }
 
@@ -75,8 +94,30 @@ export async function saveToPinecone(namespace: string, id: string, text: string
 }
 
 export async function searchInPinecone(namespace: string, query: string, topK: number = 2): Promise<string[]> {
+  const results: string[] = [];
+
+  // 1. ZOEKEN IN LOKALE PRISMA DATABASE
+  try {
+    const { prisma } = require("@rebuildyourlife/database");
+    const localMemories = await prisma.aiSharedMemory.findMany({
+      where: {
+        contextTags: { has: namespace }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: topK
+    });
+    
+    if (localMemories.length > 0) {
+      results.push(...localMemories.map((m: any) => m.content));
+    }
+  } catch (dbError) {
+    console.warn("[MEMORY] Waarschuwing: Prisma zoekopdracht faalde.", dbError);
+  }
+
+  // 2. ZOEKEN IN VECTOR DATABASE
   if (!PINECONE_API_KEY) {
-    return ["Geen historische data gevonden (simulatiemodus)."];
+    if (results.length === 0) results.push("Geen historische data gevonden (simulatiemodus).");
+    return results;
   }
 
   const queryVector = await generateEmbedding(query);
@@ -102,9 +143,13 @@ export async function searchInPinecone(namespace: string, query: string, topK: n
     }
 
     const data = await response.json();
-    return data.matches?.map((match: any) => match.metadata?.text || "") || [];
+    if (data.matches && data.matches.length > 0) {
+      results.push(...data.matches.map((m: any) => m.metadata.text));
+    }
+    
+    return results.length > 0 ? results : ["Geen significante patronen gevonden in LTM."];
   } catch (error) {
-    console.error("[MEMORY] Fout bij doorzoeken van Pinecone:", error);
-    return [];
+    console.error("[MEMORY] Fout bij zoeken in Pinecone:", error);
+    return results.length > 0 ? results : ["[MEMORY_ERROR]"];
   }
 }

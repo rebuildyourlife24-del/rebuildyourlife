@@ -488,7 +488,9 @@ export const dailyRoasValidationJob = inngest.createFunction(
           data: {
             knowledgeId: h.id,
             verifierId: h.agentId, // Self-validated by the system
-            success: isProfitable,
+            verifierType: "SYSTEM",
+            previousType: "HYPOTHESIS",
+            newType: isProfitable ? "VERIFIED" : "FAILURE",
             reasoning: isProfitable ? "Mock Stripe API: ROAS > 2x." : "Mock Stripe API: Net verlies gedetecteerd."
           }
         });

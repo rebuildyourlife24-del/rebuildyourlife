@@ -18,8 +18,13 @@ app.use(cors({
 app.use(compression());
 app.use(express.json());
 
+import { correlationMiddleware } from './middleware/correlation.js';
+
 // Apply global rate limiter
 app.use(apiLimiter);
+
+// Apply Correlation ID for global tracing
+app.use(correlationMiddleware);
 
 // Routes
 app.use('/api/v1', routes);

@@ -8,7 +8,11 @@ import { ThemeProvider } from "@/lib/contexts/ThemeContext";
 import { LightweightCinematicBackground } from "@/components/3d/LightweightCinematicBackground";
 import { SoundscapeEngine } from "@/components/audio/SoundscapeEngine";
 import AffiliateTracker from "@/components/AffiliateTracker";
+import { Outfit } from "next/font/google";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
+
+const outfit = Outfit({ subsets: ["latin"], display: 'swap' });
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -23,7 +27,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "RebuildYourLife | AI Coworker OS",
+    default: "RebuildYourLife | Mission Control",
     template: "%s | RebuildYourLife"
   },
   description: "Het ultieme platform om je leven, financiën en doelen te herbouwen met behulp van AI specialisten.",
@@ -33,13 +37,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "nl_NL",
     url: "https://app.rebuildyourlife.eu",
-    title: "RebuildYourLife - AI Coworker OS",
+    title: "RebuildYourLife - Mission Control",
     description: "Rebuild Your Future met je eigen virtuele AI team.",
     siteName: "RebuildYourLife",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RebuildYourLife - AI Coworker OS",
+    title: "RebuildYourLife - Mission Control",
     description: "Rebuild Your Future met je eigen virtuele AI team.",
   },
   robots: "index, follow",
@@ -52,21 +56,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" className="dark">
-      <body className="min-h-screen bg-transparent text-textPrimary antialiased selection:bg-cyan-500/30 selection:text-white">
-        <ThemeProvider>
-          <LightweightCinematicBackground />
-          <SoundscapeEngine />
-          <AffiliateTracker />
-          
-          <LanguageProvider>
-          <AuthProvider>
-            <AppHeader />
-            {children}
-            <OrionVisor />
-            <VoiceOrb />
-          </AuthProvider>
-        </LanguageProvider>
-        </ThemeProvider>
+      <body className={`${outfit.className} min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white`}>
+        <QueryProvider>
+          <ThemeProvider>
+            <LightweightCinematicBackground />
+            <SoundscapeEngine />
+            <AffiliateTracker />
+            
+            <LanguageProvider>
+            <AuthProvider>
+              <AppHeader />
+              {children}
+              <OrionVisor />
+              <VoiceOrb />
+            </AuthProvider>
+          </LanguageProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

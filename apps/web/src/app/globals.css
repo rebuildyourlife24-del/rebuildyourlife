@@ -2,71 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 2, 2, 2;
+@layer base {
+  :root {
+    /* 
+      RYL OS Premium Dark Mode Theme 
+      Aesthetics: Deep dark backgrounds, vibrant cyan/blue primary accents, sleek borders.
+    */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Vibrant Cyan Primary (The AI Core color) */
+    --primary: 191 97% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Deep Blue/Indigo Secondary */
+    --secondary: 240 20% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 240 20% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 10% 12%;
+    --input: 240 10% 12%;
+    --ring: 191 97% 40%;
+
+    --radius: 0.75rem;
+  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: transparent;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Custom scrollbar for sleekness */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
 }
 
-/* Fix input autofill text unreadability in dark mode */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active{
-    -webkit-box-shadow: 0 0 0 30px #020202 inset !important;
-    -webkit-text-fill-color: #ffffff !important;
-    caret-color: #06b6d4;
-}
-
-/* Cyber-grid background */
-.cyber-grid {
-  background-image: 
-    linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center top;
-}
-
-/* Glass cyber panel */
-.glass-cyber {
-  background: rgba(5, 5, 5, 0.6);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(6, 182, 212, 0.15);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(6, 182, 212, 0.05);
-  transition: all 0.3s ease;
-}
-
-.glass-cyber:hover {
-  border: 1px solid rgba(6, 182, 212, 0.4);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 20px rgba(6, 182, 212, 0.1);
-}
-
-.neon-text {
-  color: #fff;
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.6), 0 0 20px rgba(6, 182, 212, 0.4);
-}
-
-/* Scrollbar customization */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.3);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.6);
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+  }
+  .glass-panel {
+    @apply bg-surface/50 backdrop-blur-md border border-white/5;
+  }
 }

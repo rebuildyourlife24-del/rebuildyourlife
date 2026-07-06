@@ -168,7 +168,9 @@ async function performFirecrawlSearch(query: string): Promise<string> {
     }
 
     const json: any = await response.json();
-    return JSON.stringify(json.data || []);
+    const resultString = JSON.stringify(json.data || []);
+    // Zorg ervoor dat de LLM (vooral Groq) niet crasht op de 12k TPM limiet
+    return resultString.length > 4000 ? resultString.substring(0, 4000) + '... [TRUNCATED]' : resultString;
   } catch (err) {
     console.warn("[FIRECRAWL] Web search failed, returning mock:", err instanceof Error ? err.message : err);
     return "Mock search result: B2B conversion optimization strategies emphasize personalization and dynamic pricing.";

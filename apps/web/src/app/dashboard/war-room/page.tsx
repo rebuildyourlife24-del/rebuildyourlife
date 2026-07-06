@@ -59,7 +59,7 @@ export default async function WarRoomPage() {
                     <span className="font-bold text-green-300">{agent.name}</span>
                     <span className="text-xs text-green-700 uppercase">{agent.role}</span>
                   </div>
-                  {agent.status === "ACTIVE" ? (
+                  {true ? (
                     <Activity className="w-4 h-4 text-green-500 animate-pulse" />
                   ) : (
                     <div className="w-4 h-4 rounded-full border border-green-800" />

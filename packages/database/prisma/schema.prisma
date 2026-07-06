@@ -122,6 +122,9 @@ model User {
   avatarRenderJobs       AvatarRenderJob[]
   brandLauncherJobs      BrandLauncherJob[]
 
+  organizationMembers OrganizationMember[]
+  workspaceMembers    WorkspaceMember[]
+
   @@index([email])
   @@index([role])
   @@index([subscriptionTier])
@@ -1600,19 +1603,19 @@ model AgentEvolutionLog {
 }
 
 model AgentKnowledgeBase {
-  id             String                     @id @default(uuid())
-  agentId        String
-  domain         String                     @default("GENERAL") // e.g., MARKETING, FINANCE, SUPPORT
-  type           String                     @default("HYPOTHESIS") // VERIFIED, HYPOTHESIS, CONTRADICTION, FAILURE
-  claim          String                     @db.Text
-  evidence       String?                    @db.Text
-  source         String?                    // e.g., URL, USER_FEEDBACK, A/B_TEST_RESULT
-  confidence     Float                      @default(0.5) // 0.0 to 1.0
-  status         String                     @default("ACTIVE") // ACTIVE, ARCHIVED, DEPRECATED
-  createdAt      DateTime                   @default(now())
-  updatedAt      DateTime                   @updatedAt
-  agent          AgentRegistry              @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  verifications  KnowledgeVerificationLog[]
+  id            String                     @id @default(uuid())
+  agentId       String
+  domain        String                     @default("GENERAL") // e.g., MARKETING, FINANCE, SUPPORT
+  type          String                     @default("HYPOTHESIS") // VERIFIED, HYPOTHESIS, CONTRADICTION, FAILURE
+  claim         String                     @db.Text
+  evidence      String?                    @db.Text
+  source        String? // e.g., URL, USER_FEEDBACK, A/B_TEST_RESULT
+  confidence    Float                      @default(0.5) // 0.0 to 1.0
+  status        String                     @default("ACTIVE") // ACTIVE, ARCHIVED, DEPRECATED
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+  agent         AgentRegistry              @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  verifications KnowledgeVerificationLog[]
 
   @@index([agentId])
   @@index([type])
@@ -1620,15 +1623,15 @@ model AgentKnowledgeBase {
 }
 
 model KnowledgeVerificationLog {
-  id             String             @id @default(uuid())
-  knowledgeId    String
-  verifierId     String?            // Agent ID or User ID who verified
-  verifierType   String             @default("SYSTEM") // USER, SYSTEM, AGENT
-  previousType   String             // Before verification
-  newType        String             // After verification
-  reasoning      String             @db.Text
-  createdAt      DateTime           @default(now())
-  knowledge      AgentKnowledgeBase @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  id           String             @id @default(uuid())
+  knowledgeId  String
+  verifierId   String? // Agent ID or User ID who verified
+  verifierType String             @default("SYSTEM") // USER, SYSTEM, AGENT
+  previousType String // Before verification
+  newType      String // After verification
+  reasoning    String             @db.Text
+  createdAt    DateTime           @default(now())
+  knowledge    AgentKnowledgeBase @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
 
   @@index([knowledgeId])
 }
@@ -1992,16 +1995,16 @@ model UniversalSubscription {
 // =======================================================
 
 model Funnel {
-  id          String       @id @default(uuid())
-  userId      String
-  name        String
-  domain      String?      @unique
-  status      String       @default("DRAFT") // DRAFT, PUBLISHED
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  pages       FunnelPage[]
-  checkouts   CheckoutSession[]
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String            @id @default(uuid())
+  userId    String
+  name      String
+  domain    String?           @unique
+  status    String            @default("DRAFT") // DRAFT, PUBLISHED
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  pages     FunnelPage[]
+  checkouts CheckoutSession[]
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -2036,34 +2039,34 @@ model CheckoutSession {
 }
 
 model Subscriber {
-  id        String          @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   email     String
   firstName String?
   lastName  String?
-  status    String          @default("SUBSCRIBED") // SUBSCRIBED, UNSUBSCRIBED, BOUNCED
+  status    String   @default("SUBSCRIBED") // SUBSCRIBED, UNSUBSCRIBED, BOUNCED
   tags      String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, email])
 }
 
 model EmailCampaign {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
   name         String
   subject      String
-  htmlContent  String   @db.Text
-  status       String   @default("DRAFT") // DRAFT, SCHEDULED, SENT
+  htmlContent  String    @db.Text
+  status       String    @default("DRAFT") // DRAFT, SCHEDULED, SENT
   scheduledFor DateTime?
-  sentCount    Int      @default(0)
-  openCount    Int      @default(0)
-  clickCount   Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sentCount    Int       @default(0)
+  openCount    Int       @default(0)
+  clickCount   Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -2074,88 +2077,87 @@ model EmailCampaign {
 // =======================================================
 
 model HelpdeskTicket {
-  id          String   @id @default(uuid())
-  userId      String
-  customerName String
+  id            String          @id @default(uuid())
+  userId        String
+  customerName  String
   customerEmail String
-  subject     String
-  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
-  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
-  assignedTo  String?  // 'ORION', 'HERMES', or UUID of a User
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  messages    TicketMessage[]
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject       String
+  status        String          @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority      String          @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  assignedTo    String? // 'ORION', 'HERMES', or UUID of a User
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  messages      TicketMessage[]
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
 model TicketMessage {
-  id        String   @id @default(uuid())
+  id        String         @id @default(uuid())
   ticketId  String
-  sender    String   // 'CUSTOMER', 'AGENT', 'AI'
-  body      String   @db.Text
-  createdAt DateTime @default(now())
+  sender    String // 'CUSTOMER', 'AGENT', 'AI'
+  body      String         @db.Text
+  createdAt DateTime       @default(now())
   ticket    HelpdeskTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
 }
 
 model AdSet {
-  id           String   @id @default(uuid())
-  campaignId   String
-  name         String
+  id             String         @id @default(uuid())
+  campaignId     String
+  name           String
   targetAudience String?
-  dailyBudget  Float    @default(0)
-  status       String   @default("ACTIVE") // ACTIVE, PAUSED
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  campaign     SocialCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  creatives    AdCreative[]
+  dailyBudget    Float          @default(0)
+  status         String         @default("ACTIVE") // ACTIVE, PAUSED
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  campaign       SocialCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  creatives      AdCreative[]
 
   @@index([campaignId])
 }
 
 model AdCreative {
-  id           String   @id @default(uuid())
-  adSetId      String
-  headline     String
-  body         String   @db.Text
-  mediaUrl     String?
-  status       String   @default("ACTIVE")
-  impressions  Int      @default(0)
-  clicks       Int      @default(0)
-  spend        Float    @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  adSet        AdSet    @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  adSetId     String
+  headline    String
+  body        String   @db.Text
+  mediaUrl    String?
+  status      String   @default("ACTIVE")
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  spend       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  adSet       AdSet    @relation(fields: [adSetId], references: [id], onDelete: Cascade)
 
   @@index([adSetId])
 }
 
-
 model AffiliateProfile {
-  id               String          @id @default(uuid())
-  userId           String          @unique
-  affiliateCode    String          @unique
-  commissionRate   Float           @default(30.0) // Fallback for standard products
-  totalEarned      Float           @default(0)
-  pendingBalance   Float           @default(0)
-  status           String          @default("ACTIVE")
-  
+  id             String @id @default(uuid())
+  userId         String @unique
+  affiliateCode  String @unique
+  commissionRate Float  @default(30.0) // Fallback for standard products
+  totalEarned    Float  @default(0)
+  pendingBalance Float  @default(0)
+  status         String @default("ACTIVE")
+
   // MLM / Multi-Tier Network
   parentAffiliateId String?
   parentAffiliate   AffiliateProfile?  @relation("AffiliateNetwork", fields: [parentAffiliateId], references: [id], onDelete: SetNull)
   subAffiliates     AffiliateProfile[] @relation("AffiliateNetwork")
 
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  
-  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clicks           AffiliateClick[]
-  sales            AffiliateSale[] @relation("DirectSales")
-  tier2Sales       AffiliateSale[] @relation("Tier2Sales")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clicks     AffiliateClick[]
+  sales      AffiliateSale[]  @relation("DirectSales")
+  tier2Sales AffiliateSale[]  @relation("Tier2Sales")
 
   @@index([userId])
   @@index([affiliateCode])
@@ -2178,24 +2180,24 @@ model AffiliateClick {
 }
 
 model AffiliateSale {
-  id                      String           @id @default(uuid())
+  id                      String  @id @default(uuid())
   affiliateProfileId      String
   tier2AffiliateProfileId String?
   purchaserUserId         String?
   molliePaymentId         String
   amount                  Float
-  
+
   // Fixed commissions
-  commission              Float            // Direct seller (Tier 1)
-  tier2Commission         Float            @default(0) // Parent seller (Tier 2)
-  
-  status                  String           @default("PENDING")
-  createdAt               DateTime         @default(now())
-  updatedAt               DateTime         @updatedAt
-  
-  affiliateProfile        AffiliateProfile @relation("DirectSales", fields: [affiliateProfileId], references: [id], onDelete: Cascade)
-  tier2AffiliateProfile   AffiliateProfile? @relation("Tier2Sales", fields: [tier2AffiliateProfileId], references: [id], onDelete: SetNull)
-  purchaser               User?            @relation(fields: [purchaserUserId], references: [id])
+  commission      Float // Direct seller (Tier 1)
+  tier2Commission Float @default(0) // Parent seller (Tier 2)
+
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  affiliateProfile      AffiliateProfile  @relation("DirectSales", fields: [affiliateProfileId], references: [id], onDelete: Cascade)
+  tier2AffiliateProfile AffiliateProfile? @relation("Tier2Sales", fields: [tier2AffiliateProfileId], references: [id], onDelete: SetNull)
+  purchaser             User?             @relation(fields: [purchaserUserId], references: [id])
 
   @@index([affiliateProfileId])
   @@index([tier2AffiliateProfileId])
@@ -2208,30 +2210,30 @@ model AffiliateSale {
 // -----------------------------------------------------------------------------
 
 model CapabilityDevelopment {
-  id              String   @id @default(uuid())
-  title           String
-  description     String   @db.Text
-  genesisPhase    String   @default("PHASE_A") // PHASE_A, PHASE_B, PHASE_C
-  justification   String   @db.Text
-  status          String   @default("IN_DEVELOPMENT") // IN_DEVELOPMENT, TESTING, DEPLOYED, REJECTED
-  createdBy       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(uuid())
+  title         String
+  description   String   @db.Text
+  genesisPhase  String   @default("PHASE_A") // PHASE_A, PHASE_B, PHASE_C
+  justification String   @db.Text
+  status        String   @default("IN_DEVELOPMENT") // IN_DEVELOPMENT, TESTING, DEPLOYED, REJECTED
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([genesisPhase])
   @@index([status])
 }
 
 model SeoAgentProposal {
-  id              String   @id @default(uuid())
-  title           String
-  description     String   @db.Text
-  targetUrl       String
-  evidence        String   @db.Text
-  reasoning       String   @db.Text
-  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, IMPLEMENTED
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  targetUrl   String
+  evidence    String   @db.Text
+  reasoning   String   @db.Text
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, IMPLEMENTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([status])
   @@index([targetUrl])
@@ -2252,27 +2254,27 @@ model SeoAudit {
 }
 
 model Chatbot {
-  id              String         @id @default(uuid())
-  userId          String
-  name            String
-  systemPrompt    String         @db.Text
-  themeColor      String         @default("#3b82f6")
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessions        ChatSession[]
+  id           String        @id @default(uuid())
+  userId       String
+  name         String
+  systemPrompt String        @db.Text
+  themeColor   String        @default("#3b82f6")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions     ChatSession[]
 
   @@index([userId])
 }
 
 model ChatSession {
-  id          String   @id @default(uuid())
-  chatbotId   String
-  visitorId   String
-  messages    Json     // Array of { role: 'user' | 'assistant', content: string }
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  chatbot     Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  chatbotId String
+  visitorId String
+  messages  Json // Array of { role: 'user' | 'assistant', content: string }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chatbot   Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
   @@index([chatbotId])
   @@index([visitorId])
@@ -2293,106 +2295,107 @@ model Website {
 }
 
 model DigitalProduct {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   userId      String
   title       String
-  description String   @db.Text
+  description String         @db.Text
   price       Float
   fileUrl     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders      DigitalOrder[]
 
   @@index([userId])
 }
 
 model DigitalOrder {
-  id               String   @id @default(uuid())
-  productId        String
-  buyerEmail       String
-  status           String   @default("PENDING") // PENDING, PAID
-  molliePaymentId  String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  product          DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id              String         @id @default(uuid())
+  productId       String
+  buyerEmail      String
+  status          String         @default("PENDING") // PENDING, PAID
+  molliePaymentId String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  product         DigitalProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([status])
 }
 
 model BusinessReview {
-  id              String   @id @default(uuid())
-  userId          String
-  platform        String   @default("GOOGLE") // GOOGLE, TRUSTPILOT
-  authorName      String
-  rating          Int
-  text            String   @db.Text
-  aiReply         String?  @db.Text
-  replyPosted     Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  userId      String
+  platform    String   @default("GOOGLE") // GOOGLE, TRUSTPILOT
+  authorName  String
+  rating      Int
+  text        String   @db.Text
+  aiReply     String?  @db.Text
+  replyPosted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
-model GeneratedCopy {
-  id              String   @id @default(uuid())
-  userId          String
-  projectType     String   // AD, EMAIL, LANDING_PAGE, SOCIAL_POST
-  topic           String
-  tone            String   @default("PROFESSIONEEL")
-  content         String   @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+model GeneratedCopy {
+  id          String   @id @default(uuid())
+  userId      String
+  projectType String // AD, EMAIL, LANDING_PAGE, SOCIAL_POST
+  topic       String
+  tone        String   @default("PROFESSIONEEL")
+  content     String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([projectType])
 }
 
 model CrmLead {
-  id              String   @id @default(uuid())
-  userId          String
-  name            String
-  email           String?
-  company         String?
-  stage           String   @default("NEW") // NEW, CONTACTED, PROPOSAL, WON, LOST
-  value           Float?
-  notes           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  email     String?
+  company   String?
+  stage     String   @default("NEW") // NEW, CONTACTED, PROPOSAL, WON, LOST
+  value     Float?
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([stage])
 }
 
 model UptimeMonitor {
-  id              String   @id @default(uuid())
-  userId          String
-  name            String
-  url             String
-  status          String   @default("PENDING") // UP, DOWN, PENDING
-  lastCheck       DateTime?
-  interval        Int      @default(5) // Minuten
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  logs            UptimeLog[]
+  id        String      @id @default(uuid())
+  userId    String
+  name      String
+  url       String
+  status    String      @default("PENDING") // UP, DOWN, PENDING
+  lastCheck DateTime?
+  interval  Int         @default(5) // Minuten
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs      UptimeLog[]
 
   @@index([userId])
   @@index([status])
 }
 
 model UptimeLog {
-  id              String   @id @default(uuid())
-  monitorId       String
-  status          String   // UP, DOWN
-  statusCode      Int?
-  responseTime    Int?     // In ms
-  createdAt       DateTime @default(now())
-  monitor         UptimeMonitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  id           String        @id @default(uuid())
+  monitorId    String
+  status       String // UP, DOWN
+  statusCode   Int?
+  responseTime Int? // In ms
+  createdAt    DateTime      @default(now())
+  monitor      UptimeMonitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
 
   @@index([monitorId])
   @@index([createdAt])
@@ -2403,62 +2406,62 @@ model UptimeLog {
 // ==========================================
 
 model ProductHunterJob {
-  id              String   @id @default(uuid())
-  userId          String
-  niche           String
-  status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
-  result          String?  @db.Text
-  error           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  niche     String
+  status    String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  result    String?  @db.Text
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
 model SeoAuditJob {
-  id              String   @id @default(uuid())
-  userId          String
-  targetUrl       String
-  status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
-  result          String?  @db.Text
-  error           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  targetUrl String
+  status    String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  result    String?  @db.Text
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
 model AvatarRenderJob {
-  id              String   @id @default(uuid())
-  userId          String
-  imageUrl        String   @db.Text
-  audioUrl        String   @db.Text
-  status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
-  videoUrl        String?  @db.Text
-  error           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  imageUrl  String   @db.Text
+  audioUrl  String   @db.Text
+  status    String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  videoUrl  String?  @db.Text
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
 model BrandLauncherJob {
-  id              String   @id @default(uuid())
-  userId          String
-  domain          String
-  industry        String
-  status          String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
-  result          String?  @db.Text
-  error           String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  domain    String
+  industry  String
+  status    String   @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  result    String?  @db.Text
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
@@ -2469,15 +2472,221 @@ model BrandLauncherJob {
 // ==========================================
 
 model MarketingVideo {
-  id              String   @id @default(uuid())
-  productId       String?
-  title           String
-  script          String   @db.Text
-  renderedUrl     String?  // Toegevoegd voor Phase 11 Video Renderer
-  status          String   @default("DRAFT") // DRAFT, ACTIVE, REJECTED
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(uuid())
+  productId   String?
+  title       String
+  script      String   @db.Text
+  renderedUrl String? // Toegevoegd voor Phase 11 Video Renderer
+  status      String   @default("DRAFT") // DRAFT, ACTIVE, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([productId])
   @@index([status])
+}
+
+// ==========================================
+// RYL OS IDENTITY DOMAIN (CORE SERVICES)
+// ==========================================
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
+
+  workspaces Workspace[]
+  members    OrganizationMember[]
+}
+
+model Workspace {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String       @unique
+  plan           String       @default("FREE")
+  dataRegion     String       @default("EU") // D0.6 Multi-Region Strategy
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  members WorkspaceMember[]
+  wallet  WorkspaceWallet?
+  budget  WorkspaceBudget?
+}
+
+model OrganizationMember {
+  id             String   @id @default(uuid())
+  organizationId String
+  userId         String
+  role           String   @default("MEMBER") // OWNER, ADMIN, MEMBER
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+}
+
+model WorkspaceMember {
+  id          String   @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        String   @default("MEMBER") // ADMIN, EDITOR, VIEWER
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+// RBAC
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  action      String // e.g., "create:agent", "read:billing"
+  resource    String // e.g., "agent", "billing"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+
+  @@unique([action, resource])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ==========================================
+// RYL OS AUDIT DOMAIN
+// ==========================================
+model CoreAuditLog {
+  id            String   @id @default(uuid())
+  correlationId String
+  action        String
+  resource      String
+  workspaceId   String?
+  userId        String?
+  details       Json?
+  createdAt     DateTime @default(now())
+
+  @@index([correlationId])
+  @@index([workspaceId])
+}
+
+// ==========================================
+// RYL OS BILLING DOMAIN
+// ==========================================
+model WorkspaceWallet {
+  id             String   @id @default(uuid())
+  workspaceId    String   @unique
+  balance        Float    @default(0.0)
+  currency       String   @default("EUR")
+  updatedAt      DateTime @updatedAt
+  
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  walletId       String
+  amount         Float
+  currency       String
+  type           String   // CREDIT or DEBIT
+  description    String
+  idempotencyKey String   @unique
+  correlationId  String
+  createdAt      DateTime @default(now())
+
+  @@index([walletId])
+}
+
+// ==========================================
+// RYL OS COST INTELLIGENCE DOMAIN (D0.5)
+// ==========================================
+
+model WorkspaceBudget {
+  id             String   @id @default(uuid())
+  workspaceId    String   @unique
+  monthlyLimit   Float    @default(100.0)
+  alertThreshold Float    @default(80.0) // Alert at 80%
+  isKillSwitched Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model KillSwitchLog {
+  id            String   @id @default(uuid())
+  workspaceId   String
+  agentId       String?
+  reason        String   @db.Text
+  costAtKill    Float
+  correlationId String
+  createdAt     DateTime @default(now())
+
+  @@index([workspaceId])
+  @@index([correlationId])
+}
+
+// ==========================================
+// RYL OS EVENT SOURCING BACKBONE (D0.3)
+// ==========================================
+
+model EventStore {
+  id             String   @id @default(uuid())
+  aggregateId    String   // The ID of the affected entity (e.g., invoiceId, agentId)
+  aggregateType  String   // The type of entity (e.g., 'INVOICE', 'WORKSPACE')
+  eventType      String   // The event name (e.g., 'billing.invoice.paid')
+  payload        Json     // The complete event data
+  version        Int      @default(1) // Optimistic concurrency control / versioning
+  correlationId  String
+  createdAt      DateTime @default(now())
+
+  @@index([aggregateId])
+  @@index([eventType])
+  @@index([correlationId])
+}
+
+// ==========================================
+// RYL OS EVENT PLATFORM (D1 - DLQ)
+// ==========================================
+
+model DeadLetterEvent {
+  id             String   @id @default(uuid())
+  originalEventId String?
+  eventType      String
+  payload        Json
+  errorReason    String   @db.Text
+  retryCount     Int      @default(0)
+  status         String   @default("FAILED") // FAILED, RETRYING, RESOLVED, IGNORED
+  correlationId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+  @@index([eventType])
 }

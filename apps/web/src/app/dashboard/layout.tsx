@@ -51,75 +51,27 @@ import {
   PenTool
 } from 'lucide-react';
 
-const getGroupedNavItems = (user: any) => {
+const getGroupedNavItems = () => {
   return [
-    {
-      id: 'boardroom',
-      label: 'Control Room',
-      items: [
-        { label: 'Overview', href: '/dashboard', icon: <LayoutDashboard size={16} /> }
-      ]
-    },
-    {
-      id: 'academy',
-      label: 'The Academy',
-      items: [
-        { label: 'Alle Cursussen', href: '/dashboard/academy', icon: <GraduationCap size={16} /> },
-        { label: 'Mijn Voortgang', href: '/dashboard/academy/progress', icon: <Target size={16} /> }
-      ]
-    },
-    {
-      id: 'community',
-      label: 'The Network',
-      items: [
-        { label: 'Community Forum', href: '/dashboard/community', icon: <MessageSquare size={16} /> },
-        { label: 'Live Evenementen', href: '/dashboard/community/events', icon: <Map size={16} /> }
-      ]
-    },
-    {
-      id: 'finance',
-      label: 'E-Commerce & Finance',
-      items: [
-        { label: 'Shopify E-Commerce', href: '/dashboard/ecommerce', icon: <ShoppingCart size={16} /> },
-        { label: 'CRM & Facturatie', href: '/dashboard/finance', icon: <Users size={16} /> },
-        { label: 'Partner Netwerk', href: '/dashboard/affiliate', icon: <Network size={16} /> }
-      ]
-    },
-    {
-      id: 'tools',
-      label: 'Tools & Resources',
-      items: [
-        { label: 'Resource Bibliotheek', href: '/dashboard/tools', icon: <Briefcase size={16} /> },
-        { label: 'AI Product Hunter', href: '/dashboard/modules/product-hunter', icon: <Search size={16} /> },
-        { label: 'SEO Audit Scanner', href: '/dashboard/modules/seo-audit', icon: <Search size={16} /> },
-        { label: 'Cold Email Generator', href: '/dashboard/modules/cold-email', icon: <Mail size={16} /> }
-      ]
-    },
-    {
-      id: 'agents',
-      label: 'Autonomous Agents',
-      items: [
-        { label: 'Sentinel (Approvals)', href: '/dashboard/sentinel', icon: <Shield size={16} /> },
-        { label: 'Active Agents (Swarm)', href: '/dashboard/agents', icon: <Bot size={16} /> },
-        { label: 'CEO (Overkoepelend)', href: '/dashboard/agents/ceo', icon: <Briefcase size={16} /> },
-        { label: 'CMO (Marketing)', href: '/dashboard/agents/cmo', icon: <Target size={16} /> }
-      ]
-    },
-    {
-      id: 'system',
-      label: 'Systeem & Admin',
-      items: [
-        { label: 'Instellingen & Billing', href: '/dashboard/settings', icon: <Settings size={16} /> },
-        { label: 'Helpdesk & Support', href: '/dashboard/support', icon: <LifeBuoy size={16} /> }
-      ]
-    }
+    { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
+    { label: 'Agents', href: '/dashboard/agents', icon: <Bot size={16} /> },
+    { label: 'Taken', href: '/dashboard/tasks', icon: <Target size={16} /> },
+    { label: 'Klanten', href: '/dashboard/crm', icon: <Users size={16} /> },
+    { label: 'Business Models', href: '/dashboard/business-models', icon: <Briefcase size={16} /> },
+    { label: 'AI Studio', href: '/dashboard/ai-studio', icon: <Brain size={16} /> },
+    { label: 'Automations', href: '/dashboard/automations', icon: <Network size={16} /> },
+    { label: 'Analytics', href: '/dashboard/analytics', icon: <Activity size={16} /> },
+    { label: 'Approvals', href: '/dashboard/sentinel', icon: <Shield size={16} /> },
+    { label: 'System Map', href: '/dashboard/system-map', icon: <Map size={16} /> },
+    { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
   ];
 };
 
 import { NotificationDropdown, AppNotification } from '@/components/ui/NotificationDropdown';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { OrionNeuralLink } from '@/components/OrionNeuralLink';
+import { JarvisProvider } from '@/components/JarvisProvider';
+import { JarvisOmniWidget } from '@/components/JarvisOmniWidget';
 import { getNotificationsAction, markNotificationReadAction, markAllNotificationsReadAction } from '@/app/actions/dashboard';
 
 function NotificationBell() {
@@ -178,13 +130,6 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useLanguage();
 
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    boardroom: true,
-    finance: true,
-    agents: true,
-    tools: true,
-    system: false,
-  });
 
   const [activeProject, setActiveProject] = useState<any>("holding");
   const [showProjectSwitcher, setShowProjectSwitcher] = useState(false);
@@ -208,12 +153,6 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     }
   }, [pathname]);
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
-  };
 
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
@@ -238,25 +177,25 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#020202]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-neonCyan/20 border-t-neonCyan' : 'border-neonBlue/20 border-t-neonBlue'}`}
+            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-primary/20 border-t-primary' : 'border-primary/20 border-t-primary'}`}
           />
-          <p className={`text-sm font-mono tracking-widest uppercase neon-text opacity-70`}>Initializing Neuromatrix...</p>
+          <p className={`text-sm font-mono tracking-widest uppercase text-primary opacity-70`}>Initializing Neuromatrix...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex min-h-screen bg-[#020202] text-zinc-300 ${isAdmin ? 'selection:bg-neonCyan/30' : 'selection:bg-neonBlue/20'} font-sans overflow-hidden`}>
+    <div className={`flex min-h-screen bg-background text-foreground ${isAdmin ? 'selection:bg-primary/30' : 'selection:bg-primary/20'} font-sans overflow-hidden`}>
       
       {/* 110000X Cinematic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none cyber-grid">
-        <div className="absolute inset-0 bg-[#020202]/90"></div>
+        <div className="absolute inset-0 bg-background/90"></div>
         <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(2,2,2,0.9) 60%)` }}></div>
         <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(2,2,2,0) 60%)` }}></div>
         <div className="absolute inset-0 bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]" style={{ backgroundImage: `linear-gradient(${theme.gridLines} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLines} 1px, transparent 1px)` }}></div>
@@ -277,7 +216,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-black/40 backdrop-blur-xl
+          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border/50 glass-panel bg-card/40
           transition-transform duration-300 ease-out
           lg:static lg:translate-x-0 ${theme.border}
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -326,79 +265,40 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
-          <ul className="space-y-3">
-            {getGroupedNavItems(user).map((group: any) => {
-              const visibleItems = group.items.filter((item: any) => !item.isAdminOnly || isAdmin);
-              if (visibleItems.length === 0) return null;
-
-              const isExpanded = expandedSections[group.id];
+          <ul className="space-y-1">
+            {getGroupedNavItems().map((item: any) => {
+              const isActive =
+                item.href === '/dashboard'
+                  ? pathname === '/dashboard'
+                  : pathname?.startsWith(item.href);
 
               return (
-                <li key={group.id} className="space-y-1">
-                  {/* Group Header */}
-                  <button
-                    onClick={() => toggleSection(group.id)}
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
                     className={`
-                      w-full flex items-center justify-between px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-[0.25em] 
-                      transition-colors duration-200 border-b border-transparent
-                      ${isAdmin ? 'text-emerald-400/70 hover:text-emerald-400Light' : 'text-zinc-500 hover:text-zinc-300'}
+                      group relative flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium font-mono
+                      transition-all duration-200
+                      ${
+                        isActive
+                          ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
+                          : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
+                      }
                     `}
                   >
-                    <span>{group.label}</span>
-                    <span>
-                      {isExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
-                    </span>
-                  </button>
-
-                  {/* Group Items */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded && (
-                      <motion.ul
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="overflow-hidden space-y-0.5 pl-1 pt-1"
-                      >
-                        {visibleItems.map((item: any) => {
-                          const isActive =
-                            item.href === '/dashboard'
-                              ? pathname === '/dashboard'
-                              : pathname?.startsWith(item.href);
-
-                          return (
-                            <li key={item.href}>
-                              <Link
-                                href={item.href}
-                                onClick={() => setSidebarOpen(false)}
-                                className={`
-                                  group relative flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium font-mono
-                                  transition-all duration-200
-                                  ${
-                                    isActive
-                                      ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
-                                      : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
-                                  }
-                                `}
-                              >
-                                {isActive && (
-                                  <motion.div
-                                    layoutId="activeNav"
-                                    className={`absolute left-0 top-1/2 h-3.5 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
-                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                  />
-                                )}
-                                <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
-                                  {item.icon}
-                                </span>
-                                <span className="tracking-wide uppercase text-[10px]">{item.label}</span>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </motion.ul>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNav"
+                        className={`absolute left-0 top-1/2 h-3.5 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
+                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      />
                     )}
-                  </AnimatePresence>
+                    <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
+                      {item.icon}
+                    </span>
+                    <span className="tracking-wide uppercase text-[10px]">{item.label}</span>
+                  </Link>
                 </li>
               );
             })}
@@ -430,11 +330,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col relative z-10 w-full overflow-hidden">
         {/* Top Bar */}
-        <header className={`sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-black/40 px-4 backdrop-blur-xl sm:px-6 ${theme.border}`}>
+        <header className={`sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 glass-panel bg-card/40 px-4 sm:px-6 ${theme.border}`}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:hidden"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -538,7 +438,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <main id="main-scroll-container" className="flex-1 overflow-y-auto relative bg-black" style={{ scrollBehavior: 'smooth' }}>
+          <main id="main-scroll-container" className="flex-1 overflow-y-auto relative bg-background" style={{ scrollBehavior: 'smooth' }}>
             <motion.div
               key={pathname}
               initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
@@ -559,7 +459,10 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <DashboardShell>{children}</DashboardShell>
+      <JarvisProvider>
+        <DashboardShell>{children}</DashboardShell>
+        <JarvisOmniWidget />
+      </JarvisProvider>
     </AuthProvider>
   );
 }

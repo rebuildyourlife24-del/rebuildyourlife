@@ -1,4 +1,5 @@
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { BaseMessage } from "@langchain/core/messages";
 import * as dotenv from "dotenv";
 import * as path from "path";
@@ -49,13 +50,10 @@ const geminiKeys = [
 
 const uniqueGeminiKeys = [...new Set(geminiKeys)];
 
-const geminiModels: ChatOpenAI[] = uniqueGeminiKeys.map((key, idx) => {
-  return new ChatOpenAI({
-    configuration: {
-      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
-      apiKey: key,
-    },
-    modelName: "gemini-2.5-flash",
+const geminiModels = uniqueGeminiKeys.map((key, idx) => {
+  return new ChatGoogleGenerativeAI({
+    model: "gemini-1.5-flash",
+    apiKey: key,
     temperature: 0.2,
     maxRetries: 0
   });
@@ -101,7 +99,7 @@ const openrouterModels: ChatOpenAI[] = uniqueOpenrouterKeys.map((key) => {
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: key,
     },
-    modelName: "google/gemma-2-9b-it:free",
+    modelName: "meta-llama/llama-3-8b-instruct:free",
     temperature: 0.2,
     maxRetries: 0
   });
@@ -146,6 +144,10 @@ export const model = {
         // Als het een Rate Limit (429) of Server Error (5xx) is, of 404, probeer de volgende sleutel!
         if (status === 429 || status >= 500 || status === 404) {
           console.warn(`[SOVEREIGN ROUTER] API Error (${status}) op pool-sleutel ${i+1}. Failover naar volgende sleutel...`);
+          if (status === 429) {
+            // Wacht 2 seconden om free-tier limieten te respecteren voordat we de volgende sleutel proberen
+            await new Promise(r => setTimeout(r, 2000));
+          }
           continue; // Ga naar de volgende loop iteratie
         }
         

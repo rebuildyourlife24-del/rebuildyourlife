@@ -140,27 +140,27 @@ export default function AgentsPage() {
     <div className="space-y-12 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Header Widget */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-rose-500/20 glass-cyber p-8 md:p-12 group">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-rose-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/10 transition-colors duration-1000"></div>
+      <div className="relative overflow-hidden rounded-[2rem] border border-border/50 glass-panel p-8 md:p-12 group">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/10 transition-colors duration-1000"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="inline-flex items-center justify-center bg-rose-500/10 border border-rose-500/30 text-rose-400 px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+              <span className="inline-flex items-center justify-center bg-primary/10 border border-primary/30 text-primary px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(var(--primary),0.2)]">
                 <Cpu className="w-3 h-3 mr-2" />
                 The Swarm
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              Autonomous <span className="text-rose-400">Agents</span>
+            <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter uppercase leading-[0.9]">
+              Autonomous <span className="text-primary">Agents</span>
             </h1>
-            <p className="mt-4 text-lg text-zinc-400 max-w-2xl font-light">
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl font-light">
               Je digitale personeelsbestand. Delegeer complexe taken, laat ze op de achtergrond werken, en ontvang meldingen wanneer de klus geklaard is.
             </p>
           </div>
 
           <div className="flex gap-4">
-            <button className="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-colors border border-rose-400/50 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+            <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-colors border border-primary/50 shadow-[0_0_20px_currentColor]">
               <PlusCircle className="w-5 h-5" />
               Nieuwe Taak
             </button>
@@ -170,34 +170,34 @@ export default function AgentsPage() {
 
       {/* Core Swarm Section */}
       <div>
-        <h2 className="text-2xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span>
+        <h2 className="text-2xl font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_currentColor]"></span>
           Core Swarm (C-Suite)
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {coreAgents.map((agent) => (
-            <div key={agent.id} className="glass-cyber rounded-[1.5rem] p-6 flex flex-col border border-white/5 hover:border-rose-500/30 transition-all group">
+            <div key={agent.id} className="glass-panel rounded-[1.5rem] p-6 flex flex-col border border-border/50 hover:border-primary/50 transition-all group">
               <div className="flex justify-between items-start mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-card border border-border/50 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {agent.icon}
                 </div>
-                <div className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <div className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest flex items-center gap-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   {agent.status}
                 </div>
               </div>
 
               <div className="mb-4">
-                <h3 className="text-2xl font-black text-white">{agent.name}</h3>
-                <p className="text-xs font-mono text-rose-400 uppercase tracking-widest mt-1">{agent.role}</p>
+                <h3 className="text-2xl font-black text-foreground">{agent.name}</h3>
+                <p className="text-xs font-mono text-primary uppercase tracking-widest mt-1">{agent.role}</p>
               </div>
               
-              <p className="text-sm text-zinc-400 font-light flex-1 mb-6">
+              <p className="text-sm text-muted-foreground font-light flex-1 mb-6">
                 {agent.description}
               </p>
 
               <div className="flex gap-3 mt-auto">
-                <Link href={`/dashboard/agents/${agent.id}`} className="flex-1 py-3 bg-white/5 hover:bg-rose-500/10 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all">
+                <Link href={`/dashboard/agents/${agent.id}`} className="flex-1 py-3 bg-card/50 hover:bg-primary/10 hover:text-primary border border-border/50 hover:border-primary/30 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all">
                   <MessageSquare className="w-4 h-4" />
                   Chat met {agent.name}
                 </Link>
@@ -209,34 +209,34 @@ export default function AgentsPage() {
 
       {/* E-Commerce Copilots Section */}
       <div>
-        <h2 className="text-2xl font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></span>
+        <h2 className="text-2xl font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_currentColor]"></span>
           E-Commerce Copilots
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ecomAgents.map((agent) => (
-            <div key={agent.id} className="glass-cyber rounded-[1.5rem] p-6 flex flex-col border border-white/5 hover:border-cyan-500/30 transition-all group">
+            <div key={agent.id} className="glass-panel rounded-[1.5rem] p-6 flex flex-col border border-border/50 hover:border-primary/50 transition-all group">
               <div className="flex justify-between items-start mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-card border border-border/50 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {agent.icon}
                 </div>
-                <div className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                <div className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest flex items-center gap-2 bg-primary/10 text-primary border border-primary/20">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                   {agent.status}
                 </div>
               </div>
 
               <div className="mb-4">
-                <h3 className="text-2xl font-black text-white">{agent.name}</h3>
-                <p className="text-xs font-mono text-cyan-400 uppercase tracking-widest mt-1">{agent.role}</p>
+                <h3 className="text-2xl font-black text-foreground">{agent.name}</h3>
+                <p className="text-xs font-mono text-primary uppercase tracking-widest mt-1">{agent.role}</p>
               </div>
               
-              <p className="text-sm text-zinc-400 font-light flex-1 mb-6">
+              <p className="text-sm text-muted-foreground font-light flex-1 mb-6">
                 {agent.description}
               </p>
 
               <div className="flex gap-3 mt-auto">
-                <Link href={`/dashboard/agents/${agent.id}`} className="flex-1 py-3 bg-white/5 hover:bg-cyan-500/10 hover:text-cyan-400 border border-white/10 hover:border-cyan-500/30 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all">
+                <Link href={`/dashboard/agents/${agent.id}`} className="flex-1 py-3 bg-card/50 hover:bg-primary/10 hover:text-primary border border-border/50 hover:border-primary/30 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all">
                   <MessageSquare className="w-4 h-4" />
                   Chat met {agent.name}
                 </Link>

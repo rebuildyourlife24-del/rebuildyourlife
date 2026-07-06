@@ -1,101 +1,55 @@
-'use client';
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "../../lib/utils"
 
-import { forwardRef } from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-all",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+        glass: "glass text-foreground hover:bg-white/10",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'destructive';
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  loading?: boolean;
-  fullWidth?: boolean;
-  children: React.ReactNode;
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
 }
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gold text-navy font-bold shadow-glow hover:shadow-glow-lg hover:bg-goldLight',
-  secondary:
-    'bg-surfaceLight text-textPrimary border border-white/10 hover:bg-surfaceLight/80 hover:border-gold/30',
-  ghost:
-    'bg-transparent text-textSecondary hover:text-textPrimary hover:bg-white/5',
-  danger:
-    'bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20',
-  outline:
-    'bg-transparent border border-white/10 text-textSecondary hover:border-white/20 hover:text-white',
-  destructive:
-    'bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20',
-};
-
-const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm rounded-lg gap-1.5',
-  md: 'px-5 py-2.5 text-sm rounded-xl gap-2',
-  lg: 'px-7 py-3.5 text-base rounded-xl gap-2.5',
-};
-
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      variant = 'primary',
-      size = 'md',
-      loading = false,
-      fullWidth = false,
-      children,
-      className = '',
-      disabled,
-      ...props
-    },
-    ref,
-  ) => {
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = "button"
     return (
-      <motion.button
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
-        whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-        className={`
-          inline-flex items-center justify-center font-medium
-          transition-all duration-200 ease-out
-          disabled:opacity-50 disabled:cursor-not-allowed
-          ${variantStyles[variant]}
-          ${sizeStyles[size]}
-          ${fullWidth ? 'w-full' : ''}
-          ${className}
-        `}
-        disabled={disabled || loading}
         {...props}
-      >
-        {loading && (
-          <svg
-            className="h-4 w-4 animate-spin -ml-1 mr-2"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="3"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-        )}
-        {children}
-      </motion.button>
-    );
-  },
-);
+      />
+    )
+  }
+)
+Button.displayName = "Button"
 
-Button.displayName = 'Button';
-
-export { Button };
-export type { ButtonProps, ButtonVariant, ButtonSize };
+export { Button, buttonVariants }
