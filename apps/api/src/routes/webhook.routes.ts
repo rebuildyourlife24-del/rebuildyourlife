@@ -85,4 +85,22 @@ router.post(
   }
 );
 
+import { RealityGateway } from "../core/cognition/RealityGateway.js";
+
+// POST /reality-sync - External or Cron trigger for the Cognitive Loop
+router.post(
+  "/reality-sync",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const gateway = new RealityGateway();
+      // Since this is authenticated, req.user is guaranteed.
+      const result = await gateway.syncReality(req.user!.userId);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;

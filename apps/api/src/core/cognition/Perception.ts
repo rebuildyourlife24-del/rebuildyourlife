@@ -15,7 +15,7 @@ export class PerceptionEngine {
    * Filters out noise based on objectives.
    */
   async observe(signalData: any) {
-    console.log('[Perception] Observing incoming signal...', signalData);
+    console.log('[Perception] Observing incoming signal...', JSON.stringify(signalData, null, 2));
 
     // 1. Fetch active constraints
     const constraints = await prisma.constraint.findMany({
@@ -42,8 +42,21 @@ export class PerceptionEngine {
   }
 
   private evaluateConstraints(signal: any, constraints: any[]): boolean {
-    // In a real system, we parse the constraint logic.
-    // E.g., if constraint is "cash_runway > 180" and signal implies dropping cash runway.
-    return true; // Scaffolded pass
+    let isValid = true;
+    for (const constraint of constraints) {
+      if (!constraint.isHardLimit) continue; // Skip soft limits for now
+
+      // Example evaluation logic based on metric name
+      if (constraint.metric === 'cash_runway_days') {
+        const currentRunway = signal.data?.revenue?.cashRunwayDays || 365; // Default safe value if missing
+        if (constraint.operator === '>' && currentRunway <= constraint.thresholdValue) {
+          console.warn(`[Perception] Broken Constraint: ${constraint.name} (Current: ${currentRunway})`);
+          isValid = false;
+        }
+      }
+      // Add logic for debt_ratio, refund_rate etc as needed.
+    }
+    return isValid;
   }
 }
+
