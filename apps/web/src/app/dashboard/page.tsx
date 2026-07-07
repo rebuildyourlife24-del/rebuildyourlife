@@ -1,16 +1,41 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, User, ChevronRight, Activity, Shield, Hexagon, Network, Workflow, Brain, Settings } from 'lucide-react';
+import { Bot, Send, User, ChevronRight, Activity, Shield, Hexagon, Network, Workflow, Brain, Settings, Loader2 } from 'lucide-react';
 import { useChat } from '@ai-sdk/react';
 
 // ============================================================================
 // MAIN LAYOUT
 // ============================================================================
 export default function AgenticOSCommandCenter() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/v6/dashboard/overview')
+      .then(res => res.json())
+      .then(json => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch dashboard data", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="w-screen h-screen bg-[#050505] text-white font-sans overflow-hidden flex">
+    <div className="w-screen h-screen bg-[#050505] text-white font-sans overflow-hidden flex relative">
       
+      {loading && (
+        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-12 h-12 text-cyan-500 animate-spin" />
+            <span className="text-cyan-400 text-xs tracking-widest uppercase animate-pulse">Initializing V6.0 Live Feeds...</span>
+          </div>
+        </div>
+      )}
+
       {/* MAIN COMMAND CENTER (75% WIDTH) */}
       <div className="flex-1 flex flex-col p-6 gap-6 h-full relative">
         {/* Subtle Background Glows */}
@@ -40,7 +65,7 @@ export default function AgenticOSCommandCenter() {
           
           {/* PANEL 1: DASHBOARD (FINANCIALS) */}
           <MonitorPanel title="Dashboard">
-            <FinancialDashboard />
+            <FinancialDashboard data={data?.finance} />
           </MonitorPanel>
 
           {/* PANEL 2: SYSTEM OVERVIEW (NEURAL NET) */}
@@ -51,16 +76,16 @@ export default function AgenticOSCommandCenter() {
           {/* PANEL 3: AGENT ACTIVITY & DECISIONS */}
           <div className="flex flex-col gap-4">
             <MonitorPanel title="Agent Activity" className="flex-[3]">
-              <AgentActivityList />
+              <AgentActivityList activities={data?.agentActivity} />
             </MonitorPanel>
             <MonitorPanel title="Decision Engine" className="flex-[2]">
-              <DecisionEngineWidget />
+              <DecisionEngineWidget stats={data?.decisionEngine} />
             </MonitorPanel>
           </div>
 
           {/* PANEL 4: STORE PERFORMANCE (WORLD MAP) */}
           <MonitorPanel title="Store Performance">
-            <StorePerformanceWithMap />
+            <StorePerformanceWithMap stores={data?.storePerformance} />
           </MonitorPanel>
 
           {/* PANEL 5: REAL-TIME ANALYTICS */}
@@ -74,7 +99,7 @@ export default function AgenticOSCommandCenter() {
               <WorkflowNodeGraph />
             </MonitorPanel>
             <MonitorPanel title="System Status" className="flex-[2]">
-              <SystemStatusWidget />
+              <SystemStatusWidget status={data?.systemStatus} />
             </MonitorPanel>
           </div>
 
@@ -128,7 +153,11 @@ function MonitorPanel({ title, children, className = "" }: { title: string, chil
 // ----------------------------------------------------------------------------
 // PANEL 1: FINANCIAL DASHBOARD
 // ----------------------------------------------------------------------------
-function FinancialDashboard() {
+function FinancialDashboard({ data }: { data?: any }) {
+  const revenue = data?.totalRevenue || 0;
+  const profit = data?.netProfit || 0;
+  const orders = data?.orders || 0;
+
   return (
     <div className="flex flex-col h-full gap-4">
       {/* Top Stats */}
@@ -136,7 +165,7 @@ function FinancialDashboard() {
         <div className="flex-[2]">
           <span className="text-[10px] text-zinc-500 uppercase">Total Revenue</span>
           <div className="flex items-end gap-3 mt-1">
-            <span className="text-3xl font-light text-white">$2,431,245</span>
+            <span className="text-3xl font-light text-white">${revenue.toLocaleString()}</span>
             <span className="text-xs text-emerald-400 mb-1">+28.6%</span>
           </div>
           {/* Mock Line Chart */}
@@ -157,14 +186,14 @@ function FinancialDashboard() {
           <div>
             <span className="text-[10px] text-zinc-500 uppercase">Orders</span>
             <div className="flex items-end justify-between mt-1">
-              <span className="text-xl text-white">24,342</span>
+              <span className="text-xl text-white">{orders.toLocaleString()}</span>
               <span className="text-[10px] text-emerald-400">99.4%</span>
             </div>
           </div>
           <div>
             <span className="text-[10px] text-zinc-500 uppercase">Net Profit</span>
             <div className="flex items-end justify-between mt-1">
-              <span className="text-xl text-white">$842,138</span>
+              <span className="text-xl text-white">${profit.toLocaleString()}</span>
               <span className="text-[10px] text-emerald-400">+31.4%</span>
             </div>
           </div>
@@ -239,16 +268,11 @@ function NeuralNetworkOverview() {
 // ----------------------------------------------------------------------------
 // PANEL 3: AGENT ACTIVITY
 // ----------------------------------------------------------------------------
-function AgentActivityList() {
-  const agents = [
-    { name: "Product Research Agent", task: "Finding winning products", status: "ACTIVE" },
-    { name: "Ad Creative Agent", task: "Generating ad variations", status: "ACTIVE" },
-    { name: "Store Optimizer Agent", task: "Optimizing conversion rate", status: "ACTIVE" },
-    { name: "Customer Support Agent", task: "Handling customer inquiries", status: "ACTIVE" },
-    { name: "Inventory Agent", task: "Monitoring stock levels", status: "ACTIVE" },
-  ];
+function AgentActivityList({ activities }: { activities?: any[] }) {
+  const agents = activities || [];
   return (
     <div className="flex flex-col gap-3 overflow-y-auto h-full pr-2 custom-scrollbar">
+      {agents.length === 0 && <div className="text-xs text-zinc-500 p-2">Waiting for agent activity...</div>}
       {agents.map((ag, i) => (
         <div key={i} className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0">
           <div className="flex items-center gap-3">
@@ -258,26 +282,29 @@ function AgentActivityList() {
                <span className="text-[10px] text-zinc-500">{ag.task}</span>
              </div>
           </div>
-          <span className="text-[9px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded uppercase tracking-widest">{ag.status}</span>
+          <span className={`text-[9px] px-2 py-0.5 rounded uppercase tracking-widest ${ag.status === 'COMPLETED' ? 'text-emerald-400 bg-emerald-400/10' : 'text-blue-400 bg-blue-400/10'}`}>{ag.status}</span>
         </div>
       ))}
     </div>
   );
 }
 
-function DecisionEngineWidget() {
+function DecisionEngineWidget({ stats }: { stats?: any }) {
+  const total = stats?.totalDecisionsToday || 0;
+  const autoPercent = stats?.automationPercentage || 0;
+
   return (
     <div className="flex h-full gap-4 items-center">
       <div className="flex-1 flex flex-col justify-center">
         <span className="text-[10px] text-zinc-500 uppercase">Total Decisions Today</span>
         <div className="flex items-end gap-3 mt-1">
-          <span className="text-2xl text-white">1,246</span>
-          <span className="text-[10px] text-emerald-400 mb-1">+23.5%</span>
+          <span className="text-2xl text-white">{total.toLocaleString()}</span>
+          <span className="text-[10px] text-emerald-400 mb-1">Live</span>
         </div>
         
         <span className="text-[10px] text-zinc-500 uppercase mt-4">Automated Decisions</span>
         <div className="flex items-end gap-3 mt-1">
-          <span className="text-xl text-white">95.4%</span>
+          <span className="text-xl text-white">{autoPercent.toFixed(1)}%</span>
         </div>
       </div>
       <div className="w-24 h-24 relative">
@@ -296,24 +323,23 @@ function DecisionEngineWidget() {
 // ----------------------------------------------------------------------------
 // PANEL 4: STORE PERFORMANCE & WORLD MAP
 // ----------------------------------------------------------------------------
-function StorePerformanceWithMap() {
-  const stores = [
-    { name: "Main Store", rev: "$1,245,020", trend: "+21.4%", color: "text-emerald-400" },
-    { name: "Brand Store", rev: "$632,485", trend: "+18.7%", color: "text-emerald-400" },
-    { name: "Niche Store 1", rev: "$342,775", trend: "+31.2%", color: "text-emerald-400" },
-  ];
+function StorePerformanceWithMap({ stores }: { stores?: any[] }) {
+  const storeList = stores || [];
   return (
     <div className="flex h-full gap-4">
       {/* Left: Store List */}
       <div className="flex-[4] flex flex-col gap-3">
-        {stores.map((st, i) => (
+        {storeList.length === 0 && <div className="text-xs text-zinc-500">No stores found...</div>}
+        {storeList.map((st, i) => (
           <div key={i} className="flex justify-between items-center border-b border-white/5 pb-2">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded text-[10px] font-bold">a</div>
-              <span className="text-xs text-white">{st.name}</span>
+              <div className="w-5 h-5 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded text-[10px] font-bold">
+                {st.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-xs text-white truncate max-w-[100px]" title={st.name}>{st.name}</span>
             </div>
             <div className="flex gap-4 items-center">
-              <span className="text-xs text-white font-mono">{st.rev}</span>
+              <span className="text-xs text-white font-mono">${st.rev.toLocaleString()}</span>
               <span className="text-[10px] text-emerald-400">{st.trend}</span>
             </div>
           </div>
@@ -447,25 +473,27 @@ function WorkflowNodeGraph() {
   );
 }
 
-function SystemStatusWidget() {
+function SystemStatusWidget({ status }: { status?: any }) {
+  const isOk = status?.status === 'All Systems Operational';
+  
   return (
     <div className="flex flex-col h-full justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <div className={`w-4 h-4 rounded-full ${isOk ? 'bg-emerald-500/20' : 'bg-amber-500/20'} flex items-center justify-center`}>
+          <div className={`w-2 h-2 rounded-full ${isOk ? 'bg-emerald-400' : 'bg-amber-400'} animate-pulse`}></div>
         </div>
-        <span className="text-xs text-white">All Systems Operational</span>
+        <span className="text-xs text-white">{status?.status || 'Connecting...'}</span>
       </div>
       
       <div className="mt-4">
         <span className="text-[10px] text-zinc-500 uppercase">Uptime</span>
-        <div className="text-2xl text-emerald-400">99.98%</div>
+        <div className={`text-2xl ${isOk ? 'text-emerald-400' : 'text-amber-400'}`}>{status?.uptime || '---'}</div>
       </div>
       
       <div className="flex flex-col gap-1 mt-auto text-[9px] text-zinc-400 uppercase tracking-widest">
-         <div className="flex justify-between"><span>Server Status</span><span className="text-emerald-500 flex items-center gap-1"><div className="w-1 h-1 bg-emerald-500 rounded-full"/> Operational</span></div>
-         <div className="flex justify-between"><span>API Connections</span><span className="text-emerald-500 flex items-center gap-1"><div className="w-1 h-1 bg-emerald-500 rounded-full"/> Operational</span></div>
-         <div className="flex justify-between"><span>Payment Systems</span><span className="text-emerald-500 flex items-center gap-1"><div className="w-1 h-1 bg-emerald-500 rounded-full"/> Operational</span></div>
+         <div className="flex justify-between"><span>Server Status</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
+         <div className="flex justify-between"><span>API Connections</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
+         <div className="flex justify-between"><span>Payment Systems</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
       </div>
     </div>
   );
