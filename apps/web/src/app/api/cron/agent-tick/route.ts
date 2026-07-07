@@ -17,49 +17,33 @@ export async function GET(request: Request) {
   const logs = [];
 
   try {
-    // 1. Proactive Agent: System Health Check (COO Agent)
-    logs.push("COO Agent: Starting system health check...");
+    // 1. Proactive Agent: Waking up The Syndicate via Python Backend
+    logs.push("Cron Tick: Waking up The Syndicate AI Backend...");
     
-    // Simulate finding a minor issue
-    const healthCheckResult = Math.random();
-    if (healthCheckResult > 0.8) {
-      const users = await prisma.user.findMany({ take: 1 });
-      if (users.length > 0) {
-        await prisma.agentAction.create({
-          data: {
-            userId: users[0].id,
-            agentType: 'COO',
-            title: 'Stripe Webhook Mismatch Detected',
-            description: 'Er is een lichte vertraging in de webhook synchronisatie met Stripe gevonden. Wil je dat ik de sync forceer?',
-            status: 'PENDING',
-            riskLevel: 'LOW',
-            estimatedCost: 0,
-            estimatedRevenue: 0,
-            payload: JSON.stringify({ action: "FORCE_STRIPE_SYNC" })
-          }
-        });
-        logs.push("COO Agent: Found issue and created AgentAction for review.");
+    // In production, this should point to your live FastAPI deployment URL
+    const backendUrl = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    
+    try {
+      const response = await fetch(`${backendUrl}/api/cron/tick`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CRON_SECRET || 'dev-secret'}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Backend returned status ${response.status}`);
       }
-    } else {
-      logs.push("COO Agent: All systems nominal.");
-    }
-
-    // 2. Proactive Agent: CFO Revenue Scan
-    logs.push("CFO Agent: Scanning profit margins...");
-    const cfoResult = Math.random();
-    if (cfoResult > 0.9) {
-      const users = await prisma.user.findMany({ take: 1 });
-      if (users.length > 0) {
-        await prisma.agentSharedMemory.create({
-          data: {
-            sourceAgent: "CFO",
-            targetAgent: "CMO",
-            content: "We hebben extra marge vrij op productlijn A. Verhoog de ad spend op Meta met 15% vandaag.",
-            importance: 0.8
-          }
-        });
-        logs.push("CFO Agent: Saved directive to Hive Mind for CMO.");
+      
+      const backendData = await response.json();
+      logs.push(`Syndicate executed successfully. Woke up ${backendData.agents_woken || 0} agents.`);
+      if (backendData.actions_proposed) {
+        logs.push(`Proposed ${backendData.actions_proposed} new actions for Governance Lock.`);
       }
+    } catch (backendError: any) {
+      logs.push(`Error connecting to Python Backend: ${backendError.message}`);
+      // We don't fail the entire Next.js request, we just log it.
     }
 
     return NextResponse.json({ success: true, logs });

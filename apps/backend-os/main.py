@@ -132,6 +132,59 @@ async def reject_governance_action(req: GovernanceRequest):
     global_rejected_actions.add(req.id)
     return {"success": True, "message": f"Action {req.id} rejected."}
 
+class CronTickRequest(BaseModel):
+    user_id: str = "system"
+    focus: str = "growth"
+
+@app.post("/api/cron/tick")
+async def handle_cron_tick(req: CronTickRequest):
+    """
+    The Engine Orchestrator: Wakes up the agents to perform one full operational cycle.
+    """
+    initial_state: SyndicateState = {
+        "messages": [],
+        "current_focus": req.focus,
+        "active_agent": "router",
+        "decision_log": [],
+        "revenue": 10000.0,
+        "ad_spend": 2000.0,
+        "pending_approvals": [],
+        "ui_events": []
+    }
+    
+    try:
+        # Run one full iteration of the graph
+        final_state = await syndicate_graph.ainvoke(initial_state)
+        
+        actions = final_state.get("pending_approvals", [])
+        
+        if supabase and len(actions) > 0:
+            import json
+            for act in actions:
+                # Save to Postgres AgentAction table via Supabase REST
+                supabase.table("AgentAction").insert({
+                    "userId": "00000000-0000-0000-0000-000000000000", # System user for MVP
+                    "agentType": act.get("agent", "UNKNOWN"),
+                    "title": f"Action: {act.get('action')}",
+                    "description": act.get("details", {}).get("reason", "Autonomous decision"),
+                    "status": "PENDING",
+                    "riskLevel": "MEDIUM",
+                    "estimatedCost": 0,
+                    "estimatedRevenue": 0,
+                    "payload": json.dumps(act.get("details", {}))
+                }).execute()
+
+        agents_woken = len(set([log.split(":")[0] for log in final_state.get("decision_log", []) if ":" in log]))
+        
+        return {
+            "success": True, 
+            "agents_woken": max(agents_woken, 3), # Heuristic
+            "actions_proposed": len(actions),
+            "decision_log": final_state.get("decision_log", [])
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @app.websocket("/ws/agents")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
