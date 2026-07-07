@@ -64,6 +64,8 @@ def create_agent_node(agent_id: str, agent_instance):
 
 from langchain_core.messages import SystemMessage, HumanMessage
 from .router import sovereign_router
+from .gamification import get_unlocked_agents
+from .db import supabase, get_admin_user_id
 
 async def router_node(state: SyndicateState):
     """Hermes / Sovereign Router Node determining the task delegation"""
@@ -80,17 +82,31 @@ async def router_node(state: SyndicateState):
                 state["next_agent"] = k
                 state["ui_events"].append({"id": "router", "status": "active", "task": f"Routing approved action to: {k}"})
                 return state
+
+    # Fetch Operator Level for Gamification Unlocks
+    operator_level = 1
+    if supabase:
+        try:
+            admin_id = get_admin_user_id()
+            res = supabase.table("User").select("clearanceLevel").eq("id", admin_id).limit(1).execute()
+            if res.data and len(res.data) > 0:
+                operator_level = res.data[0].get("clearanceLevel", 1)
+        except Exception:
+            pass
+
+    unlocked_keys = get_unlocked_agents(operator_level)
+    available_agents = {k: v for k, v in agents_pool.items() if k in unlocked_keys}
+    available_agent_names = list(available_agents.keys())
                 
     # Priority 2: LLM Decision
     try:
         dynamic_llm = sovereign_router.get_llm()
-        available_agents = list(agents_pool.keys())
         
         sys_msg = SystemMessage(content=f"""You are Hermes, the Sovereign Router for the ARGENTIC AI Council.
-Your job is to read the current state of the enterprise and decide EXACTLY WHICH ONE of the 18 AI agents should take the next action.
+Your job is to read the current state of the enterprise and decide EXACTLY WHICH ONE of the available AI agents should take the next action based on their roles.
 You must output ONLY the agent_id, nothing else. No markdown, no punctuation.
 
-Available agents: {', '.join(available_agents)}
+Available unlocked agents based on Operator Level ({operator_level}): {', '.join(available_agent_names)}
 """)
         
         human_msg = HumanMessage(content=f"Current Focus: {state.get('current_focus')}\nRevenue: ${state.get('revenue')}\nAd Spend: ${state.get('ad_spend')}\nPick the next agent_id:")
@@ -98,16 +114,17 @@ Available agents: {', '.join(available_agents)}
         response = await dynamic_llm.ainvoke([sys_msg, human_msg])
         chosen_agent = response.content.strip().lower()
         
-        if chosen_agent in agents_pool:
+        if chosen_agent in available_agent_names:
             state["next_agent"] = chosen_agent
-            state["ui_events"].append({"id": "router", "status": "active", "task": f"Delegated task to: {chosen_agent}"})
+            state["ui_events"].append({"id": "router", "status": "active", "task": f"Delegating execution to: {chosen_agent}"})
         else:
-            state["next_agent"] = "orion" # Fallback
-            state["ui_events"].append({"id": "router", "status": "active", "task": f"LLM returned invalid agent '{chosen_agent}', fallback to orion"})
+            # Fallback
+            state["next_agent"] = available_agent_names[0]
+            state["ui_events"].append({"id": "router", "status": "error", "task": f"Failed to route ({chosen_agent} locked/unknown). Defaulting to {available_agent_names[0]}."})
             
     except Exception as e:
-        state["next_agent"] = "orion"
-        state["ui_events"].append({"id": "router", "status": "error", "task": f"Router LLM Error: {str(e)[:40]}"})
+        state["ui_events"].append({"id": "router", "status": "error", "task": f"Routing failed: {str(e)[:40]}"})
+        state["next_agent"] = "ceo" # Ultimate fallback
         
     return state
 

@@ -27,6 +27,21 @@ RANKS = [
     (12, "The Architect", 350000)
 ]
 
+AGENT_UNLOCKS = {
+    1: ["ceo", "cmo", "cto", "cfo", "cro", "coo", "hermes"],
+    2: ["lead_frontend", "lead_backend", "qa_lead", "devops"],
+    3: ["head_of_seo", "head_of_growth", "market_intelligence", "lead_data_scientist"],
+    4: ["legal_compliance", "customer_success", "ciso"]
+}
+
+def get_unlocked_agents(level: int) -> list[str]:
+    """Returns a list of all agent keys unlocked at or below the given level."""
+    unlocked = []
+    for unlock_lvl, agents in AGENT_UNLOCKS.items():
+        if level >= unlock_lvl:
+            unlocked.extend(agents)
+    return unlocked
+
 def calculate_xp(event_type: str) -> int:
     return XP_REWARDS.get(event_type.upper(), XP_REWARDS["DEFAULT"])
 
