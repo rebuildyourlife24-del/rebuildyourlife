@@ -35,7 +35,7 @@ Current System Status: All 6 monitors are operational. The Reality Gateway is sy
       system: systemPrompt,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
 
   } catch (error: any) {
     console.error('[SYNDICATE_AI_ERROR]', error);
