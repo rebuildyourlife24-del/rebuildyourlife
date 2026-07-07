@@ -11,23 +11,26 @@ class HermesAgent(BaseAgent):
     async def invoke_llm(self, prompt: str) -> str:
         """
         Sovereign AI Router Logic:
-        Tries OpenAI first. On 429 or 500 error, automatically falls back to Groq / Cerebras.
+        Uses LangChain's .with_fallbacks() via the SovereignLLMRouter.
+        Tries Groq/Cerebras first, then falls back natively on 429 or 500 errors.
         """
         try:
-            self.log_action("LLM_INVOKE_PRIMARY", {"provider": "OpenAI"})
-            # Simulated OpenAI Call
-            # response = await openai.ChatCompletion.acreate(...)
-            raise Exception("429 Too Many Requests") # Simulating a failure for fallback demonstration
+            from syndicate.router import sovereign_router
+            from langchain_core.messages import HumanMessage
+            
+            self.log_action("LLM_INVOKE_START", {"prompt_length": len(prompt)})
+            
+            dynamic_llm = sovereign_router.get_llm()
+            msg = HumanMessage(content=prompt)
+            
+            response = await dynamic_llm.ainvoke([msg])
+            
+            self.log_action("LLM_INVOKE_SUCCESS", {"response_length": len(response.content)})
+            return response.content
+            
         except Exception as e:
-            self.log_action("LLM_PRIMARY_FAILED", {"error": str(e), "action": "FALLBACK_TO_SECONDARY"})
-            try:
-                self.log_action("LLM_INVOKE_SECONDARY", {"provider": "Groq"})
-                # Simulated Groq Call
-                # response = await groq_client.chat.completions.create(...)
-                return "Simulated Fallback Response from Groq"
-            except Exception as e2:
-                self.log_action("LLM_SECONDARY_FAILED", {"error": str(e2)})
-                return "System Failure: All AI Providers unreachable."
+            self.log_action("LLM_ALL_PROVIDERS_FAILED", {"error": str(e)})
+            return "System Failure: All Sovereign AI Providers unreachable or missing API keys."
 
     async def execute(self, state: Dict[str, Any]) -> AgentResult:
         self.log_action("ANALYZING_STATE", {"state_keys": list(state.keys())})
