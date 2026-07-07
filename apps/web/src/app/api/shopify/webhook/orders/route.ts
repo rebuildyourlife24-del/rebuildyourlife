@@ -42,27 +42,14 @@ export async function POST(req: Request) {
     
     console.log(`[SHOPIFY WEBHOOK] Order #${orderData.order_number} wordt doorgestuurd naar Godbrain Auto-Fulfillment Agent...`);
 
-    // Interne call naar Godbrain (dit kun je in productie via een queue of direct server-side helper doen)
-    // Aangezien dit een server component is, kunnen we de logica direct importeren of een interne fetch doen
-    const godbrainResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/godbrain/execute`, {
+    // Interne call naar de Vercel Native Python AI Backend
+    const backendUrl = process.env.PYTHON_BACKEND_URL || 'http://localhost:8000';
+    const godbrainResponse = await fetch(`${backendUrl}/api/finance/revenue/log`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'PROCESS_FULFILLMENT',
-        source: 'SHOPIFY_WEBHOOK',
-        payload: {
-          userId: store.userId,
-          storeId: store.id,
-          orderId: orderData.id,
-          orderNumber: orderData.order_number,
-          items: orderData.line_items.map((item: any) => ({
-            productId: item.product_id,
-            sku: item.sku,
-            quantity: item.quantity,
-            price: item.price
-          })),
-          shippingAddress: orderData.shipping_address
-        }
+        user_id: store.userId,
+        amount: parseFloat(orderData.total_price || 0)
       })
     });
 

@@ -1,6 +1,5 @@
-"use client";
-
-import React, { useState } from 'react';
+import React from 'react';
+import { prisma } from '@rebuildyourlife/database';
 import { 
   Trophy, 
   Target, 
@@ -13,13 +12,7 @@ import {
   Activity
 } from 'lucide-react';
 
-// Mock data (would come from Supabase in production)
-const OPERATOR_RANK = {
-  level: 5,
-  name: "Strategist",
-  currentXp: 12500,
-  nextLevelXp: 20000,
-};
+export const dynamic = 'force-dynamic';
 
 const AGENT_UNLOCKS = [
   { level: 1, group: "C-Suite", agents: ["CEO", "CMO", "CTO", "CFO", "CRO", "COO", "Hermes"] },
@@ -34,7 +27,18 @@ const DAILY_MISSIONS = [
   { id: 3, title: "Run Backend Health Check", xp: 50, progress: 1, total: 1, status: "completed" }
 ];
 
-export default function QuestsPage() {
+export default async function QuestsPage() {
+  // Fetch real user data from Supabase/Prisma
+  // Since we don't have auth context here in this MVP, we fetch the first user (the Operator)
+  const user = await prisma.user.findFirst();
+  
+  const OPERATOR_RANK = {
+    level: user?.clearanceLevel || 1,
+    name: user?.clearanceLevel && user.clearanceLevel >= 5 ? "Strategist" : "Initiate",
+    currentXp: user?.experiencePoints || 0,
+    nextLevelXp: (user?.clearanceLevel || 1) * 5000,
+  };
+
   const xpPercentage = Math.min(100, Math.max(0, (OPERATOR_RANK.currentXp / OPERATOR_RANK.nextLevelXp) * 100));
 
   return (
