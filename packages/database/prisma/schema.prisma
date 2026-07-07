@@ -2822,3 +2822,99 @@ model AgentTrustScore {
 
   @@index([agentId])
 }
+
+// ==========================================
+// ARGENTIC AEIP V5.1 - ENTERPRISE COGNITIVE ARCHITECTURE
+// ==========================================
+
+model CognitiveState {
+  id             String   @id @default(uuid())
+  decisionId     String   @unique
+  currentPhase   String   // OBSERVE, UNDERSTAND, HYPOTHESIS, SIMULATE, DECIDE, EXECUTE, REFLECT, LEARN
+  contextData    Json
+  activeScenario String?
+  status         String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, BLOCKED, FAILED
+  updatedAt      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([decisionId])
+  @@index([currentPhase])
+  @@index([status])
+}
+
+model DecisionQualityIndex {
+  id                  String   @id @default(uuid())
+  decisionId          String   @unique
+  evidenceQuality     Float    @default(0)
+  dataFreshness       Float    @default(0)
+  forecastStability   Float    @default(0)
+  financialImpact     Float    @default(0)
+  strategicAlignment  Float    @default(0)
+  reversibility       Float    @default(0)
+  riskExposure        Float    @default(0)
+  capitalEfficiency   Float    @default(0)
+  learningPotential   Float    @default(0)
+  executionComplexity Float    @default(0)
+  compositeScore      Float    @default(0) // DQI 0-100
+  weights             Json     // Context-dependent weights applied
+  createdAt           DateTime @default(now())
+
+  @@index([decisionId])
+  @@index([compositeScore])
+}
+
+model Objective {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "Revenue Growth", "Cash Preservation"
+  description String?
+  weight      Float    @default(0) // dynamic weight %
+  targetValue Float?
+  currentValue Float?
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Constraint {
+  id            String   @id @default(uuid())
+  name          String   @unique // e.g., "Cash runway > 180 days"
+  description   String?
+  metric        String   // e.g., "cash_runway"
+  operator      String   // ">", "<", "=", ">=", "<="
+  thresholdValue Float
+  isHardLimit   Boolean  @default(true) // true = BLOCK if broken
+  status        String   @default("ACTIVE")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([metric])
+}
+
+model BusinessGenome {
+  id            String   @id @default(uuid())
+  category      String   // e.g., "Pricing", "Marketing", "Supply Chain"
+  pattern       String   @db.Text // The winning pattern / validated rule
+  confidence    Float    @default(0)
+  origin        String   // E.g. "Experiment #20481"
+  status        String   @default("CANDIDATE") // CANDIDATE, VALIDATED, DEPRECATED
+  metrics       Json?    // Performance metrics supporting this rule
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  vectors       BusinessGenomeVector[]
+
+  @@index([category])
+  @@index([status])
+}
+
+model BusinessGenomeVector {
+  id             String                       @id @default(uuid())
+  genomeId       String
+  embedding      Unsupported("vector(1536)")?
+  contentPayload String                       @db.Text
+  createdAt      DateTime                     @default(now())
+  genome         BusinessGenome               @relation(fields: [genomeId], references: [id], onDelete: Cascade)
+
+  @@index([genomeId])
+}

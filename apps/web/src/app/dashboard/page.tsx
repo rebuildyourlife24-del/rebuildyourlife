@@ -2,11 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ArgenticSidebar } from "@/components/argentic/ArgenticSidebar";
-import { AutonomyMatrix } from "@/components/argentic/AutonomyMatrix";
-import { DigitalTwinPanel } from "@/components/argentic/DigitalTwinPanel";
+import { ExecutiveDashboard } from "@/components/argentic/ExecutiveDashboard";
 import { AICourt } from "@/components/argentic/AICourt";
 import { RealityStream } from "@/components/argentic/RealityStream";
-import { EarlyWarningRadar } from "@/components/argentic/EarlyWarningRadar";
 import { ShieldCheck } from "lucide-react";
 
 export default function SovereignCommandUltra() {
@@ -21,12 +19,12 @@ export default function SovereignCommandUltra() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0B0B0D] overflow-hidden text-zinc-300 font-sans selection:bg-purple-500/30">
+    <div className="relative min-h-screen bg-[#0B0B0D] overflow-hidden text-zinc-300 font-sans selection:bg-indigo-500/30">
       
-      {/* V4.0 SOVEREIGN CANVAS BACKGROUND */}
+      {/* V5.1 SOVEREIGN CANVAS BACKGROUND */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-purple-900/[0.03] rounded-full blur-[140px] animate-pulse-glow"></div>
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/[0.02] rounded-full blur-[100px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-indigo-900/[0.03] rounded-full blur-[140px] animate-pulse-glow"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-900/[0.02] rounded-full blur-[100px]"></div>
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
       </div>
 
@@ -40,13 +38,13 @@ export default function SovereignCommandUltra() {
         <div className="flex justify-between items-center px-2">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-light tracking-[0.2em] text-white">ARGENTIC</h1>
-            <span className="text-[10px] font-mono tracking-widest text-zinc-500 px-3 py-1 border border-zinc-800 rounded-full bg-zinc-900/50">
-              V4.1 SOVEREIGN COMMAND ULTRA
+            <span className="text-[10px] font-mono tracking-widest text-emerald-400 px-3 py-1 border border-emerald-400/20 rounded-full bg-emerald-400/10">
+              V5.1 ENTERPRISE COGNITIVE ARCHITECTURE
             </span>
           </div>
           <div className="flex items-center gap-3 text-xs font-mono text-zinc-400">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            GOVERNANCE ENGINE ONLINE
+            12-LAYER CONSTITUTION ACTIVE
           </div>
         </div>
 
@@ -56,26 +54,19 @@ export default function SovereignCommandUltra() {
             <ArgenticSidebar />
           </motion.div>
 
-          {/* CENTER: INTELLIGENCE & CONTROL */}
-          <motion.div variants={panelVariants} className="col-span-6 flex flex-col gap-6">
-            <div className="flex-1 min-h-[400px]">
-              <AICourt />
-            </div>
-            <div className="h-[280px]">
-              <AutonomyMatrix />
-            </div>
-          </motion.div>
+          {/* RIGHT: COGNITIVE SUITE */}
+          <motion.div variants={panelVariants} className="col-span-10 flex flex-col gap-6 overflow-y-auto custom-scrollbar pb-10">
+            {/* TOP: ENTERPRISE HEALTH */}
+            <ExecutiveDashboard />
 
-          {/* RIGHT: REALITY & WARNINGS */}
-          <motion.div variants={panelVariants} className="col-span-4 flex flex-col gap-6">
-            <div className="h-[280px]">
-              <EarlyWarningRadar />
-            </div>
-            <div className="flex-1 min-h-[250px]">
-              <RealityStream />
-            </div>
-            <div className="h-[180px]">
-              <DigitalTwinPanel />
+            {/* BOTTOM: DECISIONS & REALITY */}
+            <div className="grid grid-cols-12 gap-6 flex-1 min-h-[500px]">
+              <div className="col-span-7 h-full">
+                <AICourt />
+              </div>
+              <div className="col-span-5 h-full">
+                <RealityStream />
+              </div>
             </div>
           </motion.div>
         </div>
