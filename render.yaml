@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: rebuildyourlife-core
+    env: node
+    buildCommand: npm install && npx turbo run build --filter=web
+    startCommand: npm start --workspace=@rebuildyourlife/web
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
+      # Voeg hier later je productiesleutels toe in de Render UI
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY_1
+        sync: false
