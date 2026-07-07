@@ -137,7 +137,7 @@ export async function executeToolCall(name: string, args: Record<string, any>): 
 
       case 'delegate_to_agent': {
         const { targetAgent, taskTitle, prompt } = args;
-        const { inngest } = await import('./inngest/client');
+        const { inngest } = await import('../inngest/client');
         
         // Sla de taak op in de database
         const task = await db.aiBountyTask.create({

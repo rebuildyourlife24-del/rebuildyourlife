@@ -72,6 +72,28 @@ export enum AgentType {
   ECOM_OPERATIONS = 'ECOM_OPERATIONS',
 }
 
+export enum CouncilMember {
+  ARISTOTLE = 'ARISTOTLE',
+  SOCRATES = 'SOCRATES',
+  SUN_TZU = 'SUN_TZU',
+  ADA_LOVELACE = 'ADA_LOVELACE',
+  MARCUS_AURELIUS = 'MARCUS_AURELIUS',
+  MACHIAVELLI = 'MACHIAVELLI',
+  LAO_TZU = 'LAO_TZU',
+  FEYNMAN = 'FEYNMAN',
+  LINUS_TORVALDS = 'LINUS_TORVALDS',
+  MIYAMOTO_MUSASHI = 'MIYAMOTO_MUSASHI',
+  ALAN_WATTS = 'ALAN_WATTS',
+  ANDREJ_KARPATHY = 'ANDREJ_KARPATHY',
+  ILYA_SUTSKEVER = 'ILYA_SUTSKEVER',
+  DANIEL_KAHNEMAN = 'DANIEL_KAHNEMAN',
+  DONELLA_MEADOWS = 'DONELLA_MEADOWS',
+  CHARLIE_MUNGER = 'CHARLIE_MUNGER',
+  NASSIM_TALEB = 'NASSIM_TALEB',
+  DIETER_RAMS = 'DIETER_RAMS',
+}
+
+
 export enum SubscriptionTier {
   FREE = 'FREE',
   BASIC = 'BASIC',
@@ -514,4 +536,33 @@ export const AGENT_DEFINITIONS: AgentInfo[] = [
     specializations: ['Conversie monitoring', 'Feestdagen & Verkeersanalyse', 'Slack alerts', 'Prestatierapportages'],
     avatarEmoji: '📊',
   },
+];
+
+export interface CouncilInfo {
+  member: CouncilMember;
+  name: string;
+  domain: string;
+  polarity: string;
+  triads: string[];
+}
+
+export const COUNCIL_DEFINITIONS: CouncilInfo[] = [
+  { member: CouncilMember.ARISTOTLE, name: 'Aristotle', domain: 'Categorization & structure', polarity: 'Classifies everything', triads: ['architecture', 'innovation', 'complexity', 'systems'] },
+  { member: CouncilMember.SOCRATES, name: 'Socrates', domain: 'Assumption destruction', polarity: 'Questions everything', triads: ['ethics', 'debugging', 'conflict', 'ai-safety', 'bias'] },
+  { member: CouncilMember.SUN_TZU, name: 'Sun Tzu', domain: 'Adversarial strategy', polarity: 'Reads terrain & competition', triads: ['strategy', 'risk', 'founder', 'economics', 'uncertainty'] },
+  { member: CouncilMember.ADA_LOVELACE, name: 'Ada Lovelace', domain: 'Formal systems & abstraction', polarity: 'What can/cant be mechanized', triads: ['architecture', 'debugging', 'innovation', 'complexity', 'ai'] },
+  { member: CouncilMember.MARCUS_AURELIUS, name: 'Marcus Aurelius', domain: 'Resilience & moral clarity', polarity: 'Control vs acceptance', triads: ['strategy', 'ethics', 'conflict', 'risk', 'ai-safety', 'decision'] },
+  { member: CouncilMember.MACHIAVELLI, name: 'Machiavelli', domain: 'Power dynamics & realpolitik', polarity: 'How actors actually behave', triads: ['strategy', 'conflict', 'product', 'ai-product', 'economics'] },
+  { member: CouncilMember.LAO_TZU, name: 'Lao Tzu', domain: 'Non-action & emergence', polarity: 'When less is more', triads: ['ethics', 'innovation', 'complexity', 'systems'] },
+  { member: CouncilMember.FEYNMAN, name: 'Feynman', domain: 'First-principles debugging', polarity: 'Refuses unexplained complexity', triads: ['architecture', 'debugging', 'risk', 'shipping'] },
+  { member: CouncilMember.LINUS_TORVALDS, name: 'Linus Torvalds', domain: 'Pragmatic engineering', polarity: 'Ship it or shut up', triads: ['shipping', 'product', 'founder', 'ai-product', 'design'] },
+  { member: CouncilMember.MIYAMOTO_MUSASHI, name: 'Miyamoto Musashi', domain: 'Strategic timing', polarity: 'The decisive strike', triads: ['shipping', 'founder'] },
+  { member: CouncilMember.ALAN_WATTS, name: 'Alan Watts', domain: 'Perspective & reframing', polarity: 'Dissolves false problems', triads: ['product', 'design', 'bias'] },
+  { member: CouncilMember.ANDREJ_KARPATHY, name: 'Andrej Karpathy', domain: 'Neural network intuition', polarity: 'How models actually learn and fail', triads: ['ai', 'ai-product'] },
+  { member: CouncilMember.ILYA_SUTSKEVER, name: 'Ilya Sutskever', domain: 'Scaling frontier & AI safety', polarity: 'When capability becomes risk', triads: ['ai', 'ai-safety', 'uncertainty'] },
+  { member: CouncilMember.DANIEL_KAHNEMAN, name: 'Daniel Kahneman', domain: 'Cognitive bias & decision science', polarity: 'Your own thinking is the first error', triads: ['decision', 'bias'] },
+  { member: CouncilMember.DONELLA_MEADOWS, name: 'Donella Meadows', domain: 'Systems thinking & feedback loops', polarity: 'Redesign the system, not the symptom', triads: ['systems'] },
+  { member: CouncilMember.CHARLIE_MUNGER, name: 'Charlie Munger', domain: 'Multi-model reasoning & economics', polarity: 'Invert — what guarantees failure?', triads: ['decision', 'economics'] },
+  { member: CouncilMember.NASSIM_TALEB, name: 'Nassim Taleb', domain: 'Antifragility & tail risk', polarity: 'Design for the tail, not the average', triads: ['uncertainty'] },
+  { member: CouncilMember.DIETER_RAMS, name: 'Dieter Rams', domain: 'User-centered design', polarity: 'Less, but better — the user decides', triads: ['design'] },
 ];

@@ -23,6 +23,14 @@ type Events = {
       agentId: string;
     };
   };
+  "system/data.stream": {
+    data: {
+      platform: "shopify" | "instagram" | "linkedin" | "facebook" | "tiktok" | "snapchat" | "system";
+      eventType: string;
+      payload: any;
+      timestamp: string;
+    };
+  };
 };
 
 export const inngest = new Inngest({ 

@@ -1,29 +1,34 @@
-import { Card } from '@/components/ui/Card';
-import { Briefcase, FileText, Download, Target, PenTool, Database, Search, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-export const dynamic = 'force-dynamic';
+import { Card } from '@/components/ui/Card';
+import { Briefcase, FileText, Download, Target, PenTool, Database, Search, ArrowRight, Lock } from 'lucide-react';
+import React from 'react';
 
 const tools = [
   {
     category: 'Marketing Tools (AI)',
     items: [
-      { name: 'AI Product Hunter', desc: 'Vind winnende Dropshipping producten in seconden.', icon: <Search className="w-5 h-5 text-amber-400" />, href: '/dashboard/modules/product-hunter' },
-      { name: 'Cold Email Generator', desc: 'Genereer B2B lead scripts op basis van bedrijfsdata.', icon: <Database className="w-5 h-5 text-amber-400" />, href: '/dashboard/modules/cold-email' },
-      { name: 'SEO Audit Scanner', desc: 'Volledige on-page scan van je e-com winkel.', icon: <Target className="w-5 h-5 text-amber-400" />, href: '/dashboard/modules/seo-audit' },
+      { name: 'AI Product Hunter', desc: 'Vind winnende Dropshipping producten in seconden.', icon: <Search className="w-5 h-5 text-amber-400" />, type: 'tool' },
+      { name: 'Cold Email Generator', desc: 'Genereer B2B lead scripts op basis van bedrijfsdata.', icon: <Database className="w-5 h-5 text-amber-400" />, type: 'tool' },
+      { name: 'SEO Audit Scanner', desc: 'Volledige on-page scan van je e-com winkel.', icon: <Target className="w-5 h-5 text-amber-400" />, type: 'tool' },
     ]
   },
   {
     category: 'De Vault (SOP\'s & Templates)',
     items: [
-      { name: 'Sales Call Script Matrix', desc: 'Het plug & play script voor high-ticket sluitingen.', icon: <FileText className="w-5 h-5 text-zinc-300" />, href: '#' },
-      { name: 'Notion CEO Dashboard', desc: 'Jouw life OS & business tracker in Notion.', icon: <Database className="w-5 h-5 text-zinc-300" />, href: '#' },
-      { name: 'Ultimate Email Swipe File', desc: 'Bewezen email flows voor E-com & Agency.', icon: <PenTool className="w-5 h-5 text-zinc-300" />, href: '#' },
+      { name: 'Sales Call Script Matrix', desc: 'Het plug & play script voor high-ticket sluitingen.', icon: <FileText className="w-5 h-5 text-zinc-300" />, type: 'download' },
+      { name: 'Notion CEO Dashboard', desc: 'Jouw life OS & business tracker in Notion.', icon: <Database className="w-5 h-5 text-zinc-300" />, type: 'download' },
+      { name: 'Ultimate Email Swipe File', desc: 'Bewezen email flows voor E-com & Agency.', icon: <PenTool className="w-5 h-5 text-zinc-300" />, type: 'download' },
     ]
   }
 ];
 
 export default function ToolsPage() {
+  const handleAction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    alert('⚠️ Onder Constructie: Deze module wordt momenteel klaargestoomd in het Syndicate Lab en is binnenkort beschikbaar.');
+  };
+
   return (
     <div className="space-y-8 max-w-[1400px] mx-auto pb-20 font-sans h-full px-4 sm:px-6 lg:px-8 py-8">
       
@@ -57,30 +62,36 @@ export default function ToolsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {section.items.map((item, i) => (
-                <Link key={i} href={item.href} className="group block h-full">
+                <div 
+                  key={i} 
+                  onClick={handleAction}
+                  className="cursor-pointer group block h-full"
+                >
                   <div className="glass-cyber rounded-[1.5rem] p-6 h-full flex flex-col hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-white/5 hover:border-amber-500/30 transition-all relative overflow-hidden">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors"></div>
                     
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 mb-4 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 mb-4 group-hover:scale-110 transition-transform relative">
                       {item.icon}
+                      <Lock className="w-3 h-3 text-amber-500 absolute -bottom-1 -right-1" />
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">{item.name}</h3>
                     <p className="text-sm text-zinc-400 font-light flex-1">
                       {item.desc}
                     </p>
                     <div className="mt-6 flex items-center justify-between">
-                      <span className="text-[10px] text-amber-400 uppercase tracking-widest font-bold">
-                        {item.href === '#' ? 'Download' : 'Open Tool'}
+                      <span className="text-[10px] text-amber-400/50 uppercase tracking-widest font-bold">
+                        Binnenkort Beschikbaar
                       </span>
-                      {item.href === '#' ? <Download className="w-4 h-4 text-zinc-500 group-hover:text-amber-400 transition-colors" /> : <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-amber-400 transition-colors" />}
+                      {item.type === 'download' ? <Download className="w-4 h-4 text-zinc-500" /> : <ArrowRight className="w-4 h-4 text-zinc-500" />}
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
         ))}
       </div>
+
       
     </div>
   );

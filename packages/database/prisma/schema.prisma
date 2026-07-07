@@ -1,11 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
 }
 
 model User {
@@ -343,18 +345,18 @@ model AIMessage {
 }
 
 model AIMemory {
-  id         String    @id @default(uuid())
+  id         String                       @id @default(uuid())
   content    String
-  importance Float     @default(0.5)
-  createdAt  DateTime  @default(now())
+  importance Float                        @default(0.5)
+  createdAt  DateTime                     @default(now())
   expiresAt  DateTime?
   memoryType String
-  updatedAt  DateTime  @updatedAt
+  updatedAt  DateTime                     @updatedAt
   userId     String
   agentType  String
   // vector field added for pgvector
   embedding  Unsupported("vector(1536)")?
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([userId, agentType])
@@ -515,22 +517,22 @@ model PasswordResetToken {
 }
 
 model OrionMemory {
-  id            String   @id @default(uuid())
+  id            String                       @id @default(uuid())
   userId        String
   sessionId     String?
   memoryType    String
   trigger       String?
   content       String
   emotionalTone String?
-  intensity     Int      @default(5)
+  intensity     Int                          @default(5)
   response      String?
   wasEffective  Boolean?
-  learnWeight   Float    @default(1.0)
+  learnWeight   Float                        @default(1.0)
   tags          String?
   // vector field added for pgvector
   embedding     Unsupported("vector(1536)")?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime                     @default(now())
+  updatedAt     DateTime                     @updatedAt
 
   @@index([userId])
   @@index([memoryType])
@@ -2605,13 +2607,13 @@ model CoreAuditLog {
 // RYL OS BILLING DOMAIN
 // ==========================================
 model WorkspaceWallet {
-  id             String   @id @default(uuid())
-  workspaceId    String   @unique
-  balance        Float    @default(0.0)
-  currency       String   @default("EUR")
-  updatedAt      DateTime @updatedAt
-  
-  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  workspaceId String   @unique
+  balance     Float    @default(0.0)
+  currency    String   @default("EUR")
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 model LedgerEntry {
@@ -2619,7 +2621,7 @@ model LedgerEntry {
   walletId       String
   amount         Float
   currency       String
-  type           String   // CREDIT or DEBIT
+  type           String // CREDIT or DEBIT
   description    String
   idempotencyKey String   @unique
   correlationId  String
@@ -2640,8 +2642,8 @@ model WorkspaceBudget {
   isKillSwitched Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  
-  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 model KillSwitchLog {
@@ -2662,14 +2664,14 @@ model KillSwitchLog {
 // ==========================================
 
 model EventStore {
-  id             String   @id @default(uuid())
-  aggregateId    String   // The ID of the affected entity (e.g., invoiceId, agentId)
-  aggregateType  String   // The type of entity (e.g., 'INVOICE', 'WORKSPACE')
-  eventType      String   // The event name (e.g., 'billing.invoice.paid')
-  payload        Json     // The complete event data
-  version        Int      @default(1) // Optimistic concurrency control / versioning
-  correlationId  String
-  createdAt      DateTime @default(now())
+  id            String   @id @default(uuid())
+  aggregateId   String // The ID of the affected entity (e.g., invoiceId, agentId)
+  aggregateType String // The type of entity (e.g., 'INVOICE', 'WORKSPACE')
+  eventType     String // The event name (e.g., 'billing.invoice.paid')
+  payload       Json // The complete event data
+  version       Int      @default(1) // Optimistic concurrency control / versioning
+  correlationId String
+  createdAt     DateTime @default(now())
 
   @@index([aggregateId])
   @@index([eventType])
@@ -2681,17 +2683,142 @@ model EventStore {
 // ==========================================
 
 model DeadLetterEvent {
-  id             String   @id @default(uuid())
+  id              String   @id @default(uuid())
   originalEventId String?
-  eventType      String
-  payload        Json
-  errorReason    String   @db.Text
-  retryCount     Int      @default(0)
-  status         String   @default("FAILED") // FAILED, RETRYING, RESOLVED, IGNORED
-  correlationId  String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  eventType       String
+  payload         Json
+  errorReason     String   @db.Text
+  retryCount      Int      @default(0)
+  status          String   @default("FAILED") // FAILED, RETRYING, RESOLVED, IGNORED
+  correlationId   String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([status])
   @@index([eventType])
+}
+
+// ==========================================
+// ARGENTIC AEIP V3.1 - INTELLIGENCE & EXECUTION
+// ==========================================
+
+model DecisionTrace {
+  id         String   @id @default(uuid())
+  decisionId String   @unique
+  type       String
+  context    Json
+  reasoning  String   @db.Text
+  confidence Float
+  riskScore  Float
+  status     String   @default("PENDING")
+  approvedBy String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+}
+
+model AgentMemory {
+  id           String   @id @default(uuid())
+  agentId      String
+  memoryType   String
+  content      String   @db.Text
+  importance   Float    @default(0.5)
+  embedding    Json?
+  createdAt    DateTime @default(now())
+  lastAccessed DateTime @default(now())
+
+  @@index([agentId])
+  @@index([memoryType])
+}
+
+model SimulationRun {
+  id            String   @id @default(uuid())
+  scenarioId    String
+  parameters    Json
+  predictedROI  Float
+  predictedRisk Float
+  outcomes      Json
+  status        String   @default("COMPLETED")
+  runTimeMs     Int
+  createdAt     DateTime @default(now())
+
+  @@index([scenarioId])
+}
+
+// ==========================================
+// ARGENTIC AEIP V4.0/4.1 - SOVEREIGN CONTROL PLANE
+// ==========================================
+
+model AgentPolicy {
+  id               String   @id @default(uuid())
+  agentId          String
+  allowedActions   Json
+  blockedActions   Json
+  maxBudget        Float
+  requiresApproval Boolean
+  createdAt        DateTime @default(now())
+
+  @@index([agentId])
+}
+
+model AIConfidenceHistory {
+  id                  String   @id @default(uuid())
+  decisionId          String
+  predictedConfidence Float
+  actualOutcome       Float
+  accuracy            Float
+  createdAt           DateTime @default(now())
+
+  @@index([decisionId])
+}
+
+model GovernanceEvent {
+  id         String   @id @default(uuid())
+  action     String
+  actor      String
+  decisionId String
+  approved   Boolean
+  reason     String   @db.Text
+  timestamp  DateTime @default(now())
+
+  @@index([decisionId])
+}
+
+model ResourceAllocation {
+  id            String   @id @default(uuid())
+  agentId       String
+  tokensUsed    Float
+  computeCost   Float
+  businessValue Float
+  roi           Float
+  createdAt     DateTime @default(now())
+
+  @@index([agentId])
+}
+
+model DecisionArtifact {
+  id               String   @id @default(uuid())
+  decisionId       String   @unique
+  evidence         Json
+  simulations      Json
+  testimonies      Json
+  governanceChecks Json
+  finalOutcome     Json
+  createdAt        DateTime @default(now())
+
+  @@index([decisionId])
+}
+
+model AgentTrustScore {
+  id         String   @id @default(uuid())
+  agentId    String   @unique
+  accuracy   Float
+  compliance Float
+  efficiency Float
+  overall    Float
+  updatedAt  DateTime @default(now())
+
+  @@index([agentId])
 }

@@ -1,89 +1,85 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { WidgetGrid } from "@/components/widgets/WidgetGrid";
-import { StatsWidget } from "@/components/widgets/StatsWidget";
-import { ActiveAgentsWidget } from "@/components/widgets/ActiveAgentsWidget";
-import { useRequireAuth } from "@/lib/auth";
-import { ShieldAlert, Network, Zap } from "lucide-react";
-import { WidgetBase } from "@/components/widgets/WidgetBase";
+import { ArgenticSidebar } from "@/components/argentic/ArgenticSidebar";
+import { AutonomyMatrix } from "@/components/argentic/AutonomyMatrix";
+import { DigitalTwinPanel } from "@/components/argentic/DigitalTwinPanel";
+import { AICourt } from "@/components/argentic/AICourt";
+import { RealityStream } from "@/components/argentic/RealityStream";
+import { EarlyWarningRadar } from "@/components/argentic/EarlyWarningRadar";
+import { ShieldCheck } from "lucide-react";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
+export default function SovereignCommandUltra() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+  };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.5, ease: "easeOut" } 
-  },
-};
-
-export default function CommandCenter() {
-  const { user } = useRequireAuth();
+  const panelVariants = {
+    hidden: { opacity: 0, y: 15, filter: 'blur(10px)' },
+    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto"
-    >
-      {/* Header Section */}
-      <motion.div variants={itemVariants} className="flex flex-col gap-2">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="inline-flex items-center justify-center bg-primary/10 border border-primary/30 text-primary px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse mr-2 shadow-[0_0_10px_currentColor]"></span>
-            System Online
-          </span>
+    <div className="relative min-h-screen bg-[#0B0B0D] overflow-hidden text-zinc-300 font-sans selection:bg-purple-500/30">
+      
+      {/* V4.0 SOVEREIGN CANVAS BACKGROUND */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-purple-900/[0.03] rounded-full blur-[140px] animate-pulse-glow"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/[0.02] rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+      </div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 max-w-[1920px] mx-auto p-4 md:p-8 h-screen flex flex-col gap-6"
+      >
+        {/* HEADER */}
+        <div className="flex justify-between items-center px-2">
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-light tracking-[0.2em] text-white">ARGENTIC</h1>
+            <span className="text-[10px] font-mono tracking-widest text-zinc-500 px-3 py-1 border border-zinc-800 rounded-full bg-zinc-900/50">
+              V4.1 SOVEREIGN COMMAND ULTRA
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-xs font-mono text-zinc-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            GOVERNANCE ENGINE ONLINE
+          </div>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter uppercase">
-          Command <span className="text-primary">Center</span>
-        </h1>
-        <p className="text-muted-foreground max-w-2xl text-sm md:text-base">
-          Welcome back, Operator {user?.firstName || 'Unknown'}. All systems are nominal.
-          Your Swarm AI is actively monitoring the workspace.
-        </p>
-      </motion.div>
 
-      {/* Primary Widget Grid */}
-      <motion.div variants={itemVariants}>
-        <WidgetGrid>
-          <StatsWidget />
-          <ActiveAgentsWidget />
-          
-          {/* Quick Action Widget Placeholder */}
-          <WidgetBase 
-            title="Active Automations" 
-            icon={<Network className="w-4 h-4" />}
-            className="col-span-1 sm:col-span-2 lg:col-span-1"
-            action={<button className="text-xs text-primary hover:underline">Deploy</button>}
-          >
-            <div className="flex flex-col items-center justify-center h-full text-center p-4 gap-2">
-              <Zap className="w-8 h-8 text-muted-foreground/30" />
-              <p className="text-xs text-muted-foreground font-mono">No active Zapier/Make webhooks detected in current region.</p>
-            </div>
-          </WidgetBase>
+        <div className="flex-1 grid grid-cols-12 gap-6 min-h-0">
+          {/* LEFT: NAVIGATION */}
+          <motion.div variants={panelVariants} className="col-span-2">
+            <ArgenticSidebar />
+          </motion.div>
 
-          {/* Security Widget Placeholder */}
-          <WidgetBase 
-            title="Sentinel Security" 
-            icon={<ShieldAlert className="w-4 h-4" />}
-            className="col-span-1"
-          >
-             <div className="flex flex-col items-center justify-center h-full text-center p-4 gap-2">
-              <ShieldAlert className="w-8 h-8 text-emerald-500/30" />
-              <p className="text-xs text-emerald-500 font-mono">0 breaches. MFA enforced. DLQ is empty.</p>
+          {/* CENTER: INTELLIGENCE & CONTROL */}
+          <motion.div variants={panelVariants} className="col-span-6 flex flex-col gap-6">
+            <div className="flex-1 min-h-[400px]">
+              <AICourt />
             </div>
-          </WidgetBase>
-        </WidgetGrid>
+            <div className="h-[280px]">
+              <AutonomyMatrix />
+            </div>
+          </motion.div>
+
+          {/* RIGHT: REALITY & WARNINGS */}
+          <motion.div variants={panelVariants} className="col-span-4 flex flex-col gap-6">
+            <div className="h-[280px]">
+              <EarlyWarningRadar />
+            </div>
+            <div className="flex-1 min-h-[250px]">
+              <RealityStream />
+            </div>
+            <div className="h-[180px]">
+              <DigitalTwinPanel />
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

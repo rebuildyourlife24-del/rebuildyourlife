@@ -504,6 +504,139 @@ export const dailyRoasValidationJob = inngest.createFunction(
     return { success: true, verified: hypotheses.length };
   }
 );
+
+// --- PIJLER 2: CASHFLOW (Preventing Silence in the Cashflow) ---
+export const cashflowCouncilJob = inngest.createFunction(
+  { id: "cashflow-council-job", name: "Cashflow Triad Scanner" },
+  { cron: "TZ=Europe/Amsterdam 0 6 * * *" }, // Elke ochtend om 06:00
+  async ({ step }) => {
+    console.log("[COUNCIL] Waking up Cashflow Triad (Taleb, Munger, Sun Tzu)...");
+
+    // 1. Ingestion: Haal de laatste Revenue Snapshot en ROAS op
+    const latestRevenue = await step.run("fetch-revenue", async () => {
+      // Haalt de inkomsten op van gisteren
+      return prisma.revenueSnapshot.findFirst({
+        orderBy: { snapshotDate: "desc" }
+      });
+    });
+
+    const isStagnating = latestRevenue && latestRevenue.netProfit < 100; // Arbitrary threshold
+
+    if (isStagnating) {
+      await step.run("council-deliberation", async () => {
+        // Taleb: Waarschuwt voor tail-risk
+        console.log("[TALEB] Cashflow is critically low. A 'silence' in cashflow leads to systemic ruin.");
+        // Munger: Inversie
+        console.log("[MUNGER] How do we guarantee bankruptcy? By doing nothing today. We must cut unused subscriptions.");
+        // Sun Tzu: Aanval
+        console.log("[SUN TZU] Attack the market where it is weak. Relaunch the abandoned cart campaigns immediately.");
+      });
+
+      // Prevention: Trigger de CEO en Hermes om actie te ondernemen
+      await step.run("trigger-cfo-action", async () => {
+        // Maak een AgentAction aan voor de CFO om abonnementen te pauzeren of campagnes te pushen
+        await prisma.agentAction.create({
+          data: {
+            userId: latestRevenue.userId,
+            agentType: "FINANCIAL",
+            title: "CASHFLOW STILTE GEDETECTEERD",
+            description: "De Council heeft een cashflow stilte voorspeld. Mogelijke oorzaak: stagnerende ad-spend. Aanbevolen actie: lanceer retargeting campagne.",
+            status: "PENDING",
+            riskLevel: "HIGH"
+          }
+        });
+      });
+    }
+
+    return { success: true, stagnating: isStagnating };
+  }
+);
+
+// --- PIJLER 1: CONTINUITY (Preventing System Collapse & Downtime) ---
+export const continuityCouncilJob = inngest.createFunction(
+  { id: "continuity-council-job", name: "Continuity Triad Scanner" },
+  { cron: "TZ=Europe/Amsterdam 0 4 * * *" }, // Elke nacht om 04:00
+  async ({ step }) => {
+    console.log("[COUNCIL] Waking up Continuity Triad (Torvalds, Sutskever, Aurelius)...");
+
+    const recentErrors = await step.run("fetch-system-health", async () => {
+      return prisma.systemHealthLog.count({
+        where: {
+          status: "ERROR",
+          createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+        }
+      });
+    });
+
+    if (recentErrors > 5) {
+      await step.run("council-deliberation", async () => {
+        console.log("[TORVALDS] The system is bleeding. Fix the damn bugs before shipping new features.");
+        console.log("[SUTSKEVER] This error rate indicates a foundational scaling limit. We must pause and refactor.");
+        console.log("[AURELIUS] Accept the reality of the broken code. Do what is necessary without panic.");
+      });
+
+      await step.run("trigger-coo-action", async () => {
+        // We find an admin user to assign this action to, or just the system default
+        const adminUser = await prisma.user.findFirst({ where: { role: "ADMIN" } });
+        if (adminUser) {
+          await prisma.agentAction.create({
+            data: {
+              userId: adminUser.id,
+              agentType: "CEO", // of COO als die in de enum zit
+              title: "CONTINUITEIT IN GEVAAR",
+              description: `De Council detecteert ${recentErrors} kritieke errors in de afgelopen 24u. Opschalen is afgeraden totdat de codebase gestabiliseerd is.`,
+              status: "PENDING",
+              riskLevel: "CRITICAL"
+            }
+          });
+        }
+      });
+    }
+
+    return { success: true, errorCount: recentErrors };
+  }
+);
+
+// --- PIJLER 3: GROWTH (Scaling & Expansion) ---
+export const growthCouncilJob = inngest.createFunction(
+  { id: "growth-council-job", name: "Growth Triad Scanner" },
+  { cron: "TZ=Europe/Amsterdam 0 8 * * *" }, // Elke ochtend om 08:00
+  async ({ step }) => {
+    console.log("[COUNCIL] Waking up Growth Triad (Machiavelli, Kahneman, Rams)...");
+
+    const runningCampaigns = await step.run("fetch-campaigns", async () => {
+      return prisma.socialCampaign.findMany({
+        where: { status: "PUBLISHED" }
+      });
+    });
+
+    for (const campaign of runningCampaigns) {
+      if (campaign.roas > 2.5) { // Highly profitable
+        await step.run(`council-deliberation-${campaign.id}`, async () => {
+          console.log("[MACHIAVELLI] They are biting. Double the budget and crush the competition.");
+          console.log("[KAHNEMAN] The users are experiencing the halo effect. Exploit this cognitive bias immediately.");
+          console.log("[RAMS] Do not ruin the UX with aggressive popups. Keep it clean, let the product sell itself.");
+        });
+
+        await step.run(`trigger-cmo-action-${campaign.id}`, async () => {
+          await prisma.agentAction.create({
+            data: {
+              userId: campaign.platformId, // Needs proper user lookup in reality
+              agentType: "CEO", // Of CMO
+              title: "GROWTH KANS: SCHAAL CAMPAGNE OP",
+              description: `Campagne ${campaign.campaignName} heeft een ROAS van ${campaign.roas}. De Council adviseert om de ad-spend te verdubbelen.`,
+              status: "PENDING",
+              riskLevel: "LOW" // Low risk because ROAS is already proven
+            }
+          });
+        });
+      }
+    }
+
+    return { success: true, processedCampaigns: runningCampaigns.length };
+  }
+);
+
 export const executeAgentTask = inngest.createFunction(
   { id: "execute-agent-task", name: "Execute Agent Task" },
   { event: "agent/task.assigned" },

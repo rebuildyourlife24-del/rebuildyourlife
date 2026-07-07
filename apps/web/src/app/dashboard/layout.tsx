@@ -9,8 +9,6 @@ import { AIHermesSidebar } from '@/components/AIHermesSidebar';
 import { getUserProjectsAction } from '@/app/actions/projects';
 import { 
   Shield, 
-  Layers, 
-  Heart, 
   Settings, 
   LogOut, 
   Menu,
@@ -19,62 +17,60 @@ import {
   Network,
   Activity,
   Map,
-  Ghost,
-  Rocket,
-  Skull,
   Terminal,
-  Cpu,
-  GraduationCap,
-  Briefcase,
-  Tv,
-  ChevronDown,
-  ChevronRight,
   Brain,
   Search,
-  Globe,
   ShoppingCart,
   Users,
-  CreditCard,
-  Building,
-  MessageSquare,
-  MousePointerClick,
-  Mail,
-  LifeBuoy,
+  Briefcase,
   Target,
-  Monitor,
-  Send,
-  Newspaper,
   Bot,
-  Link2,
   Database,
-  Megaphone,
-  PenTool
+  Cpu,
+  Lock,
+  Workflow,
+  Zap,
+  BarChart,
+  Command,
+  MessageSquare,
+  Layers,
+  GraduationCap,
+  Globe,
+  Monitor
 } from 'lucide-react';
-
-const getGroupedNavItems = () => {
-  return [
-    { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={16} /> },
-    { label: 'Agents', href: '/dashboard/agents', icon: <Bot size={16} /> },
-    { label: 'Taken', href: '/dashboard/tasks', icon: <Target size={16} /> },
-    { label: 'Klanten', href: '/dashboard/crm', icon: <Users size={16} /> },
-    { label: 'Business Models', href: '/dashboard/business-models', icon: <Briefcase size={16} /> },
-    { label: 'AI Studio', href: '/dashboard/ai-studio', icon: <Brain size={16} /> },
-    { label: 'Genesis', href: '/dashboard/genesis', icon: <ShoppingCart size={16} /> },
-    { label: 'Epistemic Grid', href: '/dashboard/epistemic', icon: <Brain size={16} /> },
-    { label: 'Automations', href: '/dashboard/automations', icon: <Network size={16} /> },
-    { label: 'Analytics', href: '/dashboard/analytics', icon: <Activity size={16} /> },
-    { label: 'Approvals', href: '/dashboard/sentinel', icon: <Shield size={16} /> },
-    { label: 'System Map', href: '/dashboard/system-map', icon: <Map size={16} /> },
-    { label: 'Settings', href: '/dashboard/settings', icon: <Settings size={16} /> }
-  ];
-};
-
 import { NotificationDropdown, AppNotification } from '@/components/ui/NotificationDropdown';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { JarvisProvider } from '@/components/JarvisProvider';
 import { JarvisOmniWidget } from '@/components/JarvisOmniWidget';
 import { getNotificationsAction, markNotificationReadAction, markAllNotificationsReadAction } from '@/app/actions/dashboard';
+
+const getGroupedNavItems = () => {
+  return [
+    { label: 'MISSION', href: '/dashboard', icon: <Target size={16} /> },
+    { label: 'COMMAND', href: '/dashboard/command', icon: <Command size={16} /> },
+    { label: 'NEXUS', href: '/dashboard/nexus', icon: <Brain size={16} /> },
+    { label: 'BOARDROOM', href: '/dashboard/boardroom', icon: <Users size={16} /> },
+    { label: 'PANOPTICON', href: '/dashboard/panopticon', icon: <Activity size={16} /> },
+    { label: 'DIGITAL TWIN', href: '/dashboard/digital-twin', icon: <Layers size={16} /> },
+    { label: 'AGENTS', href: '/dashboard/agents', icon: <Bot size={16} /> },
+    { label: 'MEMORY', href: '/dashboard/memory', icon: <Database size={16} /> },
+    { label: 'GENOME', href: '/dashboard/genome', icon: <Network size={16} /> },
+    { label: 'KNOWLEDGE', href: '/dashboard/knowledge', icon: <GraduationCap size={16} /> },
+    { label: 'RESEARCH', href: '/dashboard/research', icon: <Search size={16} /> },
+    { label: 'OPERATIONS', href: '/dashboard/operations', icon: <Briefcase size={16} /> },
+    { label: 'AUTOMATION', href: '/dashboard/automations', icon: <Zap size={16} /> },
+    { label: 'TREASURY', href: '/dashboard/treasury', icon: <BarChart size={16} /> },
+    { label: 'SIMULATION', href: '/dashboard/simulation', icon: <Cpu size={16} /> },
+    { label: 'REALITY ENGINE', href: '/dashboard/reality-engine', icon: <Globe size={16} /> },
+    { label: 'AI FACTORY', href: '/dashboard/ai-factory', icon: <Terminal size={16} /> },
+    { label: 'EVOLUTION', href: '/dashboard/evolution', icon: <Workflow size={16} /> },
+    { label: 'OBSERVABILITY', href: '/dashboard/observability', icon: <Monitor size={16} /> },
+    { label: 'SECURITY', href: '/dashboard/security', icon: <Shield size={16} /> },
+    { label: 'SENTINEL', href: '/dashboard/sentinel', icon: <Lock size={16} /> },
+    { label: 'SETTINGS', href: '/dashboard/settings', icon: <Settings size={16} /> }
+  ];
+};
 
 function NotificationBell() {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -126,80 +122,114 @@ function NotificationBell() {
   );
 }
 
+// Global Event Stream Ticker (Bloomberg Style)
+function LiveEventStream() {
+  const [events, setEvents] = useState([
+    "Marketing Agent started Campaign Alpha",
+    "Hermes solved refund request #1920",
+    "Inventory updated for SKU-9002",
+    "Meta ROAS increased by 14%",
+    "Panopticon routed €500 to Treasury",
+    "Workflow 'Abandoned Cart' triggered"
+  ]);
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 h-8 bg-black border-t border-[#00f0ff]/30 z-50 flex items-center overflow-hidden">
+      <div className="bg-[#00f0ff] text-black text-[10px] font-black uppercase tracking-widest px-4 h-full flex items-center z-10 shrink-0">
+        LIVE EVENTS
+      </div>
+      <div className="flex-1 whitespace-nowrap overflow-hidden relative">
+        <motion.div 
+          className="inline-flex items-center gap-12 absolute left-0"
+          animate={{ x: [0, -2000] }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        >
+          {[...events, ...events, ...events].map((evt, idx) => (
+            <span key={idx} className="text-[#00f0ff]/80 text-[10px] font-mono tracking-widest uppercase">
+              <span className="text-[#00f0ff] mr-2">›</span>
+              {evt}
+            </span>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout, isLoading } = useRequireAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useLanguage();
-
-
-  const [activeProject, setActiveProject] = useState<any>("holding");
-  const [showProjectSwitcher, setShowProjectSwitcher] = useState(false);
-  const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    async function load() {
-      const res = await getUserProjectsAction();
-      if (res.success && res.projects) {
-        setUserProjects(res.projects);
-      }
-    }
-    load();
-  }, []);
-
-  useEffect(() => {
-    // Scroll to top of main container on route change
     const mainContainer = document.getElementById('main-scroll-container');
     if (mainContainer) {
       mainContainer.scrollTo(0, 0);
     }
   }, [pathname]);
 
-
   const isAdmin = user?.role === 'ADMIN' || user?.email === 'hsemler50@gmail.com';
 
-  // THEME CONFIGURATION - THE 2026 CYBER AESTHETIC
-  // Admin gets Neon Cyan/Purple. User gets Deep Blue Neon.
   const theme = {
-    color: isAdmin ? 'text-neonCyan' : 'text-neonBlue',
-    hoverColor: isAdmin ? 'group-hover:text-neonCyan' : 'group-hover:text-neonBlue',
-    bgActive: isAdmin ? 'bg-neonCyanDim' : 'bg-neonBlueDim',
-    border: isAdmin ? 'border-neonCyan/20' : 'border-neonBlue/10',
-    borderStrong: isAdmin ? 'border-neonCyan/50' : 'border-neonBlue/30',
-    borderHover: isAdmin ? 'group-hover:border-neonCyan' : 'group-hover:border-neonBlue',
-    shadow: isAdmin ? 'shadow-[0_0_20px_rgba(6,182,212,0.3)]' : 'shadow-[0_0_15px_rgba(59,130,246,0.2)]',
-    pulseBg: isAdmin ? 'bg-neonCyan/20' : 'bg-neonBlue/20',
-    pulseActive: isAdmin ? 'bg-neonCyan' : 'bg-neonBlue',
-    gridLines: isAdmin ? 'rgba(6,182,212,0.05)' : 'rgba(59,130,246,0.03)',
-    orbTop: isAdmin ? 'rgba(6,182,212,0.15)' : 'rgba(59,130,246,0.1)',
-    orbBottom: isAdmin ? 'rgba(139,92,246,0.1)' : 'rgba(59,130,246,0.05)',
-    iconBg: isAdmin ? 'bg-[#020202] border-neonCyan/30' : 'bg-[#020202] border-neonBlue/20',
-    title: isAdmin ? 'System Override' : 'Operator',
+    color: 'text-[#00f0ff]',
+    hoverColor: 'group-hover:text-[#00f0ff]',
+    bgActive: 'bg-[#00f0ff]/10',
+    border: 'border-[#00f0ff]/20',
+    borderStrong: 'border-[#00f0ff]/50',
+    borderHover: 'group-hover:border-[#00f0ff]',
+    shadow: 'shadow-[0_0_20px_rgba(0,240,255,0.3)]',
+    pulseBg: 'bg-[#00f0ff]/20',
+    pulseActive: 'bg-[#00f0ff]',
+    gridLines: 'rgba(0,240,255,0.05)',
+    orbTop: 'rgba(0,240,255,0.1)',
+    orbBottom: 'rgba(0,240,255,0.05)',
+    iconBg: 'bg-black border-[#00f0ff]/30',
+    title: 'Argentic OS',
   };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`h-8 w-8 rounded-full border-2 border-t-transparent ${isAdmin ? 'border-primary/20 border-t-primary' : 'border-primary/20 border-t-primary'}`}
-          />
-          <p className={`text-sm font-mono tracking-widest uppercase text-primary opacity-70`}>Initializing Neuromatrix...</p>
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="flex flex-col items-center gap-6 relative">
+          <div className="absolute inset-0 bg-[#00f0ff]/20 blur-[50px] rounded-full pointer-events-none"></div>
+          
+          <div className="relative flex items-center justify-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              className="absolute w-24 h-24 border border-dashed border-[#00f0ff]/40 rounded-full"
+            />
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+              className="absolute w-16 h-16 border border-[#00f0ff]/60 rounded-full"
+            />
+            <div className="w-8 h-8 bg-[#00f0ff] rounded-full animate-pulse shadow-[0_0_30px_#00f0ff]" />
+          </div>
+
+          <div className="text-center space-y-1 relative z-10 mt-8">
+            <p className="text-[#00f0ff] text-xs font-black tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]">
+              Syndicate Core
+            </p>
+            <p className="text-zinc-500 text-[10px] font-mono tracking-widest uppercase">
+              Establishing Neural Link...
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex min-h-screen bg-background text-foreground ${isAdmin ? 'selection:bg-primary/30' : 'selection:bg-primary/20'} font-sans overflow-hidden`}>
+    <div className={`flex min-h-screen bg-black text-white selection:bg-[#00f0ff]/30 font-sans overflow-hidden pb-8`}>
       
-      {/* 110000X Cinematic Background */}
+      {/* Cinematic Background */}
       <div className="fixed inset-0 z-0 pointer-events-none cyber-grid">
-        <div className="absolute inset-0 bg-background/90"></div>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(2,2,2,0.9) 60%)` }}></div>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(2,2,2,0) 60%)` }}></div>
+        <div className="absolute inset-0 bg-black/90"></div>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at top, ${theme.orbTop} 0%, rgba(0,0,0,0.9) 60%)` }}></div>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at bottom, ${theme.orbBottom} 0%, rgba(0,0,0,0) 60%)` }}></div>
         <div className="absolute inset-0 bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]" style={{ backgroundImage: `linear-gradient(${theme.gridLines} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLines} 1px, transparent 1px)` }}></div>
       </div>
 
@@ -218,56 +248,51 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-border/50 glass-panel bg-card/40
+          fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/5 bg-black/60 backdrop-blur-xl
           transition-transform duration-300 ease-out
-          lg:static lg:translate-x-0 ${theme.border}
+          lg:static lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* Sidebar Header */}
-        <div className={`flex h-16 items-center justify-between border-b px-5 relative overflow-hidden group ${theme.border}`}>
+        <div className={`flex h-16 items-center justify-between border-b border-white/5 px-5 relative overflow-hidden group`}>
           <Link href="/dashboard" className="flex items-center gap-3 relative z-10">
             <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${theme.iconBg} ${theme.shadow}`}>
-              <Activity className={`w-4 h-4 ${theme.color}`} />
+              <Terminal className={`w-4 h-4 ${theme.color}`} />
             </div>
-            <span className="text-sm font-bold text-white tracking-widest uppercase">
-              R<span className={theme.color}>Y</span>L
+            <span className="text-[10px] font-black text-white tracking-[0.2em] uppercase">
+              Enterprise <span className={theme.color}>OS</span>
             </span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
+            className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:text-white lg:hidden"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Identity Block */}
-        <div className={`p-4 border-b bg-black/40 relative overflow-hidden group ${theme.border}`}>
+        <div className={`p-4 border-b border-white/5 bg-black/40 relative overflow-hidden group`}>
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative">
-              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} ${isAdmin ? 'shadow-[0_0_15px_rgba(6,182,212,0.1)] group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'shadow-[0_0_15px_rgba(255,255,255,0.02)] group-hover:shadow-[0_0_15px_rgba(255,255,255,0.08)]'}`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
-                <Terminal className={`w-4 h-4 ${theme.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
+              <div className={`w-10 h-10 border flex items-center justify-center bg-black transition-all ${theme.borderStrong} ${theme.borderHover} shadow-[0_0_15px_rgba(0,240,255,0.1)]`} style={{ clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' }}>
+                <Cpu className={`w-4 h-4 ${theme.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
               </div>
             </div>
             
-            <div className="flex-1">
-              <div className={`text-[9px] font-black uppercase tracking-[0.2em] opacity-70 ${theme.color}`}>{theme.title}</div>
-              <div className="text-white font-black tracking-widest uppercase text-xs truncate">
-                {user ? `${user.firstName} ${user.lastName}` : 'Unknown Entity'}
+            <div className="flex-1 min-w-0">
+              <div className={`text-[8px] font-black uppercase tracking-[0.2em] opacity-70 ${theme.color}`}>{theme.title}</div>
+              <div className="text-white font-black tracking-widest uppercase text-[10px] truncate">
+                {user ? `${user.firstName} ${user.lastName}` : 'System Admin'}
               </div>
             </div>
-          </div>
-          
-          <div className={`mt-3 text-[8px] font-mono tracking-widest bg-black/80 px-2 py-1 uppercase border flex justify-between items-center transition-colors ${theme.color} ${theme.borderStrong} ${theme.borderHover}`}>
-            <span className="opacity-70">Status: SECURE</span>
-            <span className={`w-1.5 h-1.5 rounded-full animate-pulse transition-colors ${theme.pulseActive}`}></span>
           </div>
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar">
-          <ul className="space-y-1">
+        <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+          <ul className="space-y-0.5">
             {getGroupedNavItems().map((item: any) => {
               const isActive =
                 item.href === '/dashboard'
@@ -280,179 +305,104 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`
-                      group relative flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium font-mono
+                      group relative flex items-center gap-4 px-6 py-2.5 text-xs font-medium font-mono
                       transition-all duration-200
                       ${
                         isActive
-                          ? `${theme.bgActive} ${theme.color} border ${theme.borderStrong}`
-                          : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300 border border-transparent'
+                          ? `bg-gradient-to-r from-[#00f0ff]/10 to-transparent text-white`
+                          : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-300'
                       }
                     `}
                   >
                     {isActive && (
                       <motion.div
                         layoutId="activeNav"
-                        className={`absolute left-0 top-1/2 h-3.5 w-[2px] -translate-y-1/2 ${theme.pulseActive}`}
-                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                        className={`absolute left-0 top-0 bottom-0 w-[2px] ${theme.pulseActive} shadow-[0_0_10px_#00f0ff]`}
                       />
                     )}
                     <span className={isActive ? theme.color : `text-zinc-600 ${theme.hoverColor}`}>
                       {item.icon}
                     </span>
-                    <span className="tracking-wide uppercase text-[10px]">{item.label}</span>
+                    <span className="tracking-[0.15em] uppercase text-[9px] font-black">{item.label}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-
-        {/* Sidebar Footer */}
-        <div className={`border-t p-3 bg-black/60 ${theme.border}`}>
-          <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-black border text-xs font-mono font-bold transition-colors ${theme.color} ${theme.borderStrong} ${theme.borderHover}`}>
-              {user?.firstName?.[0] || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-[11px] font-mono uppercase text-white tracking-widest">
-                {user ? `${user.firstName}` : 'User'}
-              </p>
-              <p className="truncate text-[9px] font-mono text-zinc-500">{user?.email || 'OFFLINE'}</p>
-            </div>
-            <button
-              onClick={logout}
-              className={`rounded-lg p-1.5 text-zinc-500 transition-colors ${theme.hoverColor}`}
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col relative z-10 w-full overflow-hidden">
-        {/* Top Bar */}
-        <header className={`sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 glass-panel bg-card/40 px-4 sm:px-6 ${theme.border}`}>
-          <div className="flex items-center gap-4">
+        
+        {/* Global AI Command Bar (Header) */}
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-black/60 backdrop-blur-xl px-4 sm:px-6">
+          <div className="flex items-center gap-4 w-1/4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground lg:hidden"
+              className="rounded-lg p-2 text-zinc-400 hover:text-white lg:hidden"
             >
               <Menu className="w-5 h-5" />
             </button>
-
-            {/* Path Breadcrumbs */}
-            <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
-              <span className={theme.color}>R_Y_L_CORE</span>
+            <div className="hidden lg:flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.2em]">
+              <span className={theme.color}>SYSTEM</span>
               <span className="text-zinc-600">/</span>
-              <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'CORE'}</span>
-            </div>
-
-            {/* Direct Connection to AI Agency */}
-            {isAdmin && (
-              <a 
-                href="https://ai-henksemler.nl/agency/ceo" 
-                className="ml-4 flex items-center gap-2 px-3 py-1.5 bg-blue-900/20 border border-blue-500/30 rounded-md hover:bg-blue-900/40 transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Terminal className="w-4 h-4 text-blue-400" />
-                <span className="text-xs font-bold uppercase text-blue-400 tracking-wider">AI Agency Control Room</span>
-              </a>
-            )}
-
-            {/* Project Switcher */}
-            <div className="relative ml-4">
-              <button 
-                onClick={() => setShowProjectSwitcher(!showProjectSwitcher)}
-                className={`flex items-center gap-2 px-3 py-1.5 bg-black/60 border rounded-md transition-colors ${showProjectSwitcher ? theme.borderStrong : theme.border}`}
-              >
-                <div className={`w-2 h-2 rounded-full ${activeProject === 'holding' ? 'bg-[#d4af37]' : 'bg-emerald-500'} animate-pulse`}></div>
-                <span className="text-xs font-bold uppercase text-white tracking-wider">
-                  {activeProject === 'holding' ? 'Holding (God-Mode)' : (userProjects.find(p => p.id === activeProject)?.name || 'E-Com Alpha')}
-                </span>
-                <ChevronDown className="w-3 h-3 text-zinc-500" />
-              </button>
-              
-              <AnimatePresence>
-                {showProjectSwitcher && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-0 mt-2 w-64 bg-[#0a0a0a] border border-white/10 shadow-2xl rounded-xl overflow-hidden z-50"
-                  >
-                    <div className="p-3 border-b border-white/10">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Jouw Portfolio</span>
-                    </div>
-                    <div className="p-2 space-y-1">
-                      <button 
-                        onClick={() => { setActiveProject('holding'); setShowProjectSwitcher(false); }}
-                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === 'holding' ? 'bg-[#d4af37]/10 border border-[#d4af37]/30' : 'hover:bg-white/5 border border-transparent'}`}
-                      >
-                        <Network className={`w-4 h-4 ${activeProject === 'holding' ? 'text-[#d4af37]' : 'text-zinc-400'}`} />
-                        <div>
-                          <p className={`text-xs font-bold uppercase ${activeProject === 'holding' ? 'text-[#d4af37]' : 'text-zinc-300'}`}>Holding View</p>
-                          <p className="text-[10px] text-zinc-500">Alle projecten geaggregeerd</p>
-                        </div>
-                      </button>
-                      
-                      {userProjects.map((proj) => (
-                        <button 
-                          key={proj.id}
-                          onClick={() => { setActiveProject(proj.id); setShowProjectSwitcher(false); }}
-                          className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${activeProject === proj.id ? 'bg-emerald-500/10 border border-emerald-500/30' : 'hover:bg-white/5 border border-transparent'}`}
-                        >
-                          <Briefcase className={`w-4 h-4 ${activeProject === proj.id ? 'text-emerald-500' : 'text-zinc-400'}`} />
-                          <div>
-                            <p className={`text-xs font-bold uppercase ${activeProject === proj.id ? 'text-emerald-500' : 'text-zinc-300'}`}>{proj.name}</p>
-                            <p className="text-[10px] text-zinc-500">{proj.domainUrl || `${proj.industry} Project`}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                    <div className="p-2 border-t border-white/10 bg-black/50">
-                      <button className="w-full text-left text-xs font-mono text-zinc-400 hover:text-white transition-colors p-2 flex items-center gap-2">
-                        + Subdomein Toevoegen
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <span className="text-zinc-400">{pathname?.split('/').filter(Boolean).pop() || 'MISSION_CONTROL'}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Cinematic Live Pulse */}
+          {/* Centered Omnibar */}
+          <div className="flex-1 max-w-xl mx-4">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-[#00f0ff]/5 rounded-lg blur-md group-focus-within:bg-[#00f0ff]/20 transition-all"></div>
+              <div className="relative flex items-center bg-black/80 border border-white/10 rounded-lg overflow-hidden group-focus-within:border-[#00f0ff]/50 transition-colors">
+                <div className="pl-3 pr-2 py-2">
+                  <Command className="w-4 h-4 text-[#00f0ff]" />
+                </div>
+                <input 
+                  type="text" 
+                  placeholder="Ask anything... Run anything... Automate anything..." 
+                  className="w-full bg-transparent border-none outline-none text-[11px] font-mono text-white placeholder-zinc-600 py-2"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <div className="pr-3 pl-2 py-2 flex items-center gap-2">
+                  <span className="text-[8px] font-mono text-zinc-600 uppercase border border-zinc-700 px-1.5 py-0.5 rounded">⌘ K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 w-1/4 justify-end">
             <div className={`hidden md:flex items-center gap-2 bg-black/60 border px-3 py-1.5 rounded-full ${theme.borderStrong}`}>
               <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.pulseActive}`}></div>
               <div className="flex flex-col">
-                <span className={`text-[7px] uppercase font-black tracking-widest leading-none ${theme.color}`}>Systeemstatus</span>
-                <span className="text-[9px] text-zinc-400 font-mono leading-none mt-0.5">Online</span>
+                <span className={`text-[6px] uppercase font-black tracking-widest leading-none ${theme.color}`}>System</span>
+                <span className="text-[8px] text-zinc-400 font-mono leading-none mt-0.5">OPTIMAL</span>
               </div>
             </div>
-
-            <div className={`w-px h-6 mx-1 ${isAdmin ? 'bg-navyLight/30' : 'bg-white/10'}`}></div>
-
-            <LanguageSwitcher />
             <NotificationBell />
+            <button onClick={logout} className="text-zinc-500 hover:text-white transition-colors">
+               <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden">
-          <main id="main-scroll-container" className="flex-1 overflow-y-auto relative bg-background" style={{ scrollBehavior: 'smooth' }}>
+        <div className="flex flex-1 overflow-hidden relative">
+          <main id="main-scroll-container" className="flex-1 overflow-y-auto relative bg-transparent" style={{ scrollBehavior: 'smooth' }}>
             <motion.div
               key={pathname}
-              initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="w-full min-h-full"
+              initial={{ opacity: 0, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="w-full min-h-full p-4 lg:p-8"
             >
               {children}
             </motion.div>
           </main>
-          <AIHermesSidebar />
         </div>
+
+        <LiveEventStream />
       </div>
     </div>
   );

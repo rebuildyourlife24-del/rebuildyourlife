@@ -8,18 +8,28 @@ import { ThemeProvider } from "@/lib/contexts/ThemeContext";
 import { LightweightCinematicBackground } from "@/components/3d/LightweightCinematicBackground";
 import { SoundscapeEngine } from "@/components/audio/SoundscapeEngine";
 import AffiliateTracker from "@/components/AffiliateTracker";
-import { Outfit } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"], display: 'swap' });
+const cormorant = Cormorant_Garamond({ 
+  subsets: ["latin"], 
+  weight: ["300", "400", "500", "600", "700"],
+  variable: '--font-cormorant'
+});
+
+const dmSans = DM_Sans({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: '--font-dmsans'
+});
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const revalidate = 0;
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#0B0B0D',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -56,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" className="dark">
-      <body className={`${outfit.className} min-h-screen bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white`}>
+      <body className={`${cormorant.variable} ${dmSans.variable} font-sans min-h-screen bg-[#0B0B0D] text-zinc-300 antialiased selection:bg-[#C8A96B]/30 selection:text-white`}>
         <QueryProvider>
           <ThemeProvider>
             <LightweightCinematicBackground />
