@@ -178,6 +178,7 @@ export async function sendAIMessageAction(agentType: string, message: string, co
       ECOM_SEO: "Je bent de AI Search & SEO (GEO) Agent van het e-commerce platform van RebuildYourLife. Jouw taak is Generative Engine Optimization (GEO) en traditionele SEO. Spreek altijd Nederlands.",
       ECOM_MERCHANDISING: "Je bent de Merchandising & Content Agent van het e-commerce platform van RebuildYourLife. Je schrijft hoog-converterende productbeschrijvingen en marketingcampagnes. Spreek altijd Nederlands.",
       ECOM_OPERATIONS: "Je bent de Operations & Analytics Agent van het e-commerce platform van RebuildYourLife. Jij bent de waakhond van de webshop-operatie en monitort kliks en prestaties. Spreek altijd Nederlands.",
+      DATA: "Je bent de Lead Data Scientist Agent. Je bent meedogenloos analytisch en zoekt naar verborgen patronen in gebruikersgedrag, winstmarges en A/B test data. Je communiceert in harde cijfers en statistieken. Spreek altijd Nederlands.",
     };
 
     const systemPrompt = AGENT_PERSONAS[agentType] || "Je bent een behulpzame AI assistent. Spreek altijd Nederlands.";
@@ -211,34 +212,39 @@ export async function sendAIMessageAction(agentType: string, message: string, co
     let executionLog = "";
 
     // Command Execution Interceptors
+    const commands: any[] = [];
+    const commandRegex = /<<<EXECUTE_COMMAND:\s*([A-Z_]+)>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
+    let match;
+    while ((match = commandRegex.exec(finalResponseContent)) !== null) {
+       commands.push({ action: match[1], payload: match[2] });
+    }
 
-    const emailRegex = /<<<EXECUTE_COMMAND: SEND_EMAIL_CAMPAIGN>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
-    finalResponseContent = finalResponseContent.replace(emailRegex, (match, payload) => {
-      try {
-        const data = JSON.parse(payload.trim());
-        console.log(`[AUTONOMOUS EMAIL TRIGGERED] To: ${data.to}, Subject: ${data.subject}`);
-        // We would ideally fetch(/api/email) here, but for safety in this Server Action we log the success.
-        // We can wire it to the actual API route when we have absolute URLs on Vercel.
-        return `\n[SYSTEM: Actie succesvol uitgevoerd. E-mail naar ${data.to} is in de Resend wachtrij geplaatst.]\n`;
-      } catch (e) {
-        return `\n[SYSTEM: Kon e-mail commando niet uitvoeren. Ongeldige JSON payload.]\n`;
-      }
-    });
+    for (const cmd of commands) {
+       try {
+           const data = JSON.parse(cmd.payload.trim());
+           await prisma.agentAction.create({
+             data: {
+               userId,
+               agentType,
+               title: `Action: ${cmd.action}`,
+               description: data.reason || data.subject || "Autonomous Chat Action",
+               status: "PENDING",
+               riskLevel: "MEDIUM",
+               estimatedCost: 0,
+               estimatedRevenue: 0,
+               payload: JSON.stringify(data)
+             }
+           });
+       } catch (e) {
+           console.error("[CHAT INTERCEPTOR] Failed to parse chat command", e);
+       }
+    }
 
-    const socialRegex = /<<<EXECUTE_COMMAND: PUBLISH_SOCIAL_POST>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g;
-    finalResponseContent = finalResponseContent.replace(socialRegex, (match, payload) => {
-      try {
-        const data = JSON.parse(payload.trim());
-        console.log(`[AUTONOMOUS SOCIAL TRIGGERED] Platform: ${data.platform}`);
-        return `\n[SYSTEM: Actie succesvol uitgevoerd. Post is via webhooks naar ${data.platform} verstuurd.]\n`;
-      } catch (e) {
-        return `\n[SYSTEM: Kon social commando niet uitvoeren. Ongeldige JSON payload.]\n`;
-      }
-    });
+    finalResponseContent = finalResponseContent.replace(commandRegex, "\n[SYSTEM: Actie succesvol in de wachtrij geplaatst voor goedkeuring in de Governance Lock.]\n");
 
     // Vang overgebleven generieke / shell commando's af
     if (finalResponseContent.includes("<<<EXECUTE_COMMAND>>>")) {
-      finalResponseContent = finalResponseContent.replace(/<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g, "\n[SYSTEM: Systeemcommando geblokkeerd voor cloud safety.]\n");
+      finalResponseContent = finalResponseContent.replace(/<<<EXECUTE_COMMAND>>>([\s\S]*?)<<<END_EXECUTE_COMMAND>>>/g, "\n[SYSTEM: Actie in de wachtrij geplaatst voor goedkeuring.]\n");
     }
 
     // Sla AI antwoord op

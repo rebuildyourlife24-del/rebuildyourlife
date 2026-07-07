@@ -13,7 +13,7 @@ import {
 import { useRequireAuth } from "@/lib/auth";
 
 interface AgentChatInterfaceProps {
-  agentId: "HERMES" | "ORION" | "CEO" | "CFO" | "CMO" | "COO" | "SEO" | "ADS" | "CRO" | "COPY" | "DATA"; 
+  agentId: "HERMES" | "ORION" | "CEO" | "CFO" | "CMO" | "COO" | "SEO" | "ADS" | "CRO" | "COPYWRITER" | "DATA" | string; 
   agentName: string;
   agentRole: string;
   agentDescription: string;
