@@ -1,36 +1,38 @@
 import os
 import asyncio
+from typing import Dict, List
 from langgraph.graph import StateGraph, END
 from .state import SyndicateState
 from .agents import *
+from .agents.ecom_catalog import EcomCatalogAgent
+from .agents.ecom_pricing import EcomPricingAgent
 
-# Instantiate the 18 AI Council Members
-agents_pool = {
-    "orion": OrionAgent(),
+# Instantiate the AI Council Members
+agents_pool: Dict[str, BaseAgent] = {
+    "hermes": HermesAgent(),
+    "ceo": CEOAgent(),
     "cfo": CFOAgent(),
-    "coo": COOAgent(),
     "cmo": CMOAgent(),
+    "coo": COOAgent(),
     "cto": CTOAgent(),
     "cro": CROAgent(),
-    "ciso": CISOAgent(),
-    "hermes": HermesAgent(),
-    "lead_data_scientist": LeadDataScientistAgent(),
-    "head_of_seo": HeadOfSEOAgent(),
-    "lead_frontend": LeadFrontendAgent(),
-    "lead_backend": LeadBackendAgent(),
-    "qa_lead": QALeadAgent(),
-    "head_of_growth": HeadOfGrowthAgent(),
-    "customer_success": CustomerSuccessAgent(),
-    "legal_compliance": LegalComplianceAgent(),
-    "market_intelligence": MarketIntelligenceAgent(),
-    "devops": DevOpsArchitectAgent()
+    "cs": CSAgent(),
+    "devops": DevOpsAgent(),
+    "frontend": FrontendAgent(),
+    "growth": GrowthAgent(),
+    "legal": LegalAgent(),
+    "market_intel": MarketIntelAgent(),
+    "qa": QAAgent(),
+    "seo": SEOAgent(),
+    "ecom_catalog": EcomCatalogAgent(),
+    "ecom_pricing": EcomPricingAgent()
 }
 
 # =====================================================================
 # GENERIC AGENT NODE WRAPPER
 # =====================================================================
 def create_agent_node(agent_id: str, agent_instance):
-    """Creates a LangGraph node for a specific 18-Council Agent"""
+    """Creates a LangGraph node for a specific Council Agent"""
     async def node_func(state: SyndicateState):
         state["active_agent"] = agent_id
         state["ui_events"].append({"id": agent_id, "status": "thinking", "task": f"{agent_instance.name} is working..."})
@@ -56,10 +58,13 @@ def create_agent_node(agent_id: str, agent_instance):
             else:
                 state["ui_events"].append({"id": agent_id, "status": "active", "task": f"Task completed with status: {result.status}"})
                 
+            state["decision_log"].append(f"{agent_instance.name}: {result.status} - {result.message}")
         except Exception as e:
-            state["ui_events"].append({"id": agent_id, "status": "error", "task": f"Agent crashed: {str(e)[:40]}"})
+            state["decision_log"].append(f"{agent_instance.name}: ERROR - {str(e)}")
+            state["ui_events"].append({"id": agent_id, "status": "error", "task": f"Agent crashed: {str(e)}"})
             
         return state
+        
     return node_func
 
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -140,7 +145,7 @@ workflow = StateGraph(SyndicateState)
 # Add standard entry node
 workflow.add_node("router", router_node)
 
-# Add all 18 nodes dynamically
+# Add nodes for each agent
 for agent_id, agent_instance in agents_pool.items():
     workflow.add_node(agent_id, create_agent_node(agent_id, agent_instance))
 
