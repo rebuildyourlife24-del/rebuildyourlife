@@ -23,4 +23,37 @@ router.get('/state', async (req, res) => {
   }
 });
 
+import { GovernancePlane } from '../core/governance/GovernancePlane';
+
+// POST /api/v1/twin/propose-action
+// Used by the execution plane / agents to propose actions
+router.post('/propose-action', async (req, res) => {
+  try {
+    const { actionType, amount, currency, evidence, target, contextEventId } = req.body;
+    
+    if (!actionType) {
+      return res.status(400).json({ error: 'actionType is required' });
+    }
+
+    const governance = new GovernancePlane();
+    
+    const decision = await governance.evaluateProposal({
+      actionType,
+      amount,
+      currency,
+      evidence,
+      target
+    }, contextEventId);
+
+    res.status(200).json({
+      message: 'Proposal Evaluated',
+      governance: decision
+    });
+
+  } catch (error: any) {
+    console.error('[Governance API Error]', error);
+    res.status(500).json({ error: error.message || 'Internal Enterprise Server Error' });
+  }
+});
+
 export default router;
