@@ -1,603 +1,348 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, User, ChevronRight, Activity, Shield, Hexagon, Network, Workflow, Brain, Settings, Loader2 } from 'lucide-react';
-import { useChat } from '@ai-sdk/react';
+import React, { useState, useEffect } from 'react';
+import { Activity, Brain, Server, Shield, Zap, Search, Globe, ChevronRight, Workflow, Database, Layers, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ============================================================================
-// MAIN LAYOUT
+// WEBSOCKET AGENT CONNECTION
 // ============================================================================
-export default function AgenticOSCommandCenter() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+function useAgentStatus() {
+  const [agents, setAgents] = useState<any[]>([
+    { id: "router", status: "idle", task: "Awaiting initialization" },
+    { id: "ceo", status: "idle", task: "System cold" },
+    { id: "cmo", status: "idle", task: "System cold" },
+    { id: "coo", status: "idle", task: "System cold" },
+    { id: "orion", status: "idle", task: "Offline" },
+  ]);
 
   useEffect(() => {
-    fetch('/api/v6/dashboard/overview')
-      .then(res => res.json())
-      .then(json => {
-        setData(json);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch dashboard data", err);
-        setLoading(false);
-      });
+    // In production, this would be wss://...
+    const ws = new WebSocket('ws://localhost:8000/ws/agents');
+    
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'AGENT_UPDATE') {
+          setAgents(data.payload.agents);
+        }
+      } catch (e) {
+        console.error("WS parse error", e);
+      }
+    };
+
+    return () => ws.close();
   }, []);
 
+  return agents;
+}
+
+export default function JarvisCommandOS() {
+  const liveAgents = useAgentStatus();
+  const [cmdOpen, setCmdOpen] = useState(false);
+
+  // Command Palette toggle via Cmd+K
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCmdOpen((open) => !open);
+      }
+    };
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, []);
+
+  // Compute active agent
+  const activeAgent = liveAgents.find(a => a.status === 'active');
+  const thinkingAgent = liveAgents.find(a => a.status === 'thinking');
+  const currentAction = activeAgent || thinkingAgent || liveAgents[0];
+
   return (
-    <div className="w-screen h-screen bg-[#050505] text-white font-sans overflow-hidden flex relative">
+    <div className="w-screen h-screen bg-[#02040a] text-white font-sans overflow-hidden flex flex-col relative selection:bg-cyan-500/30">
       
-      {loading && (
-        <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-12 h-12 text-cyan-500 animate-spin" />
-            <span className="text-cyan-400 text-xs tracking-widest uppercase animate-pulse">Initializing V6.0 Live Feeds...</span>
+      {/* GLOBAL BACKGROUND - Extremely subtle world map and glows */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10 bg-center bg-no-repeat bg-contain"
+        style={{ backgroundImage: "url('/world-map-hud.png')", mixBlendMode: 'screen' }}
+      ></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+      {/* TOP NAVIGATION / STATUS BAR */}
+      <header className="h-12 border-b border-cyan-900/40 bg-black/50 backdrop-blur-md flex items-center justify-between px-6 z-40">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+             <div className="relative flex items-center justify-center">
+                <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></div>
+                <div className="absolute w-2.5 h-2.5 rounded-full bg-cyan-500 blur-[4px]"></div>
+             </div>
+             <span className="font-mono text-xs tracking-[0.2em] text-cyan-400">ARGENTIC // AEIP</span>
           </div>
-        </div>
-      )}
-
-      {/* MAIN COMMAND CENTER (75% WIDTH) */}
-      <div className="flex-1 flex flex-col p-6 gap-6 h-full relative">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none"></div>
-
-        {/* HEADER */}
-        <header className="flex flex-col items-center justify-center shrink-0 z-10 relative">
-          <h1 className="text-4xl font-bold tracking-widest uppercase mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-            AGENTIC OS
-          </h1>
-          <p className="text-amber-500/80 text-[10px] uppercase tracking-[0.3em] font-bold mb-6">
-            Autonomous Commerce Command Center
-          </p>
           
-          <div className="flex items-center gap-16 text-amber-500/60">
-            <HeaderIcon icon={<Hexagon size={16} />} label="Autonomous Agents" />
-            <HeaderIcon icon={<Activity size={16} />} label="Data Intelligence" />
-            <HeaderIcon icon={<Network size={16} />} label="Workflow Automation" />
-            <HeaderIcon icon={<Brain size={16} />} label="Decision Engine" />
-            <HeaderIcon icon={<Workflow size={16} />} label="Multi-Channel Control" />
-          </div>
-        </header>
-
-        {/* 3x2 GRID (THE 6 MONITORS) */}
-        <div className="grid grid-cols-3 grid-rows-2 gap-4 flex-1 min-h-0 z-10">
-          
-          {/* PANEL 1: DASHBOARD (FINANCIALS) */}
-          <MonitorPanel title="Dashboard">
-            <FinancialDashboard data={data?.finance} />
-          </MonitorPanel>
-
-          {/* PANEL 2: SYSTEM OVERVIEW (NEURAL NET) */}
-          <MonitorPanel title="Agentic OS - System Overview">
-            <NeuralNetworkOverview />
-          </MonitorPanel>
-
-          {/* PANEL 3: AGENT ACTIVITY & DECISIONS */}
-          <div className="flex flex-col gap-4">
-            <MonitorPanel title="Agent Activity" className="flex-[3]">
-              <AgentActivityList activities={data?.agentActivity} />
-            </MonitorPanel>
-            <MonitorPanel title="Decision Engine" className="flex-[2]">
-              <DecisionEngineWidget stats={data?.decisionEngine} />
-            </MonitorPanel>
-          </div>
-
-          {/* PANEL 4: STORE PERFORMANCE (WORLD MAP) */}
-          <MonitorPanel title="Store Performance">
-            <StorePerformanceWithMap stores={data?.storePerformance} />
-          </MonitorPanel>
-
-          {/* PANEL 5: REAL-TIME ANALYTICS */}
-          <MonitorPanel title="Real-Time Analytics">
-            <RealTimeAnalytics />
-          </MonitorPanel>
-
-          {/* PANEL 6: AUTOMATION WORKFLOWS & STATUS */}
-          <div className="flex flex-col gap-4">
-            <MonitorPanel title="Automation Workflows" className="flex-[3]">
-              <WorkflowNodeGraph />
-            </MonitorPanel>
-            <MonitorPanel title="System Status" className="flex-[2]">
-              <SystemStatusWidget status={data?.systemStatus} />
-            </MonitorPanel>
-          </div>
-
+          <nav className="hidden md:flex gap-6 text-[11px] uppercase tracking-widest text-zinc-500 font-semibold">
+            <span className="text-cyan-400 cursor-pointer">Command Center</span>
+            <span className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</span>
+            <span className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</span>
+          </nav>
         </div>
-      </div>
 
-      {/* FULLTIME OPEN AI ASSISTANT (25% WIDTH) */}
-      <div className="w-[350px] border-l border-white/10 bg-[#0a0a0a] flex flex-col shrink-0 relative z-20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
-        <FulltimeAIAssistant />
-      </div>
+        <div className="flex items-center gap-6">
+           <div className="flex flex-col items-end">
+              <span className="text-[9px] uppercase tracking-widest text-zinc-500">System Time</span>
+              <span className="text-xs font-mono text-zinc-300">{new Date().toLocaleTimeString()}</span>
+           </div>
+           <div className="flex flex-col items-end">
+              <span className="text-[9px] uppercase tracking-widest text-zinc-500">Network</span>
+              <span className="text-xs font-mono text-emerald-400">SECURE</span>
+           </div>
+        </div>
+      </header>
+
+      {/* MAIN GRID LAYOUT */}
+      <main className="flex-1 p-6 grid grid-cols-12 grid-rows-6 gap-6 relative z-10 max-w-[2000px] mx-auto w-full">
+         
+         {/* LEFT COLUMN: THE SYNDICATE FLEET */}
+         <section className="col-span-3 row-span-6 flex flex-col gap-6">
+            <HudPanel title="The Syndicate (Agent Fleet)" icon={<Shield size={14}/>} className="flex-1">
+               <div className="flex flex-col gap-3 mt-2">
+                  {liveAgents.map((ag) => (
+                    <AgentRow key={ag.id} agent={ag} />
+                  ))}
+               </div>
+            </HudPanel>
+            
+            <HudPanel title="System Resources" icon={<Server size={14}/>} className="h-48">
+               <div className="flex flex-col gap-4 mt-2">
+                  <ResourceBar label="Compute Core (GPU)" value={78} color="cyan" />
+                  <ResourceBar label="Memory Bank (Orion)" value={42} color="amber" />
+                  <ResourceBar label="Network I/O" value={91} color="emerald" />
+               </div>
+            </HudPanel>
+         </section>
+
+         {/* CENTER COLUMN: THE NEURAL STREAM (Replacement for 3D) */}
+         <section className="col-span-6 row-span-6 flex flex-col gap-6">
+            <div className="flex-1 bg-black/40 border border-cyan-900/30 backdrop-blur-sm rounded-xl relative overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+               {/* Decorative corners */}
+               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-cyan-500/50"></div>
+               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-cyan-500/50"></div>
+               <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-cyan-500/50"></div>
+               <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-cyan-500/50"></div>
+               
+               <div className="p-4 border-b border-cyan-900/30 flex justify-between items-center">
+                  <span className="text-xs font-mono text-cyan-500/80 uppercase tracking-[0.2em]">Neural Processing Stream</span>
+                  <span className="text-[10px] font-mono text-zinc-500">LATENCY: 14ms</span>
+               </div>
+
+               <div className="flex-1 flex flex-col items-center justify-center relative p-8">
+                  {/* Central Abstract Neural Representation */}
+                  <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
+                     {/* Pulsing rings based on activity */}
+                     <motion.div 
+                        animate={{ 
+                           scale: [1, 1.2, 1],
+                           opacity: [0.1, 0.3, 0.1]
+                        }}
+                        transition={{ 
+                           duration: currentAction?.status === 'active' ? 1.5 : 4, 
+                           repeat: Infinity,
+                           ease: "linear"
+                        }}
+                        className="absolute inset-0 rounded-full border border-cyan-500/30"
+                     ></motion.div>
+                     <motion.div 
+                        animate={{ 
+                           scale: [1, 1.5, 1],
+                           opacity: [0.05, 0.15, 0.05],
+                           rotate: [0, 90, 0]
+                        }}
+                        transition={{ 
+                           duration: currentAction?.status === 'active' ? 2 : 6, 
+                           repeat: Infinity,
+                           ease: "linear"
+                        }}
+                        className="absolute inset-4 rounded-full border-2 border-dashed border-cyan-400/20"
+                     ></motion.div>
+
+                     {/* Core Intelligence Hub */}
+                     <div className="z-10 bg-[#02040a] border border-cyan-500/50 p-6 rounded-full relative shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center justify-center w-48 h-48">
+                        <Brain size={48} className="text-cyan-400 mb-2" strokeWidth={1} />
+                        <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-500 font-bold">J.A.R.V.I.S. Core</span>
+                     </div>
+                  </div>
+
+                  {/* Active Event Feed below the core */}
+                  <div className="mt-12 text-center w-full max-w-lg z-20">
+                     <span className="text-[10px] uppercase font-mono tracking-[0.3em] text-zinc-500 block mb-2">Current Operation</span>
+                     <div className="bg-[#02040a]/80 border border-cyan-900/50 rounded-lg p-4 backdrop-blur-md shadow-2xl">
+                        <div className="flex items-center justify-center gap-3 mb-1">
+                           <span className="text-xs font-bold text-white uppercase tracking-wider">{currentAction?.id}</span>
+                           <span className={`text-[9px] px-2 py-0.5 rounded-sm uppercase tracking-widest font-mono border ${
+                              currentAction?.status === 'active' ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' :
+                              currentAction?.status === 'thinking' ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' :
+                              'bg-zinc-800/50 border-zinc-700 text-zinc-400'
+                           }`}>
+                              {currentAction?.status}
+                           </span>
+                        </div>
+                        <p className="text-sm text-cyan-100/70 font-light font-mono mt-2">{currentAction?.task}</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         {/* RIGHT COLUMN: DATA STREAM & TIMELINE */}
+         <section className="col-span-3 row-span-6 flex flex-col gap-6">
+            <HudPanel title="Global Digital Twin" icon={<Globe size={14}/>} className="h-64">
+               <div className="flex-1 bg-[url('/world-map-hud.png')] bg-cover bg-center opacity-80 mix-blend-screen relative mt-2 border border-white/5 rounded-lg overflow-hidden h-full">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-transparent to-transparent"></div>
+                  {/* Fake nodes on map */}
+                  <div className="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#06b6d4]"></div>
+                  <div className="absolute top-[30%] left-[50%] w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse"></div>
+                  <div className="absolute top-[50%] left-[70%] w-1 h-1 bg-amber-400 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+                  
+                  <div className="absolute bottom-2 left-2 flex gap-4">
+                     <div>
+                        <span className="block text-[8px] uppercase text-zinc-500">Live Nodes</span>
+                        <span className="block text-xs font-mono text-cyan-400">1,204</span>
+                     </div>
+                     <div>
+                        <span className="block text-[8px] uppercase text-zinc-500">Threats</span>
+                        <span className="block text-xs font-mono text-zinc-400">0</span>
+                     </div>
+                  </div>
+               </div>
+            </HudPanel>
+
+            <HudPanel title="Event Log" icon={<Database size={14}/>} className="flex-1">
+               <div className="flex flex-col gap-4 mt-4 relative">
+                  {/* Timeline Line */}
+                  <div className="absolute left-[7px] top-2 bottom-0 w-px bg-zinc-800"></div>
+
+                  <LogEntry time="JUST NOW" text="CEO Core evaluated growth metrics. Delegated to CMO." active />
+                  <LogEntry time="2m ago" text="Orion successfully synced vector embeddings to DB." />
+                  <LogEntry time="12m ago" text="Router received batch update from Shopify webhook." />
+                  <LogEntry time="1h ago" text="System initialization complete. Handshake OK." />
+               </div>
+            </HudPanel>
+         </section>
+      </main>
+
+      {/* SPOTLIGHT COMMAND PALETTE */}
+      <AnimatePresence>
+        {cmdOpen && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-[#090b10]/95 backdrop-blur-3xl border border-cyan-500/30 rounded-xl shadow-[0_40px_100px_rgba(0,0,0,0.9),0_0_60px_rgba(6,182,212,0.15)] z-[100] overflow-hidden flex flex-col"
+          >
+            <div className="flex items-center px-6 py-5 border-b border-white/10">
+              <Search className="text-cyan-400 w-5 h-5 mr-4" />
+              <input 
+                type="text" 
+                placeholder="Enter command or query J.A.R.V.I.S..." 
+                className="w-full bg-transparent border-none outline-none text-white text-lg placeholder-zinc-500 font-light"
+                autoFocus
+              />
+              <span className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-zinc-400 font-mono tracking-widest uppercase">ESC</span>
+            </div>
+            <div className="p-2 flex flex-col gap-1 max-h-[400px] overflow-y-auto">
+               <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-600 px-4 py-3 font-bold">Suggested Commands</span>
+               
+               <CommandItem icon={<Workflow size={16}/>} text="Launch Marketing Optimization Flow" />
+               <CommandItem icon={<Database size={16}/>} text="Query Orion Memory DB" />
+               <CommandItem icon={<Brain size={16}/>} text="Override CEO Core Logic" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
 }
 
 // ============================================================================
-// COMPONENTS
+// UI COMPONENTS
 // ============================================================================
 
-function HeaderIcon({ icon, label }: { icon: React.ReactNode, label: string }) {
+function HudPanel({ title, children, className = "", icon }: { title: string, children: React.ReactNode, className?: string, icon?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 group cursor-pointer">
-      <div className="w-10 h-10 border border-amber-500/30 rounded-lg flex items-center justify-center text-amber-500 group-hover:bg-amber-500/10 group-hover:border-amber-500/60 transition-all shadow-[0_0_15px_rgba(245,158,11,0.1)] group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]">
-        {icon}
+    <div className={`bg-[#02040a]/60 backdrop-blur-md border border-white/[0.06] rounded-xl flex flex-col overflow-hidden relative shadow-lg ${className}`}>
+      <div className="h-10 border-b border-white/[0.05] flex items-center px-4 bg-gradient-to-r from-white/[0.02] to-transparent shrink-0 gap-2">
+        {icon && <span className="text-cyan-500/70">{icon}</span>}
+        <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-400">{title}</span>
       </div>
-      <span className="text-[8px] uppercase tracking-widest text-zinc-500 group-hover:text-amber-500/80 transition-colors">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function MonitorPanel({ title, children, className = "" }: { title: string, children: React.ReactNode, className?: string }) {
-  return (
-    <div className={`bg-[#0A0B0E] border border-white/10 rounded-xl flex flex-col overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.8)] ${className}`}>
-      <div className="h-8 border-b border-white/5 flex items-center justify-between px-4 bg-white/[0.02]">
-        <span className="text-[9px] uppercase tracking-widest font-bold text-zinc-400">{title}</span>
-        <div className="flex gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-zinc-700/50"></div>
-          <div className="w-2 h-2 rounded-full bg-zinc-700/50"></div>
-          <div className="w-2 h-2 rounded-full bg-zinc-700/50"></div>
-        </div>
-      </div>
-      <div className="flex-1 relative p-4 overflow-hidden">
+      <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
         {children}
       </div>
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// PANEL 1: FINANCIAL DASHBOARD
-// ----------------------------------------------------------------------------
-function FinancialDashboard({ data }: { data?: any }) {
-  const revenue = data?.totalRevenue || 0;
-  const profit = data?.netProfit || 0;
-  const orders = data?.orders || 0;
-
-  return (
-    <div className="flex flex-col h-full gap-4">
-      {/* Top Stats */}
-      <div className="flex gap-4">
-        <div className="flex-[2]">
-          <span className="text-[10px] text-zinc-500 uppercase">Total Revenue</span>
-          <div className="flex items-end gap-3 mt-1">
-            <span className="text-3xl font-light text-white">${revenue.toLocaleString()}</span>
-            <span className="text-xs text-emerald-400 mb-1">+28.6%</span>
-          </div>
-          {/* Mock Line Chart */}
-          <div className="h-16 mt-4 relative">
-             <svg viewBox="0 0 100 30" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                <path d="M0,25 Q5,15 10,20 T20,10 T30,15 T40,5 T50,18 T60,8 T70,12 T80,2 T90,10 T100,0" fill="none" stroke="#06b6d4" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <path d="M0,25 Q5,15 10,20 T20,10 T30,15 T40,5 T50,18 T60,8 T70,12 T80,2 T90,10 T100,0 L100,30 L0,30 Z" fill="url(#blue-gradient)" opacity="0.2" />
-                <defs>
-                  <linearGradient id="blue-gradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="transparent" />
-                  </linearGradient>
-                </defs>
-             </svg>
-          </div>
-        </div>
-        <div className="flex-1 flex flex-col gap-4 border-l border-white/10 pl-4">
-          <div>
-            <span className="text-[10px] text-zinc-500 uppercase">Orders</span>
-            <div className="flex items-end justify-between mt-1">
-              <span className="text-xl text-white">{orders.toLocaleString()}</span>
-              <span className="text-[10px] text-emerald-400">99.4%</span>
-            </div>
-          </div>
-          <div>
-            <span className="text-[10px] text-zinc-500 uppercase">Net Profit</span>
-            <div className="flex items-end justify-between mt-1">
-              <span className="text-xl text-white">${profit.toLocaleString()}</span>
-              <span className="text-[10px] text-emerald-400">+31.4%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Bottom Bar Chart (Revenue Overview) */}
-      <div className="flex-1 flex flex-col pt-4 border-t border-white/10">
-        <span className="text-[10px] text-zinc-500 uppercase mb-2">Revenue Overview</span>
-        <div className="flex-1 flex items-end gap-1">
-          {Array.from({length: 40}).map((_, i) => (
-             <div key={i} className="flex-1 bg-indigo-500/40 hover:bg-indigo-400 transition-colors rounded-t-sm" style={{height: `${Math.random() * 80 + 20}%`}}></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// PANEL 2: NEURAL NETWORK OVERVIEW
-// ----------------------------------------------------------------------------
-function NeuralNetworkOverview() {
-  const nodes = [
-    { label: "Product Research Agent", angle: 0 },
-    { label: "Ad Creative Agent", angle: 60 },
-    { label: "Customer Support Agent", angle: 120 },
-    { label: "Analytics Agent", angle: 180 },
-    { label: "Pricing Agent", angle: 240 },
-    { label: "Store Optimizing Agent", angle: 300 },
-  ];
-
-  return (
-    <div className="w-full h-full flex items-center justify-center relative">
-      {/* Center Core */}
-      <div className="absolute w-20 h-20 bg-cyan-500/10 rounded-full border border-cyan-500/50 flex items-center justify-center z-20 shadow-[0_0_30px_rgba(6,182,212,0.4)]">
-        <div className="w-12 h-12 bg-cyan-400 rounded-full flex items-center justify-center shadow-[0_0_20px_#06b6d4]">
-          <Brain className="text-black w-6 h-6" />
-        </div>
-      </div>
-
-      {/* Orbit Rings */}
-      <div className="absolute w-48 h-48 border border-white/10 rounded-full z-0"></div>
-      <div className="absolute w-72 h-72 border border-white/5 rounded-full z-0 border-dashed"></div>
-
-      {/* Nodes */}
-      {nodes.map((node, i) => {
-        const rad = (node.angle * Math.PI) / 180;
-        const x = Math.cos(rad) * 120;
-        const y = Math.sin(rad) * 120;
-        return (
-          <React.Fragment key={i}>
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" style={{ overflow: 'visible' }}>
-              <line x1="50%" y1="50%" x2={`calc(50% + ${x}px)`} y2={`calc(50% + ${y}px)`} stroke="rgba(6,182,212,0.3)" strokeWidth="1" strokeDasharray="4 4" />
-            </svg>
-            <div 
-              className="absolute z-20 flex flex-col items-center gap-2"
-              style={{ transform: `translate(${x}px, ${y}px)` }}
-            >
-              <div className="w-8 h-8 rounded-full bg-black border border-cyan-500/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                <Bot size={14} />
-              </div>
-              {/* <span className="text-[8px] text-zinc-400 uppercase tracking-widest bg-black/80 px-2 py-0.5 rounded border border-white/5 whitespace-nowrap">{node.label}</span> */}
-            </div>
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// PANEL 3: AGENT ACTIVITY
-// ----------------------------------------------------------------------------
-function AgentActivityList({ activities }: { activities?: any[] }) {
-  const agents = activities || [];
-  return (
-    <div className="flex flex-col gap-3 overflow-y-auto h-full pr-2 custom-scrollbar">
-      {agents.length === 0 && <div className="text-xs text-zinc-500 p-2">Waiting for agent activity...</div>}
-      {agents.map((ag, i) => (
-        <div key={i} className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0">
-          <div className="flex items-center gap-3">
-             <div className="w-6 h-6 rounded bg-white/5 flex items-center justify-center text-zinc-500"><Bot size={12}/></div>
-             <div className="flex flex-col">
-               <span className="text-xs text-white">{ag.name}</span>
-               <span className="text-[10px] text-zinc-500">{ag.task}</span>
-             </div>
-          </div>
-          <span className={`text-[9px] px-2 py-0.5 rounded uppercase tracking-widest ${ag.status === 'COMPLETED' ? 'text-emerald-400 bg-emerald-400/10' : 'text-blue-400 bg-blue-400/10'}`}>{ag.status}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function DecisionEngineWidget({ stats }: { stats?: any }) {
-  const total = stats?.totalDecisionsToday || 0;
-  const autoPercent = stats?.automationPercentage || 0;
-
-  return (
-    <div className="flex h-full gap-4 items-center">
-      <div className="flex-1 flex flex-col justify-center">
-        <span className="text-[10px] text-zinc-500 uppercase">Total Decisions Today</span>
-        <div className="flex items-end gap-3 mt-1">
-          <span className="text-2xl text-white">{total.toLocaleString()}</span>
-          <span className="text-[10px] text-emerald-400 mb-1">Live</span>
-        </div>
-        
-        <span className="text-[10px] text-zinc-500 uppercase mt-4">Automated Decisions</span>
-        <div className="flex items-end gap-3 mt-1">
-          <span className="text-xl text-white">{autoPercent.toFixed(1)}%</span>
-        </div>
-      </div>
-      <div className="w-24 h-24 relative">
-        {/* Mock Donut Chart */}
-        <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#6366f1" strokeWidth="4" strokeDasharray="40, 100" />
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#06b6d4" strokeWidth="4" strokeDasharray="30, 100" strokeDashoffset="-40" />
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" strokeWidth="4" strokeDasharray="20, 100" strokeDashoffset="-70" />
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" strokeWidth="4" strokeDasharray="10, 100" strokeDashoffset="-90" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// PANEL 4: STORE PERFORMANCE & WORLD MAP
-// ----------------------------------------------------------------------------
-function StorePerformanceWithMap({ stores }: { stores?: any[] }) {
-  const storeList = stores || [];
-  return (
-    <div className="flex h-full gap-4">
-      {/* Left: Store List */}
-      <div className="flex-[4] flex flex-col gap-3">
-        {storeList.length === 0 && <div className="text-xs text-zinc-500">No stores found...</div>}
-        {storeList.map((st, i) => (
-          <div key={i} className="flex justify-between items-center border-b border-white/5 pb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded text-[10px] font-bold">
-                {st.name.charAt(0).toUpperCase()}
-              </div>
-              <span className="text-xs text-white truncate max-w-[100px]" title={st.name}>{st.name}</span>
-            </div>
-            <div className="flex gap-4 items-center">
-              <span className="text-xs text-white font-mono">${st.rev.toLocaleString()}</span>
-              <span className="text-[10px] text-emerald-400">{st.trend}</span>
-            </div>
-          </div>
-        ))}
-        
-        <div className="mt-auto pt-2">
-           <span className="text-[9px] uppercase tracking-widest text-zinc-500 mb-2 block">Top Countries</span>
-           <div className="flex justify-between text-[10px] text-zinc-400"><span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full"/> United States</span> <span>48%</span></div>
-           <div className="flex justify-between text-[10px] text-zinc-400"><span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-blue-400 rounded-full"/> United Kingdom</span> <span>14%</span></div>
-           <div className="flex justify-between text-[10px] text-zinc-400"><span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full"/> Canada</span> <span>8%</span></div>
-        </div>
-      </div>
-
-      {/* Right: The World Map */}
-      <div className="flex-[5] relative flex items-center justify-center opacity-80 mix-blend-screen">
-        <svg viewBox="0 0 1000 500" className="w-full h-full fill-white/10" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5">
-          {/* Extremely simplified map approximation for visual effect */}
-          <path d="M 200,100 Q 250,50 300,80 T 350,150 T 250,300 T 150,200 Z" />
-          <path d="M 450,80 Q 550,20 600,100 T 550,250 T 480,180 Z" />
-          <path d="M 650,50 Q 800,20 850,150 T 700,300 T 600,200 Z" />
-          <path d="M 250,350 Q 300,320 350,450 T 280,480 Z" />
-          <path d="M 500,300 Q 550,280 600,400 T 520,450 Z" />
-          <path d="M 750,350 Q 850,300 900,450 T 800,480 Z" />
-          
-          {/* Glowing Dots */}
-          <circle cx="280" cy="180" r="8" fill="#06b6d4" className="animate-pulse" />
-          <circle cx="280" cy="180" r="24" fill="rgba(6,182,212,0.2)" className="animate-pulse" />
-          
-          <circle cx="520" cy="120" r="5" fill="#06b6d4" />
-          <circle cx="520" cy="120" r="15" fill="rgba(6,182,212,0.2)" />
-          
-          <circle cx="700" cy="200" r="6" fill="#10b981" />
-          <circle cx="700" cy="200" r="18" fill="rgba(16,185,129,0.2)" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// PANEL 5: REAL-TIME ANALYTICS
-// ----------------------------------------------------------------------------
-function RealTimeAnalytics() {
-  return (
-    <div className="flex h-full gap-4">
-      <div className="flex-[5] flex flex-col justify-between">
-        <div className="flex gap-8">
-           <div>
-             <span className="text-[10px] text-zinc-500 uppercase">Live Visitors</span>
-             <div className="text-2xl text-white mt-1">342</div>
-           </div>
-           <div>
-             <span className="text-[10px] text-zinc-500 uppercase">Page Views</span>
-             <div className="text-2xl text-white mt-1">1,876</div>
-           </div>
-        </div>
-        <div className="h-24 mt-auto relative overflow-hidden">
-           {/* Mock Area Chart */}
-           <svg viewBox="0 0 100 30" className="absolute bottom-0 w-full h-full" preserveAspectRatio="none">
-              <path d="M0,28 Q10,20 20,25 T40,10 T60,20 T80,5 T100,15 L100,30 L0,30 Z" fill="url(#blue-gradient-2)" opacity="0.3" />
-              <path d="M0,28 Q10,20 20,25 T40,10 T60,20 T80,5 T100,15" fill="none" stroke="#3b82f6" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              <defs>
-                <linearGradient id="blue-gradient-2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="transparent" />
-                </linearGradient>
-              </defs>
-           </svg>
-        </div>
-      </div>
-      <div className="flex-[4] flex flex-col border-l border-white/10 pl-4">
-        <span className="text-[10px] text-zinc-500 uppercase mb-3">Top Products</span>
-        <div className="flex flex-col gap-2">
-           <div className="flex justify-between text-xs"><span className="text-white">Smart Watch Pro</span><span className="text-emerald-400 font-mono">$38,742</span></div>
-           <div className="flex justify-between text-xs"><span className="text-white">Wireless Earbuds</span><span className="text-emerald-400 font-mono">$25,341</span></div>
-           <div className="flex justify-between text-xs"><span className="text-white">LED Strip Lights</span><span className="text-emerald-400 font-mono">$18,582</span></div>
-           <div className="flex justify-between text-xs"><span className="text-white">Phone Holder</span><span className="text-emerald-400 font-mono">$12,109</span></div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ----------------------------------------------------------------------------
-// PANEL 6: WORKFLOWS & STATUS
-// ----------------------------------------------------------------------------
-function WorkflowNodeGraph() {
-  return (
-    <div className="w-full h-full relative flex items-center justify-center p-2">
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[size:10px_10px] opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)'}}></div>
-      
-      {/* Node Lines */}
-      <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-         <line x1="20%" y1="30%" x2="50%" y2="30%" stroke="rgba(16,185,129,0.3)" strokeWidth="2" />
-         <line x1="50%" y1="30%" x2="80%" y2="30%" stroke="rgba(16,185,129,0.3)" strokeWidth="2" />
-         
-         <line x1="20%" y1="70%" x2="50%" y2="70%" stroke="rgba(16,185,129,0.3)" strokeWidth="2" />
-         <line x1="50%" y1="70%" x2="80%" y2="70%" stroke="rgba(16,185,129,0.3)" strokeWidth="2" />
-         
-         <line x1="50%" y1="30%" x2="50%" y2="70%" stroke="rgba(16,185,129,0.3)" strokeWidth="2" />
-      </svg>
-      
-      {/* Nodes */}
-      <div className="absolute left-[10%] top-[20%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Product Research</span>
-        <span className="text-[6px] text-emerald-400">Auto</span>
-      </div>
-      <div className="absolute left-[40%] top-[20%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Ad Creation</span>
-        <span className="text-[6px] text-emerald-400">Auto</span>
-      </div>
-      <div className="absolute left-[70%] top-[20%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Campaign</span>
-        <span className="text-[6px] text-emerald-400">Auto</span>
-      </div>
-      
-      <div className="absolute left-[10%] top-[60%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Customer Purchase</span>
-        <span className="text-[6px] text-emerald-400">Trigger</span>
-      </div>
-      <div className="absolute left-[40%] top-[60%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Email Follow-up</span>
-        <span className="text-[6px] text-emerald-400">Auto</span>
-      </div>
-      <div className="absolute left-[70%] top-[60%] w-20 h-10 border border-emerald-500/50 bg-black rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-        <span className="text-[8px] text-white">Review Request</span>
-        <span className="text-[6px] text-emerald-400">Auto</span>
-      </div>
-    </div>
-  );
-}
-
-function SystemStatusWidget({ status }: { status?: any }) {
-  const isOk = status?.status === 'All Systems Operational';
+function AgentRow({ agent }: { agent: any }) {
+  const isActive = agent.status === 'active';
+  const isThinking = agent.status === 'thinking';
   
   return (
-    <div className="flex flex-col h-full justify-between">
-      <div className="flex items-center gap-2">
-        <div className={`w-4 h-4 rounded-full ${isOk ? 'bg-emerald-500/20' : 'bg-amber-500/20'} flex items-center justify-center`}>
-          <div className={`w-2 h-2 rounded-full ${isOk ? 'bg-emerald-400' : 'bg-amber-400'} animate-pulse`}></div>
+    <div className={`p-3 border rounded-lg flex flex-col gap-2 transition-colors ${
+      isActive ? 'bg-cyan-950/20 border-cyan-500/30' :
+      isThinking ? 'bg-amber-950/20 border-amber-500/30' :
+      'bg-white/[0.01] border-white/[0.03]'
+    }`}>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+           <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-cyan-400 animate-pulse' : isThinking ? 'bg-amber-400' : 'bg-zinc-700'}`}></div>
+           <span className={`text-xs font-bold uppercase tracking-wider ${isActive || isThinking ? 'text-white' : 'text-zinc-500'}`}>{agent.id}</span>
         </div>
-        <span className="text-xs text-white">{status?.status || 'Connecting...'}</span>
+        <span className={`text-[9px] uppercase tracking-widest font-mono ${isActive ? 'text-cyan-400' : isThinking ? 'text-amber-400' : 'text-zinc-600'}`}>
+          {agent.status}
+        </span>
       </div>
-      
-      <div className="mt-4">
-        <span className="text-[10px] text-zinc-500 uppercase">Uptime</span>
-        <div className={`text-2xl ${isOk ? 'text-emerald-400' : 'text-amber-400'}`}>{status?.uptime || '---'}</div>
-      </div>
-      
-      <div className="flex flex-col gap-1 mt-auto text-[9px] text-zinc-400 uppercase tracking-widest">
-         <div className="flex justify-between"><span>Server Status</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
-         <div className="flex justify-between"><span>API Connections</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
-         <div className="flex justify-between"><span>Payment Systems</span><span className={`${isOk ? 'text-emerald-500' : 'text-amber-500'} flex items-center gap-1`}><div className={`w-1 h-1 ${isOk ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full`}/> Operational</span></div>
+      <div className="text-[10px] text-zinc-500 font-mono pl-3.5 border-l border-white/5 ml-0.5">
+        &gt; {agent.task || '...'}
       </div>
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// FULLTIME AI ASSISTANT (RIGHT SIDEBAR)
-// ----------------------------------------------------------------------------
-function FulltimeAIAssistant() {
-  const { messages, sendMessage, status } = useChat({
-    api: '/api/v6/intelligence/chat',
-    initialMessages: [
-      { id: '1', role: 'assistant', content: 'Agentic OS is fully initialized. Alle autonomie-functies staan op groen. Wat wil je automatiseren of analyseren via de Decision Engine?' }
-    ]
-  });
-
-  const [input, setInput] = useState('');
-  const isLoading = status === 'submitted' || status === 'streaming';
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-    sendMessage({ id: Date.now().toString(), role: 'user', content: input } as any);
-    setInput('');
+function ResourceBar({ label, value, color }: { label: string, value: number, color: 'cyan'|'amber'|'emerald' }) {
+  const bgColors = {
+     cyan: 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]',
+     amber: 'bg-amber-500 shadow-[0_0_10px_#f59e0b]',
+     emerald: 'bg-emerald-500 shadow-[0_0_10px_#10b981]'
   };
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
-    <div className="flex flex-col h-full relative">
-      {/* Header */}
-      <div className="h-16 border-b border-white/5 flex items-center gap-3 px-6 shrink-0 bg-black/20">
-        <div className="relative">
-          <div className="w-8 h-8 rounded-full border border-cyan-500/50 flex items-center justify-center bg-cyan-500/10">
-            <Bot className="w-4 h-4 text-cyan-400" />
-          </div>
-          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border border-black shadow-[0_0_8px_#10b981]"></div>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xs text-white font-bold tracking-widest uppercase">SYNDICATE AI</span>
-          <span className="text-[9px] text-emerald-400 tracking-widest uppercase">Online & Listening</span>
-        </div>
-        <button className="ml-auto text-zinc-500 hover:text-white transition-colors">
-          <Settings size={14} />
-        </button>
+    <div>
+      <div className="flex justify-between text-[10px] uppercase tracking-wider mb-1.5">
+        <span className="text-zinc-500">{label}</span>
+        <span className="text-zinc-400 font-mono">{value}%</span>
       </div>
+      <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
+        <div className={`h-full ${bgColors[color]}`} style={{ width: `${value}%` }}></div>
+      </div>
+    </div>
+  );
+}
 
-      {/* Chat History */}
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-[url('/noise.png')] bg-[length:100px_100px] opacity-[0.98]">
-        {messages.map((m, i) => (
-          <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-            <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-zinc-800' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'}`}>
-              {m.role === 'user' ? <User size={10} /> : <Bot size={10} />}
-            </div>
-            <div className={`p-3 rounded-lg max-w-[85%] text-xs leading-relaxed ${m.role === 'user' ? 'bg-zinc-800/80 text-white rounded-tr-none' : 'bg-[#0F1115] border border-white/5 text-zinc-300 rounded-tl-none shadow-[0_5px_15px_rgba(0,0,0,0.3)] whitespace-pre-wrap'}`}>
-              {m.content}
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-           <div className="flex gap-3 flex-row">
-             <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-               <Bot size={10} className="animate-pulse" />
-             </div>
-             <div className="p-3 rounded-lg max-w-[85%] text-xs bg-[#0F1115] border border-white/5 text-zinc-500 rounded-tl-none flex items-center gap-1">
-               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce"></span>
-               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></span>
-               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
-             </div>
-           </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+function LogEntry({ time, text, active = false }: { time: string, text: string, active?: boolean }) {
+  return (
+    <div className="relative pl-6">
+      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[#02040a] z-10 ${active ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]' : 'bg-zinc-800'}`}></div>
+      <span className={`text-[9px] uppercase tracking-widest font-mono ${active ? 'text-cyan-400' : 'text-zinc-600'}`}>{time}</span>
+      <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">{text}</p>
+    </div>
+  );
+}
 
-      {/* Input Area */}
-      <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-md">
-        <form onSubmit={handleSubmit} className="relative flex items-center">
-          <input 
-            type="text" 
-            placeholder="Command your AI..." 
-            value={input}
-            onChange={handleInputChange}
-            disabled={isLoading}
-            className="w-full bg-[#0A0B0E] border border-white/10 rounded-full py-3 pl-4 pr-12 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 shadow-inner disabled:opacity-50"
-          />
-          <button 
-            type="submit" 
-            disabled={isLoading || !input.trim()}
-            className="absolute right-2 w-8 h-8 rounded-full bg-cyan-500 text-black flex items-center justify-center hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:hover:bg-cyan-500"
-          >
-            <Send size={12} className="ml-0.5" />
-          </button>
-        </form>
-        <div className="text-center mt-3">
-          <span className="text-[8px] text-zinc-600 uppercase tracking-widest font-mono">
-            Powered by V6.0 Decision Engine
-          </span>
-        </div>
-      </div>
+function CommandItem({ icon, text }: { icon: React.ReactNode, text: string }) {
+  return (
+    <div className="px-4 py-3 mx-2 hover:bg-cyan-900/20 hover:border-cyan-500/30 border border-transparent rounded-lg cursor-pointer flex items-center gap-3 text-sm text-zinc-400 hover:text-white group transition-all">
+       <span className="text-zinc-600 group-hover:text-cyan-400 transition-colors">{icon}</span>
+       {text}
+       <ChevronRight size={14} className="ml-auto text-transparent group-hover:text-cyan-500/50" />
     </div>
   );
 }
