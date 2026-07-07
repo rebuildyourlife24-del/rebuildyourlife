@@ -12,6 +12,7 @@ import lifeAreaRoutes from "./life-area.routes.js";
 import notificationRoutes from "./notification.routes.js";
 import webhookRoutes from "./webhook.routes.js";
 import twinRoutes from "./twin.routes.js";
+import intelligenceRoutes from "./intelligence.routes.js";
 import socialRoutes from "./social.routes.js";
 import businessRoutes from "./business.routes.js";
 import { paymentRoutes } from "./payment.routes.js";
@@ -98,5 +99,6 @@ router.use("/traffic", trafficRoutes);
 
 // V6 Enterprise Control Plane Routes
 router.use("/twin", twinRoutes);
+router.use("/intelligence", intelligenceRoutes);
 
 export default router;
