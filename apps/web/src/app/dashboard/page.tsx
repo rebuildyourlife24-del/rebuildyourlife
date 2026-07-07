@@ -503,12 +503,23 @@ function SystemStatusWidget({ status }: { status?: any }) {
 // FULLTIME AI ASSISTANT (RIGHT SIDEBAR)
 // ----------------------------------------------------------------------------
 function FulltimeAIAssistant() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, sendMessage, status } = useChat({
     api: '/api/v6/intelligence/chat',
     initialMessages: [
       { id: '1', role: 'assistant', content: 'Agentic OS is fully initialized. Alle autonomie-functies staan op groen. Wat wil je automatiseren of analyseren via de Decision Engine?' }
     ]
   });
+
+  const [input, setInput] = useState('');
+  const isLoading = status === 'submitted' || status === 'streaming';
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    sendMessage({ id: Date.now().toString(), role: 'user', content: input } as any);
+    setInput('');
+  };
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
