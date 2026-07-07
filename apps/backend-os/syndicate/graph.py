@@ -70,6 +70,18 @@ async def router_node(state: SyndicateState):
     state["active_agent"] = "router"
     state["ui_events"].append({"id": "router", "status": "thinking", "task": "Hermes is scanning the enterprise state..."})
     
+    # Priority 1: Execute Approved Actions from the Governance Lock
+    approved_actions = state.get("approved_actions", [])
+    if approved_actions:
+        next_act = approved_actions[0]
+        target_name = next_act.get("agent")
+        for k, v in agents_pool.items():
+            if v.name == target_name:
+                state["next_agent"] = k
+                state["ui_events"].append({"id": "router", "status": "active", "task": f"Routing approved action to: {k}"})
+                return state
+                
+    # Priority 2: LLM Decision
     try:
         dynamic_llm = sovereign_router.get_llm()
         available_agents = list(agents_pool.keys())

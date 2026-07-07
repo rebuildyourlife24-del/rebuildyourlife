@@ -198,10 +198,24 @@ async def websocket_endpoint(websocket: WebSocket):
                                 approval["id"] = str(uuid.uuid4())
                         
                         # Filter out approved or rejected ones
-                        active_approvals = [
-                            a for a in node_state["pending_approvals"]
-                            if a["id"] not in global_approved_actions and a["id"] not in global_rejected_actions
-                        ]
+                        active_approvals = []
+                        newly_approved = []
+                        
+                        for a in node_state["pending_approvals"]:
+                            if a["id"] in global_approved_actions:
+                                newly_approved.append(a)
+                            elif a["id"] not in global_rejected_actions:
+                                active_approvals.append(a)
+                                
+                        # Move newly approved into the state
+                        if newly_approved:
+                            if "approved_actions" not in state:
+                                state["approved_actions"] = []
+                            # We just append them so the agents can pick them up in the next loop
+                            for approved_act in newly_approved:
+                                state["approved_actions"].append(approved_act)
+                                # Optionally, remove from global set to prevent double processing, 
+                                # but usually we keep it so it doesn't reappear in pending.
                         
                         state["pending_approvals"] = active_approvals
                         

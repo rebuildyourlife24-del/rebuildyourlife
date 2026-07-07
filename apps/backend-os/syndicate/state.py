@@ -18,6 +18,7 @@ class SyndicateState(TypedDict):
     
     # Governance Plane (HITL)
     pending_approvals: Annotated[List[Dict[str, Any]], add]
+    approved_actions: Annotated[List[Dict[str, Any]], add]
     
     # WebSocket broadcast queue
     ui_events: Annotated[List[Dict[str, Any]], add]
