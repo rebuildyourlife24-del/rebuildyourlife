@@ -6,37 +6,37 @@
   :root {
     /* 
       RYL OS Premium Dark Mode Theme 
-      Aesthetics: Deep dark backgrounds, vibrant cyan/blue primary accents, sleek borders.
+      Aesthetics: Deep dark backgrounds, cyberpunk green primary accents, sleek borders.
     */
-    --background: 240 10% 4%;
+    --background: 0 0% 2%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 6%;
+    --card: 0 0% 4%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 6%;
+    --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
 
-    /* Vibrant Cyan Primary (The AI Core color) */
-    --primary: 191 97% 40%;
-    --primary-foreground: 0 0% 100%;
+    /* Vibrant Cyberpunk Green (The God-Mode AI Core color) */
+    --primary: 142 71% 45%;
+    --primary-foreground: 144 100% 11%;
 
-    /* Deep Blue/Indigo Secondary */
-    --secondary: 240 20% 15%;
-    --secondary-foreground: 0 0% 98%;
+    /* Deep Emerald/Black Secondary */
+    --secondary: 144 100% 11%;
+    --secondary-foreground: 142 71% 45%;
 
-    --muted: 240 10% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 240 20% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 144 100% 11%;
+    --accent-foreground: 142 71% 45%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 10% 12%;
-    --input: 240 10% 12%;
-    --ring: 191 97% 40%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 142 71% 45%;
 
     --radius: 0.75rem;
   }

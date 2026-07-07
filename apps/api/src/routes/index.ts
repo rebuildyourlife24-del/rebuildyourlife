@@ -20,6 +20,8 @@ import orionOpenAIRouter from './orion-openai.js';
 import franchiseRoutes from "./franchise.routes.js";
 import adminRoutes from "./admin.routes.js";
 import { trafficRoutes } from "./traffic.routes.js";
+import mollieRoutes from "./mollie.routes.js";
+import telegramRoutes from "./telegram.routes.js";
 import { identityRoutes } from '../modules/identity/index.js';
 import { billingRoutes } from '../modules/billing/index.js';
 import { storageRoutes } from '../modules/storage/index.js';
@@ -96,6 +98,8 @@ router.use('/orion', orionOpenAIRouter);
 router.use("/franchise", franchiseRoutes);
 router.use("/admin", adminRoutes);
 router.use("/traffic", trafficRoutes);
+router.use("/mollie", mollieRoutes);
+router.use("/telegram", telegramRoutes);
 
 // V6 Enterprise Control Plane Routes
 router.use("/twin", twinRoutes);

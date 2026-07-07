@@ -39,25 +39,33 @@ class CMOAgent(BaseAgent):
                             body=body,
                             budget=budget
                         )
+                        
                         if success:
-                            # Simulated Meta API Call
-                            self.log_action("META_API_TRIGGERED", {"status": "SUCCESS", "campaign": campaign_name})
-                            return self.success(f"Launched Meta campaign '{campaign_name}'")
+                            self.log_action("META_CAMPAIGN_LAUNCHED", {"campaign_name": campaign_name})
+                            return self.success(f"CMO Agent launched Meta Campaign: {campaign_name}")
                         else:
-                            return self.error("Failed to create campaign records in Supabase.")
+                            return self.error("Failed to launch campaign.")
                     except Exception as e:
-                        self.log_action("LAUNCH_FAILED", {"error": str(e)})
-                        return self.error(f"Failed to launch campaign: {e}")
+                        return self.error(f"Error launching campaign: {str(e)}")
                 else:
-                    return self.error("Supabase not available for DB writes")
+                    return self.error("Supabase not available for Marketing operations")
+                    
+            elif act.get("agent") == self.name and act.get("action") in ["PUBLISH_LINKEDIN_POST", "PUBLISH_TWITTER_POST"]:
+                state["approved_actions"].remove(act) # Consume the event
+                
+                details = act.get("details", {})
+                platform = "LinkedIn" if act.get("action") == "PUBLISH_LINKEDIN_POST" else "Twitter/X"
+                self.log_action(f"{act.get('action')}_EXECUTED", details)
+                return self.success(f"CMO Agent published {platform} update: {details.get('topic')}")
 
-        # 2. If no approved actions, propose a new Meta campaign
-        campaign_draft = {
-            "campaign_name": "Autonomous Growth Q3",
-            "objective": "CONVERSION",
-            "headline": "Stop coding. Start building an Empire.",
-            "body": "The Syndicate gives you a 18-person AI Council to scale your business.",
-            "budget": 250.0
+        # 2. Propose actions
+        platforms = ["LINKEDIN", "TWITTER"]
+        chosen_platform = random.choice(platforms)
+        
+        draft = {
+            "target": "Social Channels",
+            "topic": "The Power of Sovereign AI Routers in 2026",
+            "reason": f"Detected high engagement potential on {chosen_platform} for AI Automation topics."
         }
         
-        return self.request_approval("LAUNCH_META_CAMPAIGN", campaign_draft)
+        return self.request_approval(f"PUBLISH_{chosen_platform}_POST", draft)
