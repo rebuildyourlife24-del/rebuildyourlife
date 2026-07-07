@@ -1,14 +1,24 @@
 services:
   - type: web
-    name: rebuildyourlife-core
+    name: rebuildyourlife-frontend
     env: node
     buildCommand: npm install && npx turbo run build --filter=web
     startCommand: npm start --workspace=@rebuildyourlife/web
     envVars:
       - key: NODE_VERSION
         value: 20.x
-      # Voeg hier later je productiesleutels toe in de Render UI
-      - key: DATABASE_URL
+
+  - type: web
+    name: rebuildyourlife-ai-backend
+    env: python
+    buildCommand: cd apps/backend-os && pip install -r requirements.txt
+    startCommand: cd apps/backend-os && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: SUPABASE_URL
         sync: false
-      - key: GEMINI_API_KEY_1
+      - key: SUPABASE_KEY
+        sync: false
+      - key: GROQ_API_KEY
         sync: false
