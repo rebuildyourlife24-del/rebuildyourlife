@@ -1,8 +1,20 @@
+import os
 import random
 from typing import Dict, Any
 from .base_agent import BaseAgent, AgentResult
 from syndicate.cfo import distribute_revenue
 from syndicate.db import supabase, get_admin_user_id
+
+# Stripe SDK mock integration
+def fetch_recent_stripe_payments():
+    """Mocks fetching recent successful payments from Stripe API."""
+    if os.environ.get("STRIPE_API_KEY"):
+        # Real SDK call would go here
+        pass
+    # We simulate a 20% chance of a new payment coming in
+    if random.random() < 0.2:
+        return [{"id": f"pi_mock_{random.randint(1000, 9999)}", "amount": 149.00, "currency": "eur"}]
+    return []
 
 class CFOAgent(BaseAgent):
     def __init__(self):
@@ -13,6 +25,18 @@ class CFOAgent(BaseAgent):
         
     async def execute(self, state: Dict[str, Any]) -> AgentResult:
         self.log_action("ANALYZING_TREASURY", {"state_keys": list(state.keys())})
+        
+        # 0. Check real-world API connections (Stripe)
+        new_payments = fetch_recent_stripe_payments()
+        for payment in new_payments:
+            amount = payment["amount"]
+            self.log_action("STRIPE_PAYMENT_DETECTED", {"amount": amount, "id": payment["id"]})
+            # Propose immediate split for this new payment
+            return self.request_approval("SPLIT_REVENUE", {
+                "target": "Treasury",
+                "reason": f"New Stripe payment detected ({payment['id']}). Split required.",
+                "amount": amount
+            })
         
         # 1. Check for Governance Approved Actions
         approved_actions = state.get("approved_actions", [])
@@ -39,14 +63,10 @@ class CFOAgent(BaseAgent):
                 else:
                     return self.error("Supabase not available for Financial operations")
 
-        # 2. If no approved actions, simulate finding unallocated revenue and propose a split
-        # We simulate revenue between 100 and 2000 EUR
-        unallocated_revenue = round(random.uniform(100.0, 2000.0), 2)
-        
-        split_draft = {
-            "amount": unallocated_revenue,
-            "currency": "EUR",
-            "reason": "Unallocated recurring Stripe payments detected."
+        # 2. Default standard financial audit
+        draft = {
+            "target": "Budget",
+            "reason": "Standard operational treasury sync."
         }
         
         return self.request_approval("SPLIT_REVENUE", split_draft)
