@@ -40,6 +40,20 @@ export default function CinematicLandingPage() {
   return (
     <div className="relative min-h-screen text-white font-sans bg-transparent selection:bg-cyan-500/30">
       
+      {/* Background Video */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="w-full h-full object-cover opacity-50"
+        >
+          <source src="/panorama_intro.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80"></div>
+      </div>
+
       {/* Cinematic HTML Overlay */}
       <div ref={contentRef} className="relative z-10">
         
