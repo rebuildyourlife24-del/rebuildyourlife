@@ -15,7 +15,7 @@ def create_stub_agent(name: str, role: str) -> type:
 
 # Generate the remaining 16 agents of the 18-Person Council dynamically as stubs for now
 OrionAgent = create_stub_agent("CEO (Orion)", "Strategic oversight, goal setting, final approval")
-CFOAgent = create_stub_agent("CFO", "Wallet splitting (90/10), budget allocation, financial auditing")
+CFOAgent = create_stub_agent("CFO", "Wallet splitting (90/10), budget allocation, financial auditing") # DEPRECATED, moved to cfo.py
 COOAgent = create_stub_agent("COO", "Workflow orchestration, logistics, performance monitoring")
 CMOAgent = create_stub_agent("CMO", "Campaign strategy, market analysis, audience targeting") # DEPRECATED, moved to cmo.py
 CROAgent = create_stub_agent("CRO", "Sales pipeline, conversion optimization, pricing strategy")
