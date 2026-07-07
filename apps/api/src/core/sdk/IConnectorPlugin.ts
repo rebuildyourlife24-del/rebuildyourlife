@@ -1,4 +1,4 @@
-import { EventPayload, IEventBus } from './IEventBus';
+import { EventPayload, IEventBus } from './IEventBus.js';
 
 export interface ConnectorResponse {
   success: boolean;

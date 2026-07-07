@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { DigitalTwin } from '../core/twin/DigitalTwin';
+import { DigitalTwin } from '../core/twin/DigitalTwin.js';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get('/state', async (req, res) => {
   }
 });
 
-import { GovernancePlane } from '../core/governance/GovernancePlane';
+import { GovernancePlane } from '../core/governance/GovernancePlane.js';
 
 // POST /api/v1/twin/propose-action
 // Used by the execution plane / agents to propose actions

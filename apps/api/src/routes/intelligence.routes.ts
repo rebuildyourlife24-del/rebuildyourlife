@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { DecisionEngine } from '../core/intelligence/DecisionEngine';
-import { OpenAIReasoningProvider } from '../core/intelligence/OpenAIReasoningProvider';
+import { DecisionEngine } from '../core/intelligence/DecisionEngine.js';
+import { OpenAIReasoningProvider } from '../core/intelligence/OpenAIReasoningProvider.js';
 
 const router = Router();
 

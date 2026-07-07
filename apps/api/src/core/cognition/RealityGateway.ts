@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { PerceptionEngine } from './Perception';
+import { PerceptionEngine } from './Perception.js';
 
 const prisma = new PrismaClient();
 const perception = new PerceptionEngine();

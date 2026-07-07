@@ -1,6 +1,6 @@
-import { DigitalTwin } from '../twin/DigitalTwin';
-import { IReasoningProvider } from '../sdk/IReasoningProvider';
-import { GovernancePlane } from '../governance/GovernancePlane';
+import { DigitalTwin } from '../twin/DigitalTwin.js';
+import { IReasoningProvider } from '../sdk/IReasoningProvider.js';
+import { GovernancePlane } from '../governance/GovernancePlane.js';
 
 export class DecisionEngine {
   private twin: DigitalTwin;

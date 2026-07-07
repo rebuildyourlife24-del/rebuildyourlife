@@ -6,6 +6,11 @@ const router = Router();
 // POST /api/telegram/webhook - Receives incoming Telegram messages
 router.post("/webhook", async (req: Request, res: Response) => {
   try {
+    const secretToken = req.headers["x-telegram-bot-api-secret-token"];
+    if (secretToken !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+      return res.status(401).send("Unauthorized");
+    }
+
     const { message } = req.body;
     
     if (!message) {

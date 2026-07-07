@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { IEventBus, EventPayload } from '../sdk/IEventBus';
+import { IEventBus, EventPayload } from '../sdk/IEventBus.js';
 
 export class MemoryEventBus implements IEventBus {
   private emitter: EventEmitter;

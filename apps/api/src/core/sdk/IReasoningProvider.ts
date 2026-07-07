@@ -1,5 +1,5 @@
-import { EnterpriseStateSummary } from '../twin/DigitalTwin';
-import { ProposedAction } from '../governance/Constitution';
+import { EnterpriseStateSummary } from '../twin/DigitalTwin.js';
+import { ProposedAction } from '../governance/Constitution.js';
 
 export interface IReasoningProvider {
   /**

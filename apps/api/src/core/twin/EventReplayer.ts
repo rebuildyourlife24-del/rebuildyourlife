@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { DigitalTwin } from './DigitalTwin';
-import { MemoryEventBus } from '../event-bus/MemoryEventBus';
-import { EventPayload } from '../sdk/IEventBus';
+import { DigitalTwin } from './DigitalTwin.js';
+import { MemoryEventBus } from '../event-bus/MemoryEventBus.js';
+import { EventPayload } from '../sdk/IEventBus.js';
 
 export class EventReplayer {
   private prisma: PrismaClient;

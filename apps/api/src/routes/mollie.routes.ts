@@ -6,6 +6,11 @@ const router = Router();
 // POST /api/mollie/webhook - Receives Mollie payment status updates
 router.post("/webhook", async (req: Request, res: Response) => {
   try {
+    const secretToken = req.query.token;
+    if (secretToken !== process.env.MOLLIE_WEBHOOK_SECRET) {
+      return res.status(401).send("Unauthorized");
+    }
+
     const { id: paymentId } = req.body;
     
     if (!paymentId) {

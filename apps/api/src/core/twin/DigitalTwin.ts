@@ -1,5 +1,5 @@
-import { MemoryEventBus } from '../event-bus/MemoryEventBus';
-import { EventPayload } from '../sdk/IEventBus';
+import { MemoryEventBus } from '../event-bus/MemoryEventBus.js';
+import { EventPayload } from '../sdk/IEventBus.js';
 
 export interface EnterpriseStateSummary {
   currentRevenue: number;

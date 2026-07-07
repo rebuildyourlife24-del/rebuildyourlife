@@ -1,5 +1,5 @@
-import { IConnectorPlugin, ConnectorResponse } from '../../sdk/IConnectorPlugin';
-import { IEventBus, EventPayload } from '../../sdk/IEventBus';
+import { IConnectorPlugin, ConnectorResponse } from '../../sdk/IConnectorPlugin.js';
+import { IEventBus, EventPayload } from '../../sdk/IEventBus.js';
 
 export class ShopifyConnector implements IConnectorPlugin {
   public readonly name = 'SHOPIFY_CONNECTOR';

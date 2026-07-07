@@ -1,10 +1,10 @@
-import { IConnectorPlugin } from '../sdk/IConnectorPlugin';
-import { IEventBus } from '../sdk/IEventBus';
-import { MemoryEventBus } from '../event-bus/MemoryEventBus';
-import { EventStoreListener } from '../event-bus/EventStoreListener';
+import { IConnectorPlugin } from '../sdk/IConnectorPlugin.js';
+import { IEventBus } from '../sdk/IEventBus.js';
+import { MemoryEventBus } from '../event-bus/MemoryEventBus.js';
+import { EventStoreListener } from '../event-bus/EventStoreListener.js';
 
 // Pre-load connectors for V1.0 (in a real system, these would be loaded dynamically from the db IntegrationPlugin table)
-import { ShopifyConnector } from './connectors/ShopifyConnector';
+import { ShopifyConnector } from './connectors/ShopifyConnector.js';
 
 export class RealityFabric {
   private connectors: Map<string, IConnectorPlugin> = new Map();

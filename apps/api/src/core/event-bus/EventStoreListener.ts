@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { IEventBus, EventPayload } from '../sdk/IEventBus';
+import { IEventBus, EventPayload } from '../sdk/IEventBus.js';
 
 export class EventStoreListener {
   private prisma: PrismaClient;

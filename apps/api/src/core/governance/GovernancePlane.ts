@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Constitution, ProposedAction, GovernanceRuleResult } from './Constitution';
+import { Constitution, ProposedAction, GovernanceRuleResult } from './Constitution.js';
 
 export interface GovernanceDecision {
   decision: 'APPROVE' | 'BLOCK' | 'HUMAN_REVIEW';
@@ -49,7 +49,7 @@ export class GovernancePlane {
         proposal: JSON.stringify(proposal),
         evidence: proposal.evidence || {},
         decision: finalDecision,
-        reason: finalReason, // Note: We might want to add reason to the schema later, or store it in outcomeObserved
+        // reason: finalReason, Note: add to schema later
         executed: false
       }
     });

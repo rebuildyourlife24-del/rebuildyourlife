@@ -1,6 +1,6 @@
-import { IReasoningProvider } from '../sdk/IReasoningProvider';
-import { EnterpriseStateSummary } from '../twin/DigitalTwin';
-import { ProposedAction } from '../governance/Constitution';
+import { IReasoningProvider } from '../sdk/IReasoningProvider.js';
+import { EnterpriseStateSummary } from '../twin/DigitalTwin.js';
+import { ProposedAction } from '../governance/Constitution.js';
 import OpenAI from 'openai';
 
 export class OpenAIReasoningProvider implements IReasoningProvider {
