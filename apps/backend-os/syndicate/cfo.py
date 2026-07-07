@@ -16,14 +16,34 @@ async def distribute_revenue(user_id: str, amount: float):
         return {"success": False, "error": "Supabase not initialized"}
 
     try:
-        admin_split = amount * 0.90
-        hardware_split = amount * 0.10
+        from datetime import datetime
+        
+        # 1. Btw-calculatie (21% inbegrepen in de prijs)
+        vat_amount = amount - (amount / 1.21)
+        net_revenue = amount - vat_amount
+        
+        # 2. Hardware-calculatie (10% van net_revenue)
+        hardware_split = net_revenue * 0.10
+        admin_split = net_revenue - hardware_split
 
-        logger.info(f"CFO Intercepted {amount} EUR. Splitting: 90% ({admin_split}) Admin, 10% ({hardware_split}) Hardware")
+        logger.info(f"CFO Intercepted {amount} EUR. VAT: {vat_amount}. Splitting Net: {admin_split} Admin, {hardware_split} Hardware")
 
-        # Get or Create Admin Wallet Vault
+        # 3. Save RevenueSnapshot
+        snapshot_data = {
+            "id": str(uuid.uuid4()),
+            "userId": user_id,
+            "snapshotDate": datetime.utcnow().isoformat(),
+            "period": datetime.utcnow().strftime("%Y-%m"),
+            "totalRevenue": amount,
+            "netProfit": net_revenue,
+            "vatReserve": vat_amount,
+            "hardwareReserve": hardware_split,
+            "source": "SHOPIFY_WEBHOOK"
+        }
+        supabase.table("RevenueSnapshot").insert(snapshot_data).execute()
+
+        # 4. Get or Create Vaults
         admin_vault = _get_or_create_vault(user_id, "ADMIN_WALLET")
-        # Get or Create Hardware Reserve Vault
         hardware_vault = _get_or_create_vault(user_id, "HARDWARE_RESERVE")
 
         if not admin_vault or not hardware_vault:
@@ -48,6 +68,7 @@ async def distribute_revenue(user_id: str, amount: float):
         return {
             "success": True,
             "amount": amount,
+            "vat_reserve": vat_amount,
             "admin_wallet": admin_vault["balance"] + admin_split,
             "hardware_reserve": hardware_vault["balance"] + hardware_split
         }
