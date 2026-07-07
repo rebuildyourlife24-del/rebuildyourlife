@@ -42,59 +42,64 @@ export async function getWalletBalance() {
   return wallet;
 }
 
-export async function approveAgentAction(actionId: string) {
+export async function approveAgentAction(actionId: string, estimatedCost: number = 0) {
   const session = await getSessionAction(); const user = session?.user;
   if (!user) throw new Error('Not authenticated');
 
+  // Check if it's a live LangGraph action (starts with uuid from backend or not in DB)
   const action = await prisma.agentAction.findUnique({
     where: { id: actionId },
   });
 
-  if (!action || action.userId !== user.id) {
-    throw new Error('Action not found or unauthorized');
-  }
+  // If found in DB, process Prisma logic
+  if (action && action.userId === user.id) {
+    if (action.status !== 'PENDING') throw new Error('Action is already processed');
 
-  if (action.status !== 'PENDING') {
-    throw new Error('Action is already processed');
-  }
-
-  // Check wallet balance
-  const wallet = await getWalletBalance();
-  if (wallet.fiatBalance < action.estimatedCost) {
-    throw new Error('Onvoldoende tegoed in je E-Com Operating Wallet');
-  }
-
-  // Transaction: Deduct from wallet and update action
-  await prisma.$transaction(async (tx) => {
-    // Deduct cost
-    await tx.userWallet.update({
-      where: { id: wallet.id },
-      data: { fiatBalance: { decrement: action.estimatedCost } },
-    });
-
-    // Log transaction
-    if (action.estimatedCost > 0) {
-      await tx.platformCreditTransaction.create({
-        data: {
-          walletId: wallet.id,
-          amount: -action.estimatedCost,
-          type: 'PAYMENT',
-          description: `Approved AI Action: ${action.title}`,
-        },
-      });
+    const wallet = await getWalletBalance();
+    if (wallet.fiatBalance < action.estimatedCost) {
+      throw new Error('Onvoldoende tegoed in je E-Com Operating Wallet');
     }
 
-    // Approve action
-    await tx.agentAction.update({
-      where: { id: actionId },
-      data: {
-        status: 'EXECUTED',
-        reviewedBy: user.id,
-        reviewedAt: new Date(),
-        executedAt: new Date(),
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.userWallet.update({
+        where: { id: wallet.id },
+        data: { fiatBalance: { decrement: action.estimatedCost } },
+      });
+
+      if (action.estimatedCost > 0) {
+        await tx.platformCreditTransaction.create({
+          data: {
+            walletId: wallet.id,
+            amount: -action.estimatedCost,
+            type: 'PAYMENT',
+            description: `Approved AI Action: ${action.title}`,
+          },
+        });
+      }
+
+      await tx.agentAction.update({
+        where: { id: actionId },
+        data: {
+          status: 'EXECUTED',
+          reviewedBy: user.id,
+          reviewedAt: new Date(),
+          executedAt: new Date(),
+        },
+      });
     });
-  });
+  } else {
+    // If not in DB, it's a Live LangGraph Action
+    // Ping Python backend to approve
+    try {
+      await fetch("http://localhost:8000/api/governance/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: actionId, userId: user.id })
+      });
+    } catch (e) {
+      console.error("Failed to ping Python backend for approval", e);
+    }
+  }
 
   revalidatePath('/dashboard/approvals');
   return { success: true };
@@ -108,18 +113,27 @@ export async function rejectAgentAction(actionId: string) {
     where: { id: actionId },
   });
 
-  if (!action || action.userId !== user.id) {
-    throw new Error('Action not found or unauthorized');
+  if (action && action.userId === user.id) {
+    await prisma.agentAction.update({
+      where: { id: actionId },
+      data: {
+        status: 'REJECTED',
+        reviewedBy: user.id,
+        reviewedAt: new Date(),
+      },
+    });
+  } else {
+    // Live LangGraph Action
+    try {
+      await fetch("http://localhost:8000/api/governance/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: actionId })
+      });
+    } catch (e) {
+      console.error("Failed to ping Python backend for rejection", e);
+    }
   }
-
-  await prisma.agentAction.update({
-    where: { id: actionId },
-    data: {
-      status: 'REJECTED',
-      reviewedBy: user.id,
-      reviewedAt: new Date(),
-    },
-  });
 
   revalidatePath('/dashboard/approvals');
   return { success: true };

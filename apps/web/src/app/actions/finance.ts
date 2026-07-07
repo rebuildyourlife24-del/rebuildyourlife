@@ -150,3 +150,50 @@ export async function seedTestFinanceDataAction() {
     return { success: false, error: "Failed to seed data" };
   }
 }
+
+/**
+ * Haalt de CFO Vault balansen op (Admin Wallet en Hardware Reserve)
+ */
+export async function getCfoVaultsAction() {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { success: false, data: [] };
+
+  try {
+    const vaults = await prisma.treasuryVault.findMany({
+      where: { userId }
+    });
+    return { success: true, data: vaults };
+  } catch (error) {
+    console.error("getCfoVaultsAction error:", error);
+    return { success: false, data: [] };
+  }
+}
+
+/**
+ * Simuleert het binnenkomen van omzet om de CFO 90/10 split te testen
+ */
+export async function simulateRevenueAction(amount: number) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { success: false, error: "Niet ingelogd" };
+
+  try {
+    // We roepen de backend Python API route aan die de opsplitsing verzorgt
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+    const res = await fetch(`${BACKEND_URL}/api/finance/revenue/log`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        amount: amount
+      })
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("simulateRevenueAction error:", error);
+    return { success: false, error: "Backend niet bereikbaar" };
+  }
+}

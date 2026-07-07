@@ -9,11 +9,15 @@ class SyndicateState(TypedDict):
     # Global context of the enterprise
     current_focus: str
     active_agent: str
+    next_agent: str
     decision_log: Annotated[List[str], add]
     
     # Financials & Metrics
     revenue: float
     ad_spend: float
+    
+    # Governance Plane (HITL)
+    pending_approvals: Annotated[List[Dict[str, Any]], add]
     
     # WebSocket broadcast queue
     ui_events: Annotated[List[Dict[str, Any]], add]

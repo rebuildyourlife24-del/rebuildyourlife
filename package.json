@@ -13,7 +13,9 @@
     "db:generate": "turbo run db:generate",
     "db:push": "turbo run db:push",
     "db:migrate": "turbo run db:migrate",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "deploy": "node scripts/deploy.js",
+    "orchestrate": "apps\\backend-os\\venv\\Scripts\\python.exe scripts\\orchestrate.py"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",

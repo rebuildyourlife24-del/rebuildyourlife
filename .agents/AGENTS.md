@@ -39,3 +39,8 @@ In `.agents/ai-os-database/` you will find 10 Markdown files forming our AI Oper
 01-AI-Constitution.md, 02-System-Prompt.md, 03-Engineering-Constitution.md, 04-Business-Constitution.md, 05-Security-Constitution.md, 06-Deployment-Constitution.md, 07-Agentic-OS.md, 08-Reasoning-Engine.md, 09-Review-Engine.md, 10-Self-Reflection-Engine.md.
 
 **CRITICAL INSTRUCTION:** Whenever you are about to execute a task, YOU MUST proactively use `view_file` to read the relevant Constitution or Engine file before writing code or making architectural decisions. For example, if you are writing business logic, read `04-Business-Constitution.md`. If fixing a bug, read `08-Reasoning-Engine.md` and `10-Self-Reflection-Engine.md`.
+
+## 7. THE "NO LOCALHOST" RULE (VERBODEN LOKAAL TE TESTEN VOOR DE GEBRUIKER)
+- The user CANNOT and DOES NOT WANT to check `localhost:3000` or local backend instances.
+- After completing a task or phase, you MUST immediately push the code online to Vercel/Production (`npx vercel --prod --yes`) so the user can verify the results live on the actual domain.
+- Do not ask the user to "check your localhost". Bring the results to them in production.

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Brain, Server, Shield, Zap, Search, Globe, ChevronRight, Workflow, Database, Layers, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/lib/auth';
 
 // ============================================================================
 // WEBSOCKET AGENT CONNECTION
@@ -38,6 +39,7 @@ function useAgentStatus() {
 }
 
 export default function JarvisCommandOS() {
+  const { user } = useAuth();
   const liveAgents = useAgentStatus();
   const [cmdOpen, setCmdOpen] = useState(false);
 
@@ -84,6 +86,26 @@ export default function JarvisCommandOS() {
             <span className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</span>
             <span className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</span>
           </nav>
+          
+          {/* GAMIFICATION STATS */}
+          <div className="hidden lg:flex items-center gap-6 border-l border-white/10 pl-6 ml-2">
+            <div className="flex flex-col">
+               <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Clearance</span>
+               <div className="flex items-center gap-1.5">
+                 <Shield size={12} className="text-amber-400" />
+                 <span className="text-xs font-mono text-white font-bold">LVL {(user as any)?.clearanceLevel || 1}</span>
+               </div>
+            </div>
+            <div className="flex flex-col w-32">
+               <div className="flex justify-between items-end mb-1">
+                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold">XP</span>
+                 <span className="text-[9px] font-mono text-cyan-400">{(user as any)?.experiencePoints || 0} / {((user as any)?.clearanceLevel || 1) * 1000}</span>
+               </div>
+               <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
+                 <div className="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4] transition-all duration-1000" style={{ width: `${Math.min(100, (((user as any)?.experiencePoints || 0) / (((user as any)?.clearanceLevel || 1) * 1000)) * 100)}%` }}></div>
+               </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-6">

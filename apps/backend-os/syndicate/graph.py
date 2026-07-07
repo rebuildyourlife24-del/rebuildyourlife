@@ -1,174 +1,138 @@
 import os
 import asyncio
-import json
-import uuid
-from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
-from langchain_core.tools import tool
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
-from firecrawl import FirecrawlApp
-from syndicate.state import SyndicateState
+from .state import SyndicateState
+from .agents import *
 
-load_dotenv()
-
-api_key = os.getenv("OPENROUTER_API_KEY_1", "")
-has_valid_key = api_key != ""
-
-llm = ChatOpenAI(
-    api_key=api_key,
-    base_url="https://openrouter.ai/api/v1",
-    model="openai/gpt-4o",
-    temperature=0
-) if has_valid_key else None
-
-# -----------------------------------------------------------------------------
-# TOOLS (Firecrawl + Pinecone)
-# -----------------------------------------------------------------------------
-firecrawl_api = os.getenv("FIRECRAWL_API_KEY", "")
-fc = FirecrawlApp(api_key=firecrawl_api) if firecrawl_api else None
-
-pc_api_key = os.getenv("PINECONE_API_KEY", "")
-pc_index = os.getenv("PINECONE_INDEX_NAME", "sovereign-os")
-
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001") if os.getenv("GOOGLE_API_KEY") else None
-
-@tool
-def scrape_competitor(url: str) -> str:
-    """Scrapes a URL to analyze competitor market data."""
-    if fc:
-        try:
-            res = fc.scrape_url(url, params={'formats': ['markdown']})
-            return res.get('markdown', 'No data')[:1000] # return snippet
-        except Exception as e:
-            return f"Scrape failed: {e}"
-    return "Firecrawl not initialized."
-
-# Bind tools to LLMs
-if llm:
-    cmo_llm_with_tools = llm.bind_tools([scrape_competitor])
-else:
-    cmo_llm_with_tools = None
+# Instantiate the 18 AI Council Members
+agents_pool = {
+    "orion": OrionAgent(),
+    "cfo": CFOAgent(),
+    "coo": COOAgent(),
+    "cmo": CMOAgent(),
+    "cto": CTOAgent(),
+    "cro": CROAgent(),
+    "ciso": CISOAgent(),
+    "hermes": HermesAgent(),
+    "lead_data_scientist": LeadDataScientistAgent(),
+    "head_of_seo": HeadOfSEOAgent(),
+    "lead_frontend": LeadFrontendAgent(),
+    "lead_backend": LeadBackendAgent(),
+    "qa_lead": QALeadAgent(),
+    "head_of_growth": HeadOfGrowthAgent(),
+    "customer_success": CustomerSuccessAgent(),
+    "legal_compliance": LegalComplianceAgent(),
+    "market_intelligence": MarketIntelligenceAgent(),
+    "devops": DevOpsArchitectAgent()
+}
 
 # =====================================================================
-# AGENT NODE FUNCTIONS
+# GENERIC AGENT NODE WRAPPER
 # =====================================================================
-
-async def router_node(state: SyndicateState):
-    state["active_agent"] = "router"
-    state["ui_events"].append({"id": "router", "status": "active", "task": "Routing data stream..."})
-    await asyncio.sleep(1.0)
-    return state
-
-async def ceo_node(state: SyndicateState):
-    state["active_agent"] = "ceo"
-    state["ui_events"].append({"id": "ceo", "status": "thinking", "task": "Evaluating strategic options with GPT-4o"})
-    
-    if has_valid_key:
-        sys_msg = SystemMessage(content="You are the CEO AI. Decide if we focus on 'growth' (marketing) or 'operations' (logistics). Reply short.")
-        human_msg = HumanMessage(content=f"Rev: ${state['revenue']}, Spend: ${state['ad_spend']}. Focus?")
+def create_agent_node(agent_id: str, agent_instance):
+    """Creates a LangGraph node for a specific 18-Council Agent"""
+    async def node_func(state: SyndicateState):
+        state["active_agent"] = agent_id
+        state["ui_events"].append({"id": agent_id, "status": "thinking", "task": f"{agent_instance.name} is working..."})
         
         try:
-            response = await llm.ainvoke([sys_msg, human_msg])
-            decision = response.content
-            state["ui_events"].append({"id": "ceo", "status": "active", "task": decision[:50] + "..."})
-            state["decision_log"].append(f"CEO: {decision}")
+            # Execute the agent logic
+            result = await agent_instance.execute(state)
             
-            if "growth" in decision.lower() or "marketing" in decision.lower():
-                state["current_focus"] = "growth"
+            # Governance Plane: Check if approval is requested
+            if result.status == "PENDING_APPROVAL":
+                state["ui_events"].append({"id": agent_id, "status": "waiting", "task": f"Waiting for Operator Approval for: {result.data.get('action')}"})
+                
+                # We need to initialize the list if it's missing (LangGraph add reducer will append)
+                if "pending_approvals" not in state or not state["pending_approvals"]:
+                    state["pending_approvals"] = []
+                
+                # We use list append via the reducer
+                state["pending_approvals"].append({
+                    "agent": agent_instance.name,
+                    "action": result.data.get("action"),
+                    "details": result.data.get("details")
+                })
             else:
-                state["current_focus"] = "operations"
-        except Exception as e:
-            state["ui_events"].append({"id": "ceo", "status": "active", "task": f"API Error"})
-            state["current_focus"] = "growth"
-    else:
-        await asyncio.sleep(1.0)
-        state["current_focus"] = "growth"
-        
-    return state
-
-async def cmo_node(state: SyndicateState):
-    state["active_agent"] = "cmo"
-    state["ui_events"].append({"id": "cmo", "status": "thinking", "task": "Running Firecrawl market analysis..."})
-    
-    if cmo_llm_with_tools:
-        sys_msg = SystemMessage(content="You are CMO. Always use the scrape_competitor tool on 'apple.com' to get a market vibe, then output an ad slogan.")
-        try:
-            response = await cmo_llm_with_tools.ainvoke([sys_msg])
-            
-            if response.tool_calls:
-                for tc in response.tool_calls:
-                    if tc["name"] == "scrape_competitor":
-                        state["ui_events"].append({"id": "cmo", "status": "active", "task": f"[TOOL RUN] Scraping {tc['args'].get('url')} via Firecrawl..."})
-                        tool_res = scrape_competitor.invoke(tc["args"])
-                        
-                        # second pass
-                        final_res = await llm.ainvoke([
-                            sys_msg, 
-                            response, 
-                            ToolMessage(tool_call_id=tc["id"], content=tool_res, name="scrape_competitor")
-                        ])
-                        state["ad_spend"] += 500.0
-                        state["ui_events"].append({"id": "cmo", "status": "active", "task": f"Ad: {final_res.content[:40]} (+ $500)"})
-            else:
-                state["ui_events"].append({"id": "cmo", "status": "active", "task": f"Ad: {response.content[:40]}"})
+                state["ui_events"].append({"id": agent_id, "status": "active", "task": f"Task completed with status: {result.status}"})
                 
         except Exception as e:
-             state["ui_events"].append({"id": "cmo", "status": "active", "task": f"CMO Error: {e}"})
-    else:
-        await asyncio.sleep(1.0)
-    
-    return state
-
-async def coo_node(state: SyndicateState):
-    state["active_agent"] = "coo"
-    state["ui_events"].append({"id": "coo", "status": "thinking", "task": "Optimizing logistics..."})
-    await asyncio.sleep(1.5)
-    state["ui_events"].append({"id": "coo", "status": "active", "task": "Logistics optimized."})
-    return state
-
-async def orion_node(state: SyndicateState):
-    state["active_agent"] = "orion"
-    state["ui_events"].append({"id": "orion", "status": "thinking", "task": "Embedding memory to Pinecone..."})
-    
-    if pc_api_key and embeddings:
-        try:
-            vectorstore = PineconeVectorStore(index_name=pc_index, embedding=embeddings, pinecone_api_key=pc_api_key)
-            last_decision = state["decision_log"][-1] if state["decision_log"] else "No recent decisions."
+            state["ui_events"].append({"id": agent_id, "status": "error", "task": f"Agent crashed: {str(e)[:40]}"})
             
-            # Save to Pinecone
-            await vectorstore.aadd_texts([last_decision], metadatas=[{"agent": "syndicate", "timestamp": str(uuid.uuid4())}])
-            state["ui_events"].append({"id": "orion", "status": "active", "task": "[SAVED TO PINECONE] Vector embedded."})
-        except Exception as e:
-            state["ui_events"].append({"id": "orion", "status": "active", "task": f"Pinecone Error: {str(e)[:30]}"})
-    else:
-        await asyncio.sleep(1.0)
-        state["ui_events"].append({"id": "orion", "status": "active", "task": "Skipped Pinecone (Missing setup)"})
+        return state
+    return node_func
+
+from langchain_core.messages import SystemMessage, HumanMessage
+from .router import sovereign_router
+
+async def router_node(state: SyndicateState):
+    """Hermes / Sovereign Router Node determining the task delegation"""
+    state["active_agent"] = "router"
+    state["ui_events"].append({"id": "router", "status": "thinking", "task": "Hermes is scanning the enterprise state..."})
+    
+    try:
+        dynamic_llm = sovereign_router.get_llm()
+        available_agents = list(agents_pool.keys())
+        
+        sys_msg = SystemMessage(content=f"""You are Hermes, the Sovereign Router for the ARGENTIC AI Council.
+Your job is to read the current state of the enterprise and decide EXACTLY WHICH ONE of the 18 AI agents should take the next action.
+You must output ONLY the agent_id, nothing else. No markdown, no punctuation.
+
+Available agents: {', '.join(available_agents)}
+""")
+        
+        human_msg = HumanMessage(content=f"Current Focus: {state.get('current_focus')}\nRevenue: ${state.get('revenue')}\nAd Spend: ${state.get('ad_spend')}\nPick the next agent_id:")
+        
+        response = await dynamic_llm.ainvoke([sys_msg, human_msg])
+        chosen_agent = response.content.strip().lower()
+        
+        if chosen_agent in agents_pool:
+            state["next_agent"] = chosen_agent
+            state["ui_events"].append({"id": "router", "status": "active", "task": f"Delegated task to: {chosen_agent}"})
+        else:
+            state["next_agent"] = "orion" # Fallback
+            state["ui_events"].append({"id": "router", "status": "active", "task": f"LLM returned invalid agent '{chosen_agent}', fallback to orion"})
+            
+    except Exception as e:
+        state["next_agent"] = "orion"
+        state["ui_events"].append({"id": "router", "status": "error", "task": f"Router LLM Error: {str(e)[:40]}"})
         
     return state
 
-# =====================================================================
-# EDGE ROUTING LOGIC
-# =====================================================================
+def hermes_router_edge(state: SyndicateState):
+    """Dynamic Edge Routing based on LLM decision"""
+    return state.get("next_agent", "orion")
 
-def ceo_router(state: SyndicateState):
-    if state["current_focus"] == "growth":
-        return "cmo"
-    return "coo"
-
+# =====================================================================
+# GRAPH COMPILATION
+# =====================================================================
 workflow = StateGraph(SyndicateState)
+
+# Add standard entry node
 workflow.add_node("router", router_node)
-workflow.add_node("ceo", ceo_node)
-workflow.add_node("cmo", cmo_node)
-workflow.add_node("coo", coo_node)
-workflow.add_node("orion", orion_node)
+
+# Add all 18 nodes dynamically
+for agent_id, agent_instance in agents_pool.items():
+    workflow.add_node(agent_id, create_agent_node(agent_id, agent_instance))
 
 workflow.set_entry_point("router")
-workflow.add_edge("router", "ceo")
-workflow.add_conditional_edges("ceo", ceo_router, {"cmo": "cmo", "coo": "coo"})
-workflow.add_edge("cmo", "orion")
-workflow.add_edge("coo", "orion")
+
+# Map Hermes router to the respective agent nodes
+agent_routing_map = {agent_id: agent_id for agent_id in agents_pool.keys()}
+
+workflow.add_conditional_edges(
+    "router", 
+    hermes_router_edge, 
+    agent_routing_map
+)
+
+# Every agent paths back to Orion for final sync, or END
+for agent_id in agents_pool.keys():
+    if agent_id != "orion":
+        workflow.add_edge(agent_id, "orion")
+
 workflow.add_edge("orion", END)
+
+# Compile with Governance Interrupt
+# If an agent added something to pending_approvals, we could interrupt, but for now we just log it to DB.
 app = workflow.compile()
