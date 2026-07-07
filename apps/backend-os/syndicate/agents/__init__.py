@@ -1,8 +1,9 @@
 from .base_agent import BaseAgent, AgentResult
 from .cto import CTOAgent
 from .ciso import CISOAgent
+from .cmo import CMOAgent
 from .department_stubs import (
-    OrionAgent, CFOAgent, COOAgent, CMOAgent, CROAgent, HermesAgent, 
+    OrionAgent, CFOAgent, COOAgent, CROAgent, HermesAgent, 
     LeadDataScientistAgent, HeadOfSEOAgent, LeadFrontendAgent, 
     LeadBackendAgent, QALeadAgent, HeadOfGrowthAgent, 
     CustomerSuccessAgent, LegalComplianceAgent, MarketIntelligenceAgent, 
