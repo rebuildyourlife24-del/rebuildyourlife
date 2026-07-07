@@ -5,15 +5,15 @@ from .base_agent import BaseAgent, AgentResult
 from syndicate.cfo import distribute_revenue
 from syndicate.db import supabase, get_admin_user_id
 
-# Stripe SDK mock integration
-def fetch_recent_stripe_payments():
-    """Mocks fetching recent successful payments from Stripe API."""
-    if os.environ.get("STRIPE_API_KEY"):
+# Mollie SDK mock integration (since keys are provided by user in .env)
+def fetch_recent_mollie_payments():
+    """Mocks fetching recent successful payments from Mollie API."""
+    if os.environ.get("MOLLIE_API_KEY"):
         # Real SDK call would go here
         pass
-    # We simulate a 20% chance of a new payment coming in
+    # We simulate a 20% chance of a new payment coming in via Mollie
     if random.random() < 0.2:
-        return [{"id": f"pi_mock_{random.randint(1000, 9999)}", "amount": 149.00, "currency": "eur"}]
+        return [{"id": f"tr_mock_{random.randint(1000, 9999)}", "amount": 149.00, "currency": "eur"}]
     return []
 
 class CFOAgent(BaseAgent):
@@ -26,15 +26,15 @@ class CFOAgent(BaseAgent):
     async def execute(self, state: Dict[str, Any]) -> AgentResult:
         self.log_action("ANALYZING_TREASURY", {"state_keys": list(state.keys())})
         
-        # 0. Check real-world API connections (Stripe)
-        new_payments = fetch_recent_stripe_payments()
+        # 0. Check real-world API connections (Mollie)
+        new_payments = fetch_recent_mollie_payments()
         for payment in new_payments:
             amount = payment["amount"]
-            self.log_action("STRIPE_PAYMENT_DETECTED", {"amount": amount, "id": payment["id"]})
+            self.log_action("MOLLIE_PAYMENT_DETECTED", {"amount": amount, "id": payment["id"]})
             # Propose immediate split for this new payment
             return self.request_approval("SPLIT_REVENUE", {
                 "target": "Treasury",
-                "reason": f"New Stripe payment detected ({payment['id']}). Split required.",
+                "reason": f"New Mollie payment detected ({payment['id']}). Split required.",
                 "amount": amount
             })
         
