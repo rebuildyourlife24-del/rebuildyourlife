@@ -11,6 +11,7 @@ import programRoutes from "./program.routes.js";
 import lifeAreaRoutes from "./life-area.routes.js";
 import notificationRoutes from "./notification.routes.js";
 import webhookRoutes from "./webhook.routes.js";
+import twinRoutes from "./twin.routes.js";
 import socialRoutes from "./social.routes.js";
 import businessRoutes from "./business.routes.js";
 import { paymentRoutes } from "./payment.routes.js";
@@ -94,5 +95,8 @@ router.use('/orion', orionOpenAIRouter);
 router.use("/franchise", franchiseRoutes);
 router.use("/admin", adminRoutes);
 router.use("/traffic", trafficRoutes);
+
+// V6 Enterprise Control Plane Routes
+router.use("/twin", twinRoutes);
 
 export default router;

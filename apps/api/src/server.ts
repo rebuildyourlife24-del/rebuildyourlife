@@ -5,6 +5,7 @@ import compression from 'compression';
 import dotenv from 'dotenv';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import routes from './routes/index.js';
+import { EventReplayer } from './core/twin/EventReplayer.js';
 
 dotenv.config();
 
@@ -41,8 +42,16 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 const PORT = process.env.PORT || process.env.API_PORT || 4000;
 
 if (process.env.NODE_ENV !== 'serverless') {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`RebuildYourLife API running on port ${PORT}`);
+    
+    // V6.0 - Boot the Digital Twin by replaying the Event Store
+    try {
+      const replayer = new EventReplayer();
+      await replayer.rebuildTwinFromScratch();
+    } catch (error) {
+      console.error('[Startup] Failed to rebuild Digital Twin:', error);
+    }
   });
 }
 
