@@ -127,51 +127,83 @@ export default function QuestsPage() {
           </section>
         </div>
 
-        {/* RIGHT COLUMN: Agent Unlock Tree */}
-        <div className="xl:col-span-2 space-y-6">
-          <h2 className="text-xl font-bold flex items-center gap-2 border-b border-green-900/50 pb-4">
-            <BrainCircuit className="w-5 h-5 text-green-500" />
-            AI COUNCIL PROGRESSION TREE
-          </h2>
+        {/* RIGHT COLUMN: Agent Unlock Tree & Arsenal */}
+        <div className="xl:col-span-2 space-y-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-            {/* Connecting lines for aesthetics */}
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-green-500/20 via-green-500/5 to-transparent -translate-x-1/2" />
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2 border-b border-green-900/50 pb-4">
+              <BrainCircuit className="w-5 h-5 text-green-500" />
+              AI COUNCIL PROGRESSION TREE
+            </h2>
             
-            {AGENT_UNLOCKS.map((tier, idx) => {
-              const isUnlocked = OPERATOR_RANK.level >= tier.level;
-              return (
-                <div key={idx} className={`p-5 border transition-all duration-500 ${isUnlocked ? 'border-green-500/30 bg-green-950/10' : 'border-gray-800 bg-black/40'}`}>
-                  <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
-                    <div className="flex items-center gap-2">
-                      {isUnlocked ? (
-                        <Unlock className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <Lock className="w-4 h-4 text-gray-500" />
-                      )}
-                      <h3 className={`font-bold ${isUnlocked ? 'text-green-400' : 'text-gray-500'}`}>
-                        {tier.group}
-                      </h3>
-                    </div>
-                    <span className={`text-xs font-mono px-2 py-1 rounded ${isUnlocked ? 'bg-green-900/30 text-green-500' : 'bg-gray-900 text-gray-500'}`}>
-                      LVL {tier.level}
-                    </span>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {tier.agents.map((agent, aIdx) => (
-                      <span 
-                        key={aIdx} 
-                        className={`text-xs px-3 py-1.5 border ${isUnlocked ? 'border-green-500/30 text-green-300 bg-green-900/20 shadow-[0_0_10px_rgba(74,222,128,0.1)]' : 'border-gray-800 text-gray-600'}`}
-                      >
-                        {agent}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+              {/* Connecting lines for aesthetics */}
+              <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-green-500/20 via-green-500/5 to-transparent -translate-x-1/2" />
+              
+              {AGENT_UNLOCKS.map((tier, idx) => {
+                const isUnlocked = OPERATOR_RANK.level >= tier.level;
+                return (
+                  <div key={idx} className={`p-5 border transition-all duration-500 ${isUnlocked ? 'border-green-500/30 bg-green-950/10' : 'border-gray-800 bg-black/40'}`}>
+                    <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+                      <div className="flex items-center gap-2">
+                        {isUnlocked ? (
+                          <Unlock className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <Lock className="w-4 h-4 text-gray-500" />
+                        )}
+                        <h3 className={`font-bold ${isUnlocked ? 'text-green-400' : 'text-gray-500'}`}>
+                          {tier.group}
+                        </h3>
+                      </div>
+                      <span className={`text-xs font-mono px-2 py-1 rounded ${isUnlocked ? 'bg-green-900/30 text-green-500' : 'bg-gray-900 text-gray-500'}`}>
+                        LVL {tier.level}
                       </span>
-                    ))}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {tier.agents.map((agent, aIdx) => (
+                        <span 
+                          key={aIdx} 
+                          className={`text-xs px-3 py-1.5 border ${isUnlocked ? 'border-green-500/30 text-green-300 bg-green-900/20 shadow-[0_0_10px_rgba(74,222,128,0.1)]' : 'border-gray-800 text-gray-600'}`}
+                        >
+                          {agent}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* UNLOCKABLE ARSENAL */}
+          <section className="mt-12">
+            <h2 className="text-xl font-bold flex items-center gap-2 border-b border-green-900/50 pb-4 mb-6">
+              <Lock className="w-5 h-5 text-gray-400" />
+              THE ARSENAL
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { name: "Stripe/Mollie Real-Time Split", level: 2, unlocked: OPERATOR_RANK.level >= 2, icon: <Activity className="w-4 h-4" /> },
+                { name: "Vercel SDK Sync", level: 3, unlocked: OPERATOR_RANK.level >= 3, icon: <Shield className="w-4 h-4" /> },
+                { name: "Agentic Dark-Mode OS", level: 5, unlocked: OPERATOR_RANK.level >= 5, icon: <Zap className="w-4 h-4" /> },
+                { name: "LLM Autonomous Deployment", level: 7, unlocked: OPERATOR_RANK.level >= 7, icon: <BrainCircuit className="w-4 h-4" /> },
+                { name: "God-Mode Control Panel", level: 10, unlocked: OPERATOR_RANK.level >= 10, icon: <Trophy className="w-4 h-4" /> }
+              ].map((item, idx) => (
+                <div key={idx} className={`p-4 border ${item.unlocked ? 'border-green-500/50 bg-green-950/20' : 'border-gray-800 bg-black/60 blur-[1px] hover:blur-none transition-all'} flex items-center justify-between`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`${item.unlocked ? 'text-green-400' : 'text-gray-600'}`}>
+                      {item.icon}
+                    </div>
+                    <span className={`text-sm ${item.unlocked ? 'text-green-100 font-bold' : 'text-gray-500'}`}>{item.name}</span>
+                  </div>
+                  {!item.unlocked && (
+                     <span className="text-xs bg-gray-900 text-gray-400 px-2 py-1 rounded border border-gray-800">LVL {item.level}</span>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          </section>
           
         </div>
       </div>
