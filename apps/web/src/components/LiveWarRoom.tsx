@@ -31,7 +31,7 @@ export default function LiveWarRoom() {
   ]);
   const [memories, setMemories] = useState<any[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
-  const wsRef = useRef<WebSocket | null>(null);
+  const backendUrl = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "https://rebuildyourlife-python-backend-ikrz82li7-henk-s-projects355.vercel.app";
 
   useEffect(() => {
     // Fetch initial data
@@ -40,14 +40,33 @@ export default function LiveWarRoom() {
         const rankData = await getOperatorRank();
         setOperatorRank(rankData);
 
-        const memRes = await fetch("http://localhost:8000/api/intelligence/memory");
-        if (memRes.ok) {
+        // Fetch Server Actions natively
+        const { getPendingActions } = await import("@/actions/agentApprovals");
+        const actions = await getPendingActions();
+        
+        // Format incoming backend approvals for the ApprovalsMatrix
+        const formattedApprovals = actions.map((pa: any) => ({
+          id: pa.id,
+          agentType: pa.agentType || "System",
+          title: pa.title || "Pending Action",
+          description: pa.description || "No details provided",
+          estimatedCost: pa.estimatedCost || 0,
+          estimatedRevenue: pa.estimatedRevenue || 0,
+          riskLevel: pa.riskLevel || "MEDIUM",
+          reasoningApprove: null,
+          reasoningDeny: null
+        }));
+        setPendingApprovals(formattedApprovals);
+
+        // Fetch standard API data from backend safely
+        const memRes = await fetch(`${backendUrl}/api/intelligence/memory`).catch(() => null);
+        if (memRes?.ok) {
           const memData = await memRes.json();
           setMemories(memData.memories || []);
         }
 
-        const campRes = await fetch("http://localhost:8000/api/marketing/campaigns");
-        if (campRes.ok) {
+        const campRes = await fetch(`${backendUrl}/api/marketing/campaigns`).catch(() => null);
+        if (campRes?.ok) {
           const campData = await campRes.json();
           setCampaigns(campData.campaigns || []);
         }
@@ -57,65 +76,12 @@ export default function LiveWarRoom() {
     };
     
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Poll every 10s
-
-    // Connect WebSocket
-    const connectWs = () => {
-      const ws = new WebSocket("ws://localhost:8000/ws/agents");
-      wsRef.current = ws;
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === "AGENT_UPDATE" && data.payload?.agents) {
-            // Update agent statuses
-            setAgents(prev => {
-              const newAgents = [...prev];
-              data.payload.agents.forEach((agUpdate: any) => {
-                const matchId = agUpdate.id ? agUpdate.id.toLowerCase() : "";
-                const idx = newAgents.findIndex(a => a.id === matchId);
-                if (idx !== -1) {
-                  newAgents[idx] = { ...newAgents[idx], status: agUpdate.status, task: agUpdate.task };
-                } else if (matchId) {
-                    // Fallback for completely unknown agents
-                    newAgents.push({ id: matchId, name: agUpdate.name || agUpdate.id, role: agUpdate.role || "Agent", status: agUpdate.status, task: agUpdate.task });
-                }
-              });
-              return newAgents;
-            });
-          } else if (data.type === "WS_APPROVALS_UPDATE" && data.payload?.pending_approvals) {
-            // Format incoming backend approvals for the ApprovalsMatrix
-            const formattedApprovals = data.payload.pending_approvals.map((pa: any) => ({
-              id: pa.id,
-              agentType: pa.agent || "System",
-              title: pa.action || "Pending Action",
-              description: JSON.stringify(pa.details || {}).substring(0, 100),
-              estimatedCost: 0, // Backend could provide this later
-              estimatedRevenue: 0,
-              riskLevel: "MEDIUM"
-            }));
-            
-            setPendingApprovals(formattedApprovals);
-            // Whenever there's a new update, re-fetch the operator rank just in case XP was awarded
-            getOperatorRank().then(setOperatorRank);
-          }
-        } catch (e) {
-          console.error("WS Parse error", e);
-        }
-      };
-
-      ws.onclose = () => {
-        setTimeout(connectWs, 3000); // Reconnect
-      };
-    };
-
-    connectWs();
+    const interval = setInterval(fetchData, 10000); // Vercel-Native Polling every 10s
 
     return () => {
       clearInterval(interval);
-      if (wsRef.current) wsRef.current.close();
     };
-  }, []);
+  }, [backendUrl]);
 
   return (
     <div className="space-y-8">

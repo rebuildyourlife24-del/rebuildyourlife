@@ -91,7 +91,8 @@ export async function approveAgentAction(actionId: string, estimatedCost: number
     // If not in DB, it's a Live LangGraph Action
     // Ping Python backend to approve
     try {
-      await fetch("http://localhost:8000/api/governance/approve", {
+      const backendUrl = process.env.PYTHON_BACKEND_URL || "https://rebuildyourlife-python-backend-ikrz82li7-henk-s-projects355.vercel.app";
+      await fetch(`${backendUrl}/api/governance/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: actionId, userId: user.id })
@@ -125,7 +126,8 @@ export async function rejectAgentAction(actionId: string) {
   } else {
     // Live LangGraph Action
     try {
-      await fetch("http://localhost:8000/api/governance/reject", {
+      const backendUrl = process.env.PYTHON_BACKEND_URL || "https://rebuildyourlife-python-backend-ikrz82li7-henk-s-projects355.vercel.app";
+      await fetch(`${backendUrl}/api/governance/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: actionId })
