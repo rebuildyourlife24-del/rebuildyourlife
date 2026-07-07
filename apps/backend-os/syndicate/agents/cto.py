@@ -3,7 +3,7 @@ import random
 import uuid
 from typing import Dict, Any
 from .base_agent import BaseAgent, AgentResult
-from syndicate.db import supabase
+from syndicate.db import supabase, get_admin_user_id
 
 class CTOAgent(BaseAgent):
     def __init__(self):
@@ -27,9 +27,7 @@ class CTOAgent(BaseAgent):
                     config_str = json.dumps(details.get("config", {}))
                     
                     if supabase:
-                        # Fetch admin user to bind module to (Technical Debt workaround)
-                        users = supabase.table("User").select("id").limit(1).execute()
-                        admin_id = users.data[0]["id"] if users.data else "00000000-0000-0000-0000-000000000000"
+                        admin_id = get_admin_user_id()
                         
                         try:
                             supabase.table("UserBusinessModule").insert({

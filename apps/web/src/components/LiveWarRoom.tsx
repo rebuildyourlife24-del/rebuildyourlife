@@ -10,11 +10,24 @@ export default function LiveWarRoom() {
   const [operatorRank, setOperatorRank] = useState({ level: 1, name: "Initiate", xp: 0, nextLevelXp: 1000, progress: 0 });
   const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
   const [agents, setAgents] = useState([
-    { id: "router", name: "Sovereign Router", role: "Traffic Controller", status: "idle", task: "Awaiting input" },
-    { id: "ceo", name: "Orion", role: "Chief Executive", status: "idle", task: "Monitoring" },
-    { id: "cmo", name: "Atlas", role: "Marketing Director", status: "idle", task: "Monitoring" },
-    { id: "coo", name: "Sentinel", role: "Operations", status: "idle", task: "Monitoring" },
-    { id: "orion", name: "Memory Core", role: "LTM Storage", status: "idle", task: "Indexing" }
+    { id: "ceo (orion)", name: "Orion", role: "CEO", status: "idle", task: "Strategic Oversight" },
+    { id: "cmo", name: "Atlas", role: "CMO", status: "idle", task: "Growth Engine" },
+    { id: "cto", name: "Nexus", role: "CTO", status: "idle", task: "Product Builder" },
+    { id: "cfo", name: "Vault", role: "CFO", status: "idle", task: "Financial Splitter" },
+    { id: "cro", name: "Apex", role: "CRO", status: "idle", task: "Sales Optimization" },
+    { id: "coo", name: "Sentinel", role: "COO", status: "idle", task: "Operations" },
+    { id: "hermes", name: "Hermes", role: "Router", status: "idle", task: "Communication" },
+    { id: "lead data scientist", name: "Oracle", role: "Data Scientist", status: "idle", task: "Analytics" },
+    { id: "head of seo & content", name: "Index", role: "SEO Lead", status: "idle", task: "Organic Traffic" },
+    { id: "lead frontend engineer", name: "Canvas", role: "Frontend Lead", status: "idle", task: "UI Generation" },
+    { id: "lead backend engineer", name: "Core", role: "Backend Lead", status: "idle", task: "API Systems" },
+    { id: "qa lead", name: "Aegis", role: "QA Lead", status: "idle", task: "Build Testing" },
+    { id: "head of growth", name: "Viral", role: "Growth Lead", status: "idle", task: "A/B Testing" },
+    { id: "customer success manager", name: "Empathy", role: "CS Manager", status: "idle", task: "Retention" },
+    { id: "legal & compliance officer", name: "Justice", role: "Legal Officer", status: "idle", task: "Risk Assessment" },
+    { id: "market intelligence agent", name: "Scout", role: "Market Intel", status: "idle", task: "Competitor Analysis" },
+    { id: "devops architect", name: "Forge", role: "DevOps", status: "idle", task: "Infrastructure" },
+    { id: "ciso", name: "Shield", role: "CISO", status: "idle", task: "Security" }
   ]);
   const [memories, setMemories] = useState<any[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -59,12 +72,13 @@ export default function LiveWarRoom() {
             setAgents(prev => {
               const newAgents = [...prev];
               data.payload.agents.forEach((agUpdate: any) => {
-                const idx = newAgents.findIndex(a => a.id === agUpdate.id);
+                const matchId = agUpdate.id ? agUpdate.id.toLowerCase() : "";
+                const idx = newAgents.findIndex(a => a.id === matchId);
                 if (idx !== -1) {
                   newAgents[idx] = { ...newAgents[idx], status: agUpdate.status, task: agUpdate.task };
-                } else if (agUpdate.id !== "router" && agUpdate.id !== "ceo" && agUpdate.id !== "cmo" && agUpdate.id !== "coo" && agUpdate.id !== "orion") {
-                    // It's a new dynamic agent from the 18 council
-                    newAgents.push({ id: agUpdate.id, name: agUpdate.name || agUpdate.id, role: agUpdate.role || "Agent", status: agUpdate.status, task: agUpdate.task });
+                } else if (matchId) {
+                    // Fallback for completely unknown agents
+                    newAgents.push({ id: matchId, name: agUpdate.name || agUpdate.id, role: agUpdate.role || "Agent", status: agUpdate.status, task: agUpdate.task });
                 }
               });
               return newAgents;
@@ -143,26 +157,25 @@ export default function LiveWarRoom() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* 1. ACTIVE COUNCIL (Agents) */}
-      <section className="border border-green-900/50 bg-black/50 p-6 backdrop-blur-sm relative overflow-hidden">
+      <section className="border border-green-900/50 bg-black/50 p-6 backdrop-blur-sm relative overflow-hidden lg:col-span-3">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50" />
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <Database className="w-5 h-5" />
-          ACTIVE COUNCIL ({agents.length})
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-green-500">
+          <BrainCircuit className="w-6 h-6" />
+          THE 18-PERSON AI COUNCIL
         </h2>
-        <div className="space-y-3 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           {agents.map(agent => (
-            <div key={agent.id} className={`flex items-center justify-between p-3 border transition-colors ${agent.status !== 'idle' ? 'border-green-500 bg-green-900/20' : 'border-green-900/30 bg-green-950/10'}`}>
-              <div className="flex flex-col flex-1 mr-4">
-                <span className={`font-bold ${agent.status !== 'idle' ? 'text-green-400' : 'text-green-600'}`}>{agent.name}</span>
-                <span className="text-xs text-green-700 uppercase">{agent.role}</span>
-                <span className="text-xs text-green-400 mt-1 font-mono truncate w-full">{agent.task}</span>
+            <div key={agent.id} className={`flex flex-col p-4 border transition-all duration-500 ${agent.status !== 'idle' ? 'border-green-400 bg-green-900/30 shadow-[0_0_15px_rgba(74,222,128,0.2)]' : 'border-green-900/30 bg-green-950/10 opacity-70 hover:opacity-100'}`}>
+              <div className="flex items-center justify-between mb-2 border-b border-green-900/50 pb-2">
+                <span className="text-xs text-green-600 uppercase tracking-widest">{agent.role}</span>
+                {agent.status !== 'idle' ? (
+                  <Activity className="w-4 h-4 text-green-400 animate-pulse" />
+                ) : (
+                  <div className="w-3 h-3 rounded-full bg-green-900/50" />
+                )}
               </div>
-              {agent.status !== 'idle' ? (
-                <Activity className="w-4 h-4 text-green-400 animate-pulse flex-shrink-0" />
-              ) : (
-                <div className="w-4 h-4 rounded-full border border-green-800 flex-shrink-0" />
-              )}
+              <span className={`font-bold text-lg ${agent.status !== 'idle' ? 'text-green-300' : 'text-green-600'}`}>{agent.name}</span>
+              <span className="text-xs text-green-500 mt-2 font-mono h-8 overflow-hidden text-ellipsis line-clamp-2">{agent.task}</span>
             </div>
           ))}
         </div>

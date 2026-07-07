@@ -48,3 +48,26 @@ async def log_dossier_async(agent_type: str, action: str, details: str, status: 
     # Fire and forget in a background thread to prevent blocking the async event loop
     loop = asyncio.get_event_loop()
     loop.run_in_executor(None, _execute)
+
+def get_admin_user_id() -> str:
+    """
+    Resolves the God-Mode Admin user ID dynamically.
+    Searches for role='ADMIN', falls back to first user, or a zero-UUID.
+    """
+    if not supabase:
+        return "00000000-0000-0000-0000-000000000000"
+    
+    try:
+        # Priority 1: Find an explicit admin
+        res = supabase.table("User").select("id").eq("role", "ADMIN").limit(1).execute()
+        if res.data and len(res.data) > 0:
+            return res.data[0]["id"]
+            
+        # Priority 2: Find the oldest user (likely the founder)
+        res = supabase.table("User").select("id").order("createdAt", desc=False).limit(1).execute()
+        if res.data and len(res.data) > 0:
+            return res.data[0]["id"]
+    except Exception as e:
+        logger.error(f"Failed to fetch dynamic admin ID: {e}")
+        
+    return "00000000-0000-0000-0000-000000000000"

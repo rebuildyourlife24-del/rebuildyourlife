@@ -2,7 +2,7 @@ import random
 from typing import Dict, Any
 from .base_agent import BaseAgent, AgentResult
 from syndicate.cfo import distribute_revenue
-from syndicate.db import supabase
+from syndicate.db import supabase, get_admin_user_id
 
 class CFOAgent(BaseAgent):
     def __init__(self):
@@ -24,9 +24,7 @@ class CFOAgent(BaseAgent):
                 amount = details.get("amount", 0.0)
                 
                 if supabase:
-                    # Fetch admin user to bind vaults to (Technical Debt workaround)
-                    users = supabase.table("User").select("id").limit(1).execute()
-                    admin_id = users.data[0]["id"] if users.data else "00000000-0000-0000-0000-000000000000"
+                    admin_id = get_admin_user_id()
                     
                     # Execute the 90/10 Vault split
                     result = await distribute_revenue(admin_id, amount)

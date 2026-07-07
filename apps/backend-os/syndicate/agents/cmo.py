@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from .base_agent import BaseAgent, AgentResult
 from syndicate.cmo import create_marketing_campaign
-from syndicate.db import supabase
+from syndicate.db import supabase, get_admin_user_id
 
 class CMOAgent(BaseAgent):
     def __init__(self):
@@ -27,9 +27,7 @@ class CMOAgent(BaseAgent):
                 budget = details.get("budget", 100.0)
                 
                 if supabase:
-                    # Fetch admin user to bind module to (Technical Debt workaround)
-                    users = supabase.table("User").select("id").limit(1).execute()
-                    admin_id = users.data[0]["id"] if users.data else "00000000-0000-0000-0000-000000000000"
+                    admin_id = get_admin_user_id()
                     
                     try:
                         # Call the existing implementation in syndicate.cmo
