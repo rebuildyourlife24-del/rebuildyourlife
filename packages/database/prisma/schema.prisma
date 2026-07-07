@@ -2830,7 +2830,7 @@ model AgentTrustScore {
 model CognitiveState {
   id             String   @id @default(uuid())
   decisionId     String   @unique
-  currentPhase   String   // OBSERVE, UNDERSTAND, HYPOTHESIS, SIMULATE, DECIDE, EXECUTE, REFLECT, LEARN
+  currentPhase   String // OBSERVE, UNDERSTAND, HYPOTHESIS, SIMULATE, DECIDE, EXECUTE, REFLECT, LEARN
   contextData    Json
   activeScenario String?
   status         String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, BLOCKED, FAILED
@@ -2856,7 +2856,7 @@ model DecisionQualityIndex {
   learningPotential   Float    @default(0)
   executionComplexity Float    @default(0)
   compositeScore      Float    @default(0) // DQI 0-100
-  weights             Json     // Context-dependent weights applied
+  weights             Json // Context-dependent weights applied
   createdAt           DateTime @default(now())
 
   @@index([decisionId])
@@ -2864,45 +2864,45 @@ model DecisionQualityIndex {
 }
 
 model Objective {
-  id          String   @id @default(uuid())
-  name        String   @unique // e.g., "Revenue Growth", "Cash Preservation"
-  description String?
-  weight      Float    @default(0) // dynamic weight %
-  targetValue Float?
+  id           String   @id @default(uuid())
+  name         String   @unique // e.g., "Revenue Growth", "Cash Preservation"
+  description  String?
+  weight       Float    @default(0) // dynamic weight %
+  targetValue  Float?
   currentValue Float?
-  status      String   @default("ACTIVE")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status       String   @default("ACTIVE")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([name])
 }
 
 model Constraint {
-  id            String   @id @default(uuid())
-  name          String   @unique // e.g., "Cash runway > 180 days"
-  description   String?
-  metric        String   // e.g., "cash_runway"
-  operator      String   // ">", "<", "=", ">=", "<="
+  id             String   @id @default(uuid())
+  name           String   @unique // e.g., "Cash runway > 180 days"
+  description    String?
+  metric         String // e.g., "cash_runway"
+  operator       String // ">", "<", "=", ">=", "<="
   thresholdValue Float
-  isHardLimit   Boolean  @default(true) // true = BLOCK if broken
-  status        String   @default("ACTIVE")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isHardLimit    Boolean  @default(true) // true = BLOCK if broken
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([metric])
 }
 
 model BusinessGenome {
-  id            String   @id @default(uuid())
-  category      String   // e.g., "Pricing", "Marketing", "Supply Chain"
-  pattern       String   @db.Text // The winning pattern / validated rule
-  confidence    Float    @default(0)
-  origin        String   // E.g. "Experiment #20481"
-  status        String   @default("CANDIDATE") // CANDIDATE, VALIDATED, DEPRECATED
-  metrics       Json?    // Performance metrics supporting this rule
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  vectors       BusinessGenomeVector[]
+  id         String                 @id @default(uuid())
+  category   String // e.g., "Pricing", "Marketing", "Supply Chain"
+  pattern    String                 @db.Text // The winning pattern / validated rule
+  confidence Float                  @default(0)
+  origin     String // E.g. "Experiment #20481"
+  status     String                 @default("CANDIDATE") // CANDIDATE, VALIDATED, DEPRECATED
+  metrics    Json? // Performance metrics supporting this rule
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  vectors    BusinessGenomeVector[]
 
   @@index([category])
   @@index([status])
@@ -2917,4 +2917,125 @@ model BusinessGenomeVector {
   genome         BusinessGenome               @relation(fields: [genomeId], references: [id], onDelete: Cascade)
 
   @@index([genomeId])
+}
+
+// ==========================================
+// V6.0 SOVEREIGN ENTERPRISE PLATFORM FOUNDATION
+// ==========================================
+
+// --- Event Bus & Reality Fabric ---
+
+model EnterpriseEvent {
+  id          String   @id @default(uuid())
+  aggregateId String // The ID of the entity this event belongs to
+  eventType   String // E.g., 'ORDER_CREATED', 'PREDICTION_MADE'
+  source      String // E.g., 'SHOPIFY_CONNECTOR', 'PREDICTION_ENGINE'
+  payload     Json // The immutable data of the event
+  timestamp   DateTime @default(now())
+
+  @@index([aggregateId])
+  @@index([eventType])
+  @@index([timestamp])
+}
+
+model IntegrationPlugin {
+  id        String   @id @default(uuid())
+  name      String   @unique // E.g. "SHOPIFY_CONNECTOR"
+  type      String // "CONNECTOR", "DOMAIN"
+  status    String   @default("ACTIVE") // ACTIVE, DISABLED
+  version   String   @default("1.0.0")
+  config    Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Governance & Intent ---
+
+model ExecutiveIntent {
+  id              String   @id @default(uuid())
+  type            String // VISION, MISSION, OBJECTIVE, KEY_RESULT
+  name            String
+  description     String?
+  horizonMonths   Int?
+  parentId        String?
+  alignmentWeight Float    @default(1.0)
+  status          String   @default("ACTIVE")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+// --- Intelligence & Memory ---
+
+model MetaIntelligenceLog {
+  id              String   @id @default(uuid())
+  targetModule    String // E.g. "PredictionEngine", "GeminiReasoningProvider"
+  metric          String // E.g. "ForecastAccuracy", "Latency"
+  value           Float
+  evaluationNotes String?
+  timestamp       DateTime @default(now())
+
+  @@index([targetModule])
+  @@index([metric])
+}
+
+model TrustScore {
+  id          String   @id @default(uuid())
+  entityType  String // "SOURCE", "MODEL", "PREDICTION", "AGENT"
+  entityId    String // The ID or Name of the entity being scored
+  score       Float // 0 to 100
+  history     Json? // Log of adjustments
+  lastUpdated DateTime @default(now())
+
+  @@unique([entityType, entityId])
+}
+
+model DecisionLedger {
+  id              String   @id @default(uuid())
+  contextEventId  String? // Link to the EnterpriseEvent that triggered this
+  proposal        String // What was proposed
+  evidence        Json? // What evidence was used
+  simulationId    String? // Link to SimulationExperiment if any
+  dqiScore        Float? // Decision Quality Index at the time
+  decision        String // APPROVE, BLOCK, HUMAN_REVIEW
+  executed        Boolean  @default(false)
+  outcomeObserved String? // Logged during Reflection
+  timestamp       DateTime @default(now())
+
+  @@index([decision])
+  @@index([timestamp])
+}
+
+model CapabilityRegistry {
+  id        String   @id @default(uuid())
+  domain    String // E.g. "MARKETING", "FINANCE"
+  action    String // E.g. "CREATE_CAMPAIGN"
+  provider  String // E.g. "MetaConnector" or "Agent_Marketing"
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+
+  @@unique([domain, action, provider])
+}
+
+model AIModelGovernance {
+  id            String   @id @default(uuid())
+  providerRole  String   @unique // E.g. "ReasoningProvider", "VisionProvider"
+  activeModel   String // E.g. "gemini-1.5-pro", "claude-3-opus"
+  fallbackModel String?
+  costPer1k     Float    @default(0)
+  maxLatencyMs  Int      @default(5000)
+  status        String   @default("ACTIVE")
+  updatedAt     DateTime @updatedAt
+}
+
+model EnterpriseOntologyNode {
+  id         String   @id @default(uuid())
+  nodeType   String // E.g. "CUSTOMER", "ORDER", "PRODUCT"
+  nodeId     String // Actual ID of the entity
+  properties Json?
+  createdAt  DateTime @default(now())
+
+  @@unique([nodeType, nodeId])
 }

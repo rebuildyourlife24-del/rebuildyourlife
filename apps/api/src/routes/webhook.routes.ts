@@ -6,6 +6,8 @@ import { validate } from "../middleware/validate.js";
 import * as webhookService from "../services/webhook.service.js";
 import { UnauthorizedError } from "../middleware/errorHandler.js";
 
+import { realityFabricInstance } from "../core/reality/RealityFabric.js";
+
 const router = Router();
 
 const generateApiKeySchema = z.object({
@@ -60,47 +62,40 @@ router.delete(
   }
 );
 
-// POST /wordpress - Webhook from WordPress
-router.post(
-  "/wordpress",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new UnauthorizedError("Geen API key opgegeven in Authorization header.");
-      }
+// ==========================================
+// V6.0 SOVEREIGN ENTERPRISE CONTROL PLANE
+// ==========================================
 
-      const token = authHeader.split(" ")[1];
-      const validKey = await webhookService.validateWordPressToken(token);
+router.post('/reality-sync', async (req, res) => {
+  try {
+    const { source, payload } = req.body;
+    const headers = req.headers;
 
-      if (!validKey) {
-        throw new UnauthorizedError("Ongeldige API key.");
-      }
+    // We determine the connector based on the source payload or a header
+    // If testing locally or via simple API call:
+    const connectorName = source || 'SHOPIFY_CONNECTOR'; 
 
-      const result = await webhookService.handleWordPressWebhook(req.body);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
+    console.log(`[Webhook] Incoming signal for ${connectorName}`);
+
+    // Reality Fabric normalizes, validates, and publishes to the Event Bus
+    const response = await realityFabricInstance.handleIncomingWebhook(connectorName, payload, headers);
+
+    if (response.success) {
+      res.status(200).json({ 
+        message: 'Reality synchronized successfully', 
+        eventsPublished: response.eventsPublished 
+      });
+    } else {
+      res.status(400).json({ 
+        message: 'Reality synchronization failed', 
+        error: response.error 
+      });
     }
-  }
-);
 
-import { RealityGateway } from "../core/cognition/RealityGateway.js";
-
-// POST /reality-sync - External or Cron trigger for the Cognitive Loop
-router.post(
-  "/reality-sync",
-  authenticate,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const gateway = new RealityGateway();
-      // Since this is authenticated, req.user is guaranteed.
-      const result = await gateway.syncReality(req.user!.userId);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
+  } catch (error: any) {
+    console.error('[Reality Sync Error]', error);
+    res.status(500).json({ error: error.message || 'Internal Enterprise Server Error' });
   }
-);
+});
 
 export default router;
