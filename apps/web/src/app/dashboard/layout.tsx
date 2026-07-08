@@ -5,8 +5,6 @@ import { JarvisProvider } from '@/components/JarvisProvider';
 import { JarvisOmniWidget } from '@/components/JarvisOmniWidget';
 
 import { AppHeader } from "@/components/ui/AppHeader";
-import { OrionVisor } from "@/components/ui/OrionVisor";
-import { VoiceOrb } from "@/components/ui/VoiceOrb";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,8 +21,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="relative z-10 flex flex-col min-h-screen w-full text-zinc-300 overflow-hidden">
           <AppHeader />
           <main className="flex-1 flex flex-col">{children}</main>
-          <OrionVisor />
-          <VoiceOrb />
         </div>
         
         <JarvisOmniWidget />
