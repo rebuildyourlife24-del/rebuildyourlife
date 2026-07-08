@@ -10,10 +10,10 @@ import Link from 'next/link';
 // ============================================================================
 function useAgentStatus() {
   const [agents, setAgents] = useState<any[]>([
-    { id: "router", status: "idle", task: "Awaiting initialization" },
-    { id: "ceo", status: "idle", task: "System cold" },
-    { id: "cmo", status: "idle", task: "System cold" },
-    { id: "coo", status: "idle", task: "System cold" },
+    { id: "router", status: "idle", task: "Wacht op initialisatie" },
+    { id: "ceo", status: "idle", task: "Systeem inactief" },
+    { id: "cmo", status: "idle", task: "Systeem inactief" },
+    { id: "coo", status: "idle", task: "Systeem inactief" },
     { id: "orion", status: "idle", task: "Offline" },
   ]);
 
@@ -82,9 +82,9 @@ export default function JarvisCommandOS() {
           </div>
           
           <nav className="hidden md:flex gap-6 text-[11px] uppercase tracking-widest text-zinc-500 font-semibold">
-            <Link href="/dashboard" className="text-blue-400 cursor-pointer">Command Center</Link>
-            <Link href="/dashboard/system-map" className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</Link>
-            <Link href="/dashboard/digital-twin" className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</Link>
+            <Link href="/dashboard" className="text-blue-400 cursor-pointer">Operationeel Centrum</Link>
+            <Link href="/dashboard/architectuur" className="hover:text-zinc-300 cursor-pointer transition-colors">Systeemarchitectuur</Link>
+            <Link href="/dashboard/digitale-tweeling" className="hover:text-zinc-300 cursor-pointer transition-colors">Digitale Tweeling</Link>
           </nav>
           
           {/* GAMIFICATION STATS */}
@@ -121,11 +121,11 @@ export default function JarvisCommandOS() {
       </header>
 
       {/* MAIN GRID LAYOUT */}
-      <main className="flex-1 p-6 grid grid-cols-12 grid-rows-6 gap-6 relative z-10 max-w-[2000px] mx-auto w-full">
+      <main className="flex-1 p-4 lg:p-6 flex flex-col xl:grid xl:grid-cols-12 xl:grid-rows-6 gap-6 relative z-10 max-w-[2000px] mx-auto w-full overflow-y-auto">
          
          {/* LEFT COLUMN: THE SYNDICATE FLEET */}
-         <section className="col-span-3 row-span-6 flex flex-col gap-6">
-            <HudPanel title="The Syndicate (Agent Fleet)" icon={<Shield size={14}/>} className="flex-1">
+         <section className="xl:col-span-3 xl:row-span-6 flex flex-col gap-6">
+            <HudPanel title="Het Syndicaat (Cognitive Fleet)" icon={<Shield size={14}/>} className="flex-1 min-h-[300px]">
                <div className="flex flex-col gap-3 mt-2">
                   {liveAgents.map((ag) => (
                     <AgentRow key={ag.id} agent={ag} />
@@ -133,7 +133,7 @@ export default function JarvisCommandOS() {
                </div>
             </HudPanel>
             
-            <HudPanel title="System Resources" icon={<Server size={14}/>} className="h-48">
+            <HudPanel title="Systeembronnen (Sovereign Node)" icon={<Server size={14}/>} className="h-48 shrink-0">
                <div className="flex flex-col gap-4 mt-2">
                   <ResourceBar label="Compute Core (GPU)" value={78} color="cyan" />
                   <ResourceBar label="Memory Bank (Orion)" value={42} color="amber" />
@@ -143,7 +143,7 @@ export default function JarvisCommandOS() {
          </section>
 
          {/* CENTER COLUMN: THE NEURAL STREAM (Replacement for 3D) */}
-         <section className="col-span-6 row-span-6 flex flex-col gap-6">
+         <section className="xl:col-span-6 xl:row-span-6 flex flex-col gap-6">
             <div className="flex-1 bg-black/40 border border-blue-900/30 backdrop-blur-sm rounded-xl relative overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                {/* Decorative corners */}
                <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-blue-500/50"></div>
@@ -215,14 +215,14 @@ export default function JarvisCommandOS() {
          </section>
 
          {/* RIGHT COLUMN: DATA STREAM & TIMELINE */}
-         <section className="col-span-3 row-span-6 flex flex-col gap-6">
-            <HudPanel title="Global Digital Twin" icon={<Globe size={14}/>} className="h-64">
+         <section className="xl:col-span-3 xl:row-span-6 flex flex-col gap-6">
+            <HudPanel title="Globale Digitale Tweeling" icon={<Globe size={14}/>} className="h-64 shrink-0">
                <div className="flex-1 bg-[url('/world-map-hud.png')] bg-cover bg-center opacity-80 mix-blend-screen relative mt-2 border border-white/5 rounded-lg overflow-hidden h-full">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-transparent to-transparent"></div>
                   {/* Fake nodes on map */}
-                  <div className="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#06b6d4]"></div>
-                  <div className="absolute top-[30%] left-[50%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse"></div>
-                  <div className="absolute top-[50%] left-[70%] w-1 h-1 bg-sky-400 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+                  <div className="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,1)]"></div>
+                  <div className="absolute top-[30%] left-[50%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,1)] animate-pulse"></div>
+                  <div className="absolute top-[50%] left-[70%] w-1 h-1 bg-sky-400 rounded-full shadow-[0_0_10px_rgba(14,165,233,1)]"></div>
                   
                   <div className="absolute bottom-2 left-2 flex gap-4">
                      <div>
@@ -237,15 +237,15 @@ export default function JarvisCommandOS() {
                </div>
             </HudPanel>
 
-            <HudPanel title="Event Log" icon={<Database size={14}/>} className="flex-1">
+            <HudPanel title="Decision Ledger (Waarheids-Stamboom)" icon={<Database size={14}/>} className="flex-1 min-h-[300px]">
                <div className="flex flex-col gap-4 mt-4 relative">
                   {/* Timeline Line */}
                   <div className="absolute left-[7px] top-2 bottom-0 w-px bg-zinc-800"></div>
 
-                  <LogEntry time="JUST NOW" text="CEO Core evaluated growth metrics. Delegated to CMO." active />
-                  <LogEntry time="2m ago" text="Orion successfully synced vector embeddings to DB." />
-                  <LogEntry time="12m ago" text="Router received batch update from Shopify webhook." />
-                  <LogEntry time="1h ago" text="System initialization complete. Handshake OK." />
+                  <LogEntry time="JUST NOW" text="Epistemic Check: Data geverifieerd in Sovereign Node." active />
+                  <LogEntry time="2m geleden" text="CEO Strateeg delegeert taak Y gebaseerd op Q3 rapportages." />
+                  <LogEntry time="12m geleden" text="Router Triage voltooide kwalificatie van Skool leads." />
+                  <LogEntry time="1h geleden" text="Systeem initialisatie voltooid. Handshake veilig." />
                </div>
             </HudPanel>
          </section>
