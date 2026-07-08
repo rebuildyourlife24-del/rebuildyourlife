@@ -1,0 +1,4 @@
+{
+  "buildCommand": "turbo run build --filter=@rebuildyourlife/web",
+  "outputDirectory": "apps/web/.next"
+}

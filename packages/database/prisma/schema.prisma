@@ -127,6 +127,9 @@ model User {
   organizationMembers OrganizationMember[]
   workspaceMembers    WorkspaceMember[]
   transactions        Transaction[]
+  generatedMedia      GeneratedMedia[]
+  chatLogs            ChatLog[]
+  creatorProfile      CreatorProfile?
 
   @@index([email])
   @@index([role])
@@ -798,6 +801,38 @@ model AgentDossier {
   @@index([agentType])
   @@index([userId])
   @@index([timestamp])
+}
+
+model GeneratedMedia {
+  id          String   @id @default(uuid())
+  userId      String
+  taskType    String   // 'image', 'voice', 'video'
+  status      String   @default("pending") // 'pending', 'processing', 'completed', 'failed'
+  promptInput String?
+  mediaUrl    String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ChatLog {
+  id         String   @id @default(uuid())
+  creatorId  String
+  partnerId  String
+  messageText String
+  sender     String   // 'user' of 'ai'
+  createdAt  DateTime @default(now())
+  creator    User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+}
+
+model CreatorProfile {
+  creatorId        String   @id
+  personalityTrait String   @default("Vriendelijk en flirterig")
+  updatedAt        DateTime @updatedAt
+  creator          User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 }
 
 model ShopifyStore {

@@ -5,3 +5,5 @@ pydantic
 langgraph
 langchain
 redis
+litellm
+python-dotenv

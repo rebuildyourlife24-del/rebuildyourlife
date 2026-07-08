@@ -1,0 +1,36 @@
+name: Wekelijkse Audit Agent (Cron)
+
+on:
+  schedule:
+    # Run at 00:00 every Sunday
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  weekly-audit:
+    name: 📊 Weekly Compliance & Tech Debt Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Deep Dependency Scan
+        run: |
+          npm ci
+          echo "Running deep NPM audit..."
+          npm audit
+
+      - name: Outdated Package Check
+        run: npm outdated || echo "Updates available"
+
+      - name: Report Generation
+        run: |
+          echo "## Wekelijkse Audit Report" >> $GITHUB_STEP_SUMMARY
+          echo "De Wekelijkse Audit Agent heeft zijn scan voltooid. Bekijk de logs voor outdated packages en security vulnerabilities." >> $GITHUB_STEP_SUMMARY

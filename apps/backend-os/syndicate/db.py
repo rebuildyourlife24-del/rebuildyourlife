@@ -13,14 +13,41 @@ logger = logging.getLogger(__name__)
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_KEY")
 
+hermes_url = os.getenv("HERMES_SUPABASE_URL")
+hermes_key = os.getenv("HERMES_SUPABASE_KEY")
+
+# 1. ORION (LOBE 1) - Human Data
 if supabase_url and supabase_key:
     try:
         supabase: Client = create_client(supabase_url, supabase_key)
     except Exception as e:
-        logger.error(f"Failed to init Supabase: {e}")
+        logger.error(f"Failed to init Supabase Orion: {e}")
         supabase = None
 else:
     supabase = None
+
+# 2. HERMES (LOBE 2) - Agent Registry & Memory
+if hermes_url and hermes_key:
+    try:
+        hermes_db: Client = create_client(hermes_url, hermes_key)
+    except Exception as e:
+        logger.error(f"Failed to init Supabase Hermes: {e}")
+        hermes_db = None
+else:
+    hermes_db = None
+
+quantum_url = os.getenv("QUANTUM_SUPABASE_URL")
+quantum_key = os.getenv("QUANTUM_SUPABASE_KEY")
+
+# 3. QUANTUM (LOBE 3) - Deep Analytics & RAG
+if quantum_url and quantum_key:
+    try:
+        quantum_db: Client = create_client(quantum_url, quantum_key)
+    except Exception as e:
+        logger.error(f"Failed to init Supabase Quantum: {e}")
+        quantum_db = None
+else:
+    quantum_db = None
 
 async def log_dossier_async(agent_type: str, action: str, details: str, status: str = "SUCCESS"):
     """

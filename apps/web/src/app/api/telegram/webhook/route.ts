@@ -17,6 +17,15 @@ async function sendTelegramMessage(chatId: string, text: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Security: Verify Telegram Secret Token
+    const secretToken = req.headers.get('x-telegram-bot-api-secret-token');
+    const expectedToken = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+    if (!expectedToken || secretToken !== expectedToken) {
+      console.error('[TELEGRAM WEBHOOK ERROR] Ongeldig of ontbrekend x-telegram-bot-api-secret-token');
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     const body = await req.json();
     
     // Ignore edits or other types of updates for now

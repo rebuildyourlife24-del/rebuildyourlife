@@ -14,11 +14,17 @@ export async function POST(req: Request) {
     }
 
     // Security: Verify Shopify Webhook HMAC Signature
-    // const sharedSecret = process.env.SHOPIFY_WEBHOOK_SECRET || '';
-    // const hash = crypto.createHmac('sha256', sharedSecret).update(bodyText, 'utf8').digest('base64');
-    // if (hash !== hmacHeader) {
-    //   return NextResponse.json({ error: 'Invalid HMAC Signature' }, { status: 401 });
-    // }
+    const sharedSecret = process.env.SHOPIFY_WEBHOOK_SECRET || '';
+    if (!sharedSecret) {
+      console.error('[SHOPIFY WEBHOOK ERROR] Geen SHOPIFY_WEBHOOK_SECRET ingesteld.');
+      return NextResponse.json({ error: 'Server misconfiguratie' }, { status: 500 });
+    }
+
+    const hash = crypto.createHmac('sha256', sharedSecret).update(bodyText, 'utf8').digest('base64');
+    if (hash !== hmacHeader) {
+      console.error('[SHOPIFY WEBHOOK ERROR] Ongeldige HMAC handtekening!');
+      return NextResponse.json({ error: 'Invalid HMAC Signature' }, { status: 401 });
+    }
 
     if (topic !== 'orders/paid') {
       return NextResponse.json({ message: 'Ignored, not orders/paid' });
