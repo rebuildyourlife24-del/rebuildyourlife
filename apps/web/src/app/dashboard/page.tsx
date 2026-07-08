@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity, Brain, Server, Shield, Zap, Search, Globe, ChevronRight, Workflow, Database, Layers, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth';
-
+import Link from 'next/link';
 // ============================================================================
 // WEBSOCKET AGENT CONNECTION
 // ============================================================================
@@ -82,9 +82,9 @@ export default function JarvisCommandOS() {
           </div>
           
           <nav className="hidden md:flex gap-6 text-[11px] uppercase tracking-widest text-zinc-500 font-semibold">
-            <span className="text-blue-400 cursor-pointer">Command Center</span>
-            <span className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</span>
-            <span className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</span>
+            <Link href="/dashboard" className="text-blue-400 cursor-pointer">Command Center</Link>
+            <Link href="/dashboard/system-map" className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</Link>
+            <Link href="/dashboard/digital-twin" className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</Link>
           </nav>
           
           {/* GAMIFICATION STATS */}
@@ -309,7 +309,7 @@ function AgentRow({ agent }: { agent: any }) {
   const isThinking = agent.status === 'thinking';
   
   return (
-    <div className={`p-3 border rounded-lg flex flex-col gap-2 transition-colors ${
+    <Link href={`/dashboard/agents/${agent.id.toLowerCase()}`} className={`block p-3 border rounded-lg flex flex-col gap-2 transition-colors hover:border-blue-500/50 cursor-pointer ${
       isActive ? 'bg-cyan-950/20 border-blue-500/30' :
       isThinking ? 'bg-amber-950/20 border-sky-500/30' :
       'bg-white/[0.01] border-white/[0.03]'
@@ -326,7 +326,7 @@ function AgentRow({ agent }: { agent: any }) {
       <div className="text-[10px] text-zinc-500 font-mono pl-3.5 border-l border-white/5 ml-0.5">
         &gt; {agent.task || '...'}
       </div>
-    </div>
+    </Link>
   );
 }
 
