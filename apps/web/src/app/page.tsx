@@ -17,37 +17,41 @@ export default function CinematicLandingPage() {
   useEffect(() => {
     if (!contentRef.current) return;
     
-    // Core GSAP Revelations
-    const elements = gsap.utils.toArray('.reveal');
-    elements.forEach((el: any) => {
-      gsap.fromTo(el, 
-        { autoAlpha: 0, y: 80, filter: 'blur(10px)' },
-        { 
-          duration: 2, 
-          autoAlpha: 1, 
-          y: 0, 
-          filter: 'blur(0px)',
-          ease: "expo.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 90%",
-            toggleActions: "play none none reverse"
+    let ctx = gsap.context(() => {
+      // Core GSAP Revelations
+      const elements = gsap.utils.toArray('.reveal');
+      elements.forEach((el: any) => {
+        gsap.fromTo(el, 
+          { autoAlpha: 0, y: 80, filter: 'blur(10px)' },
+          { 
+            duration: 2, 
+            autoAlpha: 1, 
+            y: 0, 
+            filter: 'blur(0px)',
+            ease: "expo.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 90%",
+              toggleActions: "play none none reverse"
+            }
           }
-        }
-      );
-    });
+        );
+      });
 
-    // Parallax background map
-    gsap.to('.parallax-map', {
-      yPercent: 30,
-      ease: "none",
-      scrollTrigger: {
-        trigger: contentRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: true
-      }
-    });
+      // Parallax background map
+      gsap.to('.parallax-map', {
+        yPercent: 30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: contentRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+    }, contentRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
