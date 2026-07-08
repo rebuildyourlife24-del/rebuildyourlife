@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" className="dark">
-      <body className={`${cormorant.variable} ${dmSans.variable} font-sans min-h-screen bg-[#0B0B0D] text-zinc-300 antialiased selection:bg-[#C8A96B]/30 selection:text-white`}>
+      <body className={`${cormorant.variable} ${dmSans.variable} font-sans min-h-screen bg-background text-foreground antialiased selection:bg-blue-500/30 selection:text-white relative`}>
         <QueryProvider>
           <ThemeProvider>
             <LightweightCinematicBackground />
@@ -75,10 +75,7 @@ export default function RootLayout({
             
             <LanguageProvider>
             <AuthProvider>
-              <AppHeader />
               {children}
-              <OrionVisor />
-              <VoiceOrb />
             </AuthProvider>
           </LanguageProvider>
           </ThemeProvider>

@@ -61,28 +61,28 @@ export default function JarvisCommandOS() {
   const currentAction = activeAgent || thinkingAgent || liveAgents[0];
 
   return (
-    <div className="w-screen h-screen bg-[#02040a] text-white font-sans overflow-hidden flex flex-col relative selection:bg-cyan-500/30">
+    <div className="w-screen h-screen bg-transparent text-white font-sans overflow-hidden flex flex-col relative selection:bg-blue-500/30">
       
       {/* GLOBAL BACKGROUND - Extremely subtle world map and glows */}
       <div 
         className="absolute inset-0 z-0 opacity-10 bg-center bg-no-repeat bg-contain"
         style={{ backgroundImage: "url('/world-map-hud.png')", mixBlendMode: 'screen' }}
       ></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none"></div>
 
       {/* TOP NAVIGATION / STATUS BAR */}
-      <header className="h-12 border-b border-cyan-900/40 bg-black/50 backdrop-blur-md flex items-center justify-between px-6 z-40">
+      <header className="h-12 border-b border-blue-900/40 bg-black/50 backdrop-blur-md flex items-center justify-between px-6 z-40">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-3">
              <div className="relative flex items-center justify-center">
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></div>
-                <div className="absolute w-2.5 h-2.5 rounded-full bg-cyan-500 blur-[4px]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></div>
+                <div className="absolute w-2.5 h-2.5 rounded-full bg-blue-500 blur-[4px]"></div>
              </div>
-             <span className="font-mono text-xs tracking-[0.2em] text-cyan-400">ARGENTIC // AEIP</span>
+             <span className="font-mono text-xs tracking-[0.2em] text-blue-400">ARGENTIC // AEIP</span>
           </div>
           
           <nav className="hidden md:flex gap-6 text-[11px] uppercase tracking-widest text-zinc-500 font-semibold">
-            <span className="text-cyan-400 cursor-pointer">Command Center</span>
+            <span className="text-blue-400 cursor-pointer">Command Center</span>
             <span className="hover:text-zinc-300 cursor-pointer transition-colors">Neural Network</span>
             <span className="hover:text-zinc-300 cursor-pointer transition-colors">Digital Twin</span>
           </nav>
@@ -92,17 +92,17 @@ export default function JarvisCommandOS() {
             <div className="flex flex-col">
                <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Clearance</span>
                <div className="flex items-center gap-1.5">
-                 <Shield size={12} className="text-amber-400" />
+                 <Shield size={12} className="text-sky-400" />
                  <span className="text-xs font-mono text-white font-bold">LVL {(user as any)?.clearanceLevel || 1}</span>
                </div>
             </div>
             <div className="flex flex-col w-32">
                <div className="flex justify-between items-end mb-1">
                  <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold">XP</span>
-                 <span className="text-[9px] font-mono text-cyan-400">{(user as any)?.experiencePoints || 0} / {((user as any)?.clearanceLevel || 1) * 1000}</span>
+                 <span className="text-[9px] font-mono text-blue-400">{(user as any)?.experiencePoints || 0} / {((user as any)?.clearanceLevel || 1) * 1000}</span>
                </div>
                <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
-                 <div className="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4] transition-all duration-1000" style={{ width: `${Math.min(100, (((user as any)?.experiencePoints || 0) / (((user as any)?.clearanceLevel || 1) * 1000)) * 100)}%` }}></div>
+                 <div className="h-full bg-blue-500 shadow-[0_0_10px_#06b6d4] transition-all duration-1000" style={{ width: `${Math.min(100, (((user as any)?.experiencePoints || 0) / (((user as any)?.clearanceLevel || 1) * 1000)) * 100)}%` }}></div>
                </div>
             </div>
           </div>
@@ -144,15 +144,15 @@ export default function JarvisCommandOS() {
 
          {/* CENTER COLUMN: THE NEURAL STREAM (Replacement for 3D) */}
          <section className="col-span-6 row-span-6 flex flex-col gap-6">
-            <div className="flex-1 bg-black/40 border border-cyan-900/30 backdrop-blur-sm rounded-xl relative overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="flex-1 bg-black/40 border border-blue-900/30 backdrop-blur-sm rounded-xl relative overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                {/* Decorative corners */}
-               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-cyan-500/50"></div>
-               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-cyan-500/50"></div>
-               <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-cyan-500/50"></div>
-               <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-cyan-500/50"></div>
+               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-blue-500/50"></div>
+               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-blue-500/50"></div>
+               <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-blue-500/50"></div>
+               <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-blue-500/50"></div>
                
-               <div className="p-4 border-b border-cyan-900/30 flex justify-between items-center">
-                  <span className="text-xs font-mono text-cyan-500/80 uppercase tracking-[0.2em]">Neural Processing Stream</span>
+               <div className="p-4 border-b border-blue-900/30 flex justify-between items-center">
+                  <span className="text-xs font-mono text-blue-500/80 uppercase tracking-[0.2em]">Neural Processing Stream</span>
                   <span className="text-[10px] font-mono text-zinc-500">LATENCY: 14ms</span>
                </div>
 
@@ -170,7 +170,7 @@ export default function JarvisCommandOS() {
                            repeat: Infinity,
                            ease: "linear"
                         }}
-                        className="absolute inset-0 rounded-full border border-cyan-500/30"
+                        className="absolute inset-0 rounded-full border border-blue-500/30"
                      ></motion.div>
                      <motion.div 
                         animate={{ 
@@ -183,31 +183,31 @@ export default function JarvisCommandOS() {
                            repeat: Infinity,
                            ease: "linear"
                         }}
-                        className="absolute inset-4 rounded-full border-2 border-dashed border-cyan-400/20"
+                        className="absolute inset-4 rounded-full border-2 border-dashed border-blue-400/20"
                      ></motion.div>
 
                      {/* Core Intelligence Hub */}
-                     <div className="z-10 bg-[#02040a] border border-cyan-500/50 p-6 rounded-full relative shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center justify-center w-48 h-48">
-                        <Brain size={48} className="text-cyan-400 mb-2" strokeWidth={1} />
-                        <span className="text-[10px] uppercase font-mono tracking-widest text-cyan-500 font-bold">J.A.R.V.I.S. Core</span>
+                     <div className="z-10 bg-transparent border border-blue-500/50 p-6 rounded-full relative shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center justify-center w-48 h-48">
+                        <Brain size={48} className="text-blue-400 mb-2" strokeWidth={1} />
+                        <span className="text-[10px] uppercase font-mono tracking-widest text-blue-500 font-bold">J.A.R.V.I.S. Core</span>
                      </div>
                   </div>
 
                   {/* Active Event Feed below the core */}
                   <div className="mt-12 text-center w-full max-w-lg z-20">
                      <span className="text-[10px] uppercase font-mono tracking-[0.3em] text-zinc-500 block mb-2">Current Operation</span>
-                     <div className="bg-[#02040a]/80 border border-cyan-900/50 rounded-lg p-4 backdrop-blur-md shadow-2xl">
+                     <div className="bg-transparent/80 border border-blue-900/50 rounded-lg p-4 backdrop-blur-md shadow-2xl">
                         <div className="flex items-center justify-center gap-3 mb-1">
                            <span className="text-xs font-bold text-white uppercase tracking-wider">{currentAction?.id}</span>
                            <span className={`text-[9px] px-2 py-0.5 rounded-sm uppercase tracking-widest font-mono border ${
-                              currentAction?.status === 'active' ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' :
-                              currentAction?.status === 'thinking' ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' :
+                              currentAction?.status === 'active' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' :
+                              currentAction?.status === 'thinking' ? 'bg-sky-500/20 border-sky-500/50 text-sky-400' :
                               'bg-zinc-800/50 border-zinc-700 text-zinc-400'
                            }`}>
                               {currentAction?.status}
                            </span>
                         </div>
-                        <p className="text-sm text-cyan-100/70 font-light font-mono mt-2">{currentAction?.task}</p>
+                        <p className="text-sm text-blue-100/70 font-light font-mono mt-2">{currentAction?.task}</p>
                      </div>
                   </div>
                </div>
@@ -220,14 +220,14 @@ export default function JarvisCommandOS() {
                <div className="flex-1 bg-[url('/world-map-hud.png')] bg-cover bg-center opacity-80 mix-blend-screen relative mt-2 border border-white/5 rounded-lg overflow-hidden h-full">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#02040a] via-transparent to-transparent"></div>
                   {/* Fake nodes on map */}
-                  <div className="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#06b6d4]"></div>
-                  <div className="absolute top-[30%] left-[50%] w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse"></div>
-                  <div className="absolute top-[50%] left-[70%] w-1 h-1 bg-amber-400 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+                  <div className="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#06b6d4]"></div>
+                  <div className="absolute top-[30%] left-[50%] w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse"></div>
+                  <div className="absolute top-[50%] left-[70%] w-1 h-1 bg-sky-400 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
                   
                   <div className="absolute bottom-2 left-2 flex gap-4">
                      <div>
                         <span className="block text-[8px] uppercase text-zinc-500">Live Nodes</span>
-                        <span className="block text-xs font-mono text-cyan-400">1,204</span>
+                        <span className="block text-xs font-mono text-blue-400">1,204</span>
                      </div>
                      <div>
                         <span className="block text-[8px] uppercase text-zinc-500">Threats</span>
@@ -259,10 +259,10 @@ export default function JarvisCommandOS() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-[#090b10]/95 backdrop-blur-3xl border border-cyan-500/30 rounded-xl shadow-[0_40px_100px_rgba(0,0,0,0.9),0_0_60px_rgba(6,182,212,0.15)] z-[100] overflow-hidden flex flex-col"
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-[#090b10]/95 backdrop-blur-3xl border border-blue-500/30 rounded-xl shadow-[0_40px_100px_rgba(0,0,0,0.9),0_0_60px_rgba(6,182,212,0.15)] z-[100] overflow-hidden flex flex-col"
           >
             <div className="flex items-center px-6 py-5 border-b border-white/10">
-              <Search className="text-cyan-400 w-5 h-5 mr-4" />
+              <Search className="text-blue-400 w-5 h-5 mr-4" />
               <input 
                 type="text" 
                 placeholder="Enter command or query J.A.R.V.I.S..." 
@@ -292,9 +292,9 @@ export default function JarvisCommandOS() {
 
 function HudPanel({ title, children, className = "", icon }: { title: string, children: React.ReactNode, className?: string, icon?: React.ReactNode }) {
   return (
-    <div className={`bg-[#02040a]/60 backdrop-blur-md border border-white/[0.06] rounded-xl flex flex-col overflow-hidden relative shadow-lg ${className}`}>
+    <div className={`bg-transparent/60 backdrop-blur-md border border-white/[0.06] rounded-xl flex flex-col overflow-hidden relative shadow-lg ${className}`}>
       <div className="h-10 border-b border-white/[0.05] flex items-center px-4 bg-gradient-to-r from-white/[0.02] to-transparent shrink-0 gap-2">
-        {icon && <span className="text-cyan-500/70">{icon}</span>}
+        {icon && <span className="text-blue-500/70">{icon}</span>}
         <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-400">{title}</span>
       </div>
       <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
@@ -310,16 +310,16 @@ function AgentRow({ agent }: { agent: any }) {
   
   return (
     <div className={`p-3 border rounded-lg flex flex-col gap-2 transition-colors ${
-      isActive ? 'bg-cyan-950/20 border-cyan-500/30' :
-      isThinking ? 'bg-amber-950/20 border-amber-500/30' :
+      isActive ? 'bg-cyan-950/20 border-blue-500/30' :
+      isThinking ? 'bg-amber-950/20 border-sky-500/30' :
       'bg-white/[0.01] border-white/[0.03]'
     }`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-           <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-cyan-400 animate-pulse' : isThinking ? 'bg-amber-400' : 'bg-zinc-700'}`}></div>
+           <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-blue-400 animate-pulse' : isThinking ? 'bg-sky-400' : 'bg-zinc-700'}`}></div>
            <span className={`text-xs font-bold uppercase tracking-wider ${isActive || isThinking ? 'text-white' : 'text-zinc-500'}`}>{agent.id}</span>
         </div>
-        <span className={`text-[9px] uppercase tracking-widest font-mono ${isActive ? 'text-cyan-400' : isThinking ? 'text-amber-400' : 'text-zinc-600'}`}>
+        <span className={`text-[9px] uppercase tracking-widest font-mono ${isActive ? 'text-blue-400' : isThinking ? 'text-sky-400' : 'text-zinc-600'}`}>
           {agent.status}
         </span>
       </div>
@@ -332,8 +332,8 @@ function AgentRow({ agent }: { agent: any }) {
 
 function ResourceBar({ label, value, color }: { label: string, value: number, color: 'cyan'|'amber'|'emerald' }) {
   const bgColors = {
-     cyan: 'bg-cyan-500 shadow-[0_0_10px_#06b6d4]',
-     amber: 'bg-amber-500 shadow-[0_0_10px_#f59e0b]',
+     cyan: 'bg-blue-500 shadow-[0_0_10px_#06b6d4]',
+     amber: 'bg-sky-500 shadow-[0_0_10px_#f59e0b]',
      emerald: 'bg-emerald-500 shadow-[0_0_10px_#10b981]'
   };
   return (
@@ -352,8 +352,8 @@ function ResourceBar({ label, value, color }: { label: string, value: number, co
 function LogEntry({ time, text, active = false }: { time: string, text: string, active?: boolean }) {
   return (
     <div className="relative pl-6">
-      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[#02040a] z-10 ${active ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]' : 'bg-zinc-800'}`}></div>
-      <span className={`text-[9px] uppercase tracking-widest font-mono ${active ? 'text-cyan-400' : 'text-zinc-600'}`}>{time}</span>
+      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-[#02040a] z-10 ${active ? 'bg-blue-400 shadow-[0_0_8px_#06b6d4]' : 'bg-zinc-800'}`}></div>
+      <span className={`text-[9px] uppercase tracking-widest font-mono ${active ? 'text-blue-400' : 'text-zinc-600'}`}>{time}</span>
       <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">{text}</p>
     </div>
   );
@@ -361,10 +361,11 @@ function LogEntry({ time, text, active = false }: { time: string, text: string, 
 
 function CommandItem({ icon, text }: { icon: React.ReactNode, text: string }) {
   return (
-    <div className="px-4 py-3 mx-2 hover:bg-cyan-900/20 hover:border-cyan-500/30 border border-transparent rounded-lg cursor-pointer flex items-center gap-3 text-sm text-zinc-400 hover:text-white group transition-all">
-       <span className="text-zinc-600 group-hover:text-cyan-400 transition-colors">{icon}</span>
+    <div className="px-4 py-3 mx-2 hover:bg-blue-900/20 hover:border-blue-500/30 border border-transparent rounded-lg cursor-pointer flex items-center gap-3 text-sm text-zinc-400 hover:text-white group transition-all">
+       <span className="text-zinc-600 group-hover:text-blue-400 transition-colors">{icon}</span>
        {text}
-       <ChevronRight size={14} className="ml-auto text-transparent group-hover:text-cyan-500/50" />
+       <ChevronRight size={14} className="ml-auto text-transparent group-hover:text-blue-500/50" />
     </div>
   );
 }
+

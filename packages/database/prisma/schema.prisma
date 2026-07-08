@@ -131,6 +131,13 @@ model User {
   chatLogs            ChatLog[]
   creatorProfile      CreatorProfile?
 
+  // --- NEW FIELDS FOR ORION LAUNCH SCHEMA ---
+  leadId           String?           @unique
+  lead             Lead?             @relation(fields: [leadId], references: [id])
+  subscriptions    Subscription[]
+  enrollments      Enrollment[]
+  coachingSessions CoachingSession[]
+
   @@index([email])
   @@index([role])
   @@index([subscriptionTier])
@@ -806,7 +813,7 @@ model AgentDossier {
 model GeneratedMedia {
   id          String   @id @default(uuid())
   userId      String
-  taskType    String   // 'image', 'voice', 'video'
+  taskType    String // 'image', 'voice', 'video'
   status      String   @default("pending") // 'pending', 'processing', 'completed', 'failed'
   promptInput String?
   mediaUrl    String?
@@ -817,13 +824,13 @@ model GeneratedMedia {
 }
 
 model ChatLog {
-  id         String   @id @default(uuid())
-  creatorId  String
-  partnerId  String
+  id          String   @id @default(uuid())
+  creatorId   String
+  partnerId   String
   messageText String
-  sender     String   // 'user' of 'ai'
-  createdAt  DateTime @default(now())
-  creator    User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  sender      String // 'user' of 'ai'
+  createdAt   DateTime @default(now())
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   @@index([creatorId])
 }
@@ -3091,4 +3098,263 @@ model EnterpriseOntologyNode {
   createdAt  DateTime @default(now())
 
   @@unique([nodeType, nodeId])
+}
+
+// ============================================================
+// ORION & VAULT — Launch-phase Schema Additions
+// ============================================================
+
+enum FunnelStage {
+  VISITOR
+  LEAD
+  MQL
+  SQL
+  TRIAL
+  CUSTOMER
+  CHURNED
+  REACTIVATED
+}
+
+enum LeadSourceType {
+  PAID_AD
+  ORGANIC_SOCIAL
+  REFERRAL
+  AFFILIATE
+  DIRECT
+  EMAIL
+  UNKNOWN
+}
+
+enum ProductTier {
+  LOW_TICKET_ACADEMY
+  MID_TICKET_COURSE
+  HIGH_TICKET_COACHING
+  SAAS_TOOL
+}
+
+enum PaymentProvider {
+  STRIPE
+  MOLLIE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  PAUSED
+}
+
+enum CoachingSessionType {
+  AI_AUTOMATED
+  HUMAN_1_ON_1
+  COMMUNITY_GROUP
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  AUTO_APPROVED
+}
+
+enum ActionCategory {
+  AD_SPEND_INCREASE
+  BRAND_CONTENT_PUBLISH
+  EMAIL_CAMPAIGN_SEND
+  PRICING_CHANGE
+  REFUND_ISSUANCE
+  OTHER
+}
+
+model Lead {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  firstName          String?
+  lastName           String?
+  phone              String?
+  funnelStage        FunnelStage    @default(VISITOR)
+  leadScore          Int            @default(0)
+  sourceType         LeadSourceType @default(UNKNOWN)
+  campaignId         String?
+  campaign           Campaign?      @relation(fields: [campaignId], references: [id])
+  utmSource          String?
+  utmMedium          String?
+  utmCampaign        String?
+  hermesLastThreadId String?
+  quantumProfileId   String?
+  events             FunnelEvent[]
+  user               User?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([funnelStage])
+  @@index([campaignId])
+  @@index([createdAt])
+}
+
+model Campaign {
+  id          String         @id @default(uuid())
+  name        String
+  sourceType  LeadSourceType
+  platform    String?
+  externalId  String?
+  budgetCents Int?
+  spendCents  Int            @default(0)
+  leads       Lead[]
+  createdAt   DateTime       @default(now())
+
+  @@index([sourceType])
+}
+
+model FunnelEvent {
+  id                String    @id @default(uuid())
+  leadId            String
+  lead              Lead      @relation(fields: [leadId], references: [id])
+  eventType         String
+  metadata          Json?
+  dispatchedAt      DateTime?
+  dispatchAttempts  Int       @default(0)
+  lastDispatchError String?   @db.Text
+  createdAt         DateTime  @default(now())
+
+  @@index([leadId, createdAt])
+  @@index([eventType])
+  @@index([dispatchedAt])
+}
+
+model Product {
+  id            String         @id @default(uuid())
+  name          String
+  tier          ProductTier
+  priceCents    Int
+  currency      String         @default("EUR")
+  isActive      Boolean        @default(true)
+  enrollments   Enrollment[]
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id               String             @id @default(uuid())
+  userId           String
+  user             User               @relation(fields: [userId], references: [id])
+  productId        String
+  product          Product            @relation(fields: [productId], references: [id])
+  provider         PaymentProvider
+  externalSubId    String             @unique
+  status           SubscriptionStatus @default(TRIALING)
+  currentPeriodEnd DateTime?
+  canceledAt       DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([status])
+  @@index([userId])
+}
+
+model Enrollment {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  progressPct Int       @default(0)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, productId])
+}
+
+model CoachingSession {
+  id             String              @id @default(uuid())
+  userId         String
+  user           User                @relation(fields: [userId], references: [id])
+  type           CoachingSessionType
+  scheduledAt    DateTime?
+  coachName      String?
+  meetingUrl     String?
+  attended       Boolean?
+  hermesThreadId String?
+  summary        String?             @db.Text
+  createdAt      DateTime            @default(now())
+
+  @@index([userId, type])
+}
+
+model ActionProposal {
+  id                String         @id @default(uuid())
+  agentId           String
+  agentName         String
+  category          ActionCategory
+  proposedPayload   Json
+  riskAmountCents   Int?
+  justification     String         @db.Text
+  status            ApprovalStatus @default(PENDING)
+  requestedAt       DateTime       @default(now())
+  respondedAt       DateTime?
+  respondedByUserId String?
+  approvalSignature String?
+  expiresAt         DateTime?
+
+  @@index([status])
+  @@index([agentId])
+  @@index([category])
+  @@index([requestedAt])
+}
+
+model WebhookEventLog {
+  id              String   @id @default(uuid())
+  provider        String
+  externalEventId String
+  processedAt     DateTime @default(now())
+
+  @@unique([provider, externalEventId])
+}
+
+// ============================================================
+// HERMES — Swarm Intelligence / Agent States
+// ============================================================
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  AWAITING_APPROVAL
+  COMPLETED
+  FAILED
+  STUCK
+}
+
+model EventRoutingRule {
+  id          String   @id @default(uuid())
+  eventType   String
+  funnelStage String?
+  productTier String?
+  agentKey    String
+  priority    Int      @default(100)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([eventType, isActive])
+}
+
+model HermesAgentTask {
+  id              String     @id @default(uuid())
+  triggerEventId  String     @unique
+  leadId          String
+  agentKey        String
+  payload         Json
+  status          TaskStatus @default(PENDING)
+  priority        Int        @default(100)
+  attempts        Int        @default(0)
+  maxAttempts     Int        @default(3)
+  lastError       String?    @db.Text
+  vaultProposalId String?
+  createdAt       DateTime   @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+
+  @@index([status, priority])
+  @@index([agentKey])
+  @@index([leadId])
 }

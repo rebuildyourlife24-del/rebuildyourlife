@@ -33,15 +33,15 @@ export function AIHermesSidebar() {
         {/* Core Identity */}
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <div className="flex items-center gap-3">
-            <BrainCircuit className="w-6 h-6 text-cyan-500" />
+            <BrainCircuit className="w-6 h-6 text-blue-500" />
             <div>
               <h3 className="text-sm font-black uppercase tracking-widest text-white">Sovereign Core</h3>
               <p className="text-[10px] font-mono text-zinc-500">NVIDIA Audio2Face Ready</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
-            <span className="text-[9px] uppercase font-bold text-cyan-500 tracking-widest">Online</span>
+            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+            <span className="text-[9px] uppercase font-bold text-blue-500 tracking-widest">Online</span>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export function AIHermesSidebar() {
               </div>
               <div className="w-full bg-white/5 rounded-full h-1">
                 <motion.div 
-                  className="h-1 rounded-full bg-cyan-500" 
+                  className="h-1 rounded-full bg-blue-500" 
                   animate={{ width: `${metrics.cpu}%` }} 
                   transition={{ duration: 0.5 }}
                 />
@@ -91,7 +91,7 @@ export function AIHermesSidebar() {
               </div>
               <div className="w-full bg-white/5 rounded-full h-1">
                 <motion.div 
-                  className="h-1 rounded-full bg-amber-500" 
+                  className="h-1 rounded-full bg-sky-500" 
                   animate={{ width: `${Math.min(100, metrics.latency)}%` }} 
                   transition={{ duration: 0.5 }}
                 />
@@ -135,3 +135,4 @@ export function AIHermesSidebar() {
     </div>
   );
 }
+

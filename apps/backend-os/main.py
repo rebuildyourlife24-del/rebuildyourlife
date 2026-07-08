@@ -1,5 +1,8 @@
 import asyncio
 import json
+import os
+import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -7,8 +10,39 @@ from typing import List
 # Import LangGraph
 from syndicate.graph import app as syndicate_graph
 from syndicate.state import SyndicateState
+import hermes_task_runner
 
-app = FastAPI(title="ARGENTIC AEIP OS Backend")
+logger = logging.getLogger("aeip.main")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Initializing Hermes & Vault Prisma Clients for autonomous Task Runner...")
+    hermes_client = hermes_task_runner.HermesClient(datasource={"url": os.getenv("HERMES_DATABASE_URL")})
+    vault_client = hermes_task_runner.VaultClient(datasource={"url": os.getenv("VAULT_DATABASE_URL")})
+    
+    try:
+        await hermes_client.connect()
+        await vault_client.connect()
+        # Start the background task runner
+        task = asyncio.create_task(hermes_task_runner.run_forever(hermes_client, vault_client))
+        app.state.hermes_task = task
+        app.state.hermes_client = hermes_client
+        app.state.vault_client = vault_client
+    except Exception as e:
+        logger.error("Failed to start Hermes Task Runner: %s", e)
+
+    yield
+    
+    # Shutdown
+    if hasattr(app.state, "hermes_task"):
+        app.state.hermes_task.cancel()
+    if hasattr(app.state, "hermes_client"):
+        await app.state.hermes_client.disconnect()
+    if hasattr(app.state, "vault_client"):
+        await app.state.vault_client.disconnect()
+
+app = FastAPI(title="ARGENTIC AEIP OS Backend", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +55,9 @@ app.add_middleware(
 # Websocket manager removed for Vercel Serverless compatibility
 from pydantic import BaseModel
 from syndicate.gamification import process_gamification_event
+from webhooks import router as webhooks_router
+
+app.include_router(webhooks_router)
 
 @app.get("/")
 def read_root():

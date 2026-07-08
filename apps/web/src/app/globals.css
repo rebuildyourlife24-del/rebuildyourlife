@@ -5,38 +5,38 @@
 @layer base {
   :root {
     /* 
-      RYL OS Premium Dark Mode Theme 
-      Aesthetics: Deep dark backgrounds, cyberpunk green primary accents, sleek borders.
+      AEIP System Premium Navy Blue Theme 
+      Aesthetics: Deep dark backgrounds, navy/neon blue accents, sleek glass borders.
     */
-    --background: 0 0% 2%;
+    --background: 220 50% 2%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 4%;
+    --card: 220 50% 4%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 4%;
+    --popover: 220 50% 4%;
     --popover-foreground: 0 0% 98%;
 
-    /* Vibrant Cyberpunk Green (The God-Mode AI Core color) */
-    --primary: 142 71% 45%;
-    --primary-foreground: 144 100% 11%;
+    /* Navy Blue & Neon Blue Highlights */
+    --primary: 217 91% 60%; /* Tailwind blue-500 for active accents */
+    --primary-foreground: 0 0% 100%;
 
-    /* Deep Emerald/Black Secondary */
-    --secondary: 144 100% 11%;
-    --secondary-foreground: 142 71% 45%;
+    /* Deep Navy Secondary */
+    --secondary: 220 80% 20%; /* Deep Navy */
+    --secondary-foreground: 217 91% 60%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 144 100% 11%;
-    --accent-foreground: 142 71% 45%;
+    --accent: 220 80% 20%;
+    --accent-foreground: 217 91% 60%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 142 71% 45%;
+    --border: 220 20% 12%;
+    --input: 220 20% 12%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
   }
@@ -49,30 +49,36 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Custom scrollbar for sleekness */
   }
   
-  /* Custom scrollbar for sleekness */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full;
+    @apply bg-blue-900/50 rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground;
+    @apply bg-blue-500/80;
   }
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism Utilities (AEIP Standard) */
 @layer utilities {
   .glass {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10;
+    @apply bg-[#02040a]/60 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)];
   }
   .glass-panel {
-    @apply bg-black/50 backdrop-blur-md border border-white/5;
+    @apply bg-[#02040a]/40 backdrop-blur-md border border-white/[0.05] shadow-lg;
+  }
+  .navy-glow {
+    @apply shadow-[0_0_30px_rgba(30,58,138,0.3)];
+  }
+  .neon-glow {
+    @apply shadow-[0_0_15px_rgba(59,130,246,0.5)];
   }
 }

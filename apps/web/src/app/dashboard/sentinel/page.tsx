@@ -1,18 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Shield, Package, Mail, Brain, Check, X, Loader2, Video } from 'lucide-react';
+import { Shield, Check, X, Loader2, Bot, AlertTriangle, FileText } from 'lucide-react';
 
-interface PendingItem {
+interface ActionProposal {
   id: string;
-  type: 'HYPOTHESIS' | 'SHOPIFY_PRODUCT' | 'EMAIL_CAMPAIGN' | 'MARKETING_VIDEO';
-  title: string;
-  description: string;
-  meta: string;
+  agentId: string;
+  agentName: string;
+  category: string;
+  proposedPayload: any;
+  riskAmountCents: number | null;
+  justification: string;
+  status: string;
+  requestedAt: string;
 }
 
 export default function SentinelDashboard() {
-  const [items, setItems] = useState<PendingItem[]>([]);
+  const [items, setItems] = useState<ActionProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -25,49 +29,7 @@ export default function SentinelDashboard() {
       const res = await fetch('/api/sentinel/pending');
       const data = await res.json();
       if (data.success) {
-        const formatted: PendingItem[] = [];
-        
-        data.data.hypotheses.forEach((h: any) => {
-          formatted.push({
-            id: h.id,
-            type: 'HYPOTHESIS',
-            title: `Agent ${h.agent?.name || 'System'}: Nieuwe Hypothese`,
-            description: h.claim,
-            meta: `Domein: ${h.domain}`
-          });
-        });
-
-        data.data.shopifyProducts.forEach((p: any) => {
-          formatted.push({
-            id: p.id,
-            type: 'SHOPIFY_PRODUCT',
-            title: p.title,
-            description: p.description.replace(/<[^>]+>/g, ''), // strip HTML
-            meta: `Prijs: €${p.price} | Shopify DRAFT`
-          });
-        });
-
-        data.data.emailCampaigns?.forEach((e: any) => {
-          formatted.push({
-            id: e.id,
-            type: 'EMAIL_CAMPAIGN',
-            title: e.name,
-            description: e.subject,
-            meta: `Campagne DRAFT`
-          });
-        });
-
-        data.data.marketingVideos?.forEach((v: any) => {
-          formatted.push({
-            id: v.id,
-            type: 'MARKETING_VIDEO',
-            title: v.title,
-            description: v.script.replace(/<[^>]+>/g, '').substring(0, 150) + '...',
-            meta: `AI Video Script DRAFT`
-          });
-        });
-
-        setItems(formatted);
+        setItems(data.data);
       }
     } catch (err) {
       alert('Kan de Sentinel wachtrij niet laden');
@@ -76,20 +38,19 @@ export default function SentinelDashboard() {
     }
   };
 
-  const handleAction = async (id: string, type: string, action: 'APPROVE' | 'REJECT') => {
+  const handleAction = async (id: string, action: 'APPROVE' | 'REJECT') => {
     setProcessingId(id);
     try {
       const res = await fetch('/api/sentinel/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, type, action })
+        body: JSON.stringify({ id, action })
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
         setItems(prev => prev.filter(i => i.id !== id));
       } else {
-        alert(data.error);
+        alert(data.error || 'Fout bij verwerken');
       }
     } catch (err) {
       alert('Fout bij verwerken van de actie.');
@@ -98,14 +59,9 @@ export default function SentinelDashboard() {
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'HYPOTHESIS': return <Brain className="w-5 h-5 text-purple-400" />;
-      case 'SHOPIFY_PRODUCT': return <Package className="w-5 h-5 text-green-400" />;
-      case 'EMAIL_CAMPAIGN': return <Mail className="w-5 h-5 text-blue-400" />;
-      case 'MARKETING_VIDEO': return <Video className="w-5 h-5 text-pink-400" />;
-      default: return <Shield className="w-5 h-5 text-gray-400" />;
-    }
+  const formatCurrency = (cents: number | null) => {
+    if (cents === null || cents === 0) return '€0.00';
+    return `€${(cents / 100).toFixed(2)}`;
   };
 
   return (
@@ -115,15 +71,15 @@ export default function SentinelDashboard() {
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <Shield className="w-8 h-8 text-blue-500" />
-            Sentinel War Room
+            Sentinel Vault
           </h1>
           <p className="text-white/60 mt-1">
-            Handmatige goedkeuring van door AI gegenereerde producten, campagnes en beslissingen.
+            Centrale goedkeuringsautoriteit voor alle riskante of grensverleggende agent-acties.
           </p>
         </div>
         <div className="bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-lg flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-blue-400 font-semibold">{items.length} Acties in de wachtrij</span>
+          <span className="text-blue-400 font-semibold">{items.length} Voorstellen wachten op goedkeuring</span>
         </div>
       </div>
 
@@ -134,44 +90,72 @@ export default function SentinelDashboard() {
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white/5 border border-white/10 rounded-xl p-12 text-center text-white/50">
-          Er staan momenteel geen acties in de wachtrij.
+          <Shield className="w-12 h-12 text-white/20 mx-auto mb-4" />
+          Geen pending acties. De agenten hebben momenteel niets ter goedkeuring klaarliggen.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {items.map((item) => (
-            <div key={item.id} className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col justify-between hover:border-white/20 transition-colors">
+            <div key={item.id} className="bg-[#111] border border-white/10 rounded-xl p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+              {/* Category Strip */}
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/50" />
+              
               <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-white/5 rounded-lg">
-                    {getTypeIcon(item.type)}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-white/5 rounded-xl">
+                      <Bot className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-lg">{item.agentName}</h3>
+                      <p className="text-xs text-white/50 font-mono">{item.category}</p>
+                    </div>
                   </div>
-                  <div className="text-xs font-bold text-white/50 uppercase tracking-wider">
-                    {item.type.replace('_', ' ')}
-                  </div>
+                  {item.riskAmountCents !== null && item.riskAmountCents > 0 && (
+                    <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-lg text-amber-400 text-sm font-bold">
+                      <AlertTriangle className="w-4 h-4" />
+                      Risico: {formatCurrency(item.riskAmountCents)}
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">{item.title}</h3>
-                <p className="text-sm text-white/60 mb-4 line-clamp-3">{item.description}</p>
-                <div className="text-xs font-mono text-white/40 mb-6 bg-black/20 p-2 rounded">
-                  {item.meta}
+
+                <div className="space-y-4 mb-6">
+                  <div className="bg-white/5 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <FileText className="w-4 h-4" /> Justification
+                    </h4>
+                    <p className="text-white/80 leading-relaxed text-sm">
+                      {item.justification}
+                    </p>
+                  </div>
+
+                  <div className="bg-black/50 rounded-lg p-4 border border-white/5">
+                    <h4 className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-2">
+                      Proposed Payload (Raw JSON)
+                    </h4>
+                    <pre className="text-xs text-blue-300 font-mono overflow-x-auto whitespace-pre-wrap max-h-32">
+                      {JSON.stringify(item.proposedPayload, null, 2)}
+                    </pre>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex gap-3 mt-auto">
+              <div className="flex gap-3 mt-4 pt-4 border-t border-white/10">
                 <button
-                  onClick={() => handleAction(item.id, item.type, 'APPROVE')}
+                  onClick={() => handleAction(item.id, 'APPROVE')}
                   disabled={processingId === item.id}
-                  className="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                 >
-                  {processingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  Approve
+                  {processingId === item.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                  GOEDKEUREN
                 </button>
                 <button
-                  onClick={() => handleAction(item.id, item.type, 'REJECT')}
+                  onClick={() => handleAction(item.id, 'REJECT')}
                   disabled={processingId === item.id}
-                  className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                 >
-                  {processingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-                  Reject
+                  {processingId === item.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <X className="w-5 h-5" />}
+                  AFWIJZEN
                 </button>
               </div>
             </div>
