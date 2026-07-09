@@ -78,7 +78,7 @@ export async function login(formData: FormData) {
       .sign(JWT_SECRET);
 
     // Save to database
-    await prisma.session.create({
+    await (prisma as any).session.create({
       data: {
         userId: user.id,
         token: token,
@@ -110,7 +110,7 @@ export async function logout() {
 
   if (token) {
     try {
-      await prisma.session.deleteMany({
+      await (prisma as any).session.deleteMany({
         where: { token }
       });
     } catch (e) {

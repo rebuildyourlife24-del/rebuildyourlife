@@ -6,7 +6,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "lint": "eslint \"src/**/*.ts*\"",
-    "build": "tsc --noEmit",
+    "build": "prisma generate && tsc --noEmit",
     "db:generate": "prisma generate"
   },
   "dependencies": {
