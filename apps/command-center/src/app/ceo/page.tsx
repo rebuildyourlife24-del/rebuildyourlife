@@ -156,8 +156,8 @@ export default function AEIPCommandCenter() {
           <span className="font-serif text-xl tracking-[0.2em] font-medium">ARGENTIC <span className="text-[var(--color-text-dim)]">|</span> AEIP</span>
           <div className="flex items-center gap-6 os-data text-[var(--color-text-dim)]">
             <span className="hover:text-white transition-colors cursor-pointer">COMMAND CENTER</span>
-            <span className="hover:text-white transition-colors cursor-pointer">NEURAL NETWORK</span>
-            <span className="hover:text-white transition-colors cursor-pointer">DIGITAL TWIN</span>
+          <span className="hover:text-white transition-colors cursor-pointer">SYSTEM OVERVIEW</span>
+            <span className="hover:text-white transition-colors cursor-pointer">INFRASTRUCTURE</span>
           </div>
         </div>
 
@@ -185,7 +185,7 @@ export default function AEIPCommandCenter() {
           <div className="flex-1 os-panel flex flex-col">
             <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-[var(--color-neon-blue)] rounded-full glow-cyan" />
-              <span className="os-data">THE ENGINE FLEET</span>
+              <span className="os-data">OPERATING SYSTEMS</span>
             </div>
             <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
               {ENGINES.map((engine, idx) => (
@@ -222,7 +222,7 @@ export default function AEIPCommandCenter() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between os-data text-[10px]">
-                  <span className="text-[var(--color-text-dim)]">MEMORY BANK (PINECONE)</span>
+                  <span className="text-[var(--color-text-dim)]">DATABASE MEMORY (PINECONE)</span>
                   <span className="text-white/80">42%</span>
                 </div>
                 <div className="os-progress-track"><div className="os-progress-fill-blue" style={{ width: '42%' }} /></div>
@@ -234,7 +234,7 @@ export default function AEIPCommandCenter() {
         {/* CENTER COLUMN: THE SPINE (Core processing) */}
         <div className="flex-1 flex flex-col gap-4 h-full relative">
           <div className="absolute top-4 left-4 flex items-center gap-2">
-            <span className="os-data text-[var(--color-text-dim)]">NEURAL PROCESSING STREAM</span>
+            <span className="os-data text-[var(--color-text-dim)]">AEIP CORE ROUTING</span>
           </div>
           
           {/* Central JARVIS / Spine Visualization */}
@@ -275,7 +275,7 @@ export default function AEIPCommandCenter() {
           <div className="h-64 os-panel flex flex-col">
             <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-[var(--color-neon-cyan)] rounded-full glow-cyan" />
-              <span className="os-data">THE SPINE (DATABASES)</span>
+              <span className="os-data">DATABASE INFRASTRUCTURE</span>
             </div>
             <div className="p-4 flex flex-col gap-3 overflow-y-auto">
               {DATABASES.map((db, idx) => (
