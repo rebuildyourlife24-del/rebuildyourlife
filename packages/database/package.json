@@ -10,9 +10,9 @@
     "db:generate": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "@rebuildyourlife/kernel": "*",
-    "@rebuildyourlife/security": "*",
-    "@prisma/client": "^5.10.0"
+    "@rebuildyourlife/security": "*"
   },
   "devDependencies": {
     "prisma": "^5.10.0",
