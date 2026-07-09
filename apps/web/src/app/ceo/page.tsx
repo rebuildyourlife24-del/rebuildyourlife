@@ -1,143 +1,331 @@
-import React from "react";
-import { Shield, Activity, Users, DollarSign, Zap, TrendingUp, Settings } from "lucide-react";
-import { prisma } from "@rebuildyourlife/database";
+'use client';
 
-// Server Component (No "use client")
-export default async function CeoMasterDashboard() {
-  // --- REAL DATA FETCHING ---
-  const totalUsers = await prisma.user.count();
-  
-  // Total Revenue based on sum of wallet transactions or active subscriptions
-  // For now, we count premium users to estimate MRR if WalletTransactions aren't populated yet
-  const premiumUsers = await prisma.user.count({
-    where: { subscriptionTier: { in: ['ELITE', 'ECOM', 'TECH'] } }
-  });
-  
-  const estimatedRevenue = premiumUsers * 299; // Simple calculation based on real user data
-  
-  // Total Active Modules
-  const activeModulesCount = await prisma.userBusinessModule?.count({
-    where: { status: "ACTIVE" }
-  }).catch(() => 0); // Graceful fallback if table is empty
+import React, { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-  // Total Leads (Opportunities)
-  const totalLeads = await prisma.opportunity?.count().catch(() => 0);
+// LAYER 10: Business Operating System (AI Direction)
+const AI_DIRECTORS = [
+  { name: 'CEO AI', status: 'ACTIVE', focus: 'Strategic Growth & Governance' },
+  { name: 'COO AI', status: 'ACTIVE', focus: 'Workflow & Automation' },
+  { name: 'CFO AI', status: 'ACTIVE', focus: 'Capital & Resource Allocation' },
+  { name: 'CTO AI', status: 'IDLE', focus: 'Platform Architecture & Scaling' },
+  { name: 'CMO AI', status: 'ACTIVE', focus: 'Market Positioning' },
+  { name: 'Legal AI', status: 'STANDBY', focus: 'Compliance & Contracts' },
+  { name: 'Sales AI', status: 'ACTIVE', focus: 'Revenue Generation' },
+];
 
-  // Recent Users for "Client Pulse"
-  const recentUsers = await prisma.user.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      subscriptionTier: true,
-      lastActiveAt: true
+// LAYER 5: Data Platform (The Spine)
+const DATA_PLATFORM = [
+  { name: 'PostgreSQL (Orion)', type: 'Identity & Auth', status: 'SYNCED', ip: 'eu-north-1' },
+  { name: 'PostgreSQL (Vault)', type: 'Financial & Secure', status: 'SYNCED', ip: 'eu-central-1' },
+  { name: 'PostgreSQL (Quantum)', type: 'Compute & Logic', status: 'SYNCED', ip: 'eu-west-1' },
+  { name: 'PostgreSQL (Sovereign)', type: 'Agent State', status: 'SYNCED', ip: 'eu-west-1' },
+  { name: 'PostgreSQL (Hermes)', type: 'Messaging & Events', status: 'SYNCED', ip: 'eu-west-1' },
+  { name: 'Pinecone Vector DB', type: 'Knowledge Store', status: 'SYNCED', ip: 'us-east-1' },
+  { name: 'Redis / Upstash', type: 'Rate Limit & Cache', status: 'ACTIVE', ip: 'global' },
+];
+
+// NEW LAYER: Revenue Intelligence Platform (RIE)
+const REVENUE_INTELLIGENCE = [
+  { metric: 'Opportunity Discovery', value: '3 Active Niches' },
+  { metric: 'Business Model Gen.', value: 'Idle' },
+  { metric: 'ROI & Profit Analytics', value: '+142% MoM' },
+  { metric: 'Experimentation Engine', value: '2 A/B Tests Active' },
+  { metric: 'Growth Intelligence', value: 'Optimizing' },
+  { metric: 'Portfolio Manager', value: '1 Active Portfolio' },
+];
+
+// LAYER 9: Enterprise Operations (Event Log)
+const OPERATIONS_LOG = [
+  { time: 'JUST NOW', log: 'Policy Engine verified smart contract constraints.' },
+  { time: '2M AGO', log: 'CEO AI approved new Affiliate Marketing workflow.' },
+  { time: '12M AGO', log: 'Pinecone indexed 420 new knowledge fragments.' },
+  { time: '1H AGO', log: 'CI/CD Deployment successful. Platform healthy.' },
+];
+
+export default function AEIPMissionControl() {
+  const [time, setTime] = useState('');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // System Time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setTime(now.toISOString().split('T')[1].slice(0, 11) + ' UTC');
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Cinematic Background Canvas (Particle Engine)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    };
+    window.addEventListener('resize', handleResize);
+
+    class Particle {
+      x: number; y: number; vx: number; vy: number; radius: number;
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.radius = Math.random() * 1.5;
+      }
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+      draw() {
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.3)';
+        ctx.fill();
+      }
     }
-  });
+
+    const particles: Particle[] = [];
+    for (let i = 0; i < 100; i++) {
+      particles.push(new Particle());
+    }
+
+    let animationFrameId: number;
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0, 136, 255, ${0.15 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-10 border-b border-blue-900/30 pb-6">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600/20 p-3 rounded-xl border border-blue-500/30">
-            <Shield className="text-blue-500" size={32} />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500">
-              CEO Master Control
-            </h1>
-            <p className="text-slate-400">Global Overview - Live Database</p>
+    <div className="relative w-screen h-screen overflow-hidden flex flex-col p-4 gap-4 selection:bg-cyan-900 selection:text-cyan-100">
+      
+      {/* CINEMATIC BACKGROUND */}
+      <div className="absolute inset-0 z-0 bg-[#020305]">
+        <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none mix-blend-screen opacity-60" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_rgba(0,136,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+        
+        {/* Deep space radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(10,30,50,0.4)_0%,_rgba(2,3,5,0.9)_60%)] pointer-events-none" />
+        
+        {/* Central Core Glow */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-30 mix-blend-screen pointer-events-none">
+          <div className="w-[800px] h-[800px] rounded-full border border-[rgba(0,240,255,0.1)] shadow-[0_0_150px_rgba(0,136,255,0.2)] flex items-center justify-center">
+            <div className="w-[600px] h-[600px] rounded-full border border-[rgba(255,255,255,0.05)] border-dashed animate-[spin_120s_linear_infinite]" />
+            <div className="absolute w-[400px] h-[400px] rounded-full border border-[rgba(0,240,255,0.1)] border-dotted animate-[spin_80s_linear_infinite_reverse]" />
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-sm font-bold text-slate-300 hover:bg-slate-800 transition">
-            <Settings size={16} /> Global Settings
+      </div>
+
+      {/* LAYER 7: MISSION CONTROL (Top Navigation) */}
+      <nav className="relative z-10 w-full h-12 flex items-center justify-between px-6 os-panel">
+        <div className="flex items-center gap-8">
+          <span className="font-serif text-xl tracking-[0.2em] font-medium">RYL OS <span className="text-[var(--color-text-dim)]">|</span> MISSION CONTROL</span>
+          <div className="flex items-center gap-6 os-data text-[var(--color-text-dim)]">
+            <span className="hover:text-white transition-colors cursor-pointer">WORKSPACES</span>
+            <span className="hover:text-white transition-colors cursor-pointer">AI AGENTS</span>
+            <span className="hover:text-white transition-colors cursor-pointer">WORKFLOWS</span>
+            <span className="hover:text-white transition-colors cursor-pointer">MARKETPLACE</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-8 os-data">
+          <div className="flex items-center gap-2">
+            <span className="text-[var(--color-text-dim)]">CLEARANCE</span>
+            <span className="text-[var(--color-neon-cyan)] glow-cyan">ADMIN</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[var(--color-text-dim)]">SYS_TIME</span>
+            <span>{time}</span>
+          </div>
+          <button className="px-4 py-1.5 border border-[var(--color-neon-cyan)] text-[var(--color-neon-cyan)] hover:bg-[var(--color-neon-cyan)] hover:text-black transition-all glow-box-blue">
+            ENGAGE
           </button>
-          <div className="flex items-center gap-2 bg-emerald-950/30 border border-emerald-900/50 px-4 py-2 rounded-lg text-sm font-bold text-emerald-400">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            System Online (Live DB)
-          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Top Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-        <div className="bg-slate-950 border border-blue-900/20 rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <DollarSign size={64} className="text-blue-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Estimated Network MRR</p>
-          <h2 className="text-4xl font-black text-white">€{estimatedRevenue.toLocaleString()}</h2>
-          <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1">
-            <TrendingUp size={12} /> Based on {premiumUsers} Premium Users
-          </p>
-        </div>
-        <div className="bg-slate-950 border border-slate-900 rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Zap size={64} className="text-blue-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Active AI Modules</p>
-          <h2 className="text-4xl font-black text-white">{activeModulesCount}</h2>
-          <p className="text-blue-400 text-xs font-bold mt-2">Verified in Database</p>
-        </div>
-        <div className="bg-slate-950 border border-slate-900 rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Users size={64} className="text-blue-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Total End-Clients</p>
-          <h2 className="text-4xl font-black text-white">{totalUsers}</h2>
-          <p className="text-slate-500 text-xs mt-2">Registered Accounts</p>
-        </div>
-        <div className="bg-slate-950 border border-slate-900 rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Activity size={64} className="text-blue-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Total Leads Scraped</p>
-          <h2 className="text-4xl font-black text-white">{totalLeads}</h2>
-          <p className="text-slate-500 text-xs mt-2">Across all modules</p>
-        </div>
-      </div>
-
-      {/* Grid for Modules and Clients */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Module Performance - Hardcoded text removed, generic modules shown for structure or loaded from DB if available. Since there's no Module schema with revenue stats easily queryable right now, we map dynamically if possible. */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-          <h3 className="text-xl font-bold mb-6 text-slate-200">Live Client Pulse (Recent Users)</h3>
-          <div className="space-y-4">
-            {recentUsers.length === 0 ? (
-              <p className="text-slate-500 text-sm">Geen gebruikers in de database gevonden.</p>
-            ) : (
-              recentUsers.map(u => (
-                <div key={u.id} className="flex justify-between items-center pb-4 border-b border-slate-800/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-900/30 flex items-center justify-center font-bold text-blue-400">
-                      {u.firstName?.[0] || 'U'}
+      {/* MAIN INTERFACE GRID */}
+      <div className="relative z-10 flex-1 flex gap-4 h-[calc(100vh-80px)]">
+        
+        {/* LEFT COLUMN: LAYER 10 (BUSINESS OPERATING SYSTEM) */}
+        <div className="w-[340px] flex flex-col gap-4 h-full">
+          <div className="flex-1 os-panel flex flex-col">
+            <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[var(--color-neon-blue)] rounded-full glow-cyan" />
+              <span className="os-data">BUSINESS OPERATING SYSTEM (AI DIRECTORS)</span>
+            </div>
+            <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4">
+              {AI_DIRECTORS.map((ai, idx) => (
+                <div key={idx} className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-1.5 h-1.5 rounded-full ${ai.status === 'ACTIVE' ? 'bg-[var(--color-neon-cyan)] glow-cyan' : ai.status === 'IDLE' ? 'bg-white/40' : 'bg-[var(--color-text-dim)]'}`} />
+                      <span className="os-data font-medium text-white/90">{ai.name}</span>
                     </div>
-                    <div>
-                      <p className="font-bold text-sm">{u.firstName} {u.lastName}</p>
-                      <p className="text-xs text-slate-500">Tier: {u.subscriptionTier} • Last Active: {u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleDateString() : 'N/A'}</p>
-                    </div>
+                    <span className="os-data text-[9px] text-[var(--color-text-dim)]">{ai.status}</span>
                   </div>
-                  <button className="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition text-white">Manage</button>
+                  <div className="pl-3.5 flex items-center gap-2">
+                    <span className="text-[var(--color-text-dim)]">└</span>
+                    <span className="os-data text-[9px] text-[var(--color-neon-blue)]">{ai.focus}</span>
+                  </div>
                 </div>
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* System Logs / Opportunities Overview */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-          <h3 className="text-xl font-bold mb-6 text-slate-200">System Activity Overview</h3>
-          <p className="text-slate-400 text-sm mb-4">Live koppeling met de `AuditLog` of `Opportunity` tabel (coming soon). Huidige module telt uitsluitend gevalideerde data.</p>
-          <div className="space-y-4">
-            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex justify-between items-center">
-               <span className="text-emerald-400 font-bold">100% Data Integrity</span>
-               <span className="text-xs text-slate-500">Mock data verwijderd</span>
+          {/* REVENUE INTELLIGENCE PLATFORM (Extra Layer / RIE) */}
+          <div className="h-64 os-panel flex flex-col">
+            <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[var(--color-neon-cyan)] rounded-full glow-cyan" />
+              <span className="os-data text-[var(--color-neon-cyan)]">REVENUE INTELLIGENCE ENGINE (RIE)</span>
+            </div>
+            <div className="p-4 flex flex-col gap-4 justify-center flex-1">
+              {REVENUE_INTELLIGENCE.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center pb-2 border-b border-[var(--color-os-glass-border)] last:border-0">
+                  <span className="os-data text-[10px] text-[var(--color-text-dim)]">{item.metric}</span>
+                  <span className="os-data text-[10px] text-white/90">{item.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+
+        {/* CENTER COLUMN: LAYER 2 & 3 (ENTERPRISE KERNEL & AI PLATFORM) */}
+        <div className="flex-1 flex flex-col gap-4 h-full relative">
+          <div className="absolute top-4 left-4 flex flex-col gap-1">
+            <span className="os-data text-white/90">ENTERPRISE KERNEL (LAYER 2)</span>
+            <span className="os-data text-[9px] text-[var(--color-text-dim)]">SECURITY | POLICY ENGINE | RULES ENGINE | MESSAGING</span>
+          </div>
+          
+          <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
+            <span className="os-data text-white/90">AI PLATFORM (LAYER 3)</span>
+            <span className="os-data text-[9px] text-[var(--color-text-dim)]">REASONING | MEMORY | GOAL ENGINE</span>
+          </div>
+
+          {/* Central Visualization */}
+          <div className="flex-1 flex items-center justify-center">
+            <motion.div 
+              animate={{ scale: [1, 1.02, 1], opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-40 h-40 rounded-full border border-[var(--color-neon-blue)] flex items-center justify-center bg-[#050A15]/80 backdrop-blur-md z-10 glow-box-blue"
+            >
+              <div className="text-center flex flex-col items-center gap-3">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-neon-cyan)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="opacity-90">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <div className="flex flex-col gap-0.5">
+                  <span className="os-data text-[11px] text-white font-semibold">AEIP RUNTIME</span>
+                  <span className="os-data text-[8px] text-[var(--color-neon-cyan)]">ROUTING ACTIVE</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Current Integration / Platform Status Box */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[500px] os-panel bg-black/80 flex flex-col p-4 border border-[var(--color-neon-cyan)]/30">
+            <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-3">
+              <span className="os-data text-[9px] text-[var(--color-text-dim)] tracking-[0.2em]">INTEGRATION PLATFORM (LAYER 6)</span>
+              <span className="px-2 py-0.5 bg-[var(--color-neon-blue)]/20 text-[var(--color-neon-cyan)] text-[9px] rounded-sm os-data">18 ACTIVE KOPPELINGEN</span>
+            </div>
+            <div className="flex items-center justify-center gap-6">
+              <span className="os-data text-white/60 text-[10px]">Stripe</span>
+              <span className="text-[var(--color-text-dim)]">•</span>
+              <span className="os-data text-white/60 text-[10px]">OpenAI</span>
+              <span className="text-[var(--color-text-dim)]">•</span>
+              <span className="os-data text-white font-medium text-[10px]">Shopify (SYNCING)</span>
+              <span className="text-[var(--color-text-dim)]">•</span>
+              <span className="os-data text-white/60 text-[10px]">HubSpot</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: LAYER 5 & 9 (DATA PLATFORM & ENTERPRISE OPERATIONS) */}
+        <div className="w-[360px] flex flex-col gap-4 h-full">
+          
+          {/* LAYER 5: Data Platform */}
+          <div className="h-[340px] os-panel flex flex-col">
+            <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[var(--color-neon-cyan)] rounded-full glow-cyan" />
+              <span className="os-data">DATA PLATFORM (LAYER 5)</span>
+            </div>
+            <div className="p-4 flex flex-col gap-3 overflow-y-auto">
+              {DATA_PLATFORM.map((db, idx) => (
+                <div key={idx} className="flex justify-between items-center pb-2 border-b border-[var(--color-os-glass-border)] last:border-0">
+                  <div className="flex flex-col gap-1">
+                    <span className="os-data text-white/90 text-[11px]">{db.name}</span>
+                    <span className="os-data text-[9px] text-[var(--color-text-dim)]">{db.type}</span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="os-data text-[10px] text-[var(--color-neon-cyan)]">{db.status}</span>
+                    <span className="os-data text-[8px] text-white/40">{db.ip}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* LAYER 9: Enterprise Operations (Log) */}
+          <div className="flex-1 os-panel flex flex-col">
+            <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
+              <div className="w-3 h-3 border border-white/50 rounded-sm flex items-center justify-center">
+                <div className="w-1 h-1 bg-white/50" />
+              </div>
+              <span className="os-data">ENTERPRISE OPERATIONS (LAYER 9)</span>
+            </div>
+            <div className="p-4 flex flex-col gap-5 overflow-y-auto relative">
+              <div className="absolute left-[21px] top-5 bottom-5 w-[1px] bg-[var(--color-os-glass-border)]" />
+              
+              {OPERATIONS_LOG.map((event, idx) => (
+                <div key={idx} className="relative flex gap-3">
+                  <div className="w-1.5 h-1.5 mt-1 rounded-full bg-[var(--color-neon-blue)] glow-cyan z-10 shrink-0" />
+                  <div className="flex flex-col gap-1">
+                    <span className="os-data text-[9px] text-[var(--color-text-dim)]">{event.time}</span>
+                    <p className="text-[11px] text-white/80 font-sans leading-relaxed">{event.log}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
