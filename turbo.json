@@ -42,6 +42,9 @@
   "tasks": {
     "dev": { "cache": false, "persistent": true },
     "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**"] },
+    "@rebuildyourlife/database#build": {
+      "outputs": ["node_modules/.prisma/**", "node_modules/@prisma/client/**"]
+    },
     "lint": { "dependsOn": ["^build"] },
     "test": { "dependsOn": ["^build"] },
     "db:generate": { "cache": false },
