@@ -42,3 +42,4 @@ export function getEnterpriseClient() {
 
 // We also export the base prisma client for system-level operations (like the Meta-Orchestrator)
 export const systemPrisma = basePrisma;
+export const prisma = basePrisma;

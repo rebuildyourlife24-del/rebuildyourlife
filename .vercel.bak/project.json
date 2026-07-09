@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_q9myGscEvNAelKdTEYFRBUKqIclX",
+  "orgId": "team_y3XGuyGtuHCKkDaGN1OeLvUt",
+  "projectName": "rebuildyourlife-core",
+  "settings": {
+    "createdAt": 1781394931536,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": "apps/web",
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

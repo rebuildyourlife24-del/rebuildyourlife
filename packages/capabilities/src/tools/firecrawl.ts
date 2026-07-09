@@ -1,4 +1,4 @@
-import { globalToolRegistry } from './registry';
+import { globalToolRegistry } from '../registry';
 
 // Verplaats de Firecrawl webzoeker vanuit de Agent code naar de officiële Capability Registry
 export const firecrawlSearchTool = {
