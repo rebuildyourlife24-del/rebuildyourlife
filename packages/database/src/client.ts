@@ -25,7 +25,7 @@ export function getEnterpriseClient() {
   return basePrisma.$extends({
     query: {
       $allModels: {
-        async $allOperations({ model, operation, args, query }) {
+        async $allOperations({ operation, args, query }: any) {
           // In a real advanced RLS setup, we'd check if the model has a tenantId field
           // via Prisma.dmmf. For now, we inject it into the args if it's a finding query.
           // Example logic:
