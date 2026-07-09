@@ -1,0 +1,19 @@
+{
+  "name": "@rebuildyourlife/messaging",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts*\"",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rebuildyourlife/kernel": "*",
+    "@rebuildyourlife/security": "*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

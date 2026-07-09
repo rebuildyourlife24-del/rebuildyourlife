@@ -3,8 +3,8 @@ const { execSync } = require('child_process');
 const dbs = [
   { 
     name: "Orion", 
-    url: "postgresql://postgres.gjexrxdyddystmvrgsoe:VC3etUMnjxgDU6xx@aws-1-eu-north-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
-    directUrl: "postgresql://postgres.gjexrxdyddystmvrgsoe:VC3etUMnjxgDU6xx@aws-1-eu-north-1.pooler.supabase.com:5432/postgres"
+    url: "postgresql://postgres.gjexrxdyddystmvrgsoe:h1gEItKzytMwxdRQ@aws-1-eu-north-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
+    directUrl: "postgresql://postgres.gjexrxdyddystmvrgsoe:h1gEItKzytMwxdRQ@aws-1-eu-north-1.pooler.supabase.com:5432/postgres"
   },
   { 
     name: "Hermes", 

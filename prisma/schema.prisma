@@ -24,7 +24,7 @@ enum SubscriptionStatus {
 model User {
   id             String             @id @default(cuid())
   email          String             @unique
-  password       String
+  password       String?
   firstName      String?
   lastName       String?
   role           Role               @default(USER)
@@ -51,12 +51,12 @@ model User {
   parentAgreements   CommissionAgreement[] @relation("AgreementParent")
   
   // Nieuwe Relaties (AI OS Master Update)
-  tickets            Ticket[]        @relation("UserTickets")
-  assignedTickets    Ticket[]        @relation("AssignedTickets")
-  emailCampaigns     EmailCampaign[]
-  posts              Post[]
-  comments           Comment[]
-  likes              Like[]
+  // tickets            Ticket[]        @relation("UserTickets")
+  // assignedTickets    Ticket[]        @relation("AssignedTickets")
+  // emailCampaigns     EmailCampaign[]
+  // posts              Post[]
+  // comments           Comment[]
+  // likes              Like[]
 }
 
 // Actie 1: Bank Koppeling (PSD2) Portaal
@@ -331,7 +331,12 @@ model AiSharedMemory {
   memoryType String   @map("memory_type")
   content    String   @db.Text
   context    Json     @default("{}") @map("context")
+  
+  // Compliance & Data Isolation (GDPR)
   userId     String   @map("user_id")
+  tenantId   String   @default("default_tenant") @map("tenant_id")
+  containsPII Boolean @default(false) @map("contains_pii")
+  
   importance Float
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
@@ -398,4 +403,279 @@ model ExtractedIntelligence {
   
   status         String   @default("ANALYZED") // ANALYZED, IMPLEMENTED
   createdAt      DateTime @default(now())
+}
+
+// ============================================================================
+// COMPLIANCE & LEGAL ENFORCEMENT MODELS (ADDED POST-AUDIT)
+// ============================================================================
+
+model DecisionLedger {
+  id                  String   @id @default(uuid())
+  agentId             String
+  actionProposed      String
+  rationale           String   @db.Text
+  
+  // EU AI Act: Human-in-the-loop requirement
+  requiresHumanApproval Boolean  @default(true)
+  approvedByHumanId     String?
+  approvalTimestamp     DateTime?
+  status              String   @default("PENDING_REVIEW") // PENDING_REVIEW, APPROVED, REJECTED, EXECUTED
+  
+  createdAt           DateTime @default(now())
+}
+
+model AgentKnowledgeBase {
+  id          String   @id @default(uuid())
+  agentId     String
+  knowledge   String?  @db.Text
+  
+  // GDPR: Data Minimization
+  tenantId    String?  @default("default_tenant")
+  containsPII Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================================================
+// CODE EVOLUTION ENGINE (CEE)
+// ============================================================================
+
+model CodeEvolutionGenome {
+  id              String   @id @default(cuid())
+  moduleName      String   // Bijv. "RIE Pricing Engine"
+  
+  // Enterprise Code Map
+  healthScore     Float    @default(100.0) // 0-100% kwaliteit
+  techDebtScore   Float    @default(0.0)
+  
+  identifiedIssues Json    // Dubbele logica, verouderde API's, kwetsbaarheden
+  upgradePlan      Json    // Optimalisaties
+  
+  status          String   @default("MAPPED") // MAPPED, RESEARCHING, UPGRADING
+  updatedAt       DateTime @updatedAt
+  
+  blueprints      ArchitectureBlueprint[]
+}
+
+model ArchitectureBlueprint {
+  id              String   @id @default(cuid())
+  genomeId        String
+  genome          CodeEvolutionGenome @relation(fields: [genomeId], references: [id])
+  
+  // AI Architectuur
+  currentFlow     String   @db.Text
+  proposedFlow    String   @db.Text
+  
+  // Self-Improvement Loop
+  isApproved      Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+}
+
+model TreasuryVault {
+  id              String   @id @default(uuid())
+  tenantId        String?
+  
+  // Wft (Financial Law) Compliance: Explicitly internal platform credits
+  balance         Float    @default(0.0)
+  currencyType    String   @default("PLATFORM_CREDIT") // NEVER fiat (EUR/USD) to avoid shadow banking
+  isFiat          Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ============================================================================
+// UNIVERSAL DATABASE INTELLIGENCE ENGINE (UDIE)
+// ============================================================================
+
+model DatabaseIntelligenceGenome {
+  id              String   @id @default(cuid())
+  targetDatabase  String   // Bijv. "Supabase_Main", "Redis_Cache"
+  dbType          String   
+  
+  // Zelflerend (De "Medische Geschiedenis")
+  identifiedAnomalies Json 
+  appliedFixes        Json 
+  
+  status          String   @default("MONITORING") // MONITORING, SIMULATING, REPAIRING
+  updatedAt       DateTime @updatedAt
+  
+  // Relatie naar actievoorstellen
+  proposals       UdieActionProposal[]
+}
+
+model UdieActionProposal {
+  id              String   @id @default(cuid())
+  genomeId        String
+  genome          DatabaseIntelligenceGenome @relation(fields: [genomeId], references: [id])
+  
+  // Analyse & Impact
+  problemDetected String   @db.Text
+  proposedFix     String   @db.Text
+  expectedImpact  String   @db.Text
+  
+  // Database Guardian Layer
+  riskScore       Int      // 1-10
+  usersAffected   Int      @default(0)
+  rollbackPlan    String   @db.Text
+  isBackupVerified Boolean @default(false)
+  
+  // Autorisatie Status (Fase 1: Mens in de loop)
+  authorization   String   @default("PENDING_HUMAN") // PENDING_HUMAN, AUTO_APPROVED, REJECTED, EXECUTED
+  
+  createdAt       DateTime @default(now())
+}
+
+// ============================================================================
+// THE REVENUE INTELLIGENCE ENGINE (RIE)
+// ============================================================================
+
+model RevenueIntelligenceGenome {
+  id              String   @id @default(cuid())
+  modelName       String   @unique // Bijv. "Faceless Short-Form Automation"
+  
+  // Module 1 t/m 4: Identiteit, Business Analyse, Revenue Structuur, Markt Analyse
+  identityMatrix  Json
+  businessCore    Json
+  revenueLogic    Json
+  marketData      Json
+  
+  // Module 5 t/m 8: Concurrentie, Journey, Funnel, Traffic
+  competitorIntel Json
+  customerJourney Json
+  funnelBlueprint Json
+  trafficSources  Json
+  
+  // Module 9 t/m 11: Marketing, Sales, Psychologie
+  marketingStrats Json
+  salesStrats     Json
+  psychology      Json
+  
+  // Module 12 t/m 15: Executie (AI & Automatisering)
+  aiFeasibility   Json
+  requiredAgents  String[]
+  softwareStack   Json
+  automationFlows Json
+  
+  // Module 16 t/m 20: Finance, Risico & Optimalisatie
+  kpiBaselines    Json
+  riskMatrix      Json
+  exploitableEdges Json
+  exitStrategy    Json
+  learningLoop    Json
+  
+  status          String   @default("RESEARCHING") // RESEARCHING, VALIDATED, ACTIVE
+  category        String   @default("UNCATEGORIZED") // SAAS_B2B, ECOMMERCE, CONTENT_MEDIA, SERVICES_LOCAL, AFFILIATE_LEADGEN
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  businessUnits   BusinessUnit[]
+}
+
+// ============================================================================
+// THE BUSINESS MODEL FACTORY (BMF) & DEPLOYMENT SECURITY
+// ============================================================================
+
+model BusinessUnit {
+  id              String   @id @default(cuid())
+  genomeId        String
+  genome          RevenueIntelligenceGenome @relation(fields: [genomeId], references: [id])
+  
+  domainName      String?
+  frontendUrl     String?
+  status          String   @default("BLUEPRINT") // BLUEPRINT, PROVISIONING, LIVE
+  
+  brandClusterId  String?
+  brandCluster    BrandCluster? @relation(fields: [brandClusterId], references: [id])
+  
+  brandAssets     BrandAssetProfile?
+  adEngines       AdScalingEngine[]
+  
+  logs            DeploymentLog[]
+  financialReqs   FinancialActionRequest[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model DeploymentLog {
+  id              String   @id @default(cuid())
+  unitId          String
+  unit            BusinessUnit @relation(fields: [unitId], references: [id])
+  
+  action          String   // e.g., "BUY_DOMAIN", "SPIN_UP_SERVER"
+  provider        String   // e.g., "VERCEL", "AWS", "NAMECHEAP"
+  status          String   // e.g., "SUCCESS", "FAILED"
+  details         String   @db.Text
+  
+  createdAt       DateTime @default(now())
+}
+
+model FinancialActionRequest {
+  id              String   @id @default(cuid())
+  unitId          String
+  unit            BusinessUnit @relation(fields: [unitId], references: [id])
+  
+  actionType      String
+  estimatedCost   Float
+  currency        String   @default("EUR")
+  provider        String
+  
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, EXECUTED
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model BrandCluster {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  
+  units           BusinessUnit[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AdScalingEngine {
+  id              String   @id @default(cuid())
+  unitId          String
+  unit            BusinessUnit @relation(fields: [unitId], references: [id])
+  
+  channelName     String   // "META", "TIKTOK", "GOOGLE_SEARCH", "LINKEDIN", "PINTEREST"
+  
+  breakEvenCpa    Float
+  targetRoas      Float
+  currentDailyBudget Float @default(0.0)
+  currentCpa      Float    @default(0.0)
+  
+  status          String   @default("LEARNING") // LEARNING, SCALING, CAPPED, KILLED
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model BrandAssetProfile {
+  id              String   @id @default(cuid())
+  unitId          String   @unique
+  unit            BusinessUnit @relation(fields: [unitId], references: [id])
+  
+  // AI Gegenereerde Data (via Sovereign Router)
+  tiktokBio       String?  @db.VarChar(80)
+  instagramBio    String?  @db.VarChar(150)
+  linkedinAbout   String?  @db.Text
+  twitterBio      String?  @db.VarChar(160)
+  googleBusiness  String?  @db.Text
+  
+  brandColors     Json?    // Array met hex codes
+  toneOfVoice     String?
+  
+  // Menselijke controle
+  status          String   @default("AI_DRAFT") // AI_DRAFT, READY_TO_COPY
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

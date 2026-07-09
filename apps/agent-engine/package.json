@@ -15,7 +15,12 @@
     "@langchain/google-genai": "^2.2.0",
     "@langchain/langgraph": "^0.2.45",
     "@langchain/openai": "^0.4.4",
-    "@rebuildyourlife/database": "^1.0.0",
+    "@rebuildyourlife/database": "*",
+    "@rebuildyourlife/kernel": "*",
+    "@rebuildyourlife/security": "*",
+    "@rebuildyourlife/messaging": "*",
+    "@rebuildyourlife/rules": "*",
+    "@rebuildyourlife/capabilities": "*",
     "@rebuildyourlife/shared": "*",
     "dotenv": "^16.4.7",
     "fluent-ffmpeg": "^2.1.3"

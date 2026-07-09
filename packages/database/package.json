@@ -1,38 +1,21 @@
 {
   "name": "@rebuildyourlife/database",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "exports": {
-    ".": {
-      "import": "./src/index.ts",
-      "require": "./src/index.ts",
-      "types": "./src/index.ts"
-    }
-  },
   "scripts": {
-    "postinstall": "prisma generate",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "tsx src/seed.ts",
-    "seed:toolkits": "tsx src/seed_toolkits.ts",
-    "db:studio": "prisma studio",
-    "build": "npm run db:generate && tsc",
-    "clean": "rimraf dist node_modules/.prisma"
+    "lint": "eslint \"src/**/*.ts*\"",
+    "build": "tsc --noEmit",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^6.8.0",
-    "@types/bcryptjs": "^2.4.6",
-    "bcryptjs": "^2.4.3",
-    "prisma": "^6.8.0",
-    "rimraf": "^6.0.1",
-    "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "@rebuildyourlife/kernel": "*",
+    "@rebuildyourlife/security": "*",
+    "@prisma/client": "^5.10.0"
   },
-  "prisma": {
-    "seed": "tsx src/seed.ts"
+  "devDependencies": {
+    "prisma": "^5.10.0",
+    "typescript": "^5.0.0"
   }
 }

@@ -1,423 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@100;200;300;400&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-space-900: #020206;
-  --color-space-800: #040410;
-  --color-glass-border: rgba(255, 255, 255, 0.06);
-  --color-accent-cyan: #22d3ee;
-  --color-accent-red: #f43f5e;
-  --color-accent-amber: #f59e0b;
+  /* Cinematic Hyper-Realistic OS Colors */
+  --color-os-bg: #020305;          /* Deepest black/blue void */
+  --color-os-glass: rgba(10, 15, 25, 0.4); /* Translucent glass */
+  --color-os-glass-border: rgba(255, 255, 255, 0.05);
+  
+  /* Typography */
+  --color-text-bright: #ffffff;
+  --color-text-dim: #738290;
+  --color-text-cyan: #00f0ff;
+  
+  /* Status Lighting */
+  --color-neon-blue: #0088ff;
+  --color-neon-cyan: #00f0ff;
+  --color-alert-red: #ff3333;
+  --color-alert-amber: #ff8800;
+
+  /* Fonts */
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 @layer base {
-  :root {
-    --background: #020206;
-    --foreground: #e0e0ec;
+  body {
+    background-color: var(--color-os-bg);
+    color: var(--color-text-bright);
+    font-family: var(--font-sans);
+    overflow: hidden; /* It's a full-screen OS dashboard */
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', -apple-system, sans-serif;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
+/* Hyper-Realistic Glass Panels */
+.os-panel {
+  background: var(--color-os-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-os-glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
 }
 
-/* ============================================
-   DEEP SPACE PANORAMIC BACKGROUND
-   ============================================ */
-.space-panorama {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background:
-    /* Distant nebula glow */
-    radial-gradient(ellipse 120% 80% at 75% 20%, rgba(30, 64, 175, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 60% at 20% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
-    /* Star field layers */
-    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1.5px 1.5px at 42% 22%, rgba(200,220,255,0.9), transparent),
-    radial-gradient(1px 1px at 58% 68%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 73% 12%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 88% 55%, rgba(180,200,255,0.8), transparent),
-    radial-gradient(1px 1px at 15% 82%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 35% 92%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1px 1px at 65% 38%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(2px 2px at 50% 50%, rgba(140,180,255,0.3), transparent),
-    /* Deep space base */
-    linear-gradient(180deg, #020210 0%, #030318 40%, #050520 70%, #020210 100%);
+/* Technical Monospace Text */
+.os-data {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 300;
 }
 
-/* Twinkling star layer */
-.space-panorama::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(1px 1px at 5% 25%, #fff, transparent),
-    radial-gradient(1px 1px at 18% 58%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 32% 8%, #ddeeff, transparent),
-    radial-gradient(1px 1px at 47% 75%, #fff, transparent),
-    radial-gradient(1px 1px at 62% 42%, #fff, transparent),
-    radial-gradient(1px 1px at 78% 88%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 92% 32%, #cce0ff, transparent),
-    radial-gradient(1px 1px at 8% 95%, #fff, transparent);
-  animation: twinkle 4s ease-in-out infinite alternate;
+/* Cinematic Glows */
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
-@keyframes twinkle {
-  0% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.5; }
+.glow-box-blue {
+  box-shadow: 0 0 20px rgba(0, 136, 255, 0.15), inset 0 0 10px rgba(0, 136, 255, 0.1);
+  border: 1px solid rgba(0, 136, 255, 0.3);
 }
 
-/* ============================================
-   VOLUMETRIC LIGHT CONE (from panoramic window)
-   ============================================ */
-.volumetric-light {
-  position: fixed;
-  top: -5%;
-  left: 30%;
-  width: 40%;
-  height: 60%;
-  background: conic-gradient(
-    from 180deg at 50% 0%,
-    transparent 30%,
-    rgba(100, 160, 255, 0.03) 40%,
-    rgba(100, 160, 255, 0.06) 50%,
-    rgba(100, 160, 255, 0.03) 60%,
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 1;
-  animation: volumetric-sway 12s ease-in-out infinite alternate;
-}
-
-@keyframes volumetric-sway {
-  0% { transform: translateX(-3%) scaleX(0.95); opacity: 0.6; }
-  100% { transform: translateX(3%) scaleX(1.05); opacity: 0.8; }
-}
-
-/* ============================================
-   PANORAMIC WINDOW FRAME (metallic)
-   ============================================ */
-.window-frame-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  z-index: 50;
-  background: linear-gradient(90deg,
-    transparent 5%,
-    rgba(100, 160, 255, 0.15) 20%,
-    rgba(100, 160, 255, 0.4) 50%,
-    rgba(100, 160, 255, 0.15) 80%,
-    transparent 95%
-  );
-  box-shadow: 0 0 20px rgba(100, 160, 255, 0.15), 0 0 60px rgba(100, 160, 255, 0.05);
-}
-
-/* ============================================
-   LED ACCENT STRIPS
-   ============================================ */
-.led-strip-left,
-.led-strip-right {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  z-index: 50;
-  pointer-events: none;
-}
-
-.led-strip-left {
-  left: 0;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(34, 211, 238, 0.3) 30%,
-    rgba(34, 211, 238, 0.1) 50%,
-    rgba(34, 211, 238, 0.3) 70%,
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.2);
-}
-
-.led-strip-right {
-  right: 0;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(59, 130, 246, 0.2) 30%,
-    rgba(59, 130, 246, 0.08) 50%,
-    rgba(59, 130, 246, 0.2) 70%,
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.15);
-}
-
-/* Animated LED pulse */
-.led-strip-left::after,
-.led-strip-right::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 80px;
-  border-radius: 50%;
-  animation: led-travel 6s ease-in-out infinite;
-}
-
-.led-strip-left::after {
-  background: radial-gradient(ellipse, rgba(34, 211, 238, 0.6), transparent 70%);
-  filter: blur(4px);
-  animation-delay: 0s;
-}
-
-.led-strip-right::after {
-  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.4), transparent 70%);
-  filter: blur(4px);
-  animation-delay: -3s;
-}
-
-@keyframes led-travel {
-  0% { top: -80px; }
-  100% { top: calc(100% + 80px); }
-}
-
-/* ============================================
-   FLOOR REFLECTION
-   ============================================ */
-.floor-reflection {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 30%;
-  z-index: 0;
-  background: linear-gradient(0deg,
-    rgba(10, 15, 40, 0.9) 0%,
-    rgba(10, 15, 40, 0.4) 40%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
-.floor-reflection::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(100, 160, 255, 0.1) 30%,
-    rgba(100, 160, 255, 0.2) 50%,
-    rgba(100, 160, 255, 0.1) 70%,
-    transparent
-  );
-}
-
-/* ============================================
-   NOISE & SCANLINE OVERLAYS (cinematic)
-   ============================================ */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 200px 200px;
-}
-
-.scanline-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.015;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 3px,
-    rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 4px
-  );
-}
-
-/* ============================================
-   HOLOGRAPHIC GLASS PANEL (primary)
-   ============================================ */
-.holo-panel {
-  background: rgba(8, 12, 28, 0.55);
-  backdrop-filter: blur(28px) saturate(160%);
-  -webkit-backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 0 30px rgba(34, 211, 238, 0.02),
-    0 20px 80px rgba(0, 0, 0, 0.5),
-    0 0 1px rgba(100, 160, 255, 0.1);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
+/* Progress Bars */
+.os-progress-track {
+  background: rgba(255, 255, 255, 0.05);
+  height: 2px;
+  width: 100%;
+  border-radius: 1px;
   overflow: hidden;
 }
 
-.holo-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 10%,
-    rgba(100, 160, 255, 0.2) 50%,
-    transparent 90%
-  );
+.os-progress-fill-cyan {
+  background: var(--color-neon-cyan);
+  height: 100%;
+  box-shadow: 0 0 8px var(--color-neon-cyan);
 }
-
-.holo-panel:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 0 40px rgba(34, 211, 238, 0.03),
-    0 25px 100px rgba(0, 0, 0, 0.6),
-    0 0 1px rgba(100, 160, 255, 0.15);
+.os-progress-fill-blue {
+  background: var(--color-neon-blue);
+  height: 100%;
+  box-shadow: 0 0 8px var(--color-neon-blue);
 }
-
-/* ============================================
-   FLOATING AGENT CARD
-   ============================================ */
-.agent-card {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-.agent-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--card-accent, rgba(34,211,238,0.2)), transparent);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.agent-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-}
-
-.agent-card:hover::after {
-  opacity: 1;
-}
-
-/* ============================================
-   METALLIC CONSOLE SURFACE
-   ============================================ */
-.metallic-surface {
-  background:
-    linear-gradient(135deg,
-      rgba(20, 25, 45, 0.9) 0%,
-      rgba(15, 18, 35, 0.95) 50%,
-      rgba(20, 25, 45, 0.9) 100%
-    );
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 -20px 60px rgba(0, 0, 0, 0.4);
-}
-
-/* ============================================
-   HOLOGRAM EFFECTS
-   ============================================ */
-@keyframes hologram-breathe {
-  0%, 100% { filter: brightness(1) saturate(1.2); opacity: 0.85; }
-  30%      { filter: brightness(1.1) saturate(1.4); opacity: 0.92; }
-  70%      { filter: brightness(0.95) saturate(1.1); opacity: 0.8; }
-}
-
-.hologram-alive {
-  animation: hologram-breathe 5s ease-in-out infinite;
-}
-
-@keyframes ring-rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@keyframes ring-rotate-reverse {
-  from { transform: rotate(360deg); }
-  to   { transform: rotate(0deg); }
-}
-
-.ring-spin        { animation: ring-rotate 35s linear infinite; }
-.ring-spin-rev    { animation: ring-rotate-reverse 50s linear infinite; }
-.ring-spin-slow   { animation: ring-rotate 80s linear infinite; }
-
-/* ============================================
-   STATUS INDICATORS
-   ============================================ */
-@keyframes status-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
-  50%      { box-shadow: 0 0 0 5px transparent; }
-}
-
-.status-dot {
-  animation: status-pulse 2.5s ease-in-out infinite;
-}
-
-/* ============================================
-   DATA STREAM EFFECT
-   ============================================ */
-@keyframes data-cascade {
-  0%   { background-position: 0% 0%; }
-  100% { background-position: 0% -300%; }
-}
-
-.data-stream {
-  background-image: repeating-linear-gradient(
-    0deg, transparent, transparent 24px,
-    rgba(34, 211, 238, 0.02) 24px, rgba(34, 211, 238, 0.02) 25px
-  );
-  animation: data-cascade 12s linear infinite;
-}
-
-/* ============================================
-   FLOATING ANIMATION
-   ============================================ */
-@keyframes hover-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-
-.floating { animation: hover-float 7s ease-in-out infinite; }
-.floating-slow { animation: hover-float 10s ease-in-out infinite; }
-.floating-fast { animation: hover-float 4s ease-in-out infinite; }
-
-/* ============================================
-   CURSOR BLINK
-   ============================================ */
-@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-.cursor-blink { animation: blink 1s step-end infinite; }
-
-/* ============================================
-   SCROLLBAR
-   ============================================ */
-.custom-scrollbar::-webkit-scrollbar { width: 3px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }

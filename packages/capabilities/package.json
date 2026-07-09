@@ -1,0 +1,18 @@
+{
+  "name": "@rebuildyourlife/capabilities",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts*\"",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rebuildyourlife/kernel": "*",
+    "@rebuildyourlife/security": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

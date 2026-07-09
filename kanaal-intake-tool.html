@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Kanaal Intake Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --paper: #F7F5EF;
+    --paper-raised: #FFFFFF;
+    --ink: #1B1B18;
+    --ink-soft: #55534C;
+    --line: #DEDACB;
+    --forest: #1F6F5C;
+    --forest-dark: #165445;
+    --gold: #B5842A;
+    --gold-soft: #F1E4C6;
+    --red: #A8432F;
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  header.top{
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-bottom: 2px solid var(--ink); padding-bottom: 16px; margin-bottom: 28px;
+    flex-wrap: wrap; gap:12px;
+  }
+  header.top h1{ font-size: 26px; letter-spacing: -0.02em; }
+  header.top .sub{ font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .layout{ display:grid; grid-template-columns: 340px 1fr; gap: 28px; align-items:start; }
+  @media (max-width: 880px){ .layout{ grid-template-columns: 1fr; } }
+
+  .panel{
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 22px;
+  }
+  .panel.sticky{ position: sticky; top: 20px; }
+
+  .field{ margin-bottom: 14px; }
+  .field label{
+    display:block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--ink-soft); margin-bottom: 5px; font-weight: 600;
+  }
+  .field input, .field textarea{
+    width:100%; border:1px solid var(--line); border-radius:4px; padding:9px 10px;
+    font-family:'Inter',sans-serif; font-size:14px; background:#FFFDF9; color:var(--ink);
+  }
+  .field textarea{ resize: vertical; min-height: 64px; }
+  .field input:focus, .field textarea:focus{ outline:2px solid var(--forest); outline-offset:1px; }
+  .field .count{ font-size:10px; color: var(--ink-soft); text-align:right; margin-top:2px; }
+
+  .progress-stamp{
+    display:flex; align-items:center; gap:10px; margin-top: 18px; padding-top:16px;
+    border-top: 1px dashed var(--line);
+  }
+  .stamp{
+    width:52px; height:52px; border-radius:50%; border:2.5px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'Space Grotesk'; font-weight:700; font-size:13px; color:var(--gold);
+    transform: rotate(-6deg);
+  }
+  .progress-stamp .txt{ font-size:12px; color: var(--ink-soft); line-height:1.4; }
+  .progress-stamp .txt b{ color: var(--ink); }
+
+  nav.tabs{ display:flex; gap:6px; margin-bottom: 20px; flex-wrap:wrap; }
+  nav.tabs button{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.03em;
+    padding:8px 14px; border-radius:4px; border:1px solid var(--line); background:#fff;
+    color: var(--ink-soft); cursor:pointer;
+  }
+  nav.tabs button.active{ background: var(--ink); color:#fff; border-color:var(--ink); }
+
+  .grid-cards{ display:grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
+
+  .card{
+    background: var(--paper-raised); border:1px solid var(--line); border-radius:6px;
+    padding:16px 16px 14px; display:flex; flex-direction:column; gap:10px;
+  }
+  .card .head{ display:flex; align-items:center; justify-content:space-between; }
+  .card .head h3{ font-size:15px; }
+  .card .head .badge{
+    font-family:'IBM Plex Mono'; font-size:10px; padding:2px 7px; border-radius:10px;
+    background: var(--gold-soft); color:#7A5A16; white-space:nowrap;
+  }
+
+  .snippet{
+    background:#FBFAF6; border:1px solid var(--line); border-radius:4px; padding:9px 10px;
+    font-family:'IBM Plex Mono'; font-size:12.5px; line-height:1.5; color:var(--ink);
+    white-space:pre-wrap; word-break: break-word;
+  }
+  .snippet.limit-ok{ border-left:3px solid var(--forest); }
+  .snippet-label{ font-size:10px; color:var(--ink-soft); display:flex; justify-content:space-between; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.05em;}
+
+  .copy-btn{
+    align-self:flex-start; font-family:'IBM Plex Mono'; font-size:11px; border:1px solid var(--ink);
+    background:transparent; padding:4px 10px; border-radius:4px; cursor:pointer; color:var(--ink);
+  }
+  .copy-btn:hover{ background: var(--ink); color:#fff; }
+  .copy-btn.copied{ background: var(--forest); border-color:var(--forest); color:#fff; }
+
+  ul.checklist{ list-style:none; margin:4px 0 0; padding:0; display:flex; flex-direction:column; gap:6px; }
+  ul.checklist li{ display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:var(--ink-soft); }
+  ul.checklist input[type=checkbox]{ margin-top:2px; accent-color: var(--forest); flex-shrink:0; }
+  ul.checklist li.checked span{ text-decoration: line-through; color:#9A9789; }
+
+  .section-title{ margin: 34px 0 14px; display:flex; align-items:center; gap:10px; }
+  .section-title h2{ font-size:17px; }
+  .section-title .rule{ flex:1; height:1px; background: var(--line); }
+
+  footer.note{
+    margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+    font-size:12px; color:var(--ink-soft); line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Kanaal Intake Tool</h1>
+      <div class="sub">Eén keer invullen → per platform klaar-om-te-plakken content + checklist</div>
+    </div>
+    <div class="sub mono" id="overallStamp">0 / 0 stappen afgevinkt</div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: intake form -->
+    <div class="panel sticky">
+      <h2 style="font-size:15px; margin-bottom:14px;">Bedrijfsgegevens</h2>
+
+      <div class="field">
+        <label for="companyName">Bedrijfs-/merknaam</label>
+        <input id="companyName" placeholder="bijv. Noord Studio">
+      </div>
+
+      <div class="field">
+        <label for="tagline">Korte tagline (voor bio's met weinig ruimte)</label>
+        <input id="tagline" placeholder="bijv. Slimme tools voor kleine bedrijven" maxlength="120">
+        <div class="count"><span id="taglineCount">0</span>/120</div>
+      </div>
+
+      <div class="field">
+        <label for="description">Uitgebreide omschrijving (voor 'About'-secties)</label>
+        <textarea id="description" placeholder="2-4 zinnen: wat je doet, voor wie, en wat het verschil maakt."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="website">Website</label>
+        <input id="website" placeholder="https://...">
+      </div>
+
+      <div class="field">
+        <label for="email">Zakelijk e-mailadres</label>
+        <input id="email" placeholder="hallo@bedrijf.nl">
+      </div>
+
+      <div class="field">
+        <label for="phone">Telefoonnummer</label>
+        <input id="phone" placeholder="+31 6 ...">
+      </div>
+
+      <div class="field">
+        <label for="location">Plaats / regio</label>
+        <input id="location" placeholder="bijv. Utrecht, NL">
+      </div>
+
+      <div class="field">
+        <label for="category">Categorie / branche</label>
+        <input id="category" placeholder="bijv. Software, E-commerce, Advies">
+      </div>
+
+      <div class="progress-stamp">
+        <div class="stamp" id="stampCircle">0%</div>
+        <div class="txt">Voortgang checklist over alle kanalen.<br><b id="progressDetail">0 van 0 stappen</b> afgevinkt.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: generated output -->
+    <div>
+      <nav class="tabs" id="tabNav"></nav>
+      <div id="tabContent"></div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Let op: dit hulpmiddel genereert alleen de tekst en toont wat elk platform vereist — het aanmaken en verifiëren
+    van elk account (SMS/e-mail-verificatie, business-verificatie, betaalgegevens) blijft een handmatige stap per
+    platform. Geen enkel platform biedt een officiële manier om dit in bulk te automatiseren, en dat is met opzet zo.
+  </footer>
+</div>
+
+<script>
+const state = {
+  companyName:'', tagline:'', description:'', website:'', email:'', phone:'', location:'', category:''
+};
+
+const fields = ['companyName','tagline','description','website','email','phone','location','category'];
+fields.forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    state[id] = e.target.value;
+    if(id==='tagline') document.getElementById('taglineCount').textContent = e.target.value.length;
+    renderAll();
+  });
+});
+
+function truncate(text, limit){
+  if(!text) return '';
+  if(text.length <= limit) return text;
+  return text.slice(0, limit-1).trim() + '…';
+}
+
+function bioFor(limit){
+  const base = state.tagline || state.description || '';
+  return truncate(base, limit);
+}
+
+function aboutFor(limit){
+  const base = state.description || state.tagline || '';
+  let text = truncate(base, limit);
+  return text;
+}
+
+function contactLine(){
+  const parts = [];
+  if(state.website) parts.push(state.website);
+  if(state.email) parts.push(state.email);
+  return parts.join(' · ');
+}
+
+// ---- Platform data ----
+const DATA = {
+  social: {
+    label: 'Social — organisch',
+    items: [
+      { name:'TikTok', limit:80, kind:'bio', checklist:[
+        'Telefoonnummer of e-mail voor verificatie',
+        'Overschakelen naar Zakelijk account',
+        'Vierkante profielfoto (min. 200×200px)',
+        'Website-link toevoegen (na Pro-account)'
+      ]},
+      { name:'Instagram', limit:150, kind:'bio', checklist:[
+        'Telefoonnummer/e-mail verificatie',
+        'Omzetten naar Bedrijfsaccount',
+        'Categorie kiezen',
+        'Contactknoppen instellen (e-mail/telefoon)'
+      ]},
+      { name:'YouTube', limit:1000, kind:'about', checklist:[
+        'Google-account nodig',
+        'Kanaalnaam + uniek @handle',
+        'Kanaalicoon en banner uploaden',
+        'Telefoonverificatie voor volledige functies'
+      ]},
+      { name:'Facebook Pagina', limit:255, kind:'about', checklist:[
+        'Persoonlijk account nodig als paginabeheerder',
+        'Paginacategorie kiezen',
+        'Contactgegevens invullen',
+        'Koppelen aan Meta Business Suite'
+      ]},
+      { name:'LinkedIn Bedrijfspagina', limit:120, kind:'bio', checklist:[
+        'Persoonlijk LinkedIn-account als admin',
+        'Bedrijfswebsite (domeincontrole soms vereist)',
+        'Logo + omslagfoto',
+        'Branche en bedrijfsgrootte invullen'
+      ]},
+      { name:'X (Twitter)', limit:160, kind:'bio', checklist:[
+        'Telefoonnummerverificatie',
+        'Profielfoto + headerafbeelding',
+        'Website-link'
+      ]},
+      { name:'Pinterest', limit:160, kind:'bio', checklist:[
+        'Zakelijk account aanmaken/converteren',
+        'Website claimen (meta-tag of DNS)',
+        'Categorie kiezen'
+      ]},
+      { name:'Threads', limit:150, kind:'bio', checklist:[
+        'Vereist bestaand Instagram-account',
+        'Profielfoto/bio kan worden overgenomen van IG'
+      ]},
+      { name:'Reddit', limit:200, kind:'about', checklist:[
+        'E-mailverificatie',
+        'Karma opbouwen voor volledige postrechten',
+        'Subreddit-regels checken vóór zelfpromotie'
+      ]},
+      { name:'Snapchat', limit:80, kind:'bio', checklist:[
+        'Telefoonverificatie',
+        'Zakelijk account via Ads Manager voor extra functies'
+      ]},
+    ]
+  },
+  ads: {
+    label: 'Advertentie-accounts',
+    items: [
+      { name:'Meta Business Manager', checklist:[
+        'KvK-nummer / bedrijfsregistratie',
+        'Betaalmethode (creditcard)',
+        'Soms identiteitsverificatie',
+        'Domeinverificatie voor website-events'
+      ]},
+      { name:'Google Ads', checklist:[
+        'Google-account',
+        'Factuurgegevens bedrijf + betaalmethode',
+        'Akkoord met advertentiebeleid (extra check bij bijv. gezondheid/financiën)'
+      ]},
+      { name:'TikTok Ads Manager', checklist:[
+        'Bedrijfsgegevens invullen',
+        'Betaalmethode',
+        'Extra documenten bij gereguleerde branches'
+      ]},
+      { name:'LinkedIn Campaign Manager', checklist:[
+        'Gekoppeld aan bestaande Bedrijfspagina',
+        'Betaalmethode + factuuradres'
+      ]},
+      { name:'Pinterest Ads', checklist:[
+        'Zakelijk account',
+        'Betaalmethode'
+      ]},
+      { name:'Reddit Ads', checklist:[
+        'Zakelijk account',
+        'Betaalmethode',
+        'Akkoord met content-beleid'
+      ]},
+      { name:'Microsoft/Bing Ads', checklist:[
+        'Kan bestaand Google Ads-account importeren',
+        'Betaalmethode'
+      ]},
+    ]
+  },
+  overig: {
+    label: 'Overig',
+    items: [
+      { name:'Google Bedrijfsprofiel', limit:750, kind:'about', checklist:[
+        'Bedrijfsnaam + adres of servicegebied',
+        'Categorie kiezen',
+        'Telefoonnummer',
+        'Verificatie via post/telefoon/e-mail (kan dagen duren)'
+      ]},
+      { name:'Product Hunt', limit:60, kind:'bio', checklist:[
+        'Persoonlijk account',
+        'Tagline (60 tekens)',
+        'Beschrijving + afbeeldingen/gif'
+      ]},
+      { name:'WhatsApp Business', limit:139, kind:'about', checklist:[
+        'Uniek telefoonnummer (niet in gebruik bij gewone WhatsApp)',
+        'Bedrijfsprofiel invullen (categorie, adres, openingstijden)'
+      ]},
+    ]
+  }
+};
+
+let activeTab = 'social';
+const checkedState = {}; // key: platform+idx -> bool
+
+function renderTabs(){
+  const nav = document.getElementById('tabNav');
+  nav.innerHTML = '';
+  Object.keys(DATA).forEach(key=>{
+    const btn = document.createElement('button');
+    btn.textContent = DATA[key].label;
+    btn.className = key === activeTab ? 'active' : '';
+    btn.onclick = () => { activeTab = key; renderTabs(); renderContent(); };
+    nav.appendChild(btn);
+  });
+}
+
+function renderContent(){
+  const container = document.getElementById('tabContent');
+  container.innerHTML = '';
+  const section = DATA[activeTab];
+  const grid = document.createElement('div');
+  grid.className = 'grid-cards';
+
+  section.items.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    let snippetHtml = '';
+    if(item.limit && item.kind){
+      const text = item.kind === 'bio' ? bioFor(item.limit) : aboutFor(item.limit);
+      const withContact = item.kind === 'about' && contactLine() && (text.length + contactLine().length + 3 <= item.limit)
+        ? text + (text ? '\n\n' : '') + contactLine()
+        : text;
+      const shown = withContact || '(vul links je gegevens in)';
+      snippetHtml = `
+        <div class="snippet-label"><span>${item.kind==='bio' ? 'Bio' : 'About-tekst'}</span><span>${shown.length}/${item.limit}</span></div>
+        <div class="snippet limit-ok" id="snippet-${activeTab}-${idx}">${escapeHtml(shown)}</div>
+        <button class="copy-btn" data-copy="snippet-${activeTab}-${idx}">Kopieer</button>
+      `;
+    }
+
+    const checklistHtml = item.checklist.map((step, sIdx) => {
+      const key = `${activeTab}-${idx}-${sIdx}`;
+      const checked = !!checkedState[key];
+      return `<li class="${checked?'checked':''}">
+        <input type="checkbox" data-key="${key}" ${checked?'checked':''}>
+        <span>${escapeHtml(step)}</span>
+      </li>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="head">
+        <h3>${item.name}</h3>
+        <span class="badge">${item.checklist.filter((_,sIdx)=>checkedState[`${activeTab}-${idx}-${sIdx}`]).length}/${item.checklist.length} klaar</span>
+      </div>
+      ${snippetHtml}
+      <ul class="checklist">${checklistHtml}</ul>
+    `;
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+
+  // wire copy buttons
+  container.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const el = document.getElementById(btn.dataset.copy);
+      navigator.clipboard.writeText(el.textContent).then(()=>{
+        btn.textContent = 'Gekopieerd ✓';
+        btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent='Kopieer'; btn.classList.remove('copied'); }, 1500);
+      });
+    });
+  });
+
+  // wire checkboxes
+  container.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      checkedState[cb.dataset.key] = cb.checked;
+      renderContent();
+      renderProgress();
+    });
+  });
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderProgress(){
+  let total = 0, done = 0;
+  Object.keys(DATA).forEach(key=>{
+    DATA[key].items.forEach((item, idx)=>{
+      item.checklist.forEach((_, sIdx)=>{
+        total++;
+        if(checkedState[`${key}-${idx}-${sIdx}`]) done++;
+      });
+    });
+  });
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('stampCircle').textContent = pct + '%';
+  document.getElementById('progressDetail').textContent = `${done} van ${total} stappen`;
+  document.getElementById('overallStamp').textContent = `${done} / ${total} stappen afgevinkt`;
+}
+
+function renderAll(){
+  renderContent();
+}
+
+renderTabs();
+renderContent();
+renderProgress();
+</script>
+</body>
+</html>
