@@ -56,7 +56,8 @@ export async function login(formData: FormData) {
       return { error: "Toegang Geweigerd." };
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+    const userAny = user as any;
+    const isValidPassword = await bcrypt.compare(password, userAny.passwordHash || "");
     console.log(`[AUTH RESULT] Password match: ${isValidPassword}`);
 
     if (!isValidPassword) {
