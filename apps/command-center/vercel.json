@@ -2,6 +2,5 @@
   "framework": "nextjs",
   "buildCommand": "cd ../.. && npm run db:generate && npx turbo run build --filter=command-center --force",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "regions": ["ams1"]
+  "installCommand": "npm install"
 }
