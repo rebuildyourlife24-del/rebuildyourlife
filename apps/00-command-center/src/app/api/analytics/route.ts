@@ -50,8 +50,8 @@ export async function GET(req: Request) {
 
       // Haal schulden op
       const debts = await db.debt.findMany({ where: { userId } });
-      const totalDebt = debts.reduce((s, d) => s + d.currentBalance, 0);
-      const originalDebt = debts.reduce((s, d) => s + d.originalAmount, 0);
+      const totalDebt = debts.reduce((s: number, d: any) => s + d.currentBalance, 0);
+      const originalDebt = debts.reduce((s: number, d: any) => s + d.originalAmount, 0);
 
       // Haal betalingen op
       const payments = await db.debtPayment.findMany({
@@ -61,19 +61,19 @@ export async function GET(req: Request) {
       });
 
       // Totalen
-      const totalRevenue = budgets.reduce((s, b) => s + b.totalIncome, 0);
-      const totalExpenses = budgets.reduce((s, b) => s + b.totalExpenses, 0);
+      const totalRevenue = budgets.reduce((s: number, b: any) => s + b.totalIncome, 0);
+      const totalExpenses = budgets.reduce((s: number, b: any) => s + b.totalExpenses, 0);
       const netProfit = totalRevenue - totalExpenses;
 
       // Gemiste inkomsten berekening (simpel: als uitgaven > 40% van inkomsten = gemiste winst)
-      const missedRevenue = budgets.reduce((s, b) => {
+      const missedRevenue = budgets.reduce((s: number, b: any) => {
         const ratio = b.totalIncome > 0 ? b.totalExpenses / b.totalIncome : 0;
         if (ratio > 0.6) return s + (b.totalExpenses - b.totalIncome * 0.4);
         return s;
       }, 0);
 
       // Groeidata voor grafieken
-      const growthData = budgets.map(b => ({
+      const growthData = budgets.map((b: any) => ({
         period: new Date(b.month).toLocaleDateString('nl-NL', { month: 'short', year: '2-digit' }),
         inkomsten: Math.round(b.totalIncome),
         uitgaven: Math.round(b.totalExpenses),
@@ -125,7 +125,7 @@ export async function GET(req: Request) {
         },
         growthData,
         beforeAfter: { before: beforeSnapshot, after: afterSnapshot },
-        payments: payments.slice(0, 20).map(p => ({
+        payments: payments.slice(0, 20).map((p: any) => ({
           amount: p.amount,
           date: p.paidAt,
           creditor: p.debt.creditorName,
