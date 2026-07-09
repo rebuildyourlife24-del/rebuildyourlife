@@ -25,11 +25,14 @@ const DATA_PLATFORM = [
   { name: 'Redis / Upstash', type: 'Rate Limit & Cache', status: 'ACTIVE', ip: 'global' },
 ];
 
-// NEW LAYER: Revenue Intelligence Platform
+// NEW LAYER: Revenue Intelligence Platform (RIE)
 const REVENUE_INTELLIGENCE = [
   { metric: 'Opportunity Discovery', value: '3 Active Niches' },
-  { metric: 'ROI Analytics', value: '+142% MoM' },
-  { metric: 'Growth Intelligence', value: 'A/B Testing Running' },
+  { metric: 'Business Model Gen.', value: 'Idle' },
+  { metric: 'ROI & Profit Analytics', value: '+142% MoM' },
+  { metric: 'Experimentation Engine', value: '2 A/B Tests Active' },
+  { metric: 'Growth Intelligence', value: 'Optimizing' },
+  { metric: 'Portfolio Manager', value: '1 Active Portfolio' },
 ];
 
 // LAYER 9: Enterprise Operations (Event Log)
@@ -207,11 +210,11 @@ export default function AEIPMissionControl() {
             </div>
           </div>
 
-          {/* REVENUE INTELLIGENCE PLATFORM (Extra Layer) */}
-          <div className="h-56 os-panel flex flex-col">
+          {/* REVENUE INTELLIGENCE PLATFORM (Extra Layer / RIE) */}
+          <div className="h-64 os-panel flex flex-col">
             <div className="p-4 border-b border-[var(--color-os-glass-border)] flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full glow-cyan" />
-              <span className="os-data">REVENUE INTELLIGENCE</span>
+              <div className="w-1.5 h-1.5 bg-[var(--color-neon-cyan)] rounded-full glow-cyan" />
+              <span className="os-data text-[var(--color-neon-cyan)]">REVENUE INTELLIGENCE ENGINE (RIE)</span>
             </div>
             <div className="p-4 flex flex-col gap-4 justify-center flex-1">
               {REVENUE_INTELLIGENCE.map((item, idx) => (
