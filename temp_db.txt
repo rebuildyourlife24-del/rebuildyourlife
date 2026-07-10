@@ -1,1 +1,1 @@
-postgresql://postgres.gjexrxdyddystmvrgsoe:Imperialdreams2055@aws-1-eu-north-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+postgresql://postgres:Imperialdreams2055@db.xdffrzojcpmmzksfkobo.supabase.co:5432/postgres

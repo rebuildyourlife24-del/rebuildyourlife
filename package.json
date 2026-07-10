@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "npx prisma generate --schema=packages/database/prisma/schema.prisma",
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "npm run build -w apps/00-command-center",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "db:generate": "turbo run db:generate",
@@ -35,7 +35,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "npm@10.8.0",
   "devDependencies": {
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.15",
