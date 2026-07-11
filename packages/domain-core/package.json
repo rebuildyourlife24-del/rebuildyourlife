@@ -1,0 +1,21 @@
+{
+  "name": "@rylos/domain-core",
+  "version": "1.0.0",
+  "description": "Canonical Event Catalog and Core Domain logic",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "generate-catalog": "ts-node scripts/generate-catalog.ts"
+  },
+  "dependencies": {
+    "@rylos/contracts": "*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}

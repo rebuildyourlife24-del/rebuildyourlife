@@ -1,0 +1,14 @@
+{
+  "extends": "../contracts/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@rylos/contracts": ["../contracts/dist"],
+      "@rylos/contracts/*": ["../contracts/dist/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "scripts"]
+}
